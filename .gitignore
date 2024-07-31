@@ -12,6 +12,8 @@
 
 # Please, add your custom content below!
 
+.sln
+.DS_Store
 
 # Builds
 bin
