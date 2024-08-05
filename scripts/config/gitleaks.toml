@@ -19,5 +19,6 @@ regexes = [
 paths = [
   '''.terraform.lock.hcl''',
   '''poetry.lock''',
-  '''yarn.lock'''
+  '''yarn.lock''',
+  '''\.sln'''
 ]
