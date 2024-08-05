@@ -11,9 +11,9 @@
 !project.code-workspace
 
 # Please, add your custom content below!
-__azurite*.json
-__blobstorage__
-__queuestorage__
+__azurite*
+__blobstorage*
+__queuestorage*
 *.sln
 
 # Builds

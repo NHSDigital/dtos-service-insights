@@ -12,59 +12,59 @@ using System.Collections.Generic;
 
 public static class BlobJsonTrigger
 {
-    [FunctionName("receiveDataFile")]
-    public static async Task Run(
-        [BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob,
-        string name,
-        ILogger log)
-    {
-        log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
+  [FunctionName("receiveDataFile")]
+  public static async Task Run(
+      [BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob,
+      string name,
+      ILogger log)
+  {
+    log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
 
-        // Validate JSON
-        using (var reader = new StreamReader(myBlob))
-        {
-            var jsonData = reader.ReadToEnd();
-            if (IsValidJson(jsonData))
-            {
-                log.LogInformation("JSON is valid.");
-                await SendToProcessDataFunction(jsonData, log);
-            }
-            else
-            {
-                log.LogError("JSON is invalid.");
-            }
-        }
-    }
-
-    private static bool IsValidJson(string jsonData)
+    // Validate JSON
+    using (var reader = new StreamReader(myBlob))
     {
-        try
-        {
-            var obj = JsonConvert.DeserializeObject<object>(jsonData);
-            return obj != null;
-        }
-        catch (JsonException)
-        {
-            return false;
-        }
+      var jsonData = reader.ReadToEnd();
+      if (IsValidJson(jsonData))
+      {
+        log.LogInformation("JSON is valid.");
+        await SendToProcessDataFunction(jsonData, log);
+      }
+      else
+      {
+        log.LogError("JSON is invalid.");
+      }
     }
+  }
 
-    private static async Task SendToProcessDataFunction(string jsonData, ILogger log)
+  private static bool IsValidJson(string jsonData)
+  {
+    try
     {
-        var functionUrl = "http://localhost:7071/api/ProcessData";
-        using (var client = new HttpClient())
-        {
-            var content = new StringContent(JsonConvert.SerializeObject(new { Data = jsonData }));
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await client.PostAsync(functionUrl, content);
-            if (response.IsSuccessStatusCode)
-            {
-                log.LogInformation("Data sent to ProcessData function successfully.");
-            }
-            else
-            {
-                log.LogError("Failed to send data to ProcessData function.");
-            }
-        }
+      var obj = JsonConvert.DeserializeObject<object>(jsonData);
+      return obj != null;
     }
+    catch (JsonException)
+    {
+      return false;
+    }
+  }
+
+  private static async Task SendToProcessDataFunction(string jsonData, ILogger log)
+  {
+    var functionUrl = "http://localhost:7071/api/ProcessData";
+    using (var client = new HttpClient())
+    {
+      var content = new StringContent(JsonConvert.SerializeObject(new { Data = jsonData }));
+      content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+      var response = await client.PostAsync(functionUrl, content);
+      if (response.IsSuccessStatusCode)
+      {
+        log.LogInformation("Data sent to ProcessData function successfully.");
+      }
+      else
+      {
+        log.LogError("Failed to send data to ProcessData function.");
+      }
+    }
+  }
 }
