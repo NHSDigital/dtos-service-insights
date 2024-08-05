@@ -29,7 +29,7 @@ public class UpdateEpisode
         episode = JsonSerializer.Deserialize<Episode>(postData);
       }
 
-      _logger.LogInformation(episode.episode_id);
+      _logger.LogInformation(episode.EpisodeId);
 
       return req.CreateResponse(HttpStatusCode.OK);
 

@@ -1,4 +1,4 @@
 public class Episode
 {
-  public string episode_id { get; set; }
+  public string EpisodeId { get; set; }
 }
