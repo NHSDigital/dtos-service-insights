@@ -12,7 +12,7 @@ using NHS.CohortManager.Tests.TestUtils;
 
 [TestClass]
 public class UpdateEpisodeTests
-    {
+{
     private readonly Mock<ILogger<UpdateEpisode>> _logger = new();
     private Mock<HttpRequestData> _request;
     private readonly SetupRequest _setupRequest = new();
