@@ -1,4 +1,4 @@
-namespace updateEpisode;
+namespace UpdateEpisode;
 
 using System.Net;
 using Microsoft.Azure.Functions.Worker;
