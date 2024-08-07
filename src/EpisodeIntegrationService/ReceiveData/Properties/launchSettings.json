@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ReceiveData": {
+      "commandName": "Project",
+      "launchBrowser": false
+    }
+  }
+}
