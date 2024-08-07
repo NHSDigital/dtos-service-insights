@@ -15,6 +15,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateEpisodeTests", "..\te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestUtils", "..\tests\TestUtils\TestUtils.csproj", "{D352B93A-4AFA-481A-80F9-7F68FBEC4A9B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EpisodeIntegrationService", "EpisodeIntegrationService", "{B079A490-6D52-4428-8A63-BD596589C16E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessData", "EpisodeIntegrationService\ProcessData\ProcessData.csproj", "{E8D52ABA-73F0-482C-8DA6-8E0CA58C0E66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiveData", "EpisodeIntegrationService\ReceiveData\ReceiveData.csproj", "{B80006EA-58E3-4A8A-B307-4507FCA72037}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,9 +46,19 @@ Global
 		{D352B93A-4AFA-481A-80F9-7F68FBEC4A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D352B93A-4AFA-481A-80F9-7F68FBEC4A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D352B93A-4AFA-481A-80F9-7F68FBEC4A9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8D52ABA-73F0-482C-8DA6-8E0CA58C0E66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8D52ABA-73F0-482C-8DA6-8E0CA58C0E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8D52ABA-73F0-482C-8DA6-8E0CA58C0E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8D52ABA-73F0-482C-8DA6-8E0CA58C0E66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B80006EA-58E3-4A8A-B307-4507FCA72037}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B80006EA-58E3-4A8A-B307-4507FCA72037}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B80006EA-58E3-4A8A-B307-4507FCA72037}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B80006EA-58E3-4A8A-B307-4507FCA72037}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F5DC0B84-7D84-4A7C-9198-2B4354F26B43} = {55FB169A-E543-41E4-882A-7B12DF00016B}
 		{EFF39066-513A-4054-8347-2E43958476A8} = {8BBD7332-93CD-4C28-878C-314BB44A6224}
+		{E8D52ABA-73F0-482C-8DA6-8E0CA58C0E66} = {B079A490-6D52-4428-8A63-BD596589C16E}
+		{B80006EA-58E3-4A8A-B307-4507FCA72037} = {B079A490-6D52-4428-8A63-BD596589C16E}
 	EndGlobalSection
 EndGlobal
