@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 public static class BlobJsonTrigger
 {
-  [FunctionName("receiveDataFile")]
+  [FunctionName("receiveData")]
   public static async Task Run(
       [BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob,
       string name,
@@ -51,7 +51,7 @@ public static class BlobJsonTrigger
 
   private static async Task SendToProcessDataFunction(string jsonData, ILogger log)
   {
-    var functionUrl = "http://localhost:7071/api/ProcessData";
+    var functionUrl = "http://localhost:7171/api/ProcessData";
     using (var client = new HttpClient())
     {
       var content = new StringContent(JsonConvert.SerializeObject(new { Data = jsonData }));

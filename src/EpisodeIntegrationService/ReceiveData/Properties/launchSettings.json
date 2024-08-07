@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ReceiveAndProcessDataApp": {
+      "commandName": "Project",
+      "launchBrowser": false
+    }
+  }
+}
