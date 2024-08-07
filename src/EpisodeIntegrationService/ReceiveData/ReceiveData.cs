@@ -51,7 +51,7 @@ public static class BlobJsonTrigger
 
   private static async Task SendToProcessDataFunction(string jsonData, ILogger log)
   {
-    var functionUrl = "http://localhost:7171/api/ProcessData";
+    var functionUrl = "http://localhost:7111/api/ProcessData";
     using (var client = new HttpClient())
     {
       var content = new StringContent(JsonConvert.SerializeObject(new { Data = jsonData }));

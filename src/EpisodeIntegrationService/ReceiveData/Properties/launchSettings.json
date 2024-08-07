@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "ReceiveAndProcessDataApp": {
+    "ReceiveData": {
       "commandName": "Project",
       "launchBrowser": false
     }
