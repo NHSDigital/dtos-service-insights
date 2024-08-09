@@ -1,4 +1,4 @@
-namespace NHS.UpdateEpisodeTests;
+namespace NHS.ServiceInsights.CreateUpdateEpisodeTests;
 
 using Moq;
 using System;
@@ -7,17 +7,17 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
-using UpdateEpisode;
 using NHS.CohortManager.Tests.TestUtils;
+using NHS.ServiceInsights.EpisodeManagementService;
 
 [TestClass]
-public class UpdateEpisodeTests
+public class CreateUpdateEpisodeTests
 {
-    private readonly Mock<ILogger<UpdateEpisode>> _logger = new();
+    private readonly Mock<ILogger<CreateUpdateEpisode>> _logger = new();
     private Mock<HttpRequestData> _request;
     private readonly SetupRequest _setupRequest = new();
 
-    public UpdateEpisodeTests()
+    public CreateUpdateEpisodeTests()
     {
 
     }
@@ -34,7 +34,7 @@ public class UpdateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _request = _setupRequest.Setup(json);
 
-        var sut = new UpdateEpisode(_logger.Object);
+        var sut = new CreateUpdateEpisode(_logger.Object);
 
         // Act
         var result = sut.Run(_request.Object);
@@ -58,7 +58,7 @@ public class UpdateEpisodeTests
         var json = JsonSerializer.Serialize("Invalid");
         _request = _setupRequest.Setup(json);
 
-        var sut = new UpdateEpisode(_logger.Object);
+        var sut = new CreateUpdateEpisode(_logger.Object);
 
         // Act
         var result = sut.Run(_request.Object);
