@@ -1,41 +1,32 @@
-namespace UpdateEpisode;
-
-using System.Net;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json;
 
-public class UpdateEpisode
+public static class EpisodeManagement
 {
-    private readonly ILogger<UpdateEpisode> _logger;
-
-    public UpdateEpisode(ILogger<UpdateEpisode> logger)
+    [FunctionName("UpdateEpisode")]
+    public static async Task<IActionResult> Run(
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+        ILogger log)
     {
-        _logger = logger;
-    }
+        log.LogInformation("C# HTTP trigger function received a request for Episode Management.");
 
-    [Function("UpdateEpisode")]
-    public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
-    {
-        Episode episode;
+        string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+        var data = JsonConvert.DeserializeObject<object>(requestBody);  // Adjust type as needed
 
-        try
-        {
-            using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
-            {
-                var postData = reader.ReadToEnd();
-                episode = JsonSerializer.Deserialize<Episode>(postData);
-            }
+        // Log the received Episode Data in JSON format
+        string jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
+        log.LogInformation($"Received Episode Data: {jsonData}");
 
-            _logger.LogInformation(episode.EpisodeId);
-            return req.CreateResponse(HttpStatusCode.OK);
-        }
-        catch
-        {
-            _logger.LogError("Could not read episode data.");
-            return req.CreateResponse(HttpStatusCode.BadRequest);
-        }
+
+        // Add your episode management logic here
+
+        log.LogInformation("Episode data updated successfully.");
+        return new OkObjectResult("Episode data updated successfully.");
     }
 }

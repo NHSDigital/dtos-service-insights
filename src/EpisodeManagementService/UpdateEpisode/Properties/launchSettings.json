@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "updateParticipant": {
+    "updateEpisode": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7253",
+      "commandLineArgs": "--port 7151",
       "launchBrowser": false
     }
   }
