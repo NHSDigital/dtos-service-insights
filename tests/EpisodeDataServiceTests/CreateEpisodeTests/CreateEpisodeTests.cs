@@ -19,10 +19,11 @@ public class CreateEpisodeTests
     private readonly Mock<IEpisodeRepository> _episodeRepository = new();
     private Mock<HttpRequestData> _request;
     private readonly SetupRequest _setupRequest = new();
+    private readonly CreateEpisode _sut;
 
     public CreateEpisodeTests()
     {
-
+        _sut = new CreateEpisode(_logger.Object, _episodeRepository.Object);
     }
 
     [TestMethod]
@@ -32,13 +33,11 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize("Invalid episode");
         _request = _setupRequest.Setup(json);
 
-        var sut = new CreateEpisode(_logger.Object, _episodeRepository.Object);
-
         // Act
-        var result = sut.Run(_request.Object);
+        var result = _sut.Run(_request.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
 
     [TestMethod]
@@ -53,10 +52,8 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _request = _setupRequest.Setup(json);
 
-        var sut = new CreateEpisode(_logger.Object, _episodeRepository.Object);
-
         // Act
-        var result = sut.Run(_request.Object);
+        var result = _sut.Run(_request.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
@@ -76,10 +73,8 @@ public class CreateEpisodeTests
 
         _episodeRepository.Setup(repo => repo.CreateEpisode(It.IsAny<Episode>())).Throws<Exception>();
 
-        var sut = new CreateEpisode(_logger.Object, _episodeRepository.Object);
-
         // Act
-        var result = sut.Run(_request.Object);
+        var result = _sut.Run(_request.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);

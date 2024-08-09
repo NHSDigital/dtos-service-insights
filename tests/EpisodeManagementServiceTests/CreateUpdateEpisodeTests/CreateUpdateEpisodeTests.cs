@@ -9,17 +9,20 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
 using NHS.CohortManager.Tests.TestUtils;
 using NHS.ServiceInsights.EpisodeManagementService;
+using Common;
 
 [TestClass]
 public class CreateUpdateEpisodeTests
 {
     private readonly Mock<ILogger<CreateUpdateEpisode>> _logger = new();
+    private readonly Mock<ICallFunction> _callFunction = new();
     private Mock<HttpRequestData> _request;
     private readonly SetupRequest _setupRequest = new();
+    private readonly CreateUpdateEpisode _sut;
 
     public CreateUpdateEpisodeTests()
     {
-
+        _sut = new CreateUpdateEpisode(_logger.Object, _callFunction.Object);
     }
 
     [TestMethod]
@@ -34,10 +37,8 @@ public class CreateUpdateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _request = _setupRequest.Setup(json);
 
-        var sut = new CreateUpdateEpisode(_logger.Object);
-
         // Act
-        var result = sut.Run(_request.Object);
+        var result = await _sut.Run(_request.Object);
 
         // Assert
         _logger.Verify(log =>
@@ -58,10 +59,8 @@ public class CreateUpdateEpisodeTests
         var json = JsonSerializer.Serialize("Invalid");
         _request = _setupRequest.Setup(json);
 
-        var sut = new CreateUpdateEpisode(_logger.Object);
-
         // Act
-        var result = sut.Run(_request.Object);
+        var result = await _sut.Run(_request.Object);
 
         // Assert
         _logger.Verify(log =>
