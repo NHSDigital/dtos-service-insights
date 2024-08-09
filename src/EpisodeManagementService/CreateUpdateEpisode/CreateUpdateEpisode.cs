@@ -11,12 +11,12 @@ using Common;
 public class CreateUpdateEpisode
 {
     private readonly ILogger<CreateUpdateEpisode> _logger;
-    private readonly ICallFunction _callFunction;
+    private readonly IHttpRequestService _httpRequestService;
 
-    public CreateUpdateEpisode(ILogger<CreateUpdateEpisode> logger, ICallFunction callFunction)
+    public CreateUpdateEpisode(ILogger<CreateUpdateEpisode> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
-        _callFunction = callFunction;
+        _httpRequestService = httpRequestService;
     }
 
     [Function("CreateUpdateEpisode")]
@@ -31,17 +31,23 @@ public class CreateUpdateEpisode
                 var postData = reader.ReadToEnd();
                 episode = JsonSerializer.Deserialize<Episode>(postData);
             }
-
-            var json = JsonSerializer.Serialize(episode);
-            var response = await _callFunction.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), json);
-
-            _logger.LogInformation(episode.EpisodeId);
-            return req.CreateResponse(HttpStatusCode.OK);
         }
         catch
         {
             _logger.LogError("Could not read episode data.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+
+        try
+        {
+            var json = JsonSerializer.Serialize(episode);
+            await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), json);
+
+            return req.CreateResponse(HttpStatusCode.OK);
+        }
+        catch
+        {
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
 }
