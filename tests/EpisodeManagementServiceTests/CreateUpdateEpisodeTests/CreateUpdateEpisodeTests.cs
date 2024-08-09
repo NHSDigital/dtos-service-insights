@@ -1,4 +1,4 @@
-namespace NHS.ServiceInsights.CreateUpdateEpisodeTests;
+namespace NHS.ServiceInsights.EpisodeManagementServiceTests;
 
 using Moq;
 using System;
@@ -7,9 +7,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
-using NHS.CohortManager.Tests.TestUtils;
 using NHS.ServiceInsights.EpisodeManagementService;
 using Common;
+using NHS.ServiceInsights.TestUtils;
 
 [TestClass]
 public class CreateUpdateEpisodeTests

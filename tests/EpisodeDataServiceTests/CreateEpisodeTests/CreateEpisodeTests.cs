@@ -7,10 +7,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
-using NHS.CohortManager.Tests.TestUtils;
 using NHS.ServiceInsights.EpisodeDataService;
 using Data.Models;
 using Data;
+using NHS.ServiceInsights.TestUtils;
 
 [TestClass]
 public class CreateEpisodeTests
