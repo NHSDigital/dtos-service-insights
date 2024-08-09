@@ -19,7 +19,7 @@ namespace UpdateEpisodeTests
             // Arrange
             var mockLogger = new Mock<ILogger>();
             var mockHttpRequest = new Mock<HttpRequest>();
-            var episodeData = new { Title = "Episode 1", Duration = 45 }; // Example episode data
+            var episodeData = new { episode_id = "245395" }; // Example episode data
             var json = JsonConvert.SerializeObject(episodeData);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
@@ -40,7 +40,7 @@ namespace UpdateEpisodeTests
             // Arrange
             var mockLogger = new Mock<ILogger>();
             var mockHttpRequest = new Mock<HttpRequest>();
-            var episodeData = new { Title = "Episode 1", Duration = 45 }; // Example episode data
+            var episodeData = new { episode_id = "245395" }; // Example episode data
             var json = JsonConvert.SerializeObject(episodeData);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
 

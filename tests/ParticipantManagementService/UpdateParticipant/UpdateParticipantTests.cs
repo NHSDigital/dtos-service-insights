@@ -19,7 +19,7 @@ namespace UpdateParticipantTests
             // Arrange
             var mockLogger = new Mock<ILogger>();
             var mockHttpRequest = new Mock<HttpRequest>();
-            var participantData = new { Name = "John Doe", Age = 30 }; // Example participant data
+            var participantData = new { nhs_number = "1111111112" }; // Example participant data
             var json = JsonConvert.SerializeObject(participantData);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
@@ -40,7 +40,7 @@ namespace UpdateParticipantTests
             // Arrange
             var mockLogger = new Mock<ILogger>();
             var mockHttpRequest = new Mock<HttpRequest>();
-            var participantData = new { Name = "John Doe", Age = 30 }; // Example participant data
+            var participantData = new { nhs_number = "1111111112" }; // Example participant data
             var json = JsonConvert.SerializeObject(participantData);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
@@ -53,12 +53,12 @@ namespace UpdateParticipantTests
             mockLogger.Verify(
                 log => log.Log(
                     It.Is<LogLevel>(l => l == LogLevel.Information),
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Participant data updated successfully.")),
-                    It.IsAny<Exception>(),
-                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
-                Times.Once
-            );
+                        It.IsAny<EventId>(),
+                        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Participant data updated successfully.")),
+                        It.IsAny<Exception>(),
+                        It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                    Times.Once
+                );
         }
     }
 }
