@@ -16,13 +16,11 @@ namespace GetParticipantFunction
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("Function request has been processed.");
 
-            // Read the JSON data from the request body
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-            // Log the received JSON data
-            log.LogInformation($"Received Participant Data: {requestBody}");
+            log.LogInformation($"Retrieved Participant Data: {requestBody}");
 
             return new OkResult();
         }
