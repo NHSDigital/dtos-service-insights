@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
-namespace GetParticipantFunction
+namespace GetParticipant
 {
     public static class GetParticipant
     {
@@ -16,13 +16,26 @@ namespace GetParticipantFunction
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("Function request has been processed.");
+            log.LogInformation("Request to retrieve a participant has been processed.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var data = JsonConvert.DeserializeObject<dynamic>(requestBody);
+            string NhsNumber = data?.nhs_number;
 
-            log.LogInformation($"Retrieved Participant Data: {requestBody}");
+            if (string.IsNullOrEmpty(NhsNumber))
+            {
+                return new BadRequestObjectResult("Please enter a valid NHS Number.");
+            }
 
-            return new OkResult();
+            var participant = ParticipantRepository.GetParticipantByNhsNumber(NhsNumber);
+
+            if (participant == null)
+            {
+                return new NotFoundObjectResult($"Participant with ID {NhsNumber} not found.");
+            }
+
+            return new OkObjectResult(participant);
         }
+
     }
 }
