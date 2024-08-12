@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
 using NHS.ServiceInsights.EpisodeManagementService;
-using Common;
 using NHS.ServiceInsights.TestUtils;
+using NHS.ServiceInsights.Model;
+using NHS.ServiceInsights.Common;
 
 [TestClass]
 public class CreateUpdateEpisodeTests

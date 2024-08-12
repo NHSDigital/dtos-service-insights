@@ -1,6 +1,6 @@
-using Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NHS.ServiceInsights.Common;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
