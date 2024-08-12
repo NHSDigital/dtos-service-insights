@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\EpisodeManagementService\UpdateEpisode\UpdateEpisode.csproj" />
+    <ProjectReference Include="..\..\..\src\EpisodeDataService\CreateEpisode\CreateEpisode.csproj" />
     <ProjectReference Include="..\..\TestUtils\TestUtils.csproj" />
   </ItemGroup>
 
