@@ -6,7 +6,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
-using Common;
+using NHS.ServiceInsights.Common;
 
 public class CreateUpdateEpisode
 {

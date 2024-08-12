@@ -1,6 +1,6 @@
-namespace Common;
-
 using System.Text;
+
+namespace NHS.ServiceInsights.Common;
 
 public class HttpRequestService : IHttpRequestService
 {

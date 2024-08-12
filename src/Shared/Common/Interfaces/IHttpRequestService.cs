@@ -1,6 +1,4 @@
-namespace Common;
-
-using System.Net;
+namespace NHS.ServiceInsights.Common;
 
 public interface IHttpRequestService
 {
