@@ -26,4 +26,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Data\Data.csproj" />
   </ItemGroup>
-  </Project>
+</Project>

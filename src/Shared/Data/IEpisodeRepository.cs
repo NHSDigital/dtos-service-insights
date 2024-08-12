@@ -1,6 +1,7 @@
-using Data.Models;
 
-namespace Data;
+using NHS.ServiceInsights.Model;
+
+namespace NHS.ServiceInsights.Data;
 
 public interface IEpisodeRepository
 {

@@ -6,8 +6,8 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
-using Data.Models;
-using Data;
+using NHS.ServiceInsights.Data;
+using NHS.ServiceInsights.Model;
 
 public class CreateEpisode
 {

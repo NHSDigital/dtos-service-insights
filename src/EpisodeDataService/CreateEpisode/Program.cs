@@ -1,8 +1,7 @@
-using Data;
-using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NHS.ServiceInsights.Data;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()

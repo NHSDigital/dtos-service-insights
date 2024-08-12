@@ -1,5 +1,7 @@
-using Data;
-using Data.Models;
+
+using NHS.ServiceInsights.Model;
+
+namespace NHS.ServiceInsights.Data;
 
 public class EpisodeRepository : IEpisodeRepository
 {
