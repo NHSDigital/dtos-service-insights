@@ -1,5 +1,3 @@
-namespace NHS.ServiceInsights.EpisodeDataService;
-
 using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -9,15 +7,17 @@ using System.Text.Json;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 
+namespace NHS.ServiceInsights.EpisodeDataService;
+
 public class CreateEpisode
 {
     private readonly ILogger<CreateEpisode> _logger;
     private readonly IEpisodeRepository _episodesRepository;
 
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodesRepository)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository)
     {
         _logger = logger;
-        _episodesRepository = episodesRepository;
+        _episodesRepository = episodeRepository;
     }
 
     [Function("CreateEpisode")]

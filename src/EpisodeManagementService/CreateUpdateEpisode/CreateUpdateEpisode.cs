@@ -1,5 +1,3 @@
-namespace NHS.ServiceInsights.EpisodeManagementService;
-
 using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -7,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
+
+namespace NHS.ServiceInsights.EpisodeManagementService;
 
 public class CreateUpdateEpisode
 {
