@@ -1,4 +1,4 @@
-namespace NHS.CohortManager.Tests.TestUtils;
+namespace NHS.ServiceInsights.TestUtils;
 
 using System.Text;
 using Moq;

@@ -1,22 +1,26 @@
-namespace UpdateEpisode;
-
 using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
+using NHS.ServiceInsights.Data;
+using NHS.ServiceInsights.Model;
 
-public class UpdateEpisode
+namespace NHS.ServiceInsights.EpisodeDataService;
+
+public class CreateEpisode
 {
-    private readonly ILogger<UpdateEpisode> _logger;
+    private readonly ILogger<CreateEpisode> _logger;
+    private readonly IEpisodeRepository _episodesRepository;
 
-    public UpdateEpisode(ILogger<UpdateEpisode> logger)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository)
     {
         _logger = logger;
+        _episodesRepository = episodeRepository;
     }
 
-    [Function("UpdateEpisode")]
+    [Function("CreateEpisode")]
     public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
         Episode episode;
@@ -28,14 +32,22 @@ public class UpdateEpisode
                 var postData = reader.ReadToEnd();
                 episode = JsonSerializer.Deserialize<Episode>(postData);
             }
-
-            _logger.LogInformation(episode.EpisodeId);
-            return req.CreateResponse(HttpStatusCode.OK);
         }
         catch
         {
             _logger.LogError("Could not read episode data.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+
+        try
+        {
+            _episodesRepository.CreateEpisode(episode);
+            return req.CreateResponse(HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Failed to create episode in database.\nException: {ex}", ex);
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
 }
