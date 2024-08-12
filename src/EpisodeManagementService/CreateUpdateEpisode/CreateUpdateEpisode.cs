@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
+using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.EpisodeManagementService;
 
