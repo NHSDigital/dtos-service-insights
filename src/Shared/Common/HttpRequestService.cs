@@ -18,9 +18,8 @@ public class HttpRequestService : IHttpRequestService
             Content = new StringContent(dataToSend, Encoding.UTF8, "application/json")
         };
 
-        HttpResponseMessage response;
+        var response = await _httpClient.SendAsync(request);
 
-        response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
         return response;
