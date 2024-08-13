@@ -2,7 +2,7 @@
   "profiles": {
     "processData": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7162",
+      "commandLineArgs": "--port 7072",
       "launchBrowser": false
     }
   }
