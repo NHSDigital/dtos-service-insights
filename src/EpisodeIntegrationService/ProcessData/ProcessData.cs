@@ -11,11 +11,21 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
+using NHS.ServiceInsights.Common;
+using NHS.ServiceInsights.Model;
 
-public static class ProcessData
+namespace NHS.ServiceInsights.EpisodeIntegrationService;
+
+public class ProcessData
 {
-    private static readonly HttpClient client = new HttpClient();
+    private readonly ILogger<ProcessData> _logger;
+    private readonly IHttpRequestService _httpRequestService;
 
+    public ProcessData(ILogger<ProcessData> logger, IHttpRequestService httpRequestService)
+    {
+        _logger = logger;
+        _httpRequestService = httpRequestService;
+    }
     [FunctionName("ProcessData")]
     public static async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
