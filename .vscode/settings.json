@@ -3,5 +3,11 @@
     "MD013": false,
     "MD024": { "siblings_only": true },
     "MD033": false
-  }
+  },
+  "azureFunctions.projectSubpath": "src/EpisodeIntegrationService/ReceiveData",
+  "azureFunctions.deploySubpath": "src/EpisodeIntegrationService/ReceiveData/bin/Release/net6.0/publish",
+  "azureFunctions.projectLanguage": "C#",
+  "azureFunctions.projectRuntime": "~4",
+  "debug.internalConsoleOptions": "neverOpen",
+  "azureFunctions.preDeployTask": "publish (functions)"
 }
