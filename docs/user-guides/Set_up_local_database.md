@@ -29,35 +29,35 @@ To run the Service Insights application on your local machine you will need to s
 
 1. Ensure Podman is installed
 
-  ```shell
-  podman -v
-  ```
+    ```shell
+    podman -v
+    ```
 
 2. Ensure that the Podman virtual machine is running
 
-  ```shell
-  podman machine start
-  ```
+    ```shell
+    podman machine start
+    ```
 
 3. Run the container
 
-  ```shell
-  podman run --name azuresqledge -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=YOUR_PASSWORD' -p 1433:1433 -d mcr.microsoft.com/azure-sql-edge
-  ```
+    ```shell
+    podman run --name azuresqledge -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=YOUR_PASSWORD' -p 1433:1433 -d mcr.microsoft.com/azure-sql-edge
+    ```
 
-  Replace YOUR_PASSWORD with a password of your choice. It must comply with the SQL Server [password complexity policy](https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=sql-server-ver16#password-complexity).
+    Replace YOUR_PASSWORD with a password of your choice. It must comply with the SQL Server [password complexity policy](https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=sql-server-ver16#password-complexity).
 
 4. Verify that the container is running
 
-  ```shell
-  podman container list -a
-  ```
+    ```shell
+    podman container list -a
+    ```
 
 5. Connect to the database server in Azure Data Studio
 
-  - Server: localhost
-  - User name: SA
-  - Password: YOUR_PASSWORD
+    - Server: localhost
+    - User name: SA
+    - Password: YOUR_PASSWORD
 
 6. Create the database by running the query found in `create_database.sql` in Azure Data Studio
 
@@ -65,9 +65,9 @@ To run the Service Insights application on your local machine you will need to s
 
 8. Update the ServiceInsightsDbConnectionString environment variables found in the `local.settings.json` files, replacing YOUR_CONNECTION_STRING with
 
-  `Server=localhost,1433;Database=ServiceInsightsDB;User Id=SA;Password=YOUR_PASSWORD;TrustServerCertificate=True`
+    `Server=localhost,1433;Database=ServiceInsightsDB;User Id=SA;Password=YOUR_PASSWORD;TrustServerCertificate=True`
 
-  Remember to also replace YOUR_PASSWORD in the connection string with the password you set in step 3.
+    Remember to also replace YOUR_PASSWORD in the connection string with the password you set in step 3.
 
 ## Going forward
 
