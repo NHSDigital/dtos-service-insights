@@ -12,7 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using NHS.ServiceInsights.Common;
-using NHS.ServiceInsights.Model;
+
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
@@ -107,7 +107,10 @@ public class ProcessData
             foreach (var episode in episodes)
             {
                 log.LogInformation($"Sending episode: {JsonConvert.SerializeObject(episode, Formatting.Indented)}");
-                await SendToFunction(episodeUrl, episode, log);
+                // await SendToFunction(episodeUrl, episode, log);
+                // _httpRequestService.SendPost(episodeUrl, episode, log);
+                await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("EpisodeManagementUrl"), episode);
+
             }
         }
         else
@@ -124,7 +127,9 @@ public class ProcessData
             foreach (var participant in participants)
             {
                 log.LogInformation($"Sending participant: {JsonConvert.SerializeObject(participant, Formatting.Indented)}");
-                await SendToFunction(participantUrl, participant, log);
+                // await SendToFunction(participantUrl, participant, log);
+                await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("ParticipantManagementUrl"), participant);
+
             }
         }
         else
@@ -136,33 +141,33 @@ public class ProcessData
         return new OkObjectResult("Data processed successfully.");
     }
 
-    private static async Task SendToFunction(string functionUrl, object data, ILogger log)
-    {
-        if (string.IsNullOrWhiteSpace(functionUrl))
-        {
-            log.LogError("Function URL is not configured.");
-            return;
-        }
+    // private static async Task SendToFunction(string functionUrl, object data, ILogger log)
+    // {
+    //     if (string.IsNullOrWhiteSpace(functionUrl))
+    //     {
+    //         log.LogError("Function URL is not configured.");
+    //         return;
+    //     }
 
-        try
-        {
-            // Prepare content with correct JSON structure
-            var content = new StringContent(JsonConvert.SerializeObject(data));
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await client.PostAsync(functionUrl, content);
+    //     try
+    //     {
+    //         // Prepare content with correct JSON structure
+    //         var content = new StringContent(JsonConvert.SerializeObject(data));
+    //         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+    //         var response = await client.PostAsync(functionUrl, content);
 
-            if (response.IsSuccessStatusCode)
-            {
-                log.LogInformation($"Data sent to function {functionUrl} successfully.");
-            }
-            else
-            {
-                log.LogError($"Failed to send data to function {functionUrl}. Status code: {response.StatusCode}");
-            }
-        }
-        catch (HttpRequestException ex)
-        {
-            log.LogError($"HTTP request error: {ex.Message}");
-        }
-    }
+    //         if (response.IsSuccessStatusCode)
+    //         {
+    //             log.LogInformation($"Data sent to function {functionUrl} successfully.");
+    //         }
+    //         else
+    //         {
+    //             log.LogError($"Failed to send data to function {functionUrl}. Status code: {response.StatusCode}");
+    //         }
+    //     }
+    //     catch (HttpRequestException ex)
+    //     {
+    //         log.LogError($"HTTP request error: {ex.Message}");
+    //     }
+    // }
 }
