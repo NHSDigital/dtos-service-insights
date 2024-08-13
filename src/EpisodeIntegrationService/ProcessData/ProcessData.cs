@@ -34,6 +34,7 @@ public class ProcessData
         }
 
         _logger.LogDebug($"Request body: {requestBody}");
+        _logger.LogInformation($"Request body: {requestBody}");
 
         var data = await DeserializeDataAsync(requestBody);
         if (data == null)
@@ -49,6 +50,9 @@ public class ProcessData
             return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
         }
 
+        _logger.LogInformation(participantUrl);
+        _logger.LogInformation(episodeUrl);
+        _logger.LogInformation(requestBody);
 
         await ProcessEpisodeDataAsync(data.Episodes, episodeUrl);
         await ProcessParticipantDataAsync(data.Participants, participantUrl);
@@ -71,12 +75,12 @@ public class ProcessData
         }
     }
 
-    private async Task<DataPayload> DeserializeDataAsync(string requestBody)
+    private async Task<Data> DeserializeDataAsync(string requestBody)
     {
         try
         {
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return await JsonSerializer.DeserializeAsync<DataPayload>(new MemoryStream(Encoding.UTF8.GetBytes(requestBody)), options);
+            return await JsonSerializer.DeserializeAsync<Data>(new MemoryStream(Encoding.UTF8.GetBytes(requestBody)), options);
         }
         catch (JsonException ex)
         {
@@ -135,17 +139,48 @@ public class ProcessData
 
 public class Participant
 {
-    public string? Id { get; set; }
-    public string? Name { get; set; }
+    public string? nhs_number { get; set; }
+    public string? next_test_due_date { get; set; }
+    public string? gp_practice_id { get; set; }
+    public string? subject_status_code { get; set; }
+    public string? is_higher_risk { get; set; }
+    public string? higher_risk_next_test_due_date { get; set; }
+    public string? removal_reason { get; set; }
+    public string? removal_date { get; set; }
+    public string? bso_organisation_id { get; set; }
+    public string? early_recall_date { get; set; }
+    public string? latest_invitation_date { get; set; }
+    public string? preferred_language { get; set; }
+    public string? higher_risk_referral_reason_code { get; set; }
+    public string? date_irradiated { get; set; }
+    public string? is_higher_risk_active { get; set; }
+    public string? gene_code { get; set; }
+    public string? ntdd_calculation_method { get; set; }
 }
 
 public class Episode
 {
-    public string? Id { get; set; }
-    public string? Description { get; set; }
+    public string? episode_id { get; set; }
+    public string? episode_type { get; set; }
+    public string? bso_organisation_code { get; set; }
+    public string? bso_batch_id { get; set; }
+    public string? episode_date { get; set; }
+    public string? end_code { get; set; }
+    public string? date_of_foa { get; set; }
+    public string? date_of_as { get; set; }
+    public string? appointment_made { get; set; }
+    public string? call_recall_status_authorised_by { get; set; }
+    public string? early_recall_date { get; set; }
+    public string? end_code_last_updated { get; set; }
 }
 
-public class DataPayload
+
+public class DataPayLoad
+{
+    public Data Data { get; set; }
+}
+
+public class Data
 {
     public List<Episode> Episodes { get; set; } = new List<Episode>();
     public List<Participant> Participants { get; set; } = new List<Participant>();
