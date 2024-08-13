@@ -1,18 +1,10 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using NHS.ServiceInsights.Common;
-
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
+using System.Text.Json;
+using System.Net;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
@@ -26,13 +18,11 @@ public class ProcessData
         _logger = logger;
         _httpRequestService = httpRequestService;
     }
-    [FunctionName("ProcessData")]
-    public static async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-        ILogger log,
-        ExecutionContext context)
+
+    [Function("ProcessData")]
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
-        log.LogInformation("C# HTTP trigger function received a request.");
+        _logger.LogInformation("C# HTTP trigger function received a request.");
 
         string requestBody;
         try
@@ -44,11 +34,11 @@ public class ProcessData
         }
         catch (Exception ex)
         {
-            log.LogError($"Error reading request body: {ex.Message}");
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"Error reading request body: {ex.Message}");
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
-        log.LogInformation($"Request body: {requestBody}");
+        _logger.LogInformation($"Request body: {requestBody}");
 
         Dictionary<string, object> data;
         try
@@ -66,17 +56,17 @@ public class ProcessData
         }
         catch (JsonException ex)
         {
-            log.LogError($"Deserialization error: {ex.Message}");
+            _logger.LogError($"Deserialization error: {ex.Message}");
             return new BadRequestObjectResult("Invalid JSON format.");
         }
 
         if (data == null)
         {
-            log.LogError("Deserialized data is null.");
+            _logger.LogError("Deserialized data is null.");
             return new BadRequestObjectResult("No data received.");
         }
 
-        log.LogInformation($"Deserialized data: {JsonConvert.SerializeObject(data, Formatting.Indented)}");
+        _logger.LogInformation($"Deserialized data: {JsonConvert.SerializeObject(data, Formatting.Indented)}");
 
         // Load configuration
         var config = new ConfigurationBuilder()
@@ -89,24 +79,24 @@ public class ProcessData
         string episodeUrl = config["EpisodeManagementUrl"];
         string participantUrl = config["ParticipantManagementUrl"];
 
-        log.LogInformation($"Episode URL: {episodeUrl}");
-        log.LogInformation($"Participant URL: {participantUrl}");
+        _logger.LogInformation($"Episode URL: {episodeUrl}");
+        _logger.LogInformation($"Participant URL: {participantUrl}");
 
         if (string.IsNullOrEmpty(episodeUrl) || string.IsNullOrEmpty(participantUrl))
         {
-            log.LogError("One or both URLs are not configured. Please check your settings.");
+            _logger.LogError("One or both URLs are not configured. Please check your settings.");
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         if (data.TryGetValue("Episodes", out var episodeData))
         {
-            log.LogInformation("Processing episode data.");
+            _logger.LogInformation("Processing episode data.");
 
             // Assuming episodeData is a list of episodes
             var episodes = JsonConvert.DeserializeObject<List<object>>(episodeData.ToString());
             foreach (var episode in episodes)
             {
-                log.LogInformation($"Sending episode: {JsonConvert.SerializeObject(episode, Formatting.Indented)}");
+                _logger.LogInformation($"Sending episode: {JsonConvert.SerializeObject(episode, Formatting.Indented)}");
                 // await SendToFunction(episodeUrl, episode, log);
                 // _httpRequestService.SendPost(episodeUrl, episode, log);
                 await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("EpisodeManagementUrl"), episode);
@@ -115,18 +105,18 @@ public class ProcessData
         }
         else
         {
-            log.LogInformation("No episode data found.");
+            _logger.LogInformation("No episode data found.");
         }
 
         if (data.TryGetValue("Participants", out var participantData))
         {
-            log.LogInformation("Processing participant data.");
+            _logger.LogInformation("Processing participant data.");
 
             // Assuming participantData is a list of participants
             var participants = JsonConvert.DeserializeObject<List<object>>(participantData.ToString());
             foreach (var participant in participants)
             {
-                log.LogInformation($"Sending participant: {JsonConvert.SerializeObject(participant, Formatting.Indented)}");
+                _logger.LogInformation($"Sending participant: {JsonConvert.SerializeObject(participant, Formatting.Indented)}");
                 // await SendToFunction(participantUrl, participant, log);
                 await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("ParticipantManagementUrl"), participant);
 
@@ -134,10 +124,10 @@ public class ProcessData
         }
         else
         {
-            log.LogInformation("No participant data found.");
+            _logger.LogInformation("No participant data found.");
         }
 
-        log.LogInformation("Data processed successfully.");
+        _logger.LogInformation("Data processed successfully.");
         return new OkObjectResult("Data processed successfully.");
     }
 
@@ -145,7 +135,7 @@ public class ProcessData
     // {
     //     if (string.IsNullOrWhiteSpace(functionUrl))
     //     {
-    //         log.LogError("Function URL is not configured.");
+    //         _logger.LogError("Function URL is not configured.");
     //         return;
     //     }
 
@@ -158,16 +148,16 @@ public class ProcessData
 
     //         if (response.IsSuccessStatusCode)
     //         {
-    //             log.LogInformation($"Data sent to function {functionUrl} successfully.");
+    //             _logger.LogInformation($"Data sent to function {functionUrl} successfully.");
     //         }
     //         else
     //         {
-    //             log.LogError($"Failed to send data to function {functionUrl}. Status code: {response.StatusCode}");
+    //             _logger.LogError($"Failed to send data to function {functionUrl}. Status code: {response.StatusCode}");
     //         }
     //     }
     //     catch (HttpRequestException ex)
     //     {
-    //         log.LogError($"HTTP request error: {ex.Message}");
+    //         _logger.LogError($"HTTP request error: {ex.Message}");
     //     }
     // }
 }
