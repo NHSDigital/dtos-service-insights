@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# Root directory relative to the script location (up one level, then into 'src')
-ROOT_DIR="$(dirname "$0")/../../src"
+SRC_DIR="$(dirname "$0")/../../src"
 
 # Find all files named 'local.settings.json.template' and copy them
-find "$ROOT_DIR" -type f -name "local.settings.json.template" | while read -r template_file; do
+find "$SRC_DIR" -type f -name "local.settings.json.template" | while read -r template_file; do
   # Determine the directory of the template file
   file_dir=$(dirname "$template_file")
 
