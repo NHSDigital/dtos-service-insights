@@ -5,6 +5,7 @@
   - [Prerequisites](#prerequisites)
   - [Key files](#key-files)
   - [Steps](#steps)
+  - [Going forward](#going-forward)
   - [Troubleshooting](#troubleshooting)
 
 ## Overview
@@ -15,8 +16,9 @@ To run the Service Insights application on your local machine you will need to s
 
 ## Prerequisites
 
-- Install Podman Desktop or Podman CLI
+- Install [Podman Desktop or Podman CLI](https://podman.io)
 - Install [Azure Data Studio](https://learn.microsoft.com/en-us/azure-data-studio/download-azure-data-studio)
+- [Set up local settings](./Set_up_local_settings.md)
 
 ## Key files
 
@@ -26,24 +28,24 @@ To run the Service Insights application on your local machine you will need to s
 ## Steps
 
 1. Ensure Podman is installed
-```bash
+```shell
 podman -v
 ```
 
 2. Ensure that the Podman virtual machine is running
-```bash
+```shell
 podman machine start
 ```
 
 3. Run the container
-```bash
+```shell
 podman run --name azuresqledge -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=YOUR_PASSWORD' -p 1433:1433 -d mcr.microsoft.com/azure-sql-edge
 ```
 
 Replace YOUR_PASSWORD with a password of your choice. It must comply with the SQL Server [password complexity policy](https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=sql-server-ver16#password-complexity).
 
 4. Verify that the container is running
-```bash
+```shell
 podman container list -a
 ```
 
@@ -63,13 +65,24 @@ podman container list -a
 Server=localhost,1433;Database=ServiceInsightsDB;User Id=SA;Password=YOUR_PASSWORD;TrustServerCertificate=True
 ```
 
+Remember to also replace YOUR_PASSWORD in the connection string with the password you set in step 3.
+
+## Going forward
+
+Going forward, to start up your podman container you will just need to start the podman virtual machine and start your container.
+
+```shell
+podman machine start
+podman container start azuresqledge
+```
+
 ## Troubleshooting
 
 If you are having issues with running the container try the following
 
 - Restarting the podman virtual machine
 
-```bash
+```shell
 podman machine stop
 podman machine start
 ```

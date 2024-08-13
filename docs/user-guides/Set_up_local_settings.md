@@ -2,10 +2,8 @@
 
 - [Guide: Set up local settings](#guide-set-up-local-settings)
   - [Overview](#overview)
-  - [Prerequisites](#prerequisites)
   - [Key files](#key-files)
   - [Steps](#steps)
-  - [Troubleshooting](#troubleshooting)
 
 ## Overview
 
@@ -13,7 +11,15 @@ To run the Service Insights application on your local machine you will need a `l
 
 These file are kept out of source control as they may contain sensitive values.
 
-To create your `local.settings.json` files based off of the `local.settings.json.template` files, run the following commands in your terminal:
+## Key files
 
-1. `cd scripts/local-settings`
-2. `./create_local_settings.sh`
+- [`create_local_settings.sh`](../../scripts/local-settings/create_local_settings.sh)
+
+## Steps
+
+To create the `local.settings.json` files based off of the `local.settings.json.template` files, run the following commands in your terminal:
+
+```shell
+cd scripts/local-settings
+./create_local_settings.sh
+```
