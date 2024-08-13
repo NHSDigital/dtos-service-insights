@@ -28,16 +28,19 @@ To run the Service Insights application on your local machine you will need to s
 ## Steps
 
 1. Ensure Podman is installed
+
 ```shell
 podman -v
 ```
 
 2. Ensure that the Podman virtual machine is running
+
 ```shell
 podman machine start
 ```
 
 3. Run the container
+
 ```shell
 podman run --name azuresqledge -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=YOUR_PASSWORD' -p 1433:1433 -d mcr.microsoft.com/azure-sql-edge
 ```
@@ -45,6 +48,7 @@ podman run --name azuresqledge -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=YOUR_PAS
 Replace YOUR_PASSWORD with a password of your choice. It must comply with the SQL Server [password complexity policy](https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=sql-server-ver16#password-complexity).
 
 4. Verify that the container is running
+
 ```shell
 podman container list -a
 ```
@@ -69,7 +73,7 @@ Remember to also replace YOUR_PASSWORD in the connection string with the passwor
 
 ## Going forward
 
-Going forward, to start up your podman container you will just need to start the podman virtual machine and start your container.
+Going forward, to start up your Podman container you will just need to start the Podman virtual machine and start your container.
 
 ```shell
 podman machine start
@@ -80,7 +84,7 @@ podman container start azuresqledge
 
 If you are having issues with running the container try the following
 
-- Restarting the podman virtual machine
+- Restarting the Podman virtual machine
 
 ```shell
 podman machine stop
