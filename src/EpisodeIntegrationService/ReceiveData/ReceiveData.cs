@@ -45,13 +45,37 @@ public static class BlobJsonTrigger
         }
     }
 
+    // private static async Task SendToProcessDataFunction(string jsonData, ILogger log)
+    // {
+    //     var functionUrl = "http://localhost:7072/api/ProcessData";
+    //     using (var client = new HttpClient())
+    //     {
+    //         var content = new StringContent(JsonConvert.SerializeObject(new { Data = jsonData }));
+    //         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+    //         var response = await client.PostAsync(functionUrl, content);
+    //         if (response.IsSuccessStatusCode)
+    //         {
+    //             log.LogInformation("Data sent to ProcessData function successfully.");
+    //         }
+    //         else
+    //         {
+    //             log.LogError("Failed to send data to ProcessData function.");
+    //         }
+    //     }
+    // }
     private static async Task SendToProcessDataFunction(string jsonData, ILogger log)
     {
         var functionUrl = "http://localhost:7072/api/ProcessData";
         using (var client = new HttpClient())
         {
-            var content = new StringContent(JsonConvert.SerializeObject(new { Data = jsonData }));
+            // Create the payload as an anonymous object
+            var payload = new { Data = JsonConvert.DeserializeObject(jsonData) };
+
+            // Serialize the payload
+            var content = new StringContent(JsonConvert.SerializeObject(payload));
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            // Send POST request
             var response = await client.PostAsync(functionUrl, content);
             if (response.IsSuccessStatusCode)
             {
@@ -59,8 +83,9 @@ public static class BlobJsonTrigger
             }
             else
             {
-                log.LogError("Failed to send data to ProcessData function.");
+                log.LogError($"Failed to send data to ProcessData function. StatusCode: {response.StatusCode}");
             }
         }
     }
+
 }
