@@ -1,47 +1,92 @@
-namespace updateEpisode;
-
 using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
+using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 
-public class UpdateEpisode
-{
-    private readonly ILogger<UpdateEpisode> _logger;
+namespace NHS.ServiceInsights.EpisodeDataService;
 
-    public UpdateEpisode(ILogger<UpdateEpisode> logger)
+public class CreateEpisode
+{
+    private readonly ILogger<CreateEpisode> _logger;
+    private readonly IEpisodeRepository _episodesRepository;
+
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository)
     {
         _logger = logger;
+        _episodesRepository = episodeRepository;
     }
 
-    [Function("updateEpisode")]
+
+    //  [Function("CreateEpisode")]
+    // public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    // {
+    //     Episode episode;
+
+    //     try
+    //     {
+    //         using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
+    //         {
+    //             var postData = reader.ReadToEnd();
+    //             _logger.LogInformation(postData);
+    //             _logger.LogInformation("Request Headers: {Headers}", req.Headers);
+    //             _logger.LogInformation("Request Body: {Body}", req.Body);
+    //             episode = JsonSerializer.Deserialize<Episode>(postData);
+    //             _logger.LogInformation("Episode Object: {Episode}", episode);
+    //         }
+    //     }
+    //     catch
+    //     {
+    //         _logger.LogError("Could not read episode data.");
+    //         return req.CreateResponse(HttpStatusCode.BadRequest);
+    //     }
+
+    //     try
+    //     {
+    //         _episodesRepository.CreateEpisode(episode);
+    //         return req.CreateResponse(HttpStatusCode.OK);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError("Failed to create episode in database.\nException: {ex}", ex);
+    //         return req.CreateResponse(HttpStatusCode.InternalServerError);
+    //     }
+    // }
+    [Function("CreateEpisode")]
     public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
         Episode episode;
+
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = reader.ReadToEnd();
+                _logger.LogInformation(postData);
+                _logger.LogInformation("Request Headers: {Headers}", req.Headers);
+                _logger.LogInformation("Request Body: {Body}", req.Body);
                 episode = JsonSerializer.Deserialize<Episode>(postData);
+                _logger.LogInformation("Episode Object: {Episode}", episode);
             }
-
-            _logger.LogInformation(episode.EpisodeId);
-            _logger.LogInformation("Episode ID: {EpisodeId}", episode.EpisodeId);
-
-            return req.CreateResponse(HttpStatusCode.OK);
-
         }
         catch
         {
             _logger.LogError("Could not read episode data.");
-
             return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+
+        try
+        {
+            _episodesRepository.CreateEpisode(episode);
+            return req.CreateResponse(HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Failed to create episode in database.\nException: {ex}", ex);
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
 }
-
-
