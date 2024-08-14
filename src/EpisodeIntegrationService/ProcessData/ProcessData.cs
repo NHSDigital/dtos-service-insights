@@ -50,10 +50,12 @@ namespace NHS.ServiceInsights.EpisodeIntegrationService
                 return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
             }
 
+            // Log out useful debug information
             _logger.LogInformation(participantUrl);
             _logger.LogInformation(episodeUrl);
             _logger.LogInformation(requestBody);
 
+            // Send to downstream functions
             await ProcessParticipantDataAsync(data.Participants, participantUrl);
             await ProcessEpisodeDataAsync(data.Episodes, episodeUrl);
 
@@ -111,7 +113,7 @@ namespace NHS.ServiceInsights.EpisodeIntegrationService
                 foreach (var episode in episodes)
                 {
 
-                    string serializedEpisode= JsonSerializer.Serialize(episode, new JsonSerializerOptions { WriteIndented = true });
+                    string serializedEpisode = JsonSerializer.Serialize(episode, new JsonSerializerOptions { WriteIndented = true });
 
                     // Log the Episode data before sending it
                     _logger.LogInformation($"Preparing to send Episode data: {serializedEpisode}");
