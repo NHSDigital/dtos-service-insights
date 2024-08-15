@@ -32,7 +32,7 @@ namespace NHS.EpisodeIntegrationServiceTests
             loggerMock = new Mock<ILogger>();
 
             typeof(ProcessData).GetField("client", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
-                               ?.SetValue(null, httpClient);
+            ?.SetValue(null, httpClient);
         }
 
         [TestMethod]
