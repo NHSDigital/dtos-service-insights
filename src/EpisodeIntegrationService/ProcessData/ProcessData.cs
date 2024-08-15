@@ -33,7 +33,6 @@ namespace NHS.ServiceInsights.EpisodeIntegrationService
                 return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "Error reading request body");
             }
 
-            _logger.LogDebug($"Request body: {requestBody}");
             _logger.LogInformation($"Request body: {requestBody}");
 
             var data = await DeserializeDataAsync(requestBody);
@@ -42,7 +41,7 @@ namespace NHS.ServiceInsights.EpisodeIntegrationService
                 return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid JSON format or no data received");
             }
 
-            _logger.LogDebug($"Deserialized data: {JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true })}");
+            _logger.LogInformation($"Deserialized data: {JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true })}");
 
             var (episodeUrl, participantUrl) = GetConfigurationUrls();
             if (string.IsNullOrEmpty(episodeUrl) || string.IsNullOrEmpty(participantUrl))
@@ -53,7 +52,6 @@ namespace NHS.ServiceInsights.EpisodeIntegrationService
             // Log out useful debug information
             _logger.LogInformation(participantUrl);
             _logger.LogInformation(episodeUrl);
-            _logger.LogInformation(requestBody);
 
             // Send to downstream functions
             await ProcessParticipantDataAsync(data.Participants, participantUrl);
@@ -112,16 +110,29 @@ namespace NHS.ServiceInsights.EpisodeIntegrationService
                 _logger.LogInformation("Processing episode data.");
                 foreach (var episode in episodes)
                 {
+                    // Create a new object with EpisodeId instead of episode_id
+                    var modifiedEpisode = new
+                    {
+                        EpisodeId = episode.episode_id,
+                        episode.episode_type,
+                        episode.bso_organisation_code,
+                        episode.bso_batch_id,
+                        episode.episode_date,
+                        episode.end_code,
+                        episode.date_of_foa,
+                        episode.date_of_as,
+                        episode.appointment_made,
+                        episode.call_recall_status_authorised_by,
+                        episode.early_recall_date,
+                        episode.end_code_last_updated
+                    };
 
-                    string serializedEpisode = JsonSerializer.Serialize(episode, new JsonSerializerOptions { WriteIndented = true });
+                    string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
                     // Log the Episode data before sending it
-                    _logger.LogInformation($"Preparing to send Episode data: {serializedEpisode}");
-                    _logger.LogDebug($"Sending Episode to {episodeUrl}: {serializedEpisode}");
+                    _logger.LogInformation($"Sending Episode to {episodeUrl}: {serializedEpisode}");
 
-
-                    _logger.LogDebug($"Sending episode: {JsonSerializer.Serialize(episode, new JsonSerializerOptions { WriteIndented = true })}");
-                    await _httpRequestService.SendPost(episodeUrl, JsonSerializer.Serialize(episode));
+                    await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
                 }
             }
             else
@@ -137,16 +148,12 @@ namespace NHS.ServiceInsights.EpisodeIntegrationService
                 _logger.LogInformation("Processing participant data.");
                 foreach (var participant in participants)
                 {
-
                     string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
 
                     // Log the participant data before sending it
-                    _logger.LogInformation($"Preparing to send participant data: {serializedParticipant}");
-                    _logger.LogDebug($"Sending participant to {participantUrl}: {serializedParticipant}");
+                    _logger.LogInformation($"Sending participant to {participantUrl}: {serializedParticipant}");
 
-
-                    _logger.LogDebug($"Sending participant: {JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true })}");
-                    await _httpRequestService.SendPost(participantUrl, JsonSerializer.Serialize(participant));
+                    await _httpRequestService.SendPost(participantUrl, serializedParticipant);
                 }
             }
             else
