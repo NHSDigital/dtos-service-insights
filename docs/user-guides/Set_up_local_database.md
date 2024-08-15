@@ -23,9 +23,11 @@ To run the Service Insights application on your local machine you will need to s
 ## Key files
 
 - [`create_database.sql`](../../scripts/database/create_database.sql)
-- [`create_tables.sql`](../../scripts/database/create_database.sql)
+- [`create_tables.sql`](../../scripts/database/create_tables.sql)
 
 ## Steps
+
+If you encounter any issues with the following steps, take a look at [Troubleshooting](#troubleshooting)
 
 1. Ensure Podman is installed
 
@@ -80,15 +82,19 @@ podman container start azuresqledge
 
 ## Troubleshooting
 
-If you are having issues with running the container try the following
+If the Podman container stops shortly after starting then try:
 
 - Restarting the Podman virtual machine
 
-```shell
-podman machine stop
-podman machine start
-```
+    ```shell
+    podman machine stop
+    podman machine start
+    ```
 
-- Checking that your MSSQL_SA_PASSWORD complies with the password complexity policy
+- Checking that your MSSQL_SA_PASSWORD complies with the [password complexity policy](https://learn.microsoft.com/en-us/sql/relational-databases/security/)
 
 - If are using Podman Desktop, uninstall it and try Podman CLI instead
+
+- Uninstalling Docker Desktop if it is installed
+
+If you cannot connect to the ‘localhost’ server, either update your hosts file to map the ‘localhost’ hostname to the IP address ‘127.0.0.1’, or use ‘127.0.0.1’ as the server instead of ‘localhost’.
