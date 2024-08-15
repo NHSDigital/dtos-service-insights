@@ -30,13 +30,8 @@ public class CreateEpisode
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = reader.ReadToEnd();
-                _logger.LogInformation("postData:");
-                _logger.LogInformation(postData);
-                _logger.LogInformation("Request Headers: {Headers}", req.Headers);
-                _logger.LogInformation("Request Body: {Body}", req.Body);
-                _logger.LogInformation("Deserializing episode...");
                 episode = JsonSerializer.Deserialize<Episode>(postData);
-                _logger.LogInformation("Episode Object: {Episode}", episode);
+                _logger.LogInformation("PostData: {postData}", postData);
                 _logger.LogInformation("EpisodeId: {EpisodeId}", episode.EpisodeId);
             }
         }

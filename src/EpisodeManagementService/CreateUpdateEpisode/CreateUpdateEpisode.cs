@@ -31,7 +31,7 @@ public class CreateUpdateEpisode
             {
                 var postData = reader.ReadToEnd();
                 episode = JsonSerializer.Deserialize<Episode>(postData);
-                _logger.LogInformation(postData);
+                _logger.LogInformation("PostData: {postData}", postData);
             }
         }
         catch
