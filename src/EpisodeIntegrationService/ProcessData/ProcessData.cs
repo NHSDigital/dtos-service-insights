@@ -7,8 +7,7 @@ using System.Text.Json;
 using System.Net;
 using System.Text;
 
-namespace NHS.ServiceInsights.EpisodeIntegrationService
-{
+namespace NHS.ServiceInsights.EpisodeIntegrationService;
     public class ProcessData
     {
         private readonly ILogger<ProcessData> _logger;
@@ -210,4 +209,3 @@ namespace NHS.ServiceInsights.EpisodeIntegrationService
         public List<Episode> Episodes { get; set; } = new List<Episode>();
         public List<Participant> Participants { get; set; } = new List<Participant>();
     }
-}
