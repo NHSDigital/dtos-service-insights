@@ -1,31 +1,46 @@
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
+namespace updateParticipant;
+
+using System.Net;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Text;
+using System.Text.Json;
 
-public static class ParticipantManagement
+
+public class UpdateParticipant
 {
-    [FunctionName("UpdateParticipant")]
-    public static async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-        ILogger log)
+    private readonly ILogger<UpdateParticipant> _logger;
+
+    public UpdateParticipant(ILogger<UpdateParticipant> logger)
     {
-        log.LogInformation("C# HTTP trigger function received a request for Participant Management.");
-
-        string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-        var data = JsonConvert.DeserializeObject<object>(requestBody);  // Adjust type as needed
-
-        // Log the received Participant Data in JSON format
-        string jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
-        log.LogInformation($"Received Participant Data: {jsonData}");
-
-        // Add your participant management logic here
-
-        log.LogInformation("Participant data updated successfully.");
-        return new OkObjectResult("Participant data updated successfully.");
+      _logger = logger;
     }
-}
+
+    [Function("updateParticipant")]
+    public  HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    {
+      Participant  participant;
+      try
+      {
+        using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
+        {
+            var postData = reader.ReadToEnd();
+            participant = JsonSerializer.Deserialize<Participant>(postData);
+        }
+
+        _logger.LogInformation(participant.NhsNumber);
+
+        return req.CreateResponse(HttpStatusCode.OK);
+
+      }
+      catch
+      {
+        _logger.LogError("Could not read participant");
+
+        return req.CreateResponse(HttpStatusCode.BadRequest);
+      }
+    }
+  }
+
+
