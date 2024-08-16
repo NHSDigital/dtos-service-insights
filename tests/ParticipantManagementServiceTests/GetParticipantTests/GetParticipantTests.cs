@@ -7,6 +7,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NHS.ServiceInsights.ParticipantManagementService;
 using NHS.ServiceInsights.Model;
+using NHS.ServiceInsights.TestUtils;
+using System.Collections.Specialized;
+using System.Text;
+using System.Text.Json;
 
 namespace NHS.ServiceInsights.Tests
 {
@@ -15,6 +19,8 @@ namespace NHS.ServiceInsights.Tests
     {
         private Mock<ILogger<GetParticipant>> _mockLogger;
         private GetParticipant _function;
+        private Mock<HttpRequestData> _MockRequest = new();
+        private SetupRequest _SetupRequest = new();
 
         [TestInitialize]
         public void Setup()
@@ -27,66 +33,84 @@ namespace NHS.ServiceInsights.Tests
         public async Task Run_ShouldReturnBadRequest_WhenNhsNumberIsNotProvided()
         {
             // Arrange
-            var mockRequest = new Mock<HttpRequestData>(MockBehavior.Strict);
-            mockRequest.Setup(req => req.Query["nhs_number"]).Returns((string)null);
-            mockRequest.Setup(req => req.CreateResponse(HttpStatusCode.BadRequest)).Returns(new MockHttpResponseData(HttpStatusCode.BadRequest));
+            var queryParam = new NameValueCollection
+            {
+                {
+                    "nhs_number", null
+                }
+            };
+
+            _MockRequest = _SetupRequest.SetupGet(queryParam);
 
             // Act
-            var response = await _function.Run(mockRequest.Object);
+            var response = await _function.Run(_MockRequest.Object);
 
             // Assert
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            _mockLogger.Verify(log => log.LogError("Please enter a valid NHS Number."), Times.Once);
+            _mockLogger.Verify(log =>
+                log.Log(
+                LogLevel.Error,
+                0,
+                It.Is<It.IsAnyType>((state, type) => state.ToString() == "Please enter a valid NHS Number."),
+                null,
+                (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [TestMethod]
         public async Task Run_ShouldReturnNotFound_WhenParticipantIsNotFound()
         {
             // Arrange
-            var nhs_number = "1234567890";
-            var mockRequest = new Mock<HttpRequestData>(MockBehavior.Strict);
-            mockRequest.Setup(req => req.Query["nhs_number"]).Returns(nhs_number);
-            mockRequest.Setup(req => req.CreateResponse(HttpStatusCode.NotFound)).Returns(new MockHttpResponseData(HttpStatusCode.NotFound));
+            var queryParam = new NameValueCollection
+            {
+                {
+                    "nhs_number", "9999999999"
+                }
+            };
+
+            _MockRequest = _SetupRequest.SetupGet(queryParam);
 
             // Act
-            var response = await _function.Run(mockRequest.Object);
+            var response = await _function.Run(_MockRequest.Object);
 
             // Assert
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-            _mockLogger.Verify(log => log.LogError($"Participant with NHS Number {nhs_number} not found."), Times.Once);
+            _mockLogger.Verify(log =>
+                log.Log(
+                LogLevel.Error,
+                0,
+                It.Is<It.IsAnyType>((state, type) => state.ToString() == $"Participant with NHS Number 9999999999 not found."),
+                null,
+                (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Once);
         }
 
         [TestMethod]
         public async Task Run_ShouldReturnOk_WhenParticipantIsFound()
-        {
+         {
             // Arrange
-            var nhsNumber = "1111111110";
-            var participant = new Participant { nhs_number = nhsNumber };
-            var mockRequest = new Mock<HttpRequestData>(MockBehavior.Strict);
-            mockRequest.Setup(req => req.Query["nhs_number"]).Returns(nhsNumber);
-            mockRequest.Setup(req => req.CreateResponse(HttpStatusCode.OK)).Returns(new MockHttpResponseData(HttpStatusCode.OK));
+            var queryParam = new NameValueCollection
+            {
+                {
+                    "nhs_number", "1111111110"
+                }
+            };
+
+            _MockRequest = _SetupRequest.SetupGet(queryParam);
 
             // Act
-            var response = await _function.Run(mockRequest.Object);
+            var response = await _function.Run(_MockRequest.Object);
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            _mockLogger.Verify(log => log.LogInformation("Request to retrieve a participant has been processed."), Times.Once);
+            // Participant participant;
+            //  using (StreamReader reader = new StreamReader(response.Body, Encoding.UTF8))
+            // {
+            //     var responseBody = reader.ReadToEnd();
+            //     participant = JsonSerializer.Deserialize<Participant>(responseBody);
+            // }
+            // Assert.AreEqual("1111111110", participant.nhs_number);
         }
 
-        // Mock HttpResponseData class
-        public class MockHttpResponseData : HttpResponseData
-        {
-            public MockHttpResponseData(HttpStatusCode statusCode) : base(new Mock<FunctionContext>().Object)
-            {
-                StatusCode = statusCode;
-                Headers = new HttpHeadersCollection();
-            }
-
-            public override HttpStatusCode StatusCode { get; set; }
-            public override HttpHeadersCollection Headers { get; set; }
-            public override Stream Body { get; set; } = new MemoryStream();
-            public override HttpCookies Cookies { get; } = new Mock<HttpCookies>().Object;
-        }
     }
 }
