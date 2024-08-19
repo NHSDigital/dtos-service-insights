@@ -1,9 +1,6 @@
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NHS.ServiceInsights.ParticipantManagementService;
 using NHS.ServiceInsights.Model;
@@ -87,7 +84,7 @@ namespace NHS.ServiceInsights.Tests
 
         [TestMethod]
         public async Task Run_ShouldReturnOk_WhenParticipantIsFound()
-         {
+        {
             // Arrange
             var queryParam = new NameValueCollection
             {
@@ -103,13 +100,14 @@ namespace NHS.ServiceInsights.Tests
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            // Participant participant;
-            //  using (StreamReader reader = new StreamReader(response.Body, Encoding.UTF8))
-            // {
-            //     var responseBody = reader.ReadToEnd();
-            //     participant = JsonSerializer.Deserialize<Participant>(responseBody);
-            // }
-            // Assert.AreEqual("1111111110", participant.nhs_number);
+            Participant participant;
+            using (StreamReader reader = new StreamReader(response.Body, Encoding.UTF8))
+            {
+                response.Body.Seek(0, SeekOrigin.Begin);
+                var responseBody = reader.ReadToEnd();
+                participant = JsonSerializer.Deserialize<Participant>(responseBody);
+            }
+            Assert.AreEqual("1111111110", participant.nhs_number);
         }
 
     }
