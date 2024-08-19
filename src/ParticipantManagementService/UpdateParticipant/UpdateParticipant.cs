@@ -12,41 +12,40 @@ using NHS.ServiceInsights.Model;
 
 public class UpdateParticipant
 {
-  private readonly ILogger<UpdateParticipant> _logger;
-  private readonly IHttpRequestService _httpRequestService;
+    private readonly ILogger<UpdateParticipant> _logger;
+    private readonly IHttpRequestService _httpRequestService;
 
-  public UpdateParticipant(ILogger<UpdateParticipant> logger, IHttpRequestService httpRequestService)
-  {
-    _logger = logger;
-    _httpRequestService = httpRequestService;
-  }
-
-  [Function("updateParticipant")]
-  // public  HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
-  public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
-
-  {
-    Participant participant;
-    try
+    public UpdateParticipant(ILogger<UpdateParticipant> logger, IHttpRequestService httpRequestService)
     {
-      using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
-      {
-        var postData = reader.ReadToEnd();
-        participant = JsonSerializer.Deserialize<Participant>(postData);
-      }
-
-      _logger.LogInformation(participant.NhsNumber);
-
-      return req.CreateResponse(HttpStatusCode.OK);
-
+        _logger = logger;
+        _httpRequestService = httpRequestService;
     }
-    catch
+
+    [Function("updateParticipant")]
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+
     {
-      _logger.LogError("Could not read participant");
+        Participant participant;
+        try
+        {
+            using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
+            {
+                var postData = reader.ReadToEnd();
+                participant = JsonSerializer.Deserialize<Participant>(postData);
+            }
 
-      return req.CreateResponse(HttpStatusCode.BadRequest);
+            _logger.LogInformation(participant.nhs_number);
+
+            return req.CreateResponse(HttpStatusCode.OK);
+
+        }
+        catch
+        {
+            _logger.LogError("Could not read participant");
+
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
     }
-  }
 }
 
 
