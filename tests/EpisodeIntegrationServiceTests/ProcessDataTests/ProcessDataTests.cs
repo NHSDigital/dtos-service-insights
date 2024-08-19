@@ -1,18 +1,10 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Moq.Protected;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Net.Http;
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+using NHS.ServiceInsights.Common;
+using NHS.ServiceInsights.EpisodeIntegrationService;
+using Microsoft.Azure.Functions.Worker.Http;
+using NHS.ServiceInsights.TestUtils;
+using System.Text.Json;
 
 namespace NHS.EpisodeIntegrationServiceTests
 {
@@ -20,93 +12,53 @@ namespace NHS.EpisodeIntegrationServiceTests
     [TestClass]
     public class ProcessDataTests
     {
-        private Mock<HttpMessageHandler> httpMessageHandlerMock = null!;
-        private Mock<ILogger> loggerMock = null!;
-        private HttpClient httpClient = null!;
+        private Mock<IHttpRequestService> httpRequestServiceMock = new();
+        private Mock<ILogger<ProcessData>> loggerMock = new();
+        private ProcessData _function;
+        private Mock<HttpRequestData> _MockRequest = new();
+        private SetupRequest _SetupRequest = new();
 
         [TestInitialize]
         public void TestInitialize()
         {
-            httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            httpClient = new HttpClient(httpMessageHandlerMock.Object);
-            loggerMock = new Mock<ILogger>();
+            Environment.SetEnvironmentVariable("EpisodeManagementUrl", "EpisodeManagementUrl");
+            Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
 
-            typeof(ProcessData).GetField("client", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
-            ?.SetValue(null, httpClient);
+            _function = new ProcessData(loggerMock.Object, httpRequestServiceMock.Object);
         }
 
         [TestMethod]
         public async Task ProcessData_ShouldSendJsonToDownstreamFunctions()
         {
             // Arrange
-            var jsonInput = @"{
-            ""Participants"": [
-                { ""nhs_number"": ""1111111112"" },
-                { ""nhs_number"": ""1111111110"" }
-            ],
-            ""Episodes"": [
-                { ""episode_id"": 245395 },
-                { ""episode_id"": 245396 }
-            ]
-        }";
 
-            var request = new DefaultHttpContext().Request;
-            request.Body = new MemoryStream(Encoding.UTF8.GetBytes(jsonInput));
+            DataPayLoad _DataPayLoad = new DataPayLoad
+            {
+                Episodes = new List<Episode> {
+                    new Episode{ episode_id = "245395"
+                },
+                    new Episode{ episode_id = "245396"
+                }},
+                Participants = new List<Participant> {
+                    new Participant{ nhs_number = "1111111112"
+                },
+                    new Participant{ nhs_number = "1111111110"
+                }}
+            };
 
-            var context = new Mock<Microsoft.Azure.WebJobs.ExecutionContext>();
-            context.Setup(c => c.FunctionAppDirectory).Returns(Directory.GetCurrentDirectory());
 
-            // Setup the response to be returned by the mock HttpClient
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK
-                });
+            var json = JsonSerializer.Serialize(_DataPayLoad);
+
+            _MockRequest = _SetupRequest.Setup(json);
 
             // Act
-            var result = await ProcessData.Run(request, loggerMock.Object, context.Object) as OkObjectResult;
+            var result = await _function.Run(_MockRequest.Object);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual("Data processed successfully.", result!.Value);
+            httpRequestServiceMock.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(2));
 
-            // Verify the correct data was sent to the EpisodeManagementUrl
-            httpMessageHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Exactly(2), // 2 episodes
-                ItExpr.Is<HttpRequestMessage>(req =>
-                    req.Method == HttpMethod.Post &&
-                    req.RequestUri.ToString() == "https://example.com/episode" &&
-                    req.Content.Headers.ContentType!.MediaType == "application/json" &&
-                    JsonConvert.SerializeObject(JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(req.Content.ReadAsStringAsync().Result))
-                    == JsonConvert.SerializeObject(new List<Dictionary<string, object>> {
-                    new Dictionary<string, object> { { "episode_id", 245395 } },
-                    new Dictionary<string, object> { { "episode_id", 245396 } }
-                    })
-                ),
-                ItExpr.IsAny<CancellationToken>()
-            );
+            httpRequestServiceMock.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(2));
 
-            // Verify the correct data was sent to the ParticipantManagementUrl
-            httpMessageHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Exactly(2), // 2 participants
-                ItExpr.Is<HttpRequestMessage>(req =>
-                    req.Method == HttpMethod.Post &&
-                    req.RequestUri.ToString() == "https://example.com/participant" &&
-                    req.Content.Headers.ContentType!.MediaType == "application/json" &&
-                    JsonConvert.SerializeObject(JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(req.Content.ReadAsStringAsync().Result))
-                    == JsonConvert.SerializeObject(new List<Dictionary<string, object>> {
-                    new Dictionary<string, object> { { "nhs_number", "1111111112" } },
-                    new Dictionary<string, object> { { "nhs_number", "1111111110" } }
-                    })
-                ),
-                ItExpr.IsAny<CancellationToken>()
-            );
         }
     }
 }

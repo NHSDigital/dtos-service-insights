@@ -12,13 +12,11 @@ public class ProcessData
 {
     private readonly ILogger<ProcessData> _logger;
     private readonly IHttpRequestService _httpRequestService;
-    private readonly IConfiguration _configuration;
 
-    public ProcessData(ILogger<ProcessData> logger, IHttpRequestService httpRequestService, IConfiguration configuration)
+    public ProcessData(ILogger<ProcessData> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
-        _configuration = configuration;
     }
 
     [Function("ProcessData")]
@@ -90,7 +88,7 @@ public class ProcessData
 
     private (string episodeUrl, string participantUrl) GetConfigurationUrls()
     {
-        return (_configuration["EpisodeManagementUrl"], _configuration["ParticipantManagementUrl"]);
+        return (Environment.GetEnvironmentVariable("EpisodeManagementUrl"), Environment.GetEnvironmentVariable("ParticipantManagementUrl"));
     }
 
     private HttpResponseData CreateErrorResponse(HttpRequestData req, HttpStatusCode statusCode, string message)
