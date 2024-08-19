@@ -4,6 +4,7 @@ using System.Text;
 using Moq;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker;
+using System.Collections.Specialized;
 
 public class SetupRequest
 {
@@ -33,4 +34,20 @@ public class SetupRequest
 
         return _request;
     }
+
+    public Mock<HttpRequestData> SetupGet(NameValueCollection queryParams)
+    {
+        _request.Setup(req => req.Query).Returns(queryParams);
+        _request.Setup(r => r.CreateResponse()).Returns(() =>
+        {
+            var response = new Mock<HttpResponseData>(_context.Object);
+            response.SetupProperty(r => r.Headers, new HttpHeadersCollection());
+            response.SetupProperty(r => r.StatusCode);
+            response.SetupProperty(r => r.Body, new MemoryStream());
+            return response.Object;
+        });
+
+        return _request;
+    }
 }
+
