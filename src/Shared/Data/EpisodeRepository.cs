@@ -17,4 +17,9 @@ public class EpisodeRepository : IEpisodeRepository
         _dbContext.Episodes.Add(episode);
         _dbContext.SaveChanges();
     }
+
+    public Episode GetEpisode(string episodeId)
+    {
+        return _dbContext.Episodes.Find(episodeId);
+    }
 }
