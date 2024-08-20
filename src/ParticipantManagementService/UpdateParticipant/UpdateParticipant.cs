@@ -32,9 +32,8 @@ public class UpdateParticipant
             {
                 var postData = reader.ReadToEnd();
                 participant = JsonSerializer.Deserialize<Participant>(postData);
+                _logger.LogInformation("PostData: {postData}", postData);
             }
-
-            _logger.LogInformation(participant.nhs_number);
 
             return req.CreateResponse(HttpStatusCode.OK);
 

@@ -32,7 +32,6 @@ public class CreateEpisode
                 var postData = reader.ReadToEnd();
                 episode = JsonSerializer.Deserialize<Episode>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
-                _logger.LogInformation("EpisodeId: {EpisodeId}", episode.EpisodeId);
             }
         }
         catch
