@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetParticipant", "Participa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetParticipantTests", "..\tests\ParticipantManagementServiceTests\GetParticipantTests\GetParticipantTests.csproj", "{62B77FEF-E6E0-435D-B6E5-6FB1B8F8C46D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessDataTests", "..\tests\EpisodeIntegrationServiceTests\ProcessDataTests\ProcessDataTests.csproj", "{02AA4D25-D64E-4ABE-B9CB-CFB1476D4405}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{62B77FEF-E6E0-435D-B6E5-6FB1B8F8C46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62B77FEF-E6E0-435D-B6E5-6FB1B8F8C46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62B77FEF-E6E0-435D-B6E5-6FB1B8F8C46D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02AA4D25-D64E-4ABE-B9CB-CFB1476D4405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02AA4D25-D64E-4ABE-B9CB-CFB1476D4405}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02AA4D25-D64E-4ABE-B9CB-CFB1476D4405}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02AA4D25-D64E-4ABE-B9CB-CFB1476D4405}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EFF39066-513A-4054-8347-2E43958476A8} = {8BBD7332-93CD-4C28-878C-314BB44A6224}

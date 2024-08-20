@@ -2,9 +2,11 @@
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "EpisodeManagementUrl": "http://localhost:6006/api/CreateUpdateEpisode",
+    "ParticipantManagementUrl": "http://localhost:7074/api/UpdateParticipant"
   },
   "Host": {
-    "LocalHttpPort": 7111
+    "LocalHttpPort": 7072
   }
 }
