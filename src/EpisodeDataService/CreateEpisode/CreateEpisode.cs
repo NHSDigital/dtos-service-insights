@@ -31,6 +31,7 @@ public class CreateEpisode
             {
                 var postData = reader.ReadToEnd();
                 episode = JsonSerializer.Deserialize<Episode>(postData);
+                _logger.LogInformation("PostData: {postData}", postData);
             }
         }
         catch
@@ -41,7 +42,9 @@ public class CreateEpisode
 
         try
         {
+            _logger.LogInformation("Calling CreateEpisode method...");
             _episodesRepository.CreateEpisode(episode);
+            _logger.LogInformation("Episode created successfully.");
             return req.CreateResponse(HttpStatusCode.OK);
         }
         catch (Exception ex)
