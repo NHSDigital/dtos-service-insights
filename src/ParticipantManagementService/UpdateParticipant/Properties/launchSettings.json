@@ -2,7 +2,7 @@
   "profiles": {
     "updateParticipant": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7253",
+      "commandLineArgs": "--port 7178",
       "launchBrowser": false
     }
   }

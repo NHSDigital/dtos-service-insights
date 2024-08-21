@@ -5,5 +5,6 @@ namespace NHS.ServiceInsights.Model;
 
 public partial class Episode
 {
-    public string EpisodeId { get; set; } = null!;
+    public long EpisodeId { get; set; }
+    public string episode_type { get; set; } = null!;
 }
