@@ -15,9 +15,9 @@ namespace NHS.ServiceInsights.ParticipantManagementServiceTests;
 public class GetParticipantTests
 {
     private readonly Mock<ILogger<GetParticipant>> _mockLogger = new();
-    private GetParticipant _function;
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
+    private readonly GetParticipant _function;
 
     public GetParticipantTests()
     {

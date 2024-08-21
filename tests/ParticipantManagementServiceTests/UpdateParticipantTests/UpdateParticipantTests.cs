@@ -12,25 +12,25 @@ namespace NHS.ServiceInsights.ParticipantManagementServiceTests;
 [TestClass]
 public class UpdateParticipantTests
 {
-    private readonly Mock<ILogger<UpdateParticipant>> _logger = new();
-    private readonly Mock<IHttpRequestService> _httpRequestService = new();
-    private Mock<HttpRequestData> _httpRequestData;
+    private readonly Mock<ILogger<UpdateParticipant>> _mockLogger = new();
+    private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
+    private Mock<HttpRequestData> _mockHttpRequestData;
     private readonly SetupRequest _setupRequest = new();
-    private UpdateParticipant _function;
+    private readonly UpdateParticipant _function;
 
     public UpdateParticipantTests()
     {
-        _function = new UpdateParticipant(_logger.Object, _httpRequestService.Object);
+        _function = new UpdateParticipant(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
     [TestMethod]
     public async Task Run_ShouldReturnBadRequest_WhenValidParticipantNotReceived()
     {
         // Arrange
-        _httpRequestData = _setupRequest.Setup("");
+        _mockHttpRequestData = _setupRequest.Setup("");
 
         // Act
-        var result = await _function.Run(_httpRequestData.Object);
+        var result = await _function.Run(_mockHttpRequestData.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
@@ -45,10 +45,10 @@ public class UpdateParticipantTests
             NhsNumber = "123"
         };
         var json = JsonSerializer.Serialize(participant);
-        _httpRequestData = _setupRequest.Setup(json);
+        _mockHttpRequestData = _setupRequest.Setup(json);
 
         // Act
-        var result = await _function.Run(_httpRequestData.Object);
+        var result = await _function.Run(_mockHttpRequestData.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);

@@ -13,9 +13,9 @@ public class ProcessDataTests
 {
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
     private readonly Mock<ILogger<ProcessData>> _mockLogger = new();
-    private ProcessData _function;
-    private Mock<HttpRequestData> _mockRequest = new();
+    private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
+    private readonly ProcessData _function;
 
     public ProcessDataTests()
     {
