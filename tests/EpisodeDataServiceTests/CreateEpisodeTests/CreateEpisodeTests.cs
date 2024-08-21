@@ -76,5 +76,6 @@ public class CreateEpisodeTests
 
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+        Assert.Fail();
     }
 }
