@@ -46,7 +46,15 @@ public class GetEpisode
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
             _logger.LogInformation("Episode found successfully.");
-            return req.CreateResponse(HttpStatusCode.OK);
+
+            string jsonResponse = JsonSerializer.Serialize(episode);
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+            response.WriteString(jsonResponse);
+
+            return response;
+
         }
         catch (Exception ex)
         {
