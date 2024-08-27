@@ -1,29 +1,27 @@
-namespace NHS.ServiceInsights.EpisodeDataServiceTests;
-
 using Moq;
-using System;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
 using NHS.ServiceInsights.EpisodeDataService;
-using Data;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Model;
+using NHS.ServiceInsights.Data;
+
+namespace NHS.ServiceInsights.EpisodeDataServiceTests;
 
 [TestClass]
 public class CreateEpisodeTests
 {
-    private readonly Mock<ILogger<CreateEpisode>> _logger = new();
-    private readonly Mock<IEpisodeRepository> _episodeRepository = new();
-    private Mock<HttpRequestData> _request;
+    private readonly Mock<ILogger<CreateEpisode>> _mockLogger = new();
+    private readonly Mock<IEpisodeRepository> _mockEpisodeRepository = new();
+    private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
-    private readonly CreateEpisode _sut;
+    private readonly CreateEpisode _function;
 
     public CreateEpisodeTests()
     {
-        _sut = new CreateEpisode(_logger.Object, _episodeRepository.Object);
+        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object);
     }
 
     [TestMethod]
@@ -31,10 +29,10 @@ public class CreateEpisodeTests
     {
         // Arrange
         var json = JsonSerializer.Serialize("Invalid episode");
-        _request = _setupRequest.Setup(json);
+        _mockRequest = _setupRequest.Setup(json);
 
         // Act
-        var result = _sut.Run(_request.Object);
+        var result = _function.Run(_mockRequest.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
@@ -50,10 +48,10 @@ public class CreateEpisodeTests
         };
 
         var json = JsonSerializer.Serialize(episode);
-        _request = _setupRequest.Setup(json);
+        _mockRequest = _setupRequest.Setup(json);
 
         // Act
-        var result = _sut.Run(_request.Object);
+        var result = _function.Run(_mockRequest.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
@@ -69,12 +67,12 @@ public class CreateEpisodeTests
         };
 
         var json = JsonSerializer.Serialize(episode);
-        _request = _setupRequest.Setup(json);
+        _mockRequest = _setupRequest.Setup(json);
 
-        _episodeRepository.Setup(repo => repo.CreateEpisode(It.IsAny<Episode>())).Throws<Exception>();
+        _mockEpisodeRepository.Setup(repo => repo.CreateEpisode(It.IsAny<Episode>())).Throws<Exception>();
 
         // Act
-        var result = _sut.Run(_request.Object);
+        var result = _function.Run(_mockRequest.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
