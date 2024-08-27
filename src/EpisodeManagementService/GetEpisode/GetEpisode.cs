@@ -41,7 +41,13 @@ public class GetEpisode
 
         var episodeJson = await response.Content.ReadAsStringAsync();
 
-        _logger.LogInformation($"Episode data retrieved: {episodeJson}");
+        var formattedJson = JsonSerializer.Serialize(
+            JsonSerializer.Deserialize<object>(episodeJson),
+            new JsonSerializerOptions { WriteIndented = true }
+        );
+
+        _logger.LogInformation("Episode data retrieved: {EpisodeData}", formattedJson);
+
 
         var newResponse = req.CreateResponse(HttpStatusCode.OK);
         newResponse.Headers.Add("Content-Type", "application/json");
