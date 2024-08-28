@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateParticipantTests", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisode", "EpisodeDataService\GetEpisode\GetEpisode.csproj", "{878E7696-C0CB-4779-B300-46647F434AE8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeTests", "..\tests\EpisodeDataServiceTests\GetEpisodeTests\GetEpisodeTests.csproj", "{2D1A2B5B-139F-45D3-B69C-AC952797C49D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +126,10 @@ Global
 		{878E7696-C0CB-4779-B300-46647F434AE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{878E7696-C0CB-4779-B300-46647F434AE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{878E7696-C0CB-4779-B300-46647F434AE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D1A2B5B-139F-45D3-B69C-AC952797C49D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D1A2B5B-139F-45D3-B69C-AC952797C49D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D1A2B5B-139F-45D3-B69C-AC952797C49D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D1A2B5B-139F-45D3-B69C-AC952797C49D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EFF39066-513A-4054-8347-2E43958476A8} = {8BBD7332-93CD-4C28-878C-314BB44A6224}

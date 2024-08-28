@@ -34,7 +34,7 @@ public class GetEpisode
         catch
         {
             _logger.LogError("Could not read episode ID.");
-            return req.CreateResponse(HttpStatusCode.BadRequest);
+            return req.CreateResponse(HttpStatusCode.NotFound);
         }
 
         try
@@ -43,7 +43,7 @@ public class GetEpisode
             if (episode == null)
             {
                 _logger.LogInformation("Episode not found.");
-                return req.CreateResponse(HttpStatusCode.NotFound);
+                return req.CreateResponse(HttpStatusCode.BadRequest);
             }
             _logger.LogInformation("Episode found successfully.");
 
