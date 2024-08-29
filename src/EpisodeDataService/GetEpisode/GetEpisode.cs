@@ -29,6 +29,12 @@ public class GetEpisode
         try
         {
             episodeId = req.Query["episodeId"];
+            if (string.IsNullOrEmpty(episodeId))
+            {
+                _logger.LogError("Episode ID is not provided.");
+                return req.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
             _logger.LogInformation("Getting Episode ID: {episodeId}", episodeId);
         }
         catch
@@ -42,7 +48,7 @@ public class GetEpisode
             Episode episode = _episodesRepository.GetEpisode(episodeId);
             if (episode == null)
             {
-                _logger.LogInformation("Episode not found.");
+                _logger.LogError("Episode not found.");
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
             _logger.LogInformation("Episode found successfully.");
