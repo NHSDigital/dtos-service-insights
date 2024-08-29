@@ -86,7 +86,7 @@ namespace NHS.ServiceInsights.Tests
                     LogLevel.Error,
                     0,
                     It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to retrieve episode with Episode ID 12345") &&
-                                                          state.ToString().Contains("Status Code: NotFound")),
+                                                            state.ToString().Contains("Status Code: NotFound")),
                     null,
                     (Func<object, Exception, string>)It.IsAny<object>()),
                 Times.Once);
