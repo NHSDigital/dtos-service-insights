@@ -20,7 +20,7 @@ public class ReceiveDataTests
 
     [TestMethod]
     public async Task Run_ShouldLogValidJsonAndCallSendPost()
-   {
+    {
         // Arrange
         var validJson = "{\"name\":\"John Doe\"}";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(validJson));
@@ -49,7 +49,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(invalidJson));
 
         // Act
-       await _function.Run(stream, "sample-container/{name}");
+        await _function.Run(stream, "sample-container/{name}");
 
         // Assert
         _mockLogger.Verify(log =>
