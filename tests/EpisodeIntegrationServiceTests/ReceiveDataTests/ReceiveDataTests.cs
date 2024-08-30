@@ -26,7 +26,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(validJson));
 
         // Act
-        await _function.Run(stream, "sample-container/{name}");
+        await _function.Run(stream, "test.json");
 
         // Assert
         _mockLogger.Verify(log =>
