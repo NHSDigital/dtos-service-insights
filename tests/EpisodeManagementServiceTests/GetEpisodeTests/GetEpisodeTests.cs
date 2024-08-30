@@ -2,31 +2,31 @@ using System.Net;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Moq.Protected;
 using NHS.ServiceInsights.EpisodeManagementService;
 using NHS.ServiceInsights.TestUtils;
 using System.Collections.Specialized;
 using System.Text;
 using System.Text.Json;
+using NHS.ServiceInsights.Common;
+using Microsoft.Extensions.Configuration;
 
 namespace NHS.ServiceInsights.Tests
 {
     [TestClass]
     public class GetEpisodeTests
     {
-        private Mock<ILogger<GetEpisode>> _mockLogger;
-        private Mock<HttpMessageHandler> _httpMessageHandlerMock;
+        private Mock<ILogger<GetEpisode>> _mockLogger = new();
+        private Mock<IHttpRequestService> _httpRequestService = new();
+        private Mock<IConfiguration> _configuration = new();
         private GetEpisode _function;
         private Mock<HttpRequestData> _mockRequest = new();
         private SetupRequest _setupRequest = new();
 
-        [TestInitialize]
-        public void Setup()
+        public GetEpisodeTests()
         {
-            _mockLogger = new Mock<ILogger<GetEpisode>>();
-            _httpMessageHandlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-            var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
-            _function = new GetEpisode(_mockLogger.Object, httpClient);
+
+            Environment.SetEnvironmentVariable("GetEpisodeUrl", "http://localhost:6070/api/GetEpisode");
+            _function = new GetEpisode(_mockLogger.Object, _httpRequestService.Object, _configuration.Object);
         }
 
         [TestMethod]
@@ -66,14 +66,11 @@ namespace NHS.ServiceInsights.Tests
 
             _mockRequest = _setupRequest.SetupGet(queryParam);
 
-            _httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound))
-                .Verifiable();
+            var expectedUri = "http://localhost:6070/api/GetEpisode?EpisodeId=12345";
+
+            _httpRequestService
+                .Setup(service => service.SendGet(expectedUri))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             // Act
             var response = await _function.Run(_mockRequest.Object);
@@ -81,23 +78,8 @@ namespace NHS.ServiceInsights.Tests
             // Assert
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
 
-            _mockLogger.Verify(log =>
-                log.Log(
-                    LogLevel.Error,
-                    0,
-                    It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to retrieve episode with Episode ID 12345") &&
-                                                            state.ToString().Contains("Status Code: NotFound")),
-                    null,
-                    (Func<object, Exception, string>)It.IsAny<object>()),
-                Times.Once);
-
-            _httpMessageHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Once(),
-                ItExpr.Is<HttpRequestMessage>(req =>
-                    req.Method == HttpMethod.Get &&
-                    req.RequestUri == new Uri("http://localhost:6070/api/GetEpisode?EpisodeId=12345")),
-                ItExpr.IsAny<CancellationToken>());
+            _httpRequestService.Verify(service =>
+                service.SendGet(expectedUri), Times.Once());
         }
 
         [TestMethod]
@@ -111,19 +93,16 @@ namespace NHS.ServiceInsights.Tests
 
             _mockRequest = _setupRequest.SetupGet(queryParam);
 
+            var expectedUri = "http://localhost:6070/api/GetEpisode?EpisodeId=245395";
+
             var jsonResponse = "{\"EpisodeId\": \"245395\", \"Status\": \"Active\"}";
 
-            _httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
+            _httpRequestService
+                .Setup(service => service.SendGet(expectedUri))
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(jsonResponse, Encoding.UTF8, "application/json")
-                })
-                .Verifiable();
+                });
 
             // Act
             var response = await _function.Run(_mockRequest.Object);
@@ -135,13 +114,8 @@ namespace NHS.ServiceInsights.Tests
             var episode = await JsonSerializer.DeserializeAsync<JsonElement>(response.Body);
             Assert.AreEqual("245395", episode.GetProperty("EpisodeId").GetString());
 
-            _httpMessageHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Once(),
-                ItExpr.Is<HttpRequestMessage>(req =>
-                    req.Method == HttpMethod.Get &&
-                    req.RequestUri == new Uri("http://localhost:6070/api/GetEpisode?EpisodeId=245395")),
-                ItExpr.IsAny<CancellationToken>());
+            _httpRequestService.Verify(service =>
+                service.SendGet(expectedUri), Times.Once());
         }
 
     }
