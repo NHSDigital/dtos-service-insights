@@ -48,6 +48,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeTests", "..\tests\EpisodeManagementServiceTests\GetEpisodeTests\GetEpisodeTests.csproj", "{E98C1D29-37E2-4609-A4B8-5C5209749A63}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeTests", "..\tests\EpisodeDataServiceTests\GetEpisodeTests\GetEpisodeTests.csproj", "{721BD0E2-E4EB-4FE4-ACAE-BAE55E40F423}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiveDataTests", "..\tests\EpisodeIntegrationServiceTests\ReceiveDataTests\ReceiveDataTests.csproj", "{1250A0EC-A134-4D8D-BB2F-6DE8EDC7E571}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateParticipantTests", "..\tests\ParticipantManagementServiceTests\UpdateParticipantTests\UpdateParticipantTests.csproj", "{F7965884-3F6B-4505-8924-321895EE4512}"
