@@ -38,7 +38,7 @@ public class ReceiveDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
 
-        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost("ProcessDataURL", It.IsAny<string>()), Times.Once);
     }
 
     [TestMethod]
@@ -61,7 +61,7 @@ public class ReceiveDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
 
-        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockHttpRequestService.Verify(x => x.SendPost("ProcessDataURL", It.IsAny<string>()), Times.Never);
     }
 }
 
