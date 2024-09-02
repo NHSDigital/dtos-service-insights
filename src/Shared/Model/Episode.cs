@@ -17,5 +17,4 @@ public partial class Episode
     public string? Early_Recall_Date { get; set; }
     public string? End_Code_Last_Updated { get; set; }
     public string? Bso_Batch_Id { get; set; }
-
 }

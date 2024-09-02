@@ -14,6 +14,8 @@ public partial class ServiceInsightsDbContext : DbContext
 
     public virtual DbSet<Episode> Episodes { get; set; }
 
+    public virtual DbSet<AnalyticsDatum> Analytics { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Episode>(entity =>
@@ -24,6 +26,11 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("EPISODE_ID");
+        });
+
+        modelBuilder.Entity<AnalyticsDatum>(entity =>
+        {
+            entity.ToTable("ANALYTICS");
         });
 
         OnModelCreatingPartial(modelBuilder);
