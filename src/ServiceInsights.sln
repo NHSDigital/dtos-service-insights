@@ -48,6 +48,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeTests", "..\tests\EpisodeManagementServiceTests\GetEpisodeTests\GetEpisodeTests.csproj", "{E98C1D29-37E2-4609-A4B8-5C5209749A63}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeTests", "..\tests\EpisodeDataServiceTests\GetEpisodeTests\GetEpisodeTests.csproj", "{721BD0E2-E4EB-4FE4-ACAE-BAE55E40F423}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiveDataTests", "..\tests\EpisodeIntegrationServiceTests\ReceiveDataTests\ReceiveDataTests.csproj", "{1250A0EC-A134-4D8D-BB2F-6DE8EDC7E571}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateParticipantTests", "..\tests\ParticipantManagementServiceTests\UpdateParticipantTests\UpdateParticipantTests.csproj", "{F7965884-3F6B-4505-8924-321895EE4512}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,6 +133,14 @@ Global
 		{721BD0E2-E4EB-4FE4-ACAE-BAE55E40F423}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{721BD0E2-E4EB-4FE4-ACAE-BAE55E40F423}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{721BD0E2-E4EB-4FE4-ACAE-BAE55E40F423}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1250A0EC-A134-4D8D-BB2F-6DE8EDC7E571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1250A0EC-A134-4D8D-BB2F-6DE8EDC7E571}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1250A0EC-A134-4D8D-BB2F-6DE8EDC7E571}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1250A0EC-A134-4D8D-BB2F-6DE8EDC7E571}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7965884-3F6B-4505-8924-321895EE4512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7965884-3F6B-4505-8924-321895EE4512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7965884-3F6B-4505-8924-321895EE4512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7965884-3F6B-4505-8924-321895EE4512}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EFF39066-513A-4054-8347-2E43958476A8} = {8BBD7332-93CD-4C28-878C-314BB44A6224}

@@ -1,10 +1,6 @@
-namespace NHS.ServiceInsights.EpisodeManagementServiceTests;
-
 using Moq;
-using System;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
 using NHS.ServiceInsights.EpisodeManagementService;
@@ -12,20 +8,22 @@ using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Common;
 
+namespace NHS.ServiceInsights.EpisodeManagementServiceTests;
+
 [TestClass]
 public class CreateUpdateEpisodeTests
 {
-    private readonly Mock<ILogger<CreateUpdateEpisode>> _logger = new();
-    private readonly Mock<IHttpRequestService> _httpRequestService = new();
-    private Mock<HttpRequestData> _request;
+    private readonly Mock<ILogger<CreateUpdateEpisode>> _mockLogger = new();
+    private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
+    private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
-    private readonly CreateUpdateEpisode _sut;
+    private readonly CreateUpdateEpisode _function;
 
     public CreateUpdateEpisodeTests()
     {
         Environment.SetEnvironmentVariable("CreateEpisodeUrl", "CreateEpisodeUrl");
 
-        _sut = new CreateUpdateEpisode(_logger.Object, _httpRequestService.Object);
+        _function = new CreateUpdateEpisode(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
     [TestMethod]
@@ -38,13 +36,13 @@ public class CreateUpdateEpisodeTests
         };
 
         var json = JsonSerializer.Serialize(episode);
-        _request = _setupRequest.Setup(json);
+        _mockRequest = _setupRequest.Setup(json);
 
         // Act
-        var result = await _sut.Run(_request.Object);
+        var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _httpRequestService.Verify(x => x.SendPost("CreateEpisodeUrl", It.IsAny<string>()), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost("CreateEpisodeUrl", It.IsAny<string>()), Times.Once);
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }
 
@@ -58,15 +56,15 @@ public class CreateUpdateEpisodeTests
         };
 
         var json = JsonSerializer.Serialize(episode);
-        _request = _setupRequest.Setup(json);
+        _mockRequest = _setupRequest.Setup(json);
 
-        _httpRequestService.Setup(x => x.SendPost("CreateEpisodeUrl", It.IsAny<string>())).Throws<Exception>();
+        _mockHttpRequestService.Setup(x => x.SendPost("CreateEpisodeUrl", It.IsAny<string>())).Throws<Exception>();
 
         // Act
-        var result = await _sut.Run(_request.Object);
+        var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _httpRequestService.Verify(x => x.SendPost("CreateEpisodeUrl", It.IsAny<string>()), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost("CreateEpisodeUrl", It.IsAny<string>()), Times.Once);
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
@@ -75,13 +73,13 @@ public class CreateUpdateEpisodeTests
     {
         // Arrange
         var json = JsonSerializer.Serialize("Invalid");
-        _request = _setupRequest.Setup(json);
+        _mockRequest = _setupRequest.Setup(json);
 
         // Act
-        var result = await _sut.Run(_request.Object);
+        var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _logger.Verify(log =>
+        _mockLogger.Verify(log =>
             log.Log(
             LogLevel.Error,
             0,
@@ -89,7 +87,7 @@ public class CreateUpdateEpisodeTests
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
-        _httpRequestService.Verify(x => x.SendPost("CreateEpisodeUrl", It.IsAny<string>()), Times.Never);
+        _mockHttpRequestService.Verify(x => x.SendPost("CreateEpisodeUrl", It.IsAny<string>()), Times.Never);
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
 }
