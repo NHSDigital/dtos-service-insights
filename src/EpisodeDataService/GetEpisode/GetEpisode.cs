@@ -2,7 +2,6 @@ using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
@@ -26,22 +25,16 @@ public class GetEpisode
     {
         string episodeId;
 
-        try
-        {
-            episodeId = req.Query["episodeId"];
-            if (string.IsNullOrEmpty(episodeId))
-            {
-                _logger.LogError("Episode ID is not provided.");
-                return req.CreateResponse(HttpStatusCode.BadRequest);
-            }
 
-            _logger.LogInformation("Getting Episode ID: {episodeId}", episodeId);
-        }
-        catch
+        episodeId = req.Query["episodeId"];
+        if (string.IsNullOrEmpty(episodeId))
         {
-            _logger.LogError("Could not read episode ID.");
+            _logger.LogError("Episode ID is not provided.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
+
+        _logger.LogInformation("Getting Episode ID: {episodeId}", episodeId);
+
 
         try
         {
