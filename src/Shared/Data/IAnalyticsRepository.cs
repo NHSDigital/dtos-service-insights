@@ -5,6 +5,6 @@ namespace NHS.ServiceInsights.Data;
 
 public interface IAnalyticsRepository
 {
-    bool SaveData(AnalyticsDatum datum);
-    bool SaveData(List<AnalyticsDatum> datum);
+    bool SaveData(Analytic datum);
+    bool SaveData(List<Analytic> datum);
 }

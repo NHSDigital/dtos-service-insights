@@ -6,15 +6,26 @@ namespace NHS.ServiceInsights.Model;
 public partial class Episode
 {
     public long EpisodeId { get; set; }
-    public string? Episode_Type { get; set; }
-    public string? Bso_Organisation_Code { get; set; }
-    public string? Episode_Date { get; set; }
-    public string? End_Code { get; set; }
-    public string? Date_Of_Foa { get; set; }
-    public string? Date_Of_As { get; set; }
-    public string? Appointment_Made { get; set; }
-    public string? Call_Recall_Status_Authorised_By { get; set; }
-    public string? Early_Recall_Date { get; set; }
-    public string? End_Code_Last_Updated { get; set; }
-    public string? Bso_Batch_Id { get; set; }
+
+    public string? EpisodeType { get; set; }
+
+    public string? BsoOrganisationCode { get; set; }
+
+    public string? BsoBatchId { get; set; }
+
+    public string? EpisodeDate { get; set; }
+
+    public string? EndCode { get; set; }
+
+    public string? DateOfFoa { get; set; }
+
+    public string? DateOfAs { get; set; }
+
+    public string? AppointmentMade { get; set; }
+
+    public string? CallRecallStatusAuthorisedBy { get; set; }
+
+    public string? EarlyRecallDate { get; set; }
+
+    public string? EndCodeLastUpdated { get; set; }
 }

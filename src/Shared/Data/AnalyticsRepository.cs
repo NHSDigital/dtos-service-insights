@@ -12,7 +12,7 @@ public class AnalyticsRepository : IAnalyticsRepository
         _dbContext = dbContext;
     }
 
-    public bool SaveData(AnalyticsDatum datum)
+    public bool SaveData(Analytic datum)
     {
         try
         {
@@ -22,12 +22,11 @@ public class AnalyticsRepository : IAnalyticsRepository
         }
         catch (Exception ex)
         {
-            
             return false;
         }
     }
 
-    public bool SaveData(List<AnalyticsDatum> datum)
+    public bool SaveData(List<Analytic> datum)
     {
         try
         {

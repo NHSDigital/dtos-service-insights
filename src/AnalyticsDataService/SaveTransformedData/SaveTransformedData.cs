@@ -21,21 +21,21 @@ public class SaveTransformedData
     }
 
     [Function("SaveTransformedData")]
-    public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    public  HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
-        List<AnalyticsDatum> Data = new List<AnalyticsDatum>();
+        Analytic Data = new Analytic();
 
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = reader.ReadToEnd();
-                Data = JsonSerializer.Deserialize<List<AnalyticsDatum>>(postData);
+                Data = JsonSerializer.Deserialize<Analytic>(postData);
             }
         }
-        catch
+        catch(Exception ex)
         {
-            _logger.LogError("SaveTransformedData: Could not read Json data.");
+            _logger.LogError("SaveTransformedData: Could not read Json data.\nException: {ex}", ex);
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
@@ -44,20 +44,19 @@ public class SaveTransformedData
             bool successful = _analyticsRepository.SaveData(Data);
             if (!successful)
             {
-                _logger.LogError("Could not save analytics data. Data: " + Data);
+                _logger.LogError("SaveTransformedData: Could not save analytics data. Data: " + Data);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation("Analytics data saved successfully.");
+            _logger.LogInformation("SaveTransformedData: Analytics data saved successfully.");
 
             var response = req.CreateResponse(HttpStatusCode.OK);
 
             return response;
-
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to get save analytics data to the database.\nException: {ex}", ex);
+            _logger.LogError("SaveTransformedData: Failed to save analytics data to the database.\nException: {ex}", ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

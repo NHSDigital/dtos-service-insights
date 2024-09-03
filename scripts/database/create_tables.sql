@@ -38,6 +38,9 @@ IF NOT EXISTS
 BEGIN
     CREATE TABLE ANALYTICS
     (
+      ID BIGINT NOT NULL IDENTITY(1, 1),
+        CONSTRAINT PK_ID
+          PRIMARY KEY (ID),
       EPISODE_ID                        NVARCHAR (50) NULL,
       EPISODE_TYPE                      NVARCHAR (50) NULL,
       EPISODE_DATE                      NVARCHAR (50) NULL,
