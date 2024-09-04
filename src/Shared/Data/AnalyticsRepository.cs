@@ -17,8 +17,15 @@ public class AnalyticsRepository : IAnalyticsRepository
         try
         {
             _dbContext.Analytics.Add(datum);
-            _dbContext.SaveChanges();
-            return true;
+            var rowsInserted = _dbContext.SaveChanges();
+            if (rowsInserted != 1)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         catch (Exception ex)
         {
