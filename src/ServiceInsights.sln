@@ -51,8 +51,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiveDataTests", "..\test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateParticipantTests", "..\tests\ParticipantManagementServiceTests\UpdateParticipantTests\UpdateParticipantTests.csproj", "{F7965884-3F6B-4505-8924-321895EE4512}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisode", "EpisodeDataService\GetEpisode\GetEpisode.csproj", "{878E7696-C0CB-4779-B300-46647F434AE8}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalyticsDataService", "AnalyticsDataService", "{19D0F3B6-7EE0-46B2-9212-41184B2DE509}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveTransformedData", "AnalyticsDataService\SaveTransformedData\SaveTransformedData.csproj", "{02B6D618-B3AA-4DA6-BBC3-89D677006ECA}"
