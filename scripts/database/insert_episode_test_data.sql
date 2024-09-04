@@ -1,0 +1,44 @@
+
+INSERT INTO dbo.EPISODE (
+    episode_id,
+    episode_type,
+    bso_organisation_code,
+    bso_batch_id,
+    episode_date,
+    end_code,
+    date_of_foa,
+    date_of_as,
+    appointment_made,
+    call_recall_status_authorised_by,
+    early_recall_date,
+    end_code_last_updated
+)
+VALUES
+    (
+        245395,
+        'C',
+        'PBO',
+        'ECHO',
+        '2000-01-01',
+        'SC',
+        '2000-01-01',
+        '2000-01-01',
+        1,
+        'SCREENING_OFFICE',
+        NULL,
+        NULL
+    ),
+    (
+        245396,
+        'C',
+        'PBO',
+        'ALPHA',
+        '2000-01-01',
+        'SC',
+        '2000-01-01',
+        '2000-01-01',
+        1,
+        'SCREENING_OFFICE',
+        NULL,
+        NULL
+    );
