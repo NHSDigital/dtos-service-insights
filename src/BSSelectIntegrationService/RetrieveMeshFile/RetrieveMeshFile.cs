@@ -22,14 +22,14 @@ public class RetrieveMeshFile
         _meshToBlobTransferHandler = meshToBlobTransferHandler;
 
         _mailboxId = Environment.GetEnvironmentVariable("BSSMailBox");
-        _blobConnectionString =  Environment.GetEnvironmentVariable("caasfolder_STORAGE");
+        _blobConnectionString = Environment.GetEnvironmentVariable("bssfolder_STORAGE");
     }
     /// <summary>
     /// This function polls the MESH Mailbox every 5 minutes, if there is a file posted to the mailbox.
     /// If there is a file in there will move the file to the Cohort Manager Blob Storage where it will be picked up by the ReceiveCaasFile Function.
     /// </summary>
     [Function("RetrieveMeshFile")]
-    public async Task RunAsync([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer)
+    public async Task RunAsync([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer)
     {
         _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
@@ -37,16 +37,16 @@ public class RetrieveMeshFile
 
         try
         {
-            var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(messageFilter, _mailboxId,_blobConnectionString,"inbound");
+            var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(messageFilter, _mailboxId, _blobConnectionString, "sample-container");
 
-            if(!result)
+            if (!result)
             {
                 _logger.LogError("An error was encountered while moving files from Mesh to Blob");
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex,"An error encountered while moving files from Mesh to Blob");
+            _logger.LogError(ex, "An error encountered while moving files from Mesh to Blob");
         }
 
         if (myTimer.ScheduleStatus is not null)
