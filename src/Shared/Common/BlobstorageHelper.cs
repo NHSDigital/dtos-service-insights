@@ -61,7 +61,7 @@ public class BlobStorageHelper : IBlobStorageHelper
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,$"there has been a problem while uploading the file: {ex.Message}");
+            _logger.LogError(ex, $"there has been a problem while uploading the file: {ex.Message}");
             return false;
         }
 
