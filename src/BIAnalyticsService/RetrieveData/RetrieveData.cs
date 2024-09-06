@@ -34,7 +34,7 @@ public class RetrieveData
     }
 
     var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-    var url = $"{baseUrl}EpisodeId={episodeId}";
+    var url = $"{baseUrl}?EpisodeId={episodeId}";
     _logger.LogInformation("Requesting URL: {Url}", url);
 
     try
