@@ -3,16 +3,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using NHS.MESH.Client;
 using Common;
-using System.Security.Cryptography.X509Certificates;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
-    .ConfigureServices(services => {
-        services.AddApplicationInsightsTelemetryWorkerService();
-        services.ConfigureFunctionsApplicationInsights();
+    .ConfigureServices(services =>
+    {
+        //services.AddApplicationInsightsTelemetryWorkerService();
+        //services.ConfigureFunctionsApplicationInsights();
         services
             .AddMeshClient(_ => _.MeshApiBaseUrl = Environment.GetEnvironmentVariable("MeshApiBaseUrl"))
-            .AddMailbox(Environment.GetEnvironmentVariable("BSSMailBox")!,new NHS.MESH.Client.Configuration.MailboxConfiguration
+            .AddMailbox(Environment.GetEnvironmentVariable("BSSMailBox")!, new NHS.MESH.Client.Configuration.MailboxConfiguration
             {
                 Password = Environment.GetEnvironmentVariable("MeshPassword"),
                 SharedKey = Environment.GetEnvironmentVariable("MeshSharedKey"),
@@ -20,9 +20,9 @@ var host = new HostBuilder()
             })
             .Build();
         services.AddSingleton<IBlobStorageHelper, BlobStorageHelper>();
-        services.AddTransient<IMeshToBlobTransferHandler,MeshToBlobTransferHandler>();
+        services.AddTransient<IMeshToBlobTransferHandler, MeshToBlobTransferHandler>();
     })
-    .AddExceptionHandler()
+    //.AddExceptionHandler()
     .Build();
 
 host.Run();
