@@ -6,6 +6,7 @@
         "MeshApiBaseUrl" : "https://localhost:8700/messageexchange",
         "BSSMailBox": "X26ABC1",
         "bssfolder_STORAGE":"UseDevelopmentStorage=true",
+        "bsscontainer_NAME": "sample-container",
         "MeshPassword": "password",
         "MeshSharedKey": "TestKey",
         "MeshKeyPassphrase":"test123"
