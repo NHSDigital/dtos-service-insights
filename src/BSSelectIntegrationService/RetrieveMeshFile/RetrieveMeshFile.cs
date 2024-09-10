@@ -16,16 +16,17 @@ public class RetrieveMeshFile
     private readonly string _mailboxId;
     private readonly string _blobConnectionString;
 
-    private readonly string _blobContainerName;
+    private readonly string _destinationContainer;
 
     public RetrieveMeshFile(ILogger<RetrieveMeshFile> logger, IMeshToBlobTransferHandler meshToBlobTransferHandler)
     {
         _logger = logger;
         _meshToBlobTransferHandler = meshToBlobTransferHandler;
 
+
         _mailboxId = Environment.GetEnvironmentVariable("BSSMailBox");
         _blobConnectionString = Environment.GetEnvironmentVariable("bssfolder_STORAGE");
-        _blobContainerName = Environment.GetEnvironmentVariable("bsscontainer_NAME");
+        _destinationContainer = Environment.GetEnvironmentVariable("bsscontainer_NAME");
     }
     /// <summary>
     /// This function polls the MESH Mailbox every 5 minutes, if there is a file posted to the mailbox.
@@ -40,7 +41,7 @@ public class RetrieveMeshFile
 
         try
         {
-            var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(messageFilter, _mailboxId, _blobConnectionString, _blobContainerName);
+            var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(messageFilter, _mailboxId, _blobConnectionString, _destinationContainer);
 
             if (!result)
             {
