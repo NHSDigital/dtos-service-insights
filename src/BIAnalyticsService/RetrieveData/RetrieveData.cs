@@ -6,6 +6,7 @@ using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.ParticipantManagementService;
+using Azure;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
@@ -20,36 +21,35 @@ public class RetrieveData
     }
 
     [Function("RetrieveData")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
-{
-    _logger.LogInformation("Request to retrieve episode information has been processed.");
-
-    string episodeId = req.Query["EpisodeId"];
-
-    if (string.IsNullOrEmpty(episodeId))
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
+        _logger.LogInformation("Request to retrieve episode information has been processed.");
+
+        string episodeId = req.Query["EpisodeId"];
+
+        if (string.IsNullOrEmpty(episodeId))
+        {
         _logger.LogError("Please enter a valid Episode ID.");
         var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
         return badRequestResponse;
-    }
-
-    var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-    var url = $"{baseUrl}?EpisodeId={episodeId}";
-    _logger.LogInformation("Requesting URL: {Url}", url);
-
-    try
-    {
-        var response = await _httpRequestService.SendGet(url);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError($"Failed to retrieve episode with Episode ID {episodeId}. Status Code: {response.StatusCode}");
-            var errorResponse = req.CreateResponse(response.StatusCode);
-            return errorResponse;
         }
 
-        var episodeJson = await response.Content.ReadAsStringAsync();
-        _logger.LogInformation("Episode data retrieved");
+        var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
+        var url = $"{baseUrl}?EpisodeId={episodeId}";
+        _logger.LogInformation("Requesting URL: {Url}", url);
+
+        try
+        {
+            var response = await _httpRequestService.SendGet(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Failed to retrieve episode with Episode ID {episodeId}. Status Code: {response.StatusCode}");
+                var errorResponse = req.CreateResponse(response.StatusCode);
+                return errorResponse;
+            }
+
+            var episodeJson = await response.Content.ReadAsStringAsync();
 
         // Retrieve participant data
         string nhsNumber = "1111111112";
@@ -62,37 +62,42 @@ public class RetrieveData
         }
 
         var participant = ParticipantRepository.GetParticipantByNhsNumber(nhsNumber);
+        _logger.LogInformation("found participant based on NHS number");
 
         if (participant == null)
         {
             _logger.LogError($"Participant with NHS Number {nhsNumber} not found.");
             return req.CreateResponse(HttpStatusCode.NotFound);
         }
-        var retrievedData = new RetrievedData ()
+
+        var retrievedData = new RetrievedData
+
         {
             episode = JsonSerializer.Deserialize<Episode>(episodeJson),
             participant = participant
         };
-        string serializedRetrievedData = JsonSerializer.Serialize(retrievedData, new JsonSerializerOptions { WriteIndented = true });
+
+        string serializedRetrievedData = JsonSerializer.Serialize<RetrievedData>(retrievedData, new JsonSerializerOptions { WriteIndented = true });
 
         var transformUrl = Environment.GetEnvironmentVariable("TransformUrl");
-        //  _logger.LogInformation($"Sending participant to {transformUrl}: {serializedRetrievedData}");//
+        _logger.LogInformation($"Sending participant and epsiode data to {transformUrl}: {serializedRetrievedData}");
         await _httpRequestService.SendPost(transformUrl, serializedRetrievedData);
 
-    _logger.LogInformation("Requesting URL: {transformUrl}", transformUrl);
+        _logger.LogInformation("Requesting URL: {transformUrl}", transformUrl);
         var Response = req.CreateResponse(HttpStatusCode.OK);
         Response.Headers.Add("Content-Type", "application/json");
         return Response;
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError("Failed to call the Transform Data Function. \nUrl:{url}\nException: {ex}", url, ex);
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
+        }
     }
-    catch (Exception ex)
-    {
-        _logger.LogError("Failed to call the GetEpisode Data Service. \nUrl:{url}\nException: {ex}", url, ex);
-        return req.CreateResponse(HttpStatusCode.InternalServerError);
-    }
-}
 }
 public class RetrievedData
 {
-    public Episode episode;
-    public Participant participant;
+    public Episode episode { get; set; }
+    public Participant participant { get; set; }
 }
