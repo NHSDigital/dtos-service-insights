@@ -1,4 +1,3 @@
-namespace Common;
 
 using Azure;
 using Azure.Storage.Blobs;
@@ -7,6 +6,7 @@ using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Logging;
 using Model;
 
+namespace Common;
 public class BlobStorageHelper : IBlobStorageHelper
 {
     private readonly ILogger<BlobStorageHelper> _logger;

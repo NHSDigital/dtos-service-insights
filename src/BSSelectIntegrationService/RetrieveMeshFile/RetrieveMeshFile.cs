@@ -1,13 +1,9 @@
-namespace NHS.Screening.RetrieveMeshFile;
-
-using System;
-using System.Threading.Tasks;
 using Common;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NHS.MESH.Client.Models;
 
-
+namespace NHS.Screening.RetrieveMeshFile;
 public class RetrieveMeshFile
 {
     private readonly ILogger _logger;
