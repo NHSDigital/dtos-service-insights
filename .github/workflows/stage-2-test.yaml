@@ -53,6 +53,8 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
+        with:
+          submodules: 'true'
       - name: "Run linting"
         run: |
           make test-lint
