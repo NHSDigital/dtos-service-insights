@@ -3,7 +3,7 @@
     "Values": {
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
         "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-        "MeshApiBaseUrl" : "https://localhost:8700/messageexchange",
+        "MeshApiBaseUrl" : "http://localhost:8700/messageexchange",
         "BSSMailBox": "X26ABC1",
         "bssfolder_STORAGE":"UseDevelopmentStorage=true",
         "bsscontainer_NAME": "sample-container",
