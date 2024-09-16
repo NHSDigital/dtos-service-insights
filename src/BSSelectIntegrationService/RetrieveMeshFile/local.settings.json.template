@@ -11,5 +11,8 @@
         "MeshSharedKey": "TestKey",
         "MeshKeyPassphrase":"test123"
 
+    },
+    "Host": {
+      "LocalHttpPort": 6777
     }
 }
