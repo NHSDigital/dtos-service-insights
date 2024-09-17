@@ -50,6 +50,8 @@ public class RetrieveData
             }
 
             var episodeJson = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Episode data retrieved");
+
 
         // Retrieve participant data
         string nhsNumber = "1111111112";
@@ -62,7 +64,7 @@ public class RetrieveData
         }
 
         var participant = ParticipantRepository.GetParticipantByNhsNumber(nhsNumber);
-        _logger.LogInformation("found participant based on NHS number");
+        _logger.LogInformation("Participant data Retrieved");
 
         if (participant == null)
         {
@@ -79,11 +81,7 @@ public class RetrieveData
 
         string serializedRetrievedData = JsonSerializer.Serialize<RetrievedData>(retrievedData, new JsonSerializerOptions { WriteIndented = true });
 
-        var transformUrl = Environment.GetEnvironmentVariable("TransformUrl");
-        _logger.LogInformation($"Sending participant and epsiode data to {transformUrl}: {serializedRetrievedData}");
-        await _httpRequestService.SendPost(transformUrl, serializedRetrievedData);
-
-        _logger.LogInformation("Requesting URL: {transformUrl}", transformUrl);
+        _logger.LogInformation("Retrieved Episode and Participant data: {serializedRetrievedData}", serializedRetrievedData);
         var Response = req.CreateResponse(HttpStatusCode.OK);
         Response.Headers.Add("Content-Type", "application/json");
         return Response;
@@ -91,7 +89,7 @@ public class RetrieveData
 
         catch (Exception ex)
         {
-            _logger.LogError("Failed to call the Transform Data Function. \nUrl:{url}\nException: {ex}", url, ex);
+            _logger.LogError("Failed to call the Get Episode Data Service. \nUrl:{url}\nException: {ex}", url, ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
