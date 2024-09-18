@@ -109,22 +109,17 @@ public class ProcessData
                 var modifiedEpisode = new
                 {
                     EpisodeId = episode.episode_id,
-                    ParticipantId = episode.participant_id,
-                    ScreeningId = episode.screening_id,
-                    NhsNumber = episode.nhs_number,
-                    EpisodeTypeId = episode.episode_type_id,
-                    EpisodeOpenDate = episode.episode_open_date,
-                    AppointmentMadeFlag = episode.appointment_made_flag,
-                    FirstOfferedAppointmentDate = episode.first_offered_appointment_date,
-                    ActualScreeningDate = episode.actual_screening_date,
+                    EpisodeType = episode.episode_type,
+                    EpisodeDate = episode.episode_date,
+                    AppointmentMade = episode.appointment_made,
+                    DateOfFoa = episode.date_of_foa,
+                    DateOfAs = episode.date_of_as,
                     EarlyRecallDate = episode.early_recall_date,
                     CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-                    EndCodeId = episode.end_code_id,
+                    EndCode = episode.end_code,
                     EndCodeLastUpdated = episode.end_code_last_updated,
-                    OrganisationId = episode.organisation_id,
-                    BatchId = episode.batch_id,
-                    RecordInsertDatetime = episode.record_insert_datetime,
-                    RecordUpdateDatetime = episode.record_update_datetime
+                    BsoOrganisationCode = episode.bso_organisation_code,
+                    BsoBatchId = episode.bso_batch_id
                 };
 
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
@@ -187,23 +182,17 @@ public class Participant
 public class Episode
 {
     public string? episode_id { get; set; }
-    public string? participant_id { get; set; }
-    public string? screening_id { get; set; }
-    public string? nhs_number { get; set; }
-    public string? episode_type_id { get; set; }
-    public string? episode_open_date { get; set; }
-    public string? appointment_made_flag { get; set; }
-    public string? first_offered_appointment_date { get; set; }
-    public string? actual_screening_date { get; set; }
+    public string? episode_type { get; set; }
+    public string? episode_date { get; set; }
+    public string? appointment_made { get; set; }
+    public string? date_of_foa { get; set; }
+    public string? date_of_as { get; set; }
     public string? early_recall_date { get; set; }
     public string? call_recall_status_authorised_by { get; set; }
-    public string? end_code_id { get; set; }
+    public string? end_code { get; set; }
     public string? end_code_last_updated { get; set; }
-    public string? appointment_made { get; set; }
-    public string? organisation_id { get; set; }
-    public string? batch_id { get; set; }
-    public string? record_insert_datetime { get; set; }
-    public string? record_update_datetime { get; set; }
+    public string? bso_organisation_code { get; set; }
+    public string? bso_batch_id { get; set; }
 }
 
 
