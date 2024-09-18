@@ -109,17 +109,17 @@ public class ProcessData
                 var modifiedEpisode = new
                 {
                     EpisodeId = episode.episode_id,
-                    EpisodeType = episode.episode_type,
-                    EpisodeDate = episode.episode_date,
-                    AppointmentMade = episode.appointment_made,
-                    DateOfFoa = episode.date_of_foa,
-                    DateOfAs = episode.date_of_as,
+                    EpisodeTypeId = episode.episode_type,
+                    EpisodeOpenDate = episode.episode_date,
+                    AppointmentMadeFlag = episode.appointment_made,
+                    FirstOfferedAppointmentDate = episode.date_of_foa,
+                    ActualScreeningDate = episode.date_of_as,
                     EarlyRecallDate = episode.early_recall_date,
                     CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-                    EndCode = episode.end_code,
+                    EndCodeId = episode.end_code,
                     EndCodeLastUpdated = episode.end_code_last_updated,
-                    BsoOrganisationCode = episode.bso_organisation_code,
-                    BsoBatchId = episode.bso_batch_id
+                    OrganisationId = episode.bso_organisation_code,
+                    BatchId = episode.bso_batch_id
                 };
 
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });

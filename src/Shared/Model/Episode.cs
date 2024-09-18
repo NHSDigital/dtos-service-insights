@@ -7,25 +7,25 @@ public partial class Episode
 {
     public string EpisodeId { get; set; } = null!;
 
-    public string? EpisodeType { get; set; }
+    public string? EpisodeTypeId { get; set; }
 
-    public string? EpisodeDate { get; set; }
+    public string? EpisodeOpenDate { get; set; }
 
-    public string? AppointmentMade { get; set; }
+    public string? AppointmentMadeFlag { get; set; }
 
-    public string? DateOfFoa { get; set; }
+    public string? FirstOfferedAppointmentDate { get; set; }
 
-    public string? DateOfAs { get; set; }
+    public string? ActualScreeningDate { get; set; }
 
     public string? EarlyRecallDate { get; set; }
 
     public string? CallRecallStatusAuthorisedBy { get; set; }
 
-    public string? EndCode { get; set; }
+    public string? EndCodeId { get; set; }
 
     public string? EndCodeLastUpdated { get; set; }
 
-    public string? BsoOrganisationCode { get; set; }
+    public string? OrganisationId { get; set; }
 
-    public string? BsoBatchId { get; set; }
+    public string? BatchId { get; set; }
 }
