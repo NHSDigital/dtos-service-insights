@@ -5,8 +5,6 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
-using NHS.ServiceInsights.ParticipantManagementService;
-using Azure;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
@@ -29,14 +27,16 @@ public class RetrieveData
 
         if (string.IsNullOrEmpty(episodeId))
         {
-        _logger.LogError("Please enter a valid Episode ID.");
-        var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-        return badRequestResponse;
+            _logger.LogError("Please enter a valid Episode ID.");
+            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            return badRequestResponse;
         }
 
         var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
         var url = $"{baseUrl}?EpisodeId={episodeId}";
-        _logger.LogInformation("Requesting URL: {Url}", url);
+        _logger.LogInformation("Requesting episode URL: {Url}", url);
+
+        string episodeJson = string.Empty;
 
         try
         {
@@ -49,11 +49,16 @@ public class RetrieveData
                 return errorResponse;
             }
 
-            var episodeJson = await response.Content.ReadAsStringAsync();
+            episodeJson = await response.Content.ReadAsStringAsync();
             _logger.LogInformation("Episode data retrieved");
+        }
 
+        catch (Exception ex)
+        {
+            _logger.LogError("Failed to call the GetEpisode Data Service. \nException: {ex}", ex);
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
+        }
 
-        // Retrieve participant data
         string nhsNumber = "1111111112";
 
         if (string.IsNullOrEmpty(nhsNumber))
@@ -63,33 +68,49 @@ public class RetrieveData
             return badRequestResponse;
         }
 
-        var participant = ParticipantRepository.GetParticipantByNhsNumber(nhsNumber);
-        _logger.LogInformation("Participant data Retrieved");
+        var baseparticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
+        var participantUrl = $"{baseparticipantUrl}?nhs_number={nhsNumber}";
+        _logger.LogInformation("Requesting participant URL: {Url}",participantUrl);
 
-        if (participant == null)
+        try
         {
-            _logger.LogError($"Participant with NHS Number {nhsNumber} not found.");
-            return req.CreateResponse(HttpStatusCode.NotFound);
-        }
+            var participantresponse = await _httpRequestService.SendGet(participantUrl);
 
-        var retrievedData = new RetrievedData
+            if (!participantresponse.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Failed to retrieve participant data with NHS number {nhsNumber}. Status Code: {participantresponse.StatusCode}");
+                var errorResponse = req.CreateResponse(participantresponse.StatusCode);
+                return errorResponse;
+            }
 
-        {
-            episode = JsonSerializer.Deserialize<Episode>(episodeJson),
-            participant = participant
-        };
+            var participantJson = await participantresponse.Content.ReadAsStringAsync();
+            _logger.LogInformation("Participant data retrieved");
 
-        string serializedRetrievedData = JsonSerializer.Serialize<RetrievedData>(retrievedData, new JsonSerializerOptions { WriteIndented = true });
+            var participant = JsonSerializer.Deserialize<Participant>(participantJson);
+            if (participant == null)
+            {
+                _logger.LogError($"Participant with NHS Number {nhsNumber} not found.");
+                return req.CreateResponse(HttpStatusCode.NotFound);
+            }
 
-        _logger.LogInformation("Retrieved Episode and Participant data: {serializedRetrievedData}", serializedRetrievedData);
-        var Response = req.CreateResponse(HttpStatusCode.OK);
-        Response.Headers.Add("Content-Type", "application/json");
-        return Response;
+            var retrievedData = new RetrievedData
+
+            {
+                episode = JsonSerializer.Deserialize<Episode>(episodeJson),
+                participant = participant
+            };
+
+            string serializedRetrievedData = JsonSerializer.Serialize<RetrievedData>(retrievedData, new JsonSerializerOptions { WriteIndented = true });
+
+            _logger.LogInformation("Retrieved Episode and Participant data: {serializedRetrievedData}", serializedRetrievedData);
+            var Response = req.CreateResponse(HttpStatusCode.OK);
+            Response.Headers.Add("Content-Type", "application/json");
+            return Response;
         }
 
         catch (Exception ex)
         {
-            _logger.LogError("Failed to call the Get Episode Data Service. \nUrl:{url}\nException: {ex}", url, ex);
+            _logger.LogError("Failed to call the Participant Management Service. \nUrl:{participantUrl}\nException: {ex}", participantUrl, ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

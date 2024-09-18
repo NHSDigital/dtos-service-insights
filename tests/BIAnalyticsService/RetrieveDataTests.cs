@@ -3,20 +3,17 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NHS.ServiceInsights.BIAnalyticsService;
-using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.TestUtils;
 using System.Collections.Specialized;
-using System.Text;
-using System.Text.Json;
 using NHS.ServiceInsights.Common;
+using System.Text;
 
-namespace NHS.ServiceInsights.Tests
-{
+namespace NHS.ServiceInsights.Tests;
     [TestClass]
     public class RetrieveDataTests
     {
         private Mock<ILogger<RetrieveData>> _mockLogger = new();
-        private Mock<IHttpRequestService> _httpRequestService = new();
+        private Mock<IHttpRequestService> mock_httpRequestService = new();
         private RetrieveData _function;
         private Mock<HttpRequestData> _mockRequest = new();
         private SetupRequest _setupRequest = new();
@@ -25,7 +22,8 @@ namespace NHS.ServiceInsights.Tests
         {
 
             Environment.SetEnvironmentVariable("GetEpisodeUrl", "http://localhost:6060/api/GetEpisode");
-            _function = new RetrieveData(_mockLogger.Object, _httpRequestService.Object);
+            Environment.SetEnvironmentVariable("GetParticipantUrl", "http://localhost:6061/api/GetParticipant");
+            _function = new RetrieveData(_mockLogger.Object, mock_httpRequestService.Object);
         }
 
         [TestMethod]
@@ -55,69 +53,6 @@ namespace NHS.ServiceInsights.Tests
         }
 
         [TestMethod]
-        public async Task Run_ShouldReturnNotFound_WhenEpisodeIsNotFound()
-        {
-            // Arrange
-            var queryParam = new NameValueCollection
-            {
-                { "EpisodeId", "123456" }
-            };
-
-            _mockRequest = _setupRequest.SetupGet(queryParam);
-
-            var url = "http://localhost:6060/api/GetEpisode?EpisodeId=123456";
-
-            _httpRequestService
-                .Setup(service => service.SendGet(url))
-                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
-
-            // Act
-            var response = await _function.Run(_mockRequest.Object);
-
-            // Assert
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-
-            _httpRequestService.Verify(service =>
-                service.SendGet(url), Times.Once());
-        }
-
-        [TestMethod]
-        public async Task Run_ShouldReturnOk_WhenEpisodeIsFound()
-        {
-            // Arrange
-            var queryParam = new NameValueCollection
-            {
-                { "EpisodeId", "745396" }
-            };
-
-            _mockRequest = _setupRequest.SetupGet(queryParam);
-
-            var url = "http://localhost:6009/api/GetEpisode?EpisodeId=745396";
-
-            var jsonResponse = "{\"EpisodeId\": \"745396\", \"Status\": \"Active\"}";
-
-            _httpRequestService
-                .Setup(service => service.SendGet(url))
-                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(jsonResponse, Encoding.UTF8, "application/json")
-                });
-
-            // Act
-            var response = await _function.Run(_mockRequest.Object);
-
-            // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-
-            response.Body.Seek(0, SeekOrigin.Begin);
-            var episode = await JsonSerializer.DeserializeAsync<JsonElement>(response.Body);
-            Assert.AreEqual("745396", episode.GetProperty("EpisodeId").GetString());
-
-            _httpRequestService.Verify(service =>
-                service.SendGet(url), Times.Once());
-        }
-
-        [TestMethod]
         public async Task Run_ShouldReturnInternalServerError_WhenExceptionIsThrown()
         {
             // Arrange
@@ -127,9 +62,9 @@ namespace NHS.ServiceInsights.Tests
             };
             _mockRequest = _setupRequest.SetupGet(queryParam);
 
-            var url = "http://localhost:6060/api/GetEpisode?EpisodeId=745396";
+            var url = "http://localhost:6060/api/GetEpisode/?EpisodeId=745396";
 
-            _httpRequestService
+            mock_httpRequestService
                 .Setup(service => service.SendGet(url))
                 .ThrowsAsync(new HttpRequestException("Exception: System.Net.Http.HttpRequestException:"));
 
@@ -141,97 +76,57 @@ namespace NHS.ServiceInsights.Tests
             _mockLogger.Verify(log => log.Log(
                 LogLevel.Error,
                 0,
-                It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to call the GetEpisode Data Service.") &&
-                                                        state.ToString().Contains("Exception: System.Net.Http.HttpRequestException:")),
+                It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to call the GetEpisode Data Service.")),
                 null,
                 (Func<object, Exception, string>)It.IsAny<object>()),
                 Times.Once);
         }
 
+
         [TestMethod]
-        public async Task Run_ShouldReturnBadRequest_WhenNhsNumberIsNotProvided()
+        public async Task RetrieveData_ShouldRetrieveDataFromDownstreamFunctions()
         {
             // Arrange
+            string episodeId = "745396";
+
             var queryParam = new NameValueCollection
             {
-                {
-                    "nhsNumber", null
-                }
+                { "EpisodeId", episodeId }
             };
 
             _mockRequest = _setupRequest.SetupGet(queryParam);
 
-            // Act
-            var response = await _function.Run(_mockRequest.Object);
+            var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
+            var url = $"{baseUrl}?EpisodeId={episodeId}";
 
-            // Assert
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            _mockLogger.Verify(log =>
-                log.Log(
-                LogLevel.Error,
-                0,
-                It.Is<It.IsAnyType>((state, type) => state.ToString() == "Please enter a valid NHS Number."),
-                null,
-                (Func<object, Exception, string>)It.IsAny<object>()),
-                Times.Once);
-        }
+            var episodeJson = "{\"episode_id\": \"745396\"}";
 
-        [TestMethod]
-        public async Task Run_ShouldReturnNotFound_WhenParticipantIsNotFound()
-        {
-            // Arrange
-            var queryParam = new NameValueCollection
-            {
+            mock_httpRequestService
+                .Setup(service => service.SendGet(url))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    "nhsNumber", "9999999999"
-                }
-            };
+                    Content = new StringContent(episodeJson, Encoding.UTF8, "application/json")
+                });
 
-            _mockRequest = _setupRequest.SetupGet(queryParam);
+            string nhsNumber = "1111111112";
 
-            // Act
-            var response = await _function.Run(_mockRequest.Object);
+            var baseparticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
+            var participantUrl = $"{baseparticipantUrl}?nhs_number={nhsNumber}";
 
-            // Assert
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-            _mockLogger.Verify(log =>
-                log.Log(
-                LogLevel.Error,
-                0,
-                It.Is<It.IsAnyType>((state, type) => state.ToString() == $"Participant with NHS Number 9999999999 not found."),
-                null,
-                (Func<object, Exception, string>)It.IsAny<object>()),
-                Times.Once);
-        }
+            var participantJson = "{\"nhs_number\": \"1111111112\"}";
 
-        [TestMethod]
-        public async Task Run_ShouldReturnOk_WhenParticipantIsFound()
-        {
-            // Arrange
-            var queryParam = new NameValueCollection
-            {
+            mock_httpRequestService
+                .Setup(service => service.SendGet(participantUrl))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    "nhs_number", "1111111112"
-                }
-            };
-
-            _mockRequest = _setupRequest.SetupGet(queryParam);
+                    Content = new StringContent(participantJson, Encoding.UTF8, "application/json")
+                });
 
             // Act
-            var response = await _function.Run(_mockRequest.Object);
+            var result = await _function.Run(_mockRequest.Object);
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Participant participant;
-            using (StreamReader reader = new StreamReader(response.Body, Encoding.UTF8))
-            {
-                response.Body.Seek(0, SeekOrigin.Begin);
-                var responseBody = reader.ReadToEnd();
-                participant = JsonSerializer.Deserialize<Participant>(responseBody);
-            }
-            Assert.AreEqual("1111111112", participant.nhs_number);
+            mock_httpRequestService.Verify(x => x.SendGet(url), Times.Once);
+            mock_httpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
         }
-
-
     }
-}

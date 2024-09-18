@@ -27,6 +27,5 @@
     <ProjectReference Include="..\..\Shared\Data\Data.csproj" />
     <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
     <ProjectReference Include="..\..\Shared\Model\Model.csproj" />
-    <ProjectReference Include="..\..\ParticipantManagementService\GetParticipant\GetParticipant.csproj" />
   </ItemGroup>
 </Project>

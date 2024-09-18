@@ -57,8 +57,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BIAnalyticsService", "BIAna
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveData", "BIAnalyticsService\RetrieveData\RetrieveData.csproj", "{E984BF39-D34A-4B0F-9A40-F260B4D5AEBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransformData", "BIAnalyticsService\TransformData\TransformData.csproj", "{99E1A424-6C59-4EE2-9A40-52FBFB6D4D98}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveDataTests", "..\tests\BIAnalyticsService\RetrieveDataTests.csproj", "{5C6B2030-0BBF-49EC-A8D7-C6E9B56E6119}"
 EndProject
 Global
