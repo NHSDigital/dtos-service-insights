@@ -21,15 +21,14 @@ public class RetrieveData
     [Function("RetrieveData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        _logger.LogInformation("Request to retrieve episode information has been processed.");
+        _logger.LogInformation("Request to retrieve data has been processed.");
 
         string episodeId = req.Query["EpisodeId"];
 
         if (string.IsNullOrEmpty(episodeId))
         {
             _logger.LogError("Please enter a valid Episode ID.");
-            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            return badRequestResponse;
+            return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
         var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
@@ -37,6 +36,7 @@ public class RetrieveData
         _logger.LogInformation("Requesting episode URL: {Url}", url);
 
         string episodeJson = string.Empty;
+        Episode episode;
 
         try
         {
@@ -45,12 +45,12 @@ public class RetrieveData
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError($"Failed to retrieve episode with Episode ID {episodeId}. Status Code: {response.StatusCode}");
-                var errorResponse = req.CreateResponse(response.StatusCode);
-                return errorResponse;
+                return req.CreateResponse(response.StatusCode);
             }
 
             episodeJson = await response.Content.ReadAsStringAsync();
             _logger.LogInformation("Episode data retrieved");
+            episode = JsonSerializer.Deserialize<Episode>(episodeJson);
         }
 
         catch (Exception ex)
@@ -61,29 +61,21 @@ public class RetrieveData
 
         string nhsNumber = "1111111112";
 
-        if (string.IsNullOrEmpty(nhsNumber))
-        {
-            _logger.LogError("Please enter a valid NHS Number.");
-            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            return badRequestResponse;
-        }
-
-        var baseparticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
-        var participantUrl = $"{baseparticipantUrl}?nhs_number={nhsNumber}";
+        var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
+        var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
         _logger.LogInformation("Requesting participant URL: {Url}",participantUrl);
 
         try
         {
-            var participantresponse = await _httpRequestService.SendGet(participantUrl);
+            var participantResponse = await _httpRequestService.SendGet(participantUrl);
 
-            if (!participantresponse.IsSuccessStatusCode)
+            if (!participantResponse.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve participant data with NHS number {nhsNumber}. Status Code: {participantresponse.StatusCode}");
-                var errorResponse = req.CreateResponse(participantresponse.StatusCode);
-                return errorResponse;
+                _logger.LogError($"Failed to retrieve participant data with NHS number {nhsNumber}. Status Code: {participantResponse.StatusCode}");
+                return req.CreateResponse(participantResponse.StatusCode);
             }
 
-            var participantJson = await participantresponse.Content.ReadAsStringAsync();
+            var participantJson = await participantResponse.Content.ReadAsStringAsync();
             _logger.LogInformation("Participant data retrieved");
 
             var participant = JsonSerializer.Deserialize<Participant>(participantJson);
@@ -93,19 +85,7 @@ public class RetrieveData
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 
-            var retrievedData = new RetrievedData
-
-            {
-                episode = JsonSerializer.Deserialize<Episode>(episodeJson),
-                participant = participant
-            };
-
-            string serializedRetrievedData = JsonSerializer.Serialize<RetrievedData>(retrievedData, new JsonSerializerOptions { WriteIndented = true });
-
-            _logger.LogInformation("Retrieved Episode and Participant data: {serializedRetrievedData}", serializedRetrievedData);
-            var Response = req.CreateResponse(HttpStatusCode.OK);
-            Response.Headers.Add("Content-Type", "application/json");
-            return Response;
+            return req.CreateResponse(HttpStatusCode.OK);
         }
 
         catch (Exception ex)
