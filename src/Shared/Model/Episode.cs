@@ -7,6 +7,12 @@ public partial class Episode
 {
     public string EpisodeId { get; set; } = null!;
 
+    public string? ParticipantId { get; set; }
+
+    public string? ScreeningId { get; set; }
+
+    public string? NhsNumber { get; set; }
+
     public string? EpisodeTypeId { get; set; }
 
     public string? EpisodeOpenDate { get; set; }
@@ -28,4 +34,8 @@ public partial class Episode
     public string? OrganisationId { get; set; }
 
     public string? BatchId { get; set; }
+
+    public string? RecordInsertDatetime { get; set; }
+
+    public string? RecordUpdateDatetime { get; set; }
 }

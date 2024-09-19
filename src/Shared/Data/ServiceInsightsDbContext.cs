@@ -157,9 +157,24 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.FirstOfferedAppointmentDate)
                 .HasMaxLength(50)
                 .HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
+            entity.Property(e => e.NhsNumber)
+                .HasMaxLength(50)
+                .HasColumnName("NHS_NUMBER");
             entity.Property(e => e.OrganisationId)
                 .HasMaxLength(50)
                 .HasColumnName("ORGANISATION_ID");
+            entity.Property(e => e.ParticipantId)
+                .HasMaxLength(50)
+                .HasColumnName("PARTICIPANT_ID");
+            entity.Property(e => e.RecordInsertDatetime)
+                .HasMaxLength(50)
+                .HasColumnName("RECORD_INSERT_DATETIME");
+            entity.Property(e => e.RecordUpdateDatetime)
+                .HasMaxLength(50)
+                .HasColumnName("RECORD_UPDATE_DATETIME");
+            entity.Property(e => e.ScreeningId)
+                .HasMaxLength(50)
+                .HasColumnName("SCREENING_ID");
         });
 
         OnModelCreatingPartial(modelBuilder);

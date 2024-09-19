@@ -14,6 +14,9 @@ BEGIN
       EPISODE_ID NVARCHAR (50) NOT NULL,
         CONSTRAINT PK_EPISODE
           PRIMARY KEY (EPISODE_ID),
+      PARTICIPANT_ID                       NVARCHAR (50) NULL,
+      SCREENING_ID                         NVARCHAR (50) NULL,
+      NHS_NUMBER                           NVARCHAR (50) NULL,
       EPISODE_TYPE_ID                      NVARCHAR (50) NULL,
       EPISODE_OPEN_DATE                    NVARCHAR (50) NULL,
       APPOINTMENT_MADE_FLAG                NVARCHAR (50) NULL,
@@ -25,6 +28,8 @@ BEGIN
       END_CODE_LAST_UPDATED                NVARCHAR (50) NULL,
       ORGANISATION_ID                      NVARCHAR (50) NULL,
       BATCH_ID                             NVARCHAR (50) NULL,
+      RECORD_INSERT_DATETIME               NVARCHAR (50) NULL,
+      RECORD_UPDATE_DATETIME               NVARCHAR (50) NULL,
 );
 END
 
