@@ -21,7 +21,7 @@ public partial class ParticipantScreeningProfile
 
     public string? NextTestDueDateCalculationMethod { get; set; }
 
-    public string? ParticipantScreeningStat { get; set; }
+    public string? ParticipantScreeningStatus { get; set; }
 
     public string? ScreeningCeasedReason { get; set; }
 
