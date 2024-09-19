@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
+using NHS.ServiceInsights.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Text.Json;
@@ -98,7 +99,7 @@ public class ProcessData
         return response;
     }
 
-    private async Task ProcessEpisodeDataAsync(List<Episode> episodes, string episodeUrl)
+    private async Task ProcessEpisodeDataAsync(List<BssEpisode> episodes, string episodeUrl)
     {
         if (episodes != null && episodes.Any())
         {
@@ -106,7 +107,7 @@ public class ProcessData
             foreach (var episode in episodes)
             {
                 // Create a new object with EpisodeId instead of episode_id
-                var modifiedEpisode = new
+                var modifiedEpisode = new Episode
                 {
                     EpisodeId = episode.episode_id,
                     EpisodeTypeId = episode.episode_type,
@@ -179,9 +180,9 @@ public class Participant
     public string? ntdd_calculation_method { get; set; }
 }
 
-public class Episode
+public class BssEpisode
 {
-    public string? episode_id { get; set; }
+    public string episode_id { get; set; } = null!;
     public string? episode_type { get; set; }
     public string? episode_date { get; set; }
     public string? appointment_made { get; set; }
@@ -198,6 +199,6 @@ public class Episode
 
 public class DataPayLoad
 {
-    public List<Episode> Episodes { get; set; } = new List<Episode>();
+    public List<BssEpisode> Episodes { get; set; } = new List<BssEpisode>();
     public List<Participant> Participants { get; set; } = new List<Participant>();
 }
