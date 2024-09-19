@@ -41,32 +41,32 @@
   ],
   "Episodes": [
     {
-      "episode_id": "745395",
-      "episode_type": "C",
-      "bso_organisation_code": "PBO",
-      "bso_batch_id": "ECHO",
-      "episode_date": "2000-01-01",
-      "end_code": "SC",
-      "date_of_foa": "2000-01-01",
-      "date_of_as": "2000-01-01",
-      "appointment_made": "null",
-      "call_recall_status_authorised_by": "SCREENING_OFFICE",
-      "early_recall_date": "null",
-      "end_code_last_updated": "null"
-    },
-    {
-      "episode_id": "745396",
-      "episode_type": "C",
-      "bso_organisation_code": "PBO",
-      "bso_batch_id": "ALPHA",
-      "episode_date": "2000-01-01",
-      "end_code": "SC",
-      "date_of_foa": "2000-01-01",
-      "date_of_as": "2000-01-01",
-      "appointment_made": "null",
-      "call_recall_status_authorised_by": "SCREENING_OFFICE",
-      "early_recall_date": "null",
-      "end_code_last_updated": "null"
-    }
+    "episode_id": "245395",
+    "episode_type": "C",
+    "episode_date": "01/01/2000",
+    "appointment_made": "TRUE",
+    "date_of_foa": "01/01/2000",
+    "date_of_as": "01/01/2000",
+    "early_recall_date": "NULL",
+    "call_recall_status_authorised_by": "SCREENING_OFFICE",
+    "end_code": "SC",
+    "end_code_last_updated": "01/01/2000",
+    "bso_organisation_code": "PBO",
+    "bso_batch_id": "ECHO"
+  },
+  {
+    "episode_id": "656047",
+    "episode_type": "E",
+    "episode_date": "25/08/2017",
+    "appointment_made": "TRUE",
+    "date_of_foa": "25/08/2017",
+    "date_of_as": "NULL",
+    "early_recall_date": "NULL",
+    "call_recall_status_authorised_by": "SCREENING_OFFICE",
+    "end_code": "WF",
+    "end_code_last_updated": "25/08/2017",
+    "bso_organisation_code": "LED",
+    "bso_batch_id": "WFONCHANGE"
+  }
   ]
 }
