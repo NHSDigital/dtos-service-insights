@@ -87,7 +87,7 @@ namespace NHS.ServiceInsights.Tests
 
             var episode = new Episode
             {
-                EpisodeId = 245395
+                EpisodeId = "245395"
             };
 
             _mockEpisodeRepository.Setup(repo => repo.GetEpisode("245395")).Returns(episode);
@@ -99,7 +99,7 @@ namespace NHS.ServiceInsights.Tests
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             response.Body.Seek(0, SeekOrigin.Begin);
             var episodeResponse = await JsonSerializer.DeserializeAsync<Episode>(response.Body);
-            Assert.AreEqual<long>(245395, episodeResponse.EpisodeId);
+            Assert.AreEqual<string>("245395", episodeResponse.EpisodeId);
 
             _mockLogger.Verify(log => log.Log(
                 LogLevel.Information,
