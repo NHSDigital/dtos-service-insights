@@ -95,8 +95,3 @@ public class RetrieveData
         }
     }
 }
-public class RetrievedData
-{
-    public Episode episode { get; set; }
-    public Participant participant { get; set; }
-}

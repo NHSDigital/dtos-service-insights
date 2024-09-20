@@ -8,12 +8,12 @@ using System.Collections.Specialized;
 using NHS.ServiceInsights.Common;
 using System.Text;
 
-namespace NHS.ServiceInsights.Tests;
+namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
 [TestClass]
 public class RetrieveDataTests
 {
     private Mock<ILogger<RetrieveData>> _mockLogger = new();
-    private Mock<IHttpRequestService> mock_httpRequestService = new();
+    private Mock<IHttpRequestService> mock_HttpRequestService = new();
     private RetrieveData _function;
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
@@ -23,7 +23,7 @@ public class RetrieveDataTests
 
         Environment.SetEnvironmentVariable("GetEpisodeUrl", "http://localhost:6060/api/GetEpisode");
         Environment.SetEnvironmentVariable("GetParticipantUrl", "http://localhost:6061/api/GetParticipant");
-        _function = new RetrieveData(_mockLogger.Object, mock_httpRequestService.Object);
+        _function = new RetrieveData(_mockLogger.Object, mock_HttpRequestService.Object);
     }
 
     [TestMethod]
@@ -64,7 +64,7 @@ public class RetrieveDataTests
 
         var url = "http://localhost:6060/api/GetEpisode/?EpisodeId=745396";
 
-        mock_httpRequestService
+        mock_HttpRequestService
             .Setup(service => service.SendGet(url))
             .ThrowsAsync(new HttpRequestException("Exception: System.Net.Http.HttpRequestException:"));
 
@@ -84,7 +84,7 @@ public class RetrieveDataTests
 
 
     [TestMethod]
-    public async Task RetrieveData_ShouldRetrieveDataFromDownstreamFunctions()
+    public async Task RetrieveData_MakesExpectedHttpRequestsToUrls()
     {
         // Arrange
         string episodeId = "745396";
@@ -101,7 +101,7 @@ public class RetrieveDataTests
 
         var episodeJson = "{\"episode_id\": \"745396\"}";
 
-        mock_httpRequestService
+        mock_HttpRequestService
             .Setup(service => service.SendGet(url))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
@@ -110,23 +110,18 @@ public class RetrieveDataTests
 
         string nhsNumber = "1111111112";
 
-        var baseparticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
-        var participantUrl = $"{baseparticipantUrl}?nhs_number={nhsNumber}";
+        var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
+        var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
 
-        var participantJson = "{\"nhs_number\": \"1111111112\"}";
-
-        mock_httpRequestService
+        mock_HttpRequestService
             .Setup(service => service.SendGet(participantUrl))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(participantJson, Encoding.UTF8, "application/json")
-            });
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        mock_httpRequestService.Verify(x => x.SendGet(url), Times.Once);
-        mock_httpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
+        mock_HttpRequestService.Verify(x => x.SendGet(url), Times.Once);
+        mock_HttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
     }
 }
