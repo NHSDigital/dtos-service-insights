@@ -13,7 +13,7 @@ namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
 public class RetrieveDataTests
 {
     private Mock<ILogger<RetrieveData>> _mockLogger = new();
-    private Mock<IHttpRequestService> mock_HttpRequestService = new();
+    private Mock<IHttpRequestService> _mockHttpRequestService = new();
     private RetrieveData _function;
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
@@ -23,7 +23,7 @@ public class RetrieveDataTests
 
         Environment.SetEnvironmentVariable("GetEpisodeUrl", "http://localhost:6060/api/GetEpisode");
         Environment.SetEnvironmentVariable("GetParticipantUrl", "http://localhost:6061/api/GetParticipant");
-        _function = new RetrieveData(_mockLogger.Object, mock_HttpRequestService.Object);
+        _function = new RetrieveData(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
     [TestMethod]
@@ -64,7 +64,7 @@ public class RetrieveDataTests
 
         var url = "http://localhost:6060/api/GetEpisode/?EpisodeId=745396";
 
-        mock_HttpRequestService
+        _mockHttpRequestService
             .Setup(service => service.SendGet(url))
             .ThrowsAsync(new HttpRequestException("Exception: System.Net.Http.HttpRequestException:"));
 
@@ -101,7 +101,7 @@ public class RetrieveDataTests
 
         var episodeJson = "{\"episode_id\": \"745396\"}";
 
-        mock_HttpRequestService
+        _mockHttpRequestService
             .Setup(service => service.SendGet(url))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
@@ -113,7 +113,7 @@ public class RetrieveDataTests
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
         var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
 
-        mock_HttpRequestService
+        _mockHttpRequestService
             .Setup(service => service.SendGet(participantUrl))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
@@ -121,7 +121,7 @@ public class RetrieveDataTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        mock_HttpRequestService.Verify(x => x.SendGet(url), Times.Once);
-        mock_HttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(url), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
     }
 }
