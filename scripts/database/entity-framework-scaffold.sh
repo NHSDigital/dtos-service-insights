@@ -1,0 +1,1 @@
+dotnet ef dbcontext scaffold "Server=localhost,1433;Database=ServiceInsightsDB;User Id=SA;Password=YOUR_LOCAL_SQL_PWD;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --force --no-onconfiguring -o ../Model -n NHS.ServiceInsights.Model --context-dir . --context-namespace NHS.ServiceInsights.Data
