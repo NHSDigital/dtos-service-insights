@@ -22,7 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BSSelectIntegrationService\RetrieveMeshFile\RetrieveMeshFile.csproj" />
+    <ProjectReference
+      Include="..\..\..\src\MeshIntegrationService\RetrieveMeshFile\RetrieveMeshFile.csproj" />
     <ProjectReference Include="..\..\..\src\Shared\Common\Common.csproj" />
   </ItemGroup>
 
