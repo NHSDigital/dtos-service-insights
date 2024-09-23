@@ -1,7 +1,7 @@
 name: service-insights
 
 services:
-  # # External Dependencies
+  # External Dependencies
   # azurite:
   #   container_name: azurite
   #   image: mcr.microsoft.com/azure-storage/azurite
@@ -46,77 +46,14 @@ services:
   #     - PASSWORD=${PASSWORD}
   #     - DB_NAME=${DB_NAME}
 
-  # # CaaS Integration Service
-  # retrieve-mesh-file:
-  #   container_name: retrieve-mesh-file
-  #   network_mode: host
-  #   build:
-  #     context: ./src/Functions/
-  #     dockerfile: CaasIntegration/RetrieveMeshFile/Dockerfile
-  #   environment:
-  #     - AzureWebJobsStorage=UseDevelopmentStorage=true
-  #     - caasfolder_STORAGE=UseDevelopmentStorage=true
-  #     - MeshApiBaseUrl=https://localhost:8700/messageexchange
-  #     - BSSMailBox="X26ABC1"
-  #     - MeshPassword = ${MESHPASSWORD}
-  #     - MeshSharedKey = ${MESHSHAREDKEY}
-  #     - MeshKeyPassphrase = ${MESHKEYPASSPHRASE}
-  #     - ASPNETCORE_URLS=http://*:7060
-  #   depends_on:
-  #     - azurite
+  # AnalyticsDataService
+  # todo
 
-  # receive-caas-file:
-  #   container_name: receive-caas-file
-  #   network_mode: host
-  #   build:
-  #     context: ./src/Functions/
-  #     dockerfile: CaasIntegration/receiveCaasFile/Dockerfile
-  #   environment:
-  #     - AzureWebJobsStorage=UseDevelopmentStorage=true
-  #     - caasfolder_STORAGE=UseDevelopmentStorage=true
-  #     - ASPNETCORE_URLS=http://*:7060
-  #     - targetFunction=http://localhost:7061/api/processCaasFile
-  #     - FileValidationURL=http://localhost:7073/api/FileValidation
-  #     - DtOsDatabaseConnectionString=Server=localhost,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
-  #   depends_on:
-  #     - azurite
+  # BIAnalyticsService
+  # todo
 
-  # process-caas-file:
-  #   container_name: process-caas-file
-  #   network_mode: host
-  #   build:
-  #     context: ./src/Functions/
-  #     dockerfile: CaasIntegration/processCaasFile/Dockerfile
-  #   environment:
-  #     - ASPNETCORE_URLS=http://*:7061
-  #     - PMSAddParticipant=http://localhost:7062/api/addParticipant
-  #     - PMSRemoveParticipant=http://localhost:7063/api/RemoveParticipant
-  #     - PMSUpdateParticipant=http://localhost:7065/api/updateParticipant
-  #     - DemographicURI=http://localhost:7076/api/DemographicDataFunction
-  #     - ExceptionFunctionURL=http://localhost:7070/api/CreateException
-
-  # Participant Management Service
-  get-participant:
-    container_name: get-participant
-    # network_mode: host
-    build:
-      context: ./src/
-      dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
-    ports:
-      - "7073:7073"
-    environment:
-      - ASPNETCORE_URLS=http://*:7073
-
-  update-participant:
-    container_name: update-participant
-    # network_mode: host
-    build:
-      context: ./src/
-      dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
-    ports:
-      - "7074:7074"
-    environment:
-      - ASPNETCORE_URLS=http://*:7074
+  # BSSelectIntegrationService
+  # todo
 
   # Episode Data Service
   create-episode:
@@ -188,3 +125,26 @@ services:
       - "6060:6060"
     environment:
       - ASPNETCORE_URLS=http://*:6060
+
+  # Participant Management Service
+  get-participant:
+    container_name: get-participant
+    # network_mode: host
+    build:
+      context: ./src/
+      dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
+    ports:
+      - "7073:7073"
+    environment:
+      - ASPNETCORE_URLS=http://*:7073
+
+  update-participant:
+    container_name: update-participant
+    # network_mode: host
+    build:
+      context: ./src/
+      dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
+    ports:
+      - "7074:7074"
+    environment:
+      - ASPNETCORE_URLS=http://*:7074
