@@ -5,7 +5,7 @@ using NHS.MESH.Client;
 using NHS.ServiceInsights.Common;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication()
+    .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
         //services.AddApplicationInsightsTelemetryWorkerService();
