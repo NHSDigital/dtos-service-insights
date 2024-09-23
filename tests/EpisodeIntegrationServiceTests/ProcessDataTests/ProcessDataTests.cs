@@ -31,10 +31,10 @@ public class ProcessDataTests
         // Arrange
         DataPayLoad _DataPayLoad = new DataPayLoad
         {
-            Episodes = new List<Episode> {
-                new Episode{ episode_id = "245395"
+            Episodes = new List<BssEpisode> {
+                new BssEpisode{ episode_id = "245395"
             },
-                new Episode{ episode_id = "245396"
+                new BssEpisode{ episode_id = "245396"
             }},
             Participants = new List<Participant> {
                 new Participant{ nhs_number = "1111111112"

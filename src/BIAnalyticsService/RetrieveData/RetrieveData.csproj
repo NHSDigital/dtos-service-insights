@@ -21,6 +21,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
     <ProjectReference Include="..\..\Shared\Model\Model.csproj" />
   </ItemGroup>
