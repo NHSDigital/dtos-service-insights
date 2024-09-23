@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using NHS.ServiceInsights.Common;
+using NHS.ServiceInsights.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Text.Json;
@@ -99,7 +99,7 @@ public class ProcessData
         return response;
     }
 
-    private async Task ProcessEpisodeDataAsync(List<Episode> episodes, string episodeUrl)
+    private async Task ProcessEpisodeDataAsync(List<BssEpisode> episodes, string episodeUrl)
     {
         if (episodes != null && episodes.Any())
         {
@@ -107,20 +107,20 @@ public class ProcessData
             foreach (var episode in episodes)
             {
                 // Create a new object with EpisodeId instead of episode_id
-                var modifiedEpisode = new
+                var modifiedEpisode = new Episode
                 {
                     EpisodeId = episode.episode_id,
-                    episode.episode_type,
-                    episode.bso_organisation_code,
-                    episode.bso_batch_id,
-                    episode.episode_date,
-                    episode.end_code,
-                    episode.date_of_foa,
-                    episode.date_of_as,
-                    episode.appointment_made,
-                    episode.call_recall_status_authorised_by,
-                    episode.early_recall_date,
-                    episode.end_code_last_updated
+                    EpisodeTypeId = episode.episode_type,
+                    EpisodeOpenDate = episode.episode_date,
+                    AppointmentMadeFlag = episode.appointment_made,
+                    FirstOfferedAppointmentDate = episode.date_of_foa,
+                    ActualScreeningDate = episode.date_of_as,
+                    EarlyRecallDate = episode.early_recall_date,
+                    CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
+                    EndCodeId = episode.end_code,
+                    EndCodeLastUpdated = episode.end_code_last_updated,
+                    OrganisationId = episode.bso_organisation_code,
+                    BatchId = episode.bso_batch_id
                 };
 
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
@@ -180,25 +180,25 @@ public class Participant
     public string? ntdd_calculation_method { get; set; }
 }
 
-public class Episode
+public class BssEpisode
 {
-    public string? episode_id { get; set; }
+    public string episode_id { get; set; } = null!;
     public string? episode_type { get; set; }
-    public string? bso_organisation_code { get; set; }
-    public string? bso_batch_id { get; set; }
     public string? episode_date { get; set; }
-    public string? end_code { get; set; }
+    public string? appointment_made { get; set; }
     public string? date_of_foa { get; set; }
     public string? date_of_as { get; set; }
-    public string? appointment_made { get; set; }
-    public string? call_recall_status_authorised_by { get; set; }
     public string? early_recall_date { get; set; }
+    public string? call_recall_status_authorised_by { get; set; }
+    public string? end_code { get; set; }
     public string? end_code_last_updated { get; set; }
+    public string? bso_organisation_code { get; set; }
+    public string? bso_batch_id { get; set; }
 }
 
 
 public class DataPayLoad
 {
-    public List<Episode> Episodes { get; set; } = new List<Episode>();
+    public List<BssEpisode> Episodes { get; set; } = new List<BssEpisode>();
     public List<Participant> Participants { get; set; } = new List<Participant>();
 }
