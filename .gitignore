@@ -26,3 +26,7 @@ obj
 
 # local.settings.json
 local.settings.json
+
+
+# environment variables
+.env
