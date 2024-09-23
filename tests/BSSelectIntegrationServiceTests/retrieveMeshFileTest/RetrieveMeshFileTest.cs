@@ -2,8 +2,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NHS.MESH.Client.Contracts.Services;
 using NHS.MESH.Client.Models;
-using Common;
-using Model;
+using NHS.ServiceInsights.Common;
+using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Tests.BSSelectIntegrationTests;
 
 namespace NHS.Screening.RetrieveMeshFile;

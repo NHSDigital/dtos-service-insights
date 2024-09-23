@@ -1,4 +1,4 @@
-namespace Model;
+namespace NHS.ServiceInsights.Model;
 
 public class BlobFile
 {
@@ -13,6 +13,6 @@ public class BlobFile
         FileName = fileName;
     }
 
-    public Stream Data {get; set; }
-    public string FileName {get; set;}
+    public Stream Data { get; set; }
+    public string FileName { get; set; }
 }
