@@ -1,4 +1,4 @@
-using Common;
+using NHS.ServiceInsights.Common;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NHS.MESH.Client.Models;
