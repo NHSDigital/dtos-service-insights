@@ -67,11 +67,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DotNetMeshClient", "DotNetM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHS.Mesh.Client", "Shared\dotnet-mesh-client\application\DotNetMeshClient\NHS.Mesh.Client\NHS.Mesh.Client.csproj", "{95A4BD99-1495-4839-989F-1B1EB98AC912}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BSSelectIntegrationService", "BSSelectIntegrationService", "{4CBE2AE3-2FFC-46BE-8727-0B128F849495}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MeshIntegrationService", "MeshIntegrationService", "{4CBE2AE3-2FFC-46BE-8727-0B128F849495}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveMeshFile", "BSSelectIntegrationService\RetrieveMeshFile\RetrieveMeshFile.csproj", "{DB295F89-199F-4951-B26E-35E256761FB4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveMeshFile", "MeshIntegrationService\RetrieveMeshFile\RetrieveMeshFile.csproj", "{DB295F89-199F-4951-B26E-35E256761FB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveMeshFileTest", "..\tests\BSSelectIntegrationServiceTests\retrieveMeshFileTest\RetrieveMeshFileTest.csproj", "{D9E121BD-96EE-41D4-BD1A-1B8FF9C5E251}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveMeshFileTest", "..\tests\MeshIntegrationServiceTests\retrieveMeshFileTest\RetrieveMeshFileTest.csproj", "{D9E121BD-96EE-41D4-BD1A-1B8FF9C5E251}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
