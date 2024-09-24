@@ -1,6 +1,6 @@
-namespace NHS.ServiceInsights.Common;
-
 using NHS.ServiceInsights.Model;
+
+namespace NHS.ServiceInsights.Common;
 
 public interface IBlobStorageHelper
 {
