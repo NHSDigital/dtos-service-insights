@@ -34,7 +34,6 @@ public class RetrieveMeshFileTest
     public async Task Run_DownloadSingleFileFromMesh_Success()
     {
         //arrange
-
         var messageId = "MessageId";
         var fileName = "testFile.json";
         var content = System.Text.Encoding.UTF8.GetBytes("{}");
@@ -68,7 +67,6 @@ public class RetrieveMeshFileTest
     public async Task Run_DownloadSingleChunkedFileFromMesh_Success()
     {
         //arrange
-
         var messageId = "MessageId";
         var fileName = "testFile.json";
 
@@ -224,9 +222,6 @@ public class RetrieveMeshFileTest
     public async Task Run_DownloadSingleFile_FailToGetMessage()
     {
         //arrange
-
-        //arrange
-
         var messageId = "MessageId";
         var fileName = "testFile.json";
         var content = System.Text.Encoding.UTF8.GetBytes("{}");
@@ -250,10 +245,8 @@ public class RetrieveMeshFileTest
         _mockBlobStorageHelper.Setup(i => i.UploadFileToBlobStorage("BlobStorage_ConnectionString", "inbound", It.IsAny<BlobFile>())).ReturnsAsync(true);
         _mockMeshInboxService.Setup(i => i.AcknowledgeMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(acknowledgeMessageResponse);
 
-
         //act
         await _retrieveMeshFile.RunAsync(new Microsoft.Azure.Functions.Worker.TimerInfo());
-
 
         //assert
         _mockMeshInboxService.Verify(i => i.GetMessagesAsync(It.IsAny<string>()), Times.Once);
@@ -287,7 +280,6 @@ public class RetrieveMeshFileTest
         //act
         await _retrieveMeshFile.RunAsync(new Microsoft.Azure.Functions.Worker.TimerInfo());
 
-
         //assert
         _mockMeshInboxService.Verify(i => i.GetMessagesAsync(It.IsAny<string>()), Times.Once);
         _mockMeshInboxService.Verify(i => i.GetHeadMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -300,7 +292,6 @@ public class RetrieveMeshFileTest
     public async Task Run_DownloadSingleChunkFile_FailToGetMessage()
     {
         //arrange
-
         var messageId = "MessageId";
         var fileName = "testFile.json";
         MeshResponse<CheckInboxResponse> inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse([messageId]);
@@ -323,10 +314,8 @@ public class RetrieveMeshFileTest
         _mockBlobStorageHelper.Setup(i => i.UploadFileToBlobStorage("BlobStorage_ConnectionString", "inbound", It.IsAny<BlobFile>())).ReturnsAsync(true);
         _mockMeshInboxService.Setup(i => i.AcknowledgeMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(acknowledgeMessageResponse);
 
-
         //act
         await _retrieveMeshFile.RunAsync(new Microsoft.Azure.Functions.Worker.TimerInfo());
-
 
         //assert
         _mockMeshInboxService.Verify(i => i.GetMessagesAsync(It.IsAny<string>()), Times.Once);
@@ -336,6 +325,5 @@ public class RetrieveMeshFileTest
         _mockMeshInboxService.Verify(i => i.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 
     }
-
 
 }

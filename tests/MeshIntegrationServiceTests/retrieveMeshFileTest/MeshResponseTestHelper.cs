@@ -1,8 +1,7 @@
-namespace NHS.ServiceInsights.Tests.BSSelectIntegrationTests;
-
 using NHS.MESH.Client.Helpers.ContentHelpers;
 using NHS.MESH.Client.Models;
 
+namespace NHS.ServiceInsights.Tests.BSSelectIntegrationTests;
 public static class MeshResponseTestHelper
 {
     public static MeshResponse<CheckInboxResponse> CreateSuccessfulCheckInboxResponse(IEnumerable<string> messageIds)
