@@ -1,6 +1,6 @@
-namespace NHS.ServiceInsights.Common;
-
 using NHS.MESH.Client.Models;
+
+namespace NHS.ServiceInsights.Common;
 
 public interface IMeshToBlobTransferHandler
 {

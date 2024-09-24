@@ -1,4 +1,3 @@
-
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -7,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.Common;
+
 public class BlobStorageHelper : IBlobStorageHelper
 {
     private readonly ILogger<BlobStorageHelper> _logger;

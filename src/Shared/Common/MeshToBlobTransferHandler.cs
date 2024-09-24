@@ -1,10 +1,10 @@
-namespace NHS.ServiceInsights.Common;
-
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Model;
 using NHS.MESH.Client.Contracts.Services;
 using NHS.MESH.Client.Helpers;
 using NHS.MESH.Client.Models;
+
+namespace NHS.ServiceInsights.Common;
 
 public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
 {
