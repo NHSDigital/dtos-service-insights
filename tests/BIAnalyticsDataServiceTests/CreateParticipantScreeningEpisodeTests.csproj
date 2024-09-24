@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AnalyticsDataService\SaveTransformedData\SaveTransformedData.csproj" />
+    <ProjectReference Include="..\..\src\BIAnalyticsDataService\CreateParticipantScreeningEpisode\CreateParticipantScreeningEpisode.csproj" />
     <ProjectReference Include="..\TestUtils\TestUtils.csproj" />
   </ItemGroup>
 
