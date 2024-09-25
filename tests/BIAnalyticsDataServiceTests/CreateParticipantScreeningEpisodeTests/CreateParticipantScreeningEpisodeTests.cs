@@ -9,10 +9,10 @@ using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
 using System.Security.Cryptography.X509Certificates;
 
-namespace NHS.ServiceInsights.SaveTransformedDataTests;
+namespace NHS.ServiceInsights.CreateParticipantScreeningEpisodeTests;
 
 [TestClass]
-public class SaveTransformedDataTests
+public class CreateParticipantScreeningEpisodeTests
 {
     private readonly Mock<ILogger<CreateParticipantScreeningEpisode>> _mockLogger = new();
     private readonly Mock<IParticipantScreeningEpisodeRepository> _mockParticipantScreeningEpisodeRepository = new();
@@ -41,13 +41,13 @@ public class SaveTransformedDataTests
         RecordInsertDatetime = "2019-08-01"
     };
 
-    public SaveTransformedDataTests()
+    public CreateParticipantScreeningEpisodeTests()
     {
         _function = new CreateParticipantScreeningEpisode(_mockLogger.Object, _mockParticipantScreeningEpisodeRepository.Object);
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_OK_When_Analytics_Data_Is_Saved()
+    public async Task Run_Should_Return_OK_When_Episode_Is_Saved()
     {
         // Arrange
         var json = JsonSerializer.Serialize(ValidParticipantScreeningEpisode);
@@ -68,7 +68,7 @@ public class SaveTransformedDataTests
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_InternalServerError_When_Analytics_Data_Is_Not_Saved()
+    public async Task Run_Should_Return_InternalServerError_When_Episode_Is_Not_Saved()
     {
         // Arrange
         var json = JsonSerializer.Serialize(ValidParticipantScreeningEpisode);
@@ -109,7 +109,7 @@ public class SaveTransformedDataTests
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_InternalServerError_When_Saving_Data_throws_Exception()
+    public async Task Run_Should_Return_InternalServerError_When_Saving_Episode_throws_Exception()
     {
         // Arrange
         var json = JsonSerializer.Serialize(ValidParticipantScreeningEpisode);

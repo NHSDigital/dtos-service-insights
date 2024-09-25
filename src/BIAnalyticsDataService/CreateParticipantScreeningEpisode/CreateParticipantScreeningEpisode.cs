@@ -21,7 +21,7 @@ public class CreateParticipantScreeningEpisode
     }
 
     [Function("CreateParticipantScreeningEpisode")]
-    public  HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
         ParticipantScreeningEpisode Episode = new ParticipantScreeningEpisode();
 
