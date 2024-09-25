@@ -15,18 +15,13 @@ public class ParticipantScreeningEpisodeRepository : IParticipantScreeningEpisod
     public bool CreateParticipantEpisode(ParticipantScreeningEpisode episode)
     {
         _dbContext.ParticipantScreeningEpisodes.Add(episode);
-        try
-        {
-            if (1 == _dbContext.SaveChanges())
-            {
-                return true;
-            }
 
-            return false;
-        }
-        catch (Exception ex)
+        if (1 == _dbContext.SaveChanges())
         {
-            throw;
+            return true;
         }
+
+        return false;
+
     }
 }

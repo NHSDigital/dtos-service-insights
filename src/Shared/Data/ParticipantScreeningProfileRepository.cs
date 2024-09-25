@@ -14,18 +14,12 @@ public class ParticipantScreeningProfileRepository : IParticipantScreeningProfil
     public bool CreateParticipantProfile(ParticipantScreeningProfile profile)
     {
         _dbContext.ParticipantScreeningProfiles.Add(profile);
-        try
-        {
-            if (1 == _dbContext.SaveChanges())
-            {
-                return true;
-            }
 
-            return false;
-        }
-        catch (Exception ex)
+        if (1 == _dbContext.SaveChanges())
         {
-            throw;
+            return true;
         }
+
+        return false;
     }
 }
