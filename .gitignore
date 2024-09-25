@@ -24,5 +24,8 @@ TestResults
 bin
 obj
 
-# local.settings.json
+# Local settings
 local.settings.json
+
+# Local environment
+.env
