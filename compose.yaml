@@ -1,50 +1,68 @@
 name: service-insights
 
+# Define network
+networks:
+  app-network:
+    driver: bridge
+
+# Define services
 services:
   # External Dependencies
-  # azurite:
-  #   container_name: azurite
-  #   image: mcr.microsoft.com/azure-storage/azurite
-  #   command: azurite --silent
-  #   network_mode: host
+  azurite:
+    container_name: azurite
+    image: mcr.microsoft.com/azure-storage/azurite
+    command: azurite --silent
+    networks:
+      - app-network
+    ports:
+      - "10000:10000" # Exposing Azurite port to the host
 
-  # azurite-setup:
-  #   container_name: azurite-setup
-  #   build:
-  #     context: ./
-  #     dockerfile: ./Set-up/azurite/Dockerfile
-  #   network_mode: host
-  #   depends_on:
-  #     - azurite
-  #   environment:
-  #     - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
+  azurite-setup:
+    container_name: azurite-setup
+    build:
+      context: ./
+      dockerfile: ./Set-up/azurite/Dockerfile
+    # network_mode: host
+    depends_on:
+      - azurite
+    environment:
+      - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
+    networks:
+      - app-network
 
-  # sql-edge:
-  #   container_name: db
-  #   network_mode: host
-  #   image: mcr.microsoft.com/azure-sql-edge
-  #   environment:
-  #     - ACCEPT_EULA=Y
-  #     - MSSQL_SA_PASSWORD=${PASSWORD}
-  #   cap_add:
-  #     - SYS_PTRACE
-  #   healthcheck:
-  #     test: [ "CMD-SHELL", "curl -v --silent 127.0.0.1:1433 --stderr - | grep -q 'Empty reply from server'" ]
-  #     interval: 15s
-  #     timeout: 15s
-  #     retries: 5
-  #     start_period: 30s
+  sql-edge:
+    container_name: sql-edge
+    image: mcr.microsoft.com/azure-sql-edge
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${PASSWORD}
+    networks:
+      - app-network
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -v --silent 127.0.0.1:1433 --stderr - | grep -q 'Empty reply from server'",
+        ]
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
 
-  # db-setup:
-  #   container_name: db-setup
-  #   network_mode: host
-  #   build: ./Set-up/database
-  #   depends_on:
-  #     sql-edge:
-  #       condition: service_healthy
-  #   environment:
-  #     - PASSWORD=${PASSWORD}
-  #     - DB_NAME=${DB_NAME}
+  db-setup:
+    container_name: db-setup
+    # network_mode: host
+    build: ./Set-up/database
+    # depends_on:
+    #   sql-edge:
+    #     condition: service_healthy
+    environment:
+      - PASSWORD=${PASSWORD}
+      - DB_NAME=${DB_NAME}
+    networks:
+      - app-network
 
   # AnalyticsDataService
   # todo
@@ -62,6 +80,8 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6007:6007"
     environment:
@@ -74,6 +94,8 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6070:6070"
     environment:
@@ -87,10 +109,13 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
+    networks:
+      - app-network
     ports:
       - "7071:7071"
     environment:
       - ASPNETCORE_URLS=http://*:7071
+      - ProcessDataURL=http://localhost:7072/api/ProcessData
 
   process-data:
     container_name: process-data
@@ -98,10 +123,14 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ProcessData/Dockerfile
+    networks:
+      - app-network
     ports:
       - "7072:7072"
     environment:
       - ASPNETCORE_URLS=http://*:7072
+      - EpisodeManagementUrl=http://localhost:6006/api/CreateUpdateEpisode
+      - ParticipantManagementUrl=http://localhost:7074/api/UpdateParticipant
 
   # Episode Management Service
   create-update-episode:
@@ -110,21 +139,27 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6006:6006"
     environment:
       - ASPNETCORE_URLS=http://*:6006
+      - CreateEpisodeUrl=http://localhost:6007/api/CreateEpisode
 
-  mgmt-get-episode:
-    container_name: mgmt-get-episode
+  get-episode-mgmt:
+    container_name: get-episode-mgmt
     # network_mode: host
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6060:6060"
     environment:
       - ASPNETCORE_URLS=http://*:6060
+      - GetEpisodeUrl=http://localhost:6070/api/GetEpisode
 
   # Participant Management Service
   get-participant:
@@ -133,6 +168,8 @@ services:
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
+    networks:
+      - app-network
     ports:
       - "7073:7073"
     environment:
@@ -144,6 +181,8 @@ services:
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
+    networks:
+      - app-network
     ports:
       - "7074:7074"
     environment:
