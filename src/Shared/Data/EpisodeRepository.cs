@@ -18,16 +18,16 @@ public class EpisodeRepository : IEpisodeRepository
         _dbContext.SaveChanges();
     }
 
-    public Episode GetEpisode(string episodeId)
+    public async Task<Episode> GetEpisodeAsync(string episodeId)
     {
 
-        return _dbContext.Episodes.Find(episodeId);
+        return await _dbContext.Episodes.FindAsync(episodeId);
 
     }
-    public void UpdateEpisode(Episode episode)
+    public async Task UpdateEpisode(Episode episode)
     {
         _dbContext.Episodes.Update(episode);
-        _dbContext.SaveChanges();
+        _dbContext.SaveChangesAsync();
     }
 
 }
