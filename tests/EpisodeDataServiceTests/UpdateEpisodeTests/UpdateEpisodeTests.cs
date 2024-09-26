@@ -4,12 +4,12 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
 using NHS.ServiceInsights.Model;
-using NHS.ServiceInsights.DataService;
+using NHS.ServiceInsights.EpisodeDataService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace NHS.ServiceInsights.DataServiceTests;
+namespace NHS.ServiceInsights.EpisodeDataServiceTests;
 
 [TestClass]
 public class UpdateEpisodeTests
@@ -38,7 +38,7 @@ public class UpdateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        _mockEpisodeRepository.Setup(x => x.GetEpisode(It.IsAny<string>())).Returns(episode);
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<string>())).ReturnsAsync(episode);
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
@@ -68,7 +68,7 @@ public class UpdateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        _mockEpisodeRepository.Setup(x => x.GetEpisode(It.IsAny<string>())).Returns((Episode)null);
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<string>())).ReturnsAsync((Episode)null);
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
@@ -97,7 +97,7 @@ public class UpdateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        _mockEpisodeRepository.Setup(x => x.GetEpisode(It.IsAny<string>())).Returns(episode);
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<string>())).ReturnsAsync(episode);
         _mockEpisodeRepository.Setup(x => x.UpdateEpisode(It.IsAny<Episode>())).Throws(new DbUpdateException());
 
         // Act
