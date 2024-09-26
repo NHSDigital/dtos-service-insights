@@ -5,5 +5,5 @@ namespace NHS.ServiceInsights.Data;
 
 public interface IParticipantScreeningProfileRepository
 {
-    bool CreateParticipantProfile(ParticipantScreeningProfile profile);
+    Task<bool> CreateParticipantProfile(ParticipantScreeningProfile profile);
 }

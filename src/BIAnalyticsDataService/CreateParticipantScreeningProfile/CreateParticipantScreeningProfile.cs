@@ -21,16 +21,16 @@ public class CreateParticipantScreeningProfile
     }
 
     [Function("CreateParticipantScreeningProfile")]
-    public  HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
-        ParticipantScreeningProfile Profile = new ParticipantScreeningProfile();
+        ParticipantScreeningProfile profile = new ParticipantScreeningProfile();
 
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = reader.ReadToEnd();
-                Profile = JsonSerializer.Deserialize<ParticipantScreeningProfile>(postData);
+                profile = JsonSerializer.Deserialize<ParticipantScreeningProfile>(postData);
             }
         }
         catch(Exception ex)
@@ -41,10 +41,10 @@ public class CreateParticipantScreeningProfile
 
         try
         {
-            bool successful = _participantScreeningProfileRepository.CreateParticipantProfile(Profile);
+            bool successful = await _participantScreeningProfileRepository.CreateParticipantProfile(profile);
             if (!successful)
             {
-                _logger.LogError("CreateParticipantScreeningProfile: Could not save participant profile. Data: " + Profile);
+                _logger.LogError("CreateParticipantScreeningProfile: Could not save participant profile. Data: " + profile);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 

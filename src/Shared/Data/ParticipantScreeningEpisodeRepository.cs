@@ -12,11 +12,11 @@ public class ParticipantScreeningEpisodeRepository : IParticipantScreeningEpisod
         _dbContext = dbContext;
     }
 
-    public bool CreateParticipantEpisode(ParticipantScreeningEpisode episode)
+    public async Task<bool> CreateParticipantEpisode(ParticipantScreeningEpisode episode)
     {
         _dbContext.ParticipantScreeningEpisodes.Add(episode);
 
-        if (1 == _dbContext.SaveChanges())
+        if (1 == await _dbContext.SaveChangesAsync())
         {
             return true;
         }

@@ -21,16 +21,16 @@ public class CreateParticipantScreeningEpisode
     }
 
     [Function("CreateParticipantScreeningEpisode")]
-    public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
-        ParticipantScreeningEpisode Episode = new ParticipantScreeningEpisode();
+        ParticipantScreeningEpisode episode = new ParticipantScreeningEpisode();
 
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = reader.ReadToEnd();
-                Episode = JsonSerializer.Deserialize<ParticipantScreeningEpisode>(postData);
+                episode = JsonSerializer.Deserialize<ParticipantScreeningEpisode>(postData);
             }
         }
         catch(Exception ex)
@@ -41,10 +41,10 @@ public class CreateParticipantScreeningEpisode
 
         try
         {
-            bool successful = _participantScreeningEpisodeRepository.CreateParticipantEpisode(Episode);
+            bool successful = await _participantScreeningEpisodeRepository.CreateParticipantEpisode(episode);
             if (!successful)
             {
-                _logger.LogError("CreateParticipantScreeningEpisode: Could not save participant episode. Data: " + Episode);
+                _logger.LogError("CreateParticipantScreeningEpisode: Could not save participant episode. Data: " + episode);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 

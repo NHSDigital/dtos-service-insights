@@ -11,11 +11,11 @@ public class ParticipantScreeningProfileRepository : IParticipantScreeningProfil
         _dbContext = dbContext;
     }
 
-    public bool CreateParticipantProfile(ParticipantScreeningProfile profile)
+    public async Task<bool> CreateParticipantProfile(ParticipantScreeningProfile profile)
     {
         _dbContext.ParticipantScreeningProfiles.Add(profile);
 
-        if (1 == _dbContext.SaveChanges())
+        if (1 == await _dbContext.SaveChangesAsync())
         {
             return true;
         }

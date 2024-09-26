@@ -67,6 +67,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningProfileTests", "..\tests\BIAnalyticsDataServiceTests\CreateParticipantScreeningProfileTests\CreateParticipantScreeningProfileTests.csproj", "{0E427D98-951C-4EA4-8B86-8043E8E4F5E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningProfile", "BIAnalyticsDataService\CreateParticipantScreeningProfile\CreateParticipantScreeningProfile.csproj", "{11157BC7-7617-482B-88EB-BEB69E258C1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -165,6 +167,10 @@ Global
 		{0E427D98-951C-4EA4-8B86-8043E8E4F5E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E427D98-951C-4EA4-8B86-8043E8E4F5E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E427D98-951C-4EA4-8B86-8043E8E4F5E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -183,5 +189,6 @@ Global
 		{878E7696-C0CB-4779-B300-46647F434AE8} = {DACA4EB5-14F5-42D8-AD61-DA1FA4DBB6ED}
 		{052722A8-E6DB-409B-95B0-19146D848586} = {F0A4CB48-845E-4B4A-B6E6-4FF6AD88C758}
 		{3B36D188-0E89-4AFD-8154-E867E2CA942B} = {4015B40A-C9B6-47B9-9758-67DF6C9B99D6}
+		{11157BC7-7617-482B-88EB-BEB69E258C1B} = {4015B40A-C9B6-47B9-9758-67DF6C9B99D6}
 	EndGlobalSection
 EndGlobal

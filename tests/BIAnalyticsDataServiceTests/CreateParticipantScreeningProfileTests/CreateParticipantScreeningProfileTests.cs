@@ -53,10 +53,10 @@ public class CreateParticipantScreeningProfileTests
         // Arrange
         var json = JsonSerializer.Serialize(ValidParticipantScreeningProfile);
         _mockRequest = _setupRequest.Setup(json);
-        _mockParticipantScreeningProfileRepository.Setup(r => r.CreateParticipantProfile(It.IsAny<ParticipantScreeningProfile>())).Returns(true);
+        _mockParticipantScreeningProfileRepository.Setup(r => r.CreateParticipantProfile(It.IsAny<ParticipantScreeningProfile>())).Returns(Task.FromResult(true));
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.Run(_mockRequest.Object);
 
         // Assert
         _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Information),
@@ -74,10 +74,10 @@ public class CreateParticipantScreeningProfileTests
         // Arrange
         var json = JsonSerializer.Serialize(ValidParticipantScreeningProfile);
         _mockRequest = _setupRequest.Setup(json);
-        _mockParticipantScreeningProfileRepository.Setup(r => r.CreateParticipantProfile(It.IsAny<ParticipantScreeningProfile>())).Returns(false);
+        _mockParticipantScreeningProfileRepository.Setup(r => r.CreateParticipantProfile(It.IsAny<ParticipantScreeningProfile>())).Returns(Task.FromResult(false));
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.Run(_mockRequest.Object);
 
         // Assert
         _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
@@ -97,7 +97,7 @@ public class CreateParticipantScreeningProfileTests
         _mockRequest = _setupRequest.Setup(json);
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.Run(_mockRequest.Object);
 
         // Assert
         _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
@@ -118,7 +118,7 @@ public class CreateParticipantScreeningProfileTests
         _mockParticipantScreeningProfileRepository.Setup(r => r.CreateParticipantProfile(It.IsAny<ParticipantScreeningProfile>())).Throws<Exception>();
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.Run(_mockRequest.Object);
 
         // Assert
         _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),

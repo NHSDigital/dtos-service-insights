@@ -5,5 +5,5 @@ namespace NHS.ServiceInsights.Data;
 
 public interface IParticipantScreeningEpisodeRepository
 {
-    bool CreateParticipantEpisode(ParticipantScreeningEpisode episode);
+    Task<bool> CreateParticipantEpisode(ParticipantScreeningEpisode episode);
 }
