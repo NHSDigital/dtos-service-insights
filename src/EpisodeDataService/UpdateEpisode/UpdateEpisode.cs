@@ -7,7 +7,7 @@ using System.Text.Json;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
 
-namespace NHS.ServiceInsights.DataService;
+namespace NHS.ServiceInsights.EpisodeDataService;
 
 public class UpdateEpisode
 {
@@ -43,7 +43,7 @@ public class UpdateEpisode
 
         try
         {
-            var existingEpisode = _episodeRepository.GetEpisode(episode.EpisodeId);
+            var existingEpisode = await _episodeRepository.GetEpisodeAsync(episode.EpisodeId);
             if (existingEpisode != null)
             {
                 existingEpisode.ParticipantId = episode.ParticipantId;
@@ -63,9 +63,17 @@ public class UpdateEpisode
                 existingEpisode.RecordInsertDatetime = episode.RecordInsertDatetime;
                 existingEpisode.RecordUpdateDatetime = episode.RecordUpdateDatetime;
 
-                _episodeRepository.UpdateEpisode(existingEpisode);
-                _logger.LogInformation("Episode {episodeId} updated successfully.", episode.EpisodeId);
-                return req.CreateResponse(HttpStatusCode.OK);
+                try
+                {
+                    _episodeRepository.UpdateEpisode(existingEpisode);
+                    _logger.LogInformation("Episode {episodeId} updated successfully.", episode.EpisodeId);
+                    return req.CreateResponse(HttpStatusCode.OK);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error updating episode {episodeId}.", episode.EpisodeId);
+                    return req.CreateResponse(HttpStatusCode.InternalServerError);
+                }
             }
             else
             {
