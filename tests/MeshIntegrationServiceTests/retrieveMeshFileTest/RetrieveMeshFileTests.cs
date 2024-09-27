@@ -4,11 +4,12 @@ using NHS.MESH.Client.Contracts.Services;
 using NHS.MESH.Client.Models;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
+using NHS.ServiceInsights.MeshIntegrationService;
 using NHS.ServiceInsights.Tests.BSSelectIntegrationTests;
 
-namespace NHS.Screening.RetrieveMeshFile;
+namespace NHS.ServiceInsights.MeshIntegrationServiceTests;
 [TestClass]
-public class RetrieveMeshFileTest
+public class RetrieveMeshFileTests
 {
 
     private readonly Mock<ILogger<RetrieveMeshFile>> _mockLogger = new();
@@ -21,11 +22,11 @@ public class RetrieveMeshFileTest
 
     private const string mailboxId = "TestMailBox";
 
-    public RetrieveMeshFileTest()
+    public RetrieveMeshFileTests()
     {
         Environment.SetEnvironmentVariable("BSSMailBox", mailboxId);
-        Environment.SetEnvironmentVariable("bssfolder_STORAGE", "BlobStorage_ConnectionString");
-        Environment.SetEnvironmentVariable("bsscontainer_NAME", "BlobStorage_DestinationContainer");
+        Environment.SetEnvironmentVariable("AzureWebJobsStorage", "BlobStorage_ConnectionString");
+        Environment.SetEnvironmentVariable("BSSContainerName", "BlobStorage_DestinationContainer");
         _meshToBlobTransferHandler = new MeshToBlobTransferHandler(_mockMeshTransferLogger.Object, _mockBlobStorageHelper.Object, _mockMeshInboxService.Object);
         _retrieveMeshFile = new RetrieveMeshFile(_mockLogger.Object, _meshToBlobTransferHandler);
 

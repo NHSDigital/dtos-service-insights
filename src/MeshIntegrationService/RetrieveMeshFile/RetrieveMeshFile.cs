@@ -21,8 +21,8 @@ public class RetrieveMeshFile
 
 
         _mailboxId = Environment.GetEnvironmentVariable("BSSMailBox");
-        _blobConnectionString = Environment.GetEnvironmentVariable("bssfolder_STORAGE");
-        _destinationContainer = Environment.GetEnvironmentVariable("bsscontainer_NAME");
+        _blobConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+        _destinationContainer = Environment.GetEnvironmentVariable("BSSContainerName");
     }
     /// <summary>
     /// This function polls the MESH Mailbox every 5 minutes, if there is a file posted to the mailbox.
