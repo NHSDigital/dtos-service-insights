@@ -15,13 +15,13 @@ services:
     networks:
       - app-network
     ports:
-      - "10000:10000" # Exposing Azurite port to the host
+      - "10000:10000"
 
   azurite-setup:
     container_name: azurite-setup
     build:
       context: ./
-      dockerfile: ./Set-up/azurite/Dockerfile
+      dockerfile: ./azurite/Dockerfile
     # network_mode: host
     depends_on:
       - azurite
@@ -54,10 +54,10 @@ services:
   db-setup:
     container_name: db-setup
     network_mode: host
-    build: ./Set-up/database
-    # depends_on:
-    #   sql-edge:
-    #     condition: service_healthy
+    build: ./database
+    depends_on:
+      sql-edge:
+        condition: service_healthy
     environment:
       - PASSWORD=${PASSWORD}
       - DB_NAME=${DB_NAME}
@@ -86,7 +86,7 @@ services:
       - "6007:6007"
     environment:
       - ASPNETCORE_URLS=http://*:6007
-      - ServiceInsightsDbConnectionString=Server=localhost,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - ServiceInsightsDbConnectionString=Server=sql-edge,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   get-episode:
     container_name: get-episode
@@ -100,7 +100,7 @@ services:
       - "6070:6070"
     environment:
       - ASPNETCORE_URLS=http://*:6070
-      - ServiceInsightsDbConnectionString=Server=localhost,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - ServiceInsightsDbConnectionString=Server=sql-edge,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # Episode Integration Service
   receive-data:
@@ -115,7 +115,7 @@ services:
       - "7071:7071"
     environment:
       - ASPNETCORE_URLS=http://*:7071
-      - ProcessDataURL=http://localhost:7072/api/ProcessData
+      - ProcessDataURL=http://process-data:7072/api/ProcessData
 
   process-data:
     container_name: process-data
@@ -129,8 +129,8 @@ services:
       - "7072:7072"
     environment:
       - ASPNETCORE_URLS=http://*:7072
-      - EpisodeManagementUrl=http://localhost:6006/api/CreateUpdateEpisode
-      - ParticipantManagementUrl=http://localhost:7074/api/UpdateParticipant
+      - EpisodeManagementUrl=http://create-update-episode:6006/api/CreateUpdateEpisode
+      - ParticipantManagementUrl=http://update-participant:7074/api/UpdateParticipant
 
   # Episode Management Service
   create-update-episode:
@@ -145,7 +145,7 @@ services:
       - "6006:6006"
     environment:
       - ASPNETCORE_URLS=http://*:6006
-      - CreateEpisodeUrl=http://localhost:6007/api/CreateEpisode
+      - CreateEpisodeUrl=http://create-episode:6007/api/CreateEpisode
 
   get-episode-mgmt:
     container_name: get-episode-mgmt
@@ -159,7 +159,7 @@ services:
       - "6060:6060"
     environment:
       - ASPNETCORE_URLS=http://*:6060
-      - GetEpisodeUrl=http://localhost:6070/api/GetEpisode
+      - GetEpisodeUrl=http://get-episode:6070/api/GetEpisode
 
   # Participant Management Service
   get-participant:
