@@ -3,7 +3,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NHS.MESH.Client.Models;
 
-namespace NHS.Screening.RetrieveMeshFile;
+namespace NHS.ServiceInsights.MeshIntegrationService;
 public class RetrieveMeshFile
 {
     private readonly ILogger _logger;
@@ -26,7 +26,7 @@ public class RetrieveMeshFile
     }
     /// <summary>
     /// This function polls the MESH Mailbox every 5 minutes, if there is a file posted to the mailbox.
-    /// If there is a file in there will move the file to the Service Insights Blob Storage where it will be picked up by the ReceiveCaasFile Function.
+    /// If there is a file in there will move the file to the Service Insights Blob Storage where it will be picked up by the ReceiveData Function.
     /// </summary>
     [Function("RetrieveMeshFile")]
     public async Task RunAsync([TimerTrigger("*/5 * * * *")] TimerInfo myTimer)
