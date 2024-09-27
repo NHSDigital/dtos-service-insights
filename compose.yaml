@@ -53,7 +53,7 @@ services:
 
   db-setup:
     container_name: db-setup
-    # network_mode: host
+    network_mode: host
     build: ./Set-up/database
     # depends_on:
     #   sql-edge:
@@ -61,8 +61,8 @@ services:
     environment:
       - PASSWORD=${PASSWORD}
       - DB_NAME=${DB_NAME}
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
 
   # AnalyticsDataService
   # todo
