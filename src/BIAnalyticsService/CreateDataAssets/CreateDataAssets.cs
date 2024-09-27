@@ -22,26 +22,26 @@ public class CreateDataAssets
     [Function("CreateDataAssets")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        _logger.LogInformation("Request to retrieve data has been processed.");
+        _logger.LogInformation("CreateDataAssets function start");
 
         string episodeId = req.Query["EpisodeId"];
 
         if (string.IsNullOrEmpty(episodeId))
         {
-            _logger.LogError("Please enter a valid Episode ID.");
+            _logger.LogError("episodeId is null or empty");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
         var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-        var url = $"{baseUrl}?EpisodeId={episodeId}";
-        _logger.LogInformation("Requesting episode URL: {Url}", url);
+        var GetEpisodeUrl = $"{baseUrl}?EpisodeId={episodeId}";
+        _logger.LogInformation("Requesting episode URL: {Url}", GetEpisodeUrl);
 
-        string episodeJson = string.Empty;
+        string episodeJson;
         Episode episode;
 
         try
         {
-            var response = await _httpRequestService.SendGet(url);
+            var response = await _httpRequestService.SendGet(GetEpisodeUrl);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -56,15 +56,17 @@ public class CreateDataAssets
 
         catch (Exception ex)
         {
-            _logger.LogError("Failed to call the GetEpisode Data Service. \nException: {ex}", ex);
+            _logger.LogError("Issue when getting episode from db. \nException: {ex}", ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
-
+        
         string nhsNumber = "1111111112";
 
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
         var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
         _logger.LogInformation("Requesting participant URL: {Url}",participantUrl);
+        
+        Participant participant;
 
         try
         {
@@ -79,37 +81,40 @@ public class CreateDataAssets
             var participantJson = await participantResponse.Content.ReadAsStringAsync();
             _logger.LogInformation("Participant data retrieved");
 
-            var participant = JsonSerializer.Deserialize<Participant>(participantJson);
-            if (participant == null)
-            {
-                _logger.LogError($"Participant with NHS Number {nhsNumber} not found.");
-                return req.CreateResponse(HttpStatusCode.NotFound);
-            }
-
-            var (screeningEpisodeUrl, screeningProfileUrl) = GetConfigurationUrls();
-            if (string.IsNullOrEmpty(screeningEpisodeUrl) || string.IsNullOrEmpty(screeningProfileUrl))
-            {
-                return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
-            }
-
-        // Log out useful debug information
-        _logger.LogInformation(screeningEpisodeUrl);
-        _logger.LogInformation(screeningProfileUrl);
-
-        // Send to downstream functions
-        await SendToCreateParticipantScreeningEpisodeAsync(episode, screeningEpisodeUrl);
-        await SendToCreateParticipantScreeningProfileAsync(participant, screeningProfileUrl);
-
-        _logger.LogInformation("Data processed successfully.");
-
-            return req.CreateResponse(HttpStatusCode.OK);
+            participant = JsonSerializer.Deserialize<Participant>(participantJson);
         }
-
         catch (Exception ex)
         {
-            _logger.LogError("Failed to call the Participant Management Service. \nUrl:{participantUrl}\nException: {ex}", participantUrl, ex);
+            _logger.LogError("Issue when getting participant from db. \nException: {ex}", ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
+
+        var (screeningEpisodeUrl, screeningProfileUrl) = GetConfigurationUrls();
+        if (string.IsNullOrEmpty(screeningEpisodeUrl) || string.IsNullOrEmpty(screeningProfileUrl))
+        {
+            _logger.LogError("One or both URLs are not configured. \nUrl:{screeningProfileUrl}\nUrl:{screeningEpisodeUrl}", participantUrl, screeningEpisodeUrl);
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
+        }
+
+        try
+        {
+            // Log out useful debug information
+            _logger.LogInformation(screeningEpisodeUrl);
+            _logger.LogInformation(screeningProfileUrl);
+
+            // Send to downstream functions
+            await SendToCreateParticipantScreeningEpisodeAsync(episode, screeningEpisodeUrl);
+            await SendToCreateParticipantScreeningProfileAsync(participant, screeningProfileUrl);
+
+            _logger.LogInformation("Data processed successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create episode or profile.");
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
+        }
+
+        return req.CreateResponse(HttpStatusCode.OK);
     }
 
     private (string screeningEpisodeUrl, string screeningProfileUrl) GetConfigurationUrls()
@@ -123,18 +128,38 @@ public class CreateDataAssets
         {
             _logger.LogInformation("Mapping participant profile data.");
 
-                //Create a new object
                 var screeningProfile = new ParticipantScreeningProfile
                 {
-
+                    NhsNumber = participant.nhs_number,
+                    ScreeningName = String.Empty,
+                    PrimaryCareProvider = String.Empty,
+                    PreferredLanguage = participant.preferred_language,
+                    ReasonForRemoval = participant.removal_reason,
+                    ReasonForRemovalDt = String.Empty,
+                    NextTestDueDate = participant.next_test_due_date,
+                    NextTestDueDateCalculationMethod = participant.ntdd_calculation_method,
+                    ParticipantScreeningStatus = participant.subject_status_code,
+                    ScreeningCeasedReason = String.Empty,
+                    IsHigherRisk = participant.is_higher_risk,
+                    IsHigherRiskActive = participant.is_higher_risk_active,
+                    HigherRiskNextTestDueDate = participant.higher_risk_next_test_due_date,
+                    HigherRiskReferralReasonCode = participant.higher_risk_referral_reason_code,
+                    HrReasonCodeDescription = String.Empty,
+                    DateIrradiated = participant.date_irradiated,
+                    GeneCode = participant.gene_code,
+                    GeneCodeDescription = String.Empty,
+                    RecordInsertDatetime = DateTime.Now.ToString()
                 };
 
-                string serializedParticipantScreeningProfile = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
+                string serializedParticipantScreeningProfile = JsonSerializer.Serialize(screeningProfile, new JsonSerializerOptions { WriteIndented = true });
 
-            // Log the Episode data before sending it
-            _logger.LogInformation($"Sending Participant Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
+            _logger.LogInformation($"Sending ParticipantScreeningProfile Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
 
             await _httpRequestService.SendPost(screeningProfileUrl, serializedParticipantScreeningProfile);
+        }
+        else
+        {
+            _logger.LogInformation("No profile data found.");
         }
     }
 
@@ -144,7 +169,6 @@ public class CreateDataAssets
         {
             _logger.LogInformation("Processing episode data.");
 
-                // Create a new object with EpisodeId instead of episode_id
                 var screeningEpisode = new ParticipantScreeningEpisode
                 {
                     EpisodeId = episode.EpisodeId,
@@ -169,8 +193,7 @@ public class CreateDataAssets
 
                 string serializedParticipantScreeningEpisode = JsonSerializer.Serialize(screeningEpisode, new JsonSerializerOptions { WriteIndented = true });
 
-                // Log the Episode data before sending it
-                _logger.LogInformation($"Sending Episode to {screeningEpisodeUrl}: {serializedParticipantScreeningEpisode}");
+                _logger.LogInformation($"Sending ParticipantScreeningEpisode to {screeningEpisodeUrl}: {serializedParticipantScreeningEpisode}");
 
                 await _httpRequestService.SendPost(screeningEpisodeUrl, serializedParticipantScreeningEpisode);
         }
@@ -179,10 +202,4 @@ public class CreateDataAssets
             _logger.LogInformation("No episode data found.");
         }
     }
-}
-
-public class DataPayLoad
-{
-    public List<ParticipantScreeningEpisode> ScreeningEpisodes { get; set; } = new List<ParticipantScreeningEpisode>();
-    public List<ParticipantScreeningProfile> Participants { get; set; } = new List<ParticipantScreeningProfile>();
 }
