@@ -65,6 +65,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningProfile", "BIAnalyticsDataService\CreateParticipantScreeningProfile\CreateParticipantScreeningProfile.csproj", "{11157BC7-7617-482B-88EB-BEB69E258C1B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BIAnalyticsService", "BIAnalyticsService", "{4B0AD4B3-4508-4F6B-AEBF-24B4578DB1DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateDataAssets", "BIAnalyticsService\CreateDataAssets\CreateDataAssets.csproj", "{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,6 +171,10 @@ Global
 		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -186,5 +194,6 @@ Global
 		{052722A8-E6DB-409B-95B0-19146D848586} = {F0A4CB48-845E-4B4A-B6E6-4FF6AD88C758}
 		{3B36D188-0E89-4AFD-8154-E867E2CA942B} = {4015B40A-C9B6-47B9-9758-67DF6C9B99D6}
 		{11157BC7-7617-482B-88EB-BEB69E258C1B} = {4015B40A-C9B6-47B9-9758-67DF6C9B99D6}
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759} = {4B0AD4B3-4508-4F6B-AEBF-24B4578DB1DC}
 	EndGlobalSection
 EndGlobal

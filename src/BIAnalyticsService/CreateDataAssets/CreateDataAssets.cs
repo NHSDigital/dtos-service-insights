@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
+using System.Text;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
@@ -85,11 +86,11 @@ public class CreateDataAssets
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 
-        var (screeningEpisodeUrl, screeningProfileUrl) = GetConfigurationUrls();
-        if (string.IsNullOrEmpty(screeningEpisodeUrl) || string.IsNullOrEmpty(screeningProfileUrl))
-        {
-            return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
-        }
+            var (screeningEpisodeUrl, screeningProfileUrl) = GetConfigurationUrls();
+            if (string.IsNullOrEmpty(screeningEpisodeUrl) || string.IsNullOrEmpty(screeningProfileUrl))
+            {
+                return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
+            }
 
         // Log out useful debug information
         _logger.LogInformation(screeningEpisodeUrl);
@@ -97,7 +98,7 @@ public class CreateDataAssets
 
         // Send to downstream functions
         await SendToCreateParticipantScreeningEpisodeAsync(episode, screeningEpisodeUrl);
-        await ProcessEpisodeDataAsync(participant, screeningProfileUrl);
+        await SendToCreateParticipantScreeningProfileAsync(participant, screeningProfileUrl);
 
         _logger.LogInformation("Data processed successfully.");
 
@@ -116,20 +117,66 @@ public class CreateDataAssets
         return (Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl"), Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl"));
     }
 
-    private async Task SendToCreateParticipantScreeningEpisodeAsync(List<ParticipantScreeningProfile> participant, string screeningProfileUrl)
+    private async Task SendToCreateParticipantScreeningProfileAsync(Participant participant, string screeningProfileUrl)
     {
-        if (participant != null && participant.Any())
+        if (participant != null)
         {
             _logger.LogInformation("Mapping participant profile data.");
-            foreach (var screeningProfile in participant)
-            {
-                string serializedParticipantScreeningProfile = JsonSerializer.Serialize(screeningProfile, new JsonSerializerOptions { WriteIndented = true });
+
+                //Create a new object
+                var screeningProfile = new ParticipantScreeningProfile
+                {
+
+                };
+
+                string serializedParticipantScreeningProfile = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
 
             // Log the Episode data before sending it
-            _logger.LogInformation($"Sending Episode to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
+            _logger.LogInformation($"Sending Participant Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
 
             await _httpRequestService.SendPost(screeningProfileUrl, serializedParticipantScreeningProfile);
-            }
+        }
+    }
+
+    private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode, string screeningEpisodeUrl)
+    {
+        if (episode != null)
+        {
+            _logger.LogInformation("Processing episode data.");
+
+                // Create a new object with EpisodeId instead of episode_id
+                var screeningEpisode = new ParticipantScreeningEpisode
+                {
+                    EpisodeId = episode.EpisodeId,
+                    ScreeningName = episode.ScreeningId,
+                    NhsNumber= episode.NhsNumber,
+                    EpisodeType = episode.EpisodeTypeId,
+                    EpisodeTypeDescription = String.Empty,
+                    EpisodeOpenDate = episode.EpisodeOpenDate,
+                    AppointmentMadeFlag = episode.AppointmentMadeFlag,
+                    FirstOfferedAppointmentDate = episode.FirstOfferedAppointmentDate,
+                    ActualScreeningDate = episode.ActualScreeningDate,
+                    EarlyRecallDate = episode.EarlyRecallDate,
+                    CallRecallStatusAuthorisedBy = episode.CallRecallStatusAuthorisedBy,
+                    EndCode = episode.EndCodeId,
+                    EndCodeDescription = String.Empty,
+                    EndCodeLastUpdated = episode.EndCodeLastUpdated,
+                    OrganisationCode = episode.OrganisationId,
+                    OrganisationName = String.Empty,
+                    BatchId = episode.BatchId,
+                    RecordInsertDatetime = episode.RecordInsertDatetime
+                };
+
+                string serializedParticipantScreeningEpisode = JsonSerializer.Serialize(screeningEpisode, new JsonSerializerOptions { WriteIndented = true });
+
+                // Log the Episode data before sending it
+                _logger.LogInformation($"Sending Episode to {screeningEpisodeUrl}: {serializedParticipantScreeningEpisode}");
+
+                await _httpRequestService.SendPost(screeningEpisodeUrl, serializedParticipantScreeningEpisode);
+        }
+        else
+        {
+            _logger.LogInformation("No episode data found.");
         }
     }
 }
