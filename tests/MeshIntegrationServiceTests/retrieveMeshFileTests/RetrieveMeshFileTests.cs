@@ -154,7 +154,7 @@ public class RetrieveMeshFileTests
     }
 
     [TestMethod]
-    public async Task Run_SingleFileAvailableCannotUploadToBlob_DoesntMarkAsAcknowledged()
+    public async Task Run_SingleFileAvailableCannotUploadToBlob_DoesNotMarkAsAcknowledged()
     {
         //arrange
         var messageId = "MessageId";
