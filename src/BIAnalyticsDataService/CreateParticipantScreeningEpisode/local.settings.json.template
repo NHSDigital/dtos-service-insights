@@ -6,6 +6,6 @@
     "ServiceInsightsDbConnectionString": "YOUR_CONNECTION_STRING"
   },
   "Host": {
-    "LocalHttpPort": 6008
+    "LocalHttpPort": 6010
   }
 }
