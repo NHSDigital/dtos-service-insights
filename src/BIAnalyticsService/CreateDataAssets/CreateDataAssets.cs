@@ -8,17 +8,17 @@ using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
-public class RetrieveData
+public class CreateDataAssets
 {
-    private readonly ILogger<RetrieveData> _logger;
+    private readonly ILogger<CreateDataAssets> _logger;
     private readonly IHttpRequestService _httpRequestService;
-    public RetrieveData(ILogger<RetrieveData> logger, IHttpRequestService httpRequestService)
+    public CreateDataAssets(ILogger<CreateDataAssets> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
     }
 
-    [Function("RetrieveData")]
+    [Function("CreateDataAssets")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
         _logger.LogInformation("Request to retrieve data has been processed.");
@@ -85,6 +85,22 @@ public class RetrieveData
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 
+        var (screeningEpisodeUrl, screeningProfileUrl) = GetConfigurationUrls();
+        if (string.IsNullOrEmpty(screeningEpisodeUrl) || string.IsNullOrEmpty(screeningProfileUrl))
+        {
+            return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
+        }
+
+        // Log out useful debug information
+        _logger.LogInformation(screeningEpisodeUrl);
+        _logger.LogInformation(screeningProfileUrl);
+
+        // Send to downstream functions
+        await SendToCreateParticipantScreeningEpisodeAsync(episode, screeningEpisodeUrl);
+        await ProcessEpisodeDataAsync(participant, screeningProfileUrl);
+
+        _logger.LogInformation("Data processed successfully.");
+
             return req.CreateResponse(HttpStatusCode.OK);
         }
 
@@ -94,4 +110,32 @@ public class RetrieveData
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
+
+    private (string screeningEpisodeUrl, string screeningProfileUrl) GetConfigurationUrls()
+    {
+        return (Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl"), Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl"));
+    }
+
+    private async Task SendToCreateParticipantScreeningEpisodeAsync(List<ParticipantScreeningProfile> participant, string screeningProfileUrl)
+    {
+        if (participant != null && participant.Any())
+        {
+            _logger.LogInformation("Mapping participant profile data.");
+            foreach (var screeningProfile in participant)
+            {
+                string serializedParticipantScreeningProfile = JsonSerializer.Serialize(screeningProfile, new JsonSerializerOptions { WriteIndented = true });
+
+            // Log the Episode data before sending it
+            _logger.LogInformation($"Sending Episode to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
+
+            await _httpRequestService.SendPost(screeningProfileUrl, serializedParticipantScreeningProfile);
+            }
+        }
+    }
+}
+
+public class DataPayLoad
+{
+    public List<ParticipantScreeningEpisode> ScreeningEpisodes { get; set; } = new List<ParticipantScreeningEpisode>();
+    public List<ParticipantScreeningProfile> Participants { get; set; } = new List<ParticipantScreeningProfile>();
 }
