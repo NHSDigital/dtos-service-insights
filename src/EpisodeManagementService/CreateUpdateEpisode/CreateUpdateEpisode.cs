@@ -54,7 +54,7 @@ public class CreateUpdateEpisode
             }
             else if (getEpisodeResponse.StatusCode == HttpStatusCode.NotFound)
             {
-                _logger.LogError("Episode {episodeId} does not exist and will be created.", episode.EpisodeId);
+                _logger.LogInformation("Episode {episodeId} does not exist and will be created.", episode.EpisodeId);
                 await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("CreateEpisode function called successfully.");
                 return req.CreateResponse(HttpStatusCode.OK);
