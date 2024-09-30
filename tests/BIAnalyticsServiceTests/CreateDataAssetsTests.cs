@@ -7,23 +7,27 @@ using NHS.ServiceInsights.TestUtils;
 using System.Collections.Specialized;
 using NHS.ServiceInsights.Common;
 using System.Text;
+using System.Text.Json;
+using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
 [TestClass]
-public class RetrieveDataTests
+public class CreateDataAssetsTests
 {
-    private Mock<ILogger<RetrieveData>> _mockLogger = new();
+    private Mock<ILogger<CreateDataAssets>> _mockLogger = new();
     private Mock<IHttpRequestService> _mockHttpRequestService = new();
-    private RetrieveData _function;
+    private CreateDataAssets _function;
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
-    public RetrieveDataTests()
+    public CreateDataAssetsTests()
     {
 
         Environment.SetEnvironmentVariable("GetEpisodeUrl", "http://localhost:6060/api/GetEpisode");
         Environment.SetEnvironmentVariable("GetParticipantUrl", "http://localhost:6061/api/GetParticipant");
-        _function = new RetrieveData(_mockLogger.Object, _mockHttpRequestService.Object);
+        Environment.SetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl", "http://localhost:6010/api/CreateParticipantScreeningEpisode");
+        Environment.SetEnvironmentVariable("CreateParticipantScreeningProfileUrl", "http://localhost:6011/api/CreateParticipantScreeningProfile");
+        _function = new CreateDataAssets(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
     [TestMethod]
@@ -123,5 +127,61 @@ public class RetrieveDataTests
         // Assert
         _mockHttpRequestService.Verify(x => x.SendGet(url), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task CreateDataAssets_ShouldSendEpisodeAndProfileToDownstreamFunctions()
+    {
+        // Arrange
+        var screeningEpisode = new Episode
+        {
+            EpisodeId = Guid.NewGuid().ToString(),
+            ParticipantId = "test",
+            ScreeningId = "test",
+            NhsNumber = "1111111110",
+            EpisodeTypeId = "D",
+            EpisodeOpenDate = null,
+            AppointmentMadeFlag = "TRUE",
+            FirstOfferedAppointmentDate = "2000-01-02",
+            ActualScreeningDate = "2000-01-02",
+            EarlyRecallDate = "NULL",
+            CallRecallStatusAuthorisedBy = "SCREENING_OFFICE",
+            EndCodeId = "DC",
+            EndCodeLastUpdated = "2000-01-02",
+            OrganisationId = "PCO",
+            BatchId = "ECHO",
+            RecordInsertDatetime = "NULL",
+            RecordUpdateDatetime = "NULL"
+        };
+
+        var screeningProfile = new Participant
+        {
+            nhs_number = Guid.NewGuid().ToString(),
+            next_test_due_date = null,
+            gp_practice_id = null,
+            subject_status_code = "null",
+            is_higher_risk = "null",
+            higher_risk_next_test_due_date = null,
+            removal_reason = "null",
+            removal_date = "null",
+            bso_organisation_id = "NORMAL",
+            early_recall_date = null,
+            latest_invitation_date = "false",
+            preferred_language = "false",
+            higher_risk_referral_reason_code = "null",
+            date_irradiated = "null",
+            is_higher_risk_active = null,
+            gene_code = "null",
+            ntdd_calculation_method = "null"
+        };
+
+        // Act
+        var (screeningEpisodeUrl, screeningProfileUrl) = _function.GetConfigurationUrls();
+        await _function.SendToCreateParticipantScreeningEpisodeAsync(screeningEpisode, screeningEpisodeUrl);
+        await _function.SendToCreateParticipantScreeningProfileAsync(screeningProfile, screeningProfileUrl);
+
+        // Assert
+        _mockHttpRequestService.Verify(x => x.SendPost("CreateParticipantScreeningEpisodeUrl", It.IsAny<string>()), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost("CreateParticipantScreeningProfileUrl", It.IsAny<string>()), Times.Once);
     }
 }

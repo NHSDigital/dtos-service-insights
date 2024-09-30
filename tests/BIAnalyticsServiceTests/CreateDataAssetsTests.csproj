@@ -23,7 +23,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BIAnalyticsService\RetrieveData\RetrieveData.csproj" />
+    <ProjectReference Include="..\..\src\BIAnalyticsService\CreateDataAssets\CreateDataAssets.csproj" />
     <ProjectReference Include="..\TestUtils\TestUtils.csproj" />
   </ItemGroup>
 
