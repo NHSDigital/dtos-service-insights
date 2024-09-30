@@ -53,8 +53,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateParticipantTests", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeDataTests", "..\tests\EpisodeDataServiceTests\GetEpisodeTests\GetEpisodeDataTests.csproj", "{85B06FE6-DF2C-4C19-8969-B3D0A33719EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveDataTests", "..\tests\BIAnalyticsServiceTests\RetrieveDataTests.csproj", "{5C6B2030-0BBF-49EC-A8D7-C6E9B56E6119}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BIAnalyticsDataService", "BIAnalyticsDataService", "{4015B40A-C9B6-47B9-9758-67DF6C9B99D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningEpisode", "BIAnalyticsDataService\CreateParticipantScreeningEpisode\CreateParticipantScreeningEpisode.csproj", "{3B36D188-0E89-4AFD-8154-E867E2CA942B}"
@@ -68,6 +66,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BIAnalyticsService", "BIAnalyticsService", "{4B0AD4B3-4508-4F6B-AEBF-24B4578DB1DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateDataAssets", "BIAnalyticsService\CreateDataAssets\CreateDataAssets.csproj", "{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateDataAssetsTests", "..\tests\BIAnalyticsServiceTests\CreateDataAssetsTests.csproj", "{35CEA801-8082-4963-9D60-656D02E021DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -175,6 +175,10 @@ Global
 		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35CEA801-8082-4963-9D60-656D02E021DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35CEA801-8082-4963-9D60-656D02E021DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35CEA801-8082-4963-9D60-656D02E021DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35CEA801-8082-4963-9D60-656D02E021DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

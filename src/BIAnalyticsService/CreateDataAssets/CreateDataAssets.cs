@@ -59,13 +59,13 @@ public class CreateDataAssets
             _logger.LogError("Issue when getting episode from db. \nException: {ex}", ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
-        
+
         string nhsNumber = "1111111112";
 
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
         var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
         _logger.LogInformation("Requesting participant URL: {Url}",participantUrl);
-        
+
         Participant participant;
 
         try
@@ -117,12 +117,12 @@ public class CreateDataAssets
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
-    private (string screeningEpisodeUrl, string screeningProfileUrl) GetConfigurationUrls()
+    public (string screeningEpisodeUrl, string screeningProfileUrl) GetConfigurationUrls()
     {
         return (Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl"), Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl"));
     }
 
-    private async Task SendToCreateParticipantScreeningProfileAsync(Participant participant, string screeningProfileUrl)
+    public async Task SendToCreateParticipantScreeningProfileAsync(Participant participant, string screeningProfileUrl)
     {
         if (participant != null)
         {
@@ -163,7 +163,7 @@ public class CreateDataAssets
         }
     }
 
-    private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode, string screeningEpisodeUrl)
+    public async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode, string screeningEpisodeUrl)
     {
         if (episode != null)
         {
