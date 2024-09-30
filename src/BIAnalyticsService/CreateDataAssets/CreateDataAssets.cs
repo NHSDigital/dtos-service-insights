@@ -59,7 +59,7 @@ public class CreateDataAssets
             _logger.LogError("Issue when getting episode from db. \nException: {ex}", ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
-        
+
         string nhsNumber = "1111111112";
 
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
@@ -98,15 +98,8 @@ public class CreateDataAssets
 
         try
         {
-            // Log out useful debug information
-            _logger.LogInformation(screeningEpisodeUrl);
-            _logger.LogInformation(screeningProfileUrl);
-
-            // Send to downstream functions
             await SendToCreateParticipantScreeningEpisodeAsync(episode, screeningEpisodeUrl);
             await SendToCreateParticipantScreeningProfileAsync(participant, screeningProfileUrl);
-
-            _logger.LogInformation("Data processed successfully.");
         }
         catch (Exception ex)
         {
@@ -188,7 +181,7 @@ public class CreateDataAssets
                     OrganisationCode = episode.OrganisationId,
                     OrganisationName = String.Empty,
                     BatchId = episode.BatchId,
-                    RecordInsertDatetime = episode.RecordInsertDatetime
+                    RecordInsertDatetime = DateTime.Now.ToString()
                 };
 
                 string serializedParticipantScreeningEpisode = JsonSerializer.Serialize(screeningEpisode, new JsonSerializerOptions { WriteIndented = true });

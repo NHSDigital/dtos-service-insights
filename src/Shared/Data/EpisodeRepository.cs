@@ -20,11 +20,8 @@ public class EpisodeRepository : IEpisodeRepository
 
     public Episode GetEpisode(string episodeId)
     {
-        if (long.TryParse(episodeId, out var id))
-        {
-            return _dbContext.Episodes.Find(id);
-        }
+        return _dbContext.Episodes.Find(episodeId);
+        
         throw new ArgumentException("Invalid episode ID format.");
     }
-
 }
