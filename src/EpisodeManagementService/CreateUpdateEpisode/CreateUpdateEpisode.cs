@@ -52,12 +52,17 @@ public class CreateUpdateEpisode
                 _logger.LogInformation("UpdateEpisode function called successfully.");
                 return req.CreateResponse(HttpStatusCode.OK);
             }
-            else
+            else if (getEpisodeResponse.StatusCode == HttpStatusCode.NotFound)
             {
-                _logger.LogInformation("Episode {episodeId} does not exist and will be created.", episode.EpisodeId);
+                _logger.LogError("Episode {episodeId} does not exist and will be created.", episode.EpisodeId);
                 await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("CreateEpisode function called successfully.");
                 return req.CreateResponse(HttpStatusCode.OK);
+            }
+            else
+            {
+                _logger.LogError("Error occurred while checking episode existence. Status code: {statusCode}", getEpisodeResponse.StatusCode);
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
         }
         catch (Exception ex)
