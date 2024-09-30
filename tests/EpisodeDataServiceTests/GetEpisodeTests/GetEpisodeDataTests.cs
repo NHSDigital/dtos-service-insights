@@ -36,7 +36,7 @@ namespace NHS.ServiceInsights.Tests
             _mockRequest = _setupRequest.SetupGet(queryParam);
 
             // Act
-            var response = _function.Run(_mockRequest.Object);
+            var response = await _function.Run(_mockRequest.Object);
 
             // Assert
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
@@ -59,10 +59,10 @@ namespace NHS.ServiceInsights.Tests
             };
             _mockRequest = _setupRequest.SetupGet(queryParam);
 
-            _mockEpisodeRepository.Setup(repo => repo.GetEpisode("12345")).Returns((Episode)null);
+            _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync("12345")).ReturnsAsync((Episode)null);
 
             // Act
-            var response = _function.Run(_mockRequest.Object);
+            var response = await _function.Run(_mockRequest.Object);
 
             // Assert
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
@@ -90,10 +90,10 @@ namespace NHS.ServiceInsights.Tests
                 EpisodeId = "245395"
             };
 
-            _mockEpisodeRepository.Setup(repo => repo.GetEpisode("245395")).Returns(episode);
+            _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync("245395")).ReturnsAsync(episode);
 
             // Act
-            var response = _function.Run(_mockRequest.Object);
+            var response = await _function.Run(_mockRequest.Object);
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -120,11 +120,11 @@ namespace NHS.ServiceInsights.Tests
             };
             _mockRequest = _setupRequest.SetupGet(queryParam);
 
-            _mockEpisodeRepository.Setup(repo => repo.GetEpisode("12345"))
+            _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync("12345"))
                 .Throws(new Exception("Database error"));
 
             // Act
-            var response = _function.Run(_mockRequest.Object);
+            var response = await _function.Run(_mockRequest.Object);
 
             // Assert
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
