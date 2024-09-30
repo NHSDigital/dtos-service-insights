@@ -51,7 +51,7 @@ public class UpdateEpisodeTests
                 It.IsAny<It.IsAnyType>(),
                 null,
                 (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-            Times.Exactly(3));
+            Times.Exactly(2));
         _mockEpisodeRepository.Verify(x => x.UpdateEpisode(It.IsAny<Episode>()), Times.Once);
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }
@@ -76,7 +76,7 @@ public class UpdateEpisodeTests
         // Assert
         _mockLogger.Verify(log =>
             log.Log(
-                LogLevel.Information,
+                LogLevel.Error,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((state, type) => state.ToString().Contains($"Episode {episode.EpisodeId} not found.")),
                 null,
