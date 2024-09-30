@@ -5,7 +5,6 @@ using NHS.MESH.Client.Models;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.MeshIntegrationService;
-using NHS.ServiceInsights.Tests.BSSelectIntegrationTests;
 
 namespace NHS.ServiceInsights.MeshIntegrationServiceTests;
 [TestClass]
