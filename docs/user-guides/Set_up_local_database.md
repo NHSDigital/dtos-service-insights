@@ -91,6 +91,8 @@ If the Podman container stops shortly after starting then try:
     podman machine start
     ```
 
+- Recreating the Podman container
+
 - Allocating extra resources to the Podman virtual machine
 
 - Uninstalling Docker Desktop if it is installed
