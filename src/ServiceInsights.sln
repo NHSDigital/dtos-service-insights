@@ -51,8 +51,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiveDataTests", "..\test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateParticipantTests", "..\tests\ParticipantManagementServiceTests\UpdateParticipantTests\UpdateParticipantTests.csproj", "{F7965884-3F6B-4505-8924-321895EE4512}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveTransformedDataTests", "..\tests\AnalyticsDataServiceTests\SaveTransformedDataTests.csproj", "{2C891FA4-74EB-425A-8E9E-FB69E2C49F74}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeDataTests", "..\tests\EpisodeDataServiceTests\GetEpisodeTests\GetEpisodeDataTests.csproj", "{85B06FE6-DF2C-4C19-8969-B3D0A33719EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveDataTests", "..\tests\BIAnalyticsServiceTests\RetrieveDataTests.csproj", "{5C6B2030-0BBF-49EC-A8D7-C6E9B56E6119}"
@@ -61,9 +59,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BIAnalyticsService", "BIAna
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveData", "BIAnalyticsService\RetrieveData\RetrieveData.csproj", "{052722A8-E6DB-409B-95B0-19146D848586}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalyticsDataService", "AnalyticsDataService", "{099AB6A8-8ECE-4BEB-9DDF-5FEA0E1D44FB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BIAnalyticsDataService", "BIAnalyticsDataService", "{4015B40A-C9B6-47B9-9758-67DF6C9B99D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveTransformedData", "AnalyticsDataService\SaveTransformedData\SaveTransformedData.csproj", "{C7407ADD-C5DF-489C-826E-726F486ACF32}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningEpisode", "BIAnalyticsDataService\CreateParticipantScreeningEpisode\CreateParticipantScreeningEpisode.csproj", "{3B36D188-0E89-4AFD-8154-E867E2CA942B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningEpisodeTests", "..\tests\BIAnalyticsDataServiceTests\CreateParticipantScreeningEpisodeTests\CreateParticipantScreeningEpisodeTests.csproj", "{887B420F-EB4F-4A46-8240-D78A3A697DD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningProfileTests", "..\tests\BIAnalyticsDataServiceTests\CreateParticipantScreeningProfileTests\CreateParticipantScreeningProfileTests.csproj", "{0E427D98-951C-4EA4-8B86-8043E8E4F5E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningProfile", "BIAnalyticsDataService\CreateParticipantScreeningProfile\CreateParticipantScreeningProfile.csproj", "{11157BC7-7617-482B-88EB-BEB69E258C1B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dotnet-mesh-client", "dotnet-mesh-client", "{7A119A5C-EAEA-4C9C-8502-E50DAD38ED18}"
 EndProject
@@ -75,18 +79,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHS.Mesh.Client", "Shared\d
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MeshIntegrationService", "MeshIntegrationService", "{4CBE2AE3-2FFC-46BE-8727-0B128F849495}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveMeshFile", "MeshIntegrationService\RetrieveMeshFile\RetrieveMeshFile.csproj", "{DB295F89-199F-4951-B26E-35E256761FB4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveMeshFileTests", "..\tests\MeshIntegrationServiceTests\RetrieveMeshFileTests\RetrieveMeshFileTests.csproj", "{D9E121BD-96EE-41D4-BD1A-1B8FF9C5E251}"
 EndProject
-
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{EFF39066-513A-4054-8347-2E43958476A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -177,10 +175,6 @@ Global
 		{D9E121BD-96EE-41D4-BD1A-1B8FF9C5E251}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9E121BD-96EE-41D4-BD1A-1B8FF9C5E251}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9E121BD-96EE-41D4-BD1A-1B8FF9C5E251}.Release|Any CPU.Build.0 = Release|Any CPU
-		{721BD0E2-E4EB-4FE4-ACAE-BAE55E40F423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{721BD0E2-E4EB-4FE4-ACAE-BAE55E40F423}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{721BD0E2-E4EB-4FE4-ACAE-BAE55E40F423}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{721BD0E2-E4EB-4FE4-ACAE-BAE55E40F423}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1250A0EC-A134-4D8D-BB2F-6DE8EDC7E571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1250A0EC-A134-4D8D-BB2F-6DE8EDC7E571}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1250A0EC-A134-4D8D-BB2F-6DE8EDC7E571}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -193,10 +187,25 @@ Global
 		{052722A8-E6DB-409B-95B0-19146D848586}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{052722A8-E6DB-409B-95B0-19146D848586}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{052722A8-E6DB-409B-95B0-19146D848586}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C7407ADD-C5DF-489C-826E-726F486ACF32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C7407ADD-C5DF-489C-826E-726F486ACF32}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C7407ADD-C5DF-489C-826E-726F486ACF32}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C7407ADD-C5DF-489C-826E-726F486ACF32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B36D188-0E89-4AFD-8154-E867E2CA942B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B36D188-0E89-4AFD-8154-E867E2CA942B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B36D188-0E89-4AFD-8154-E867E2CA942B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B36D188-0E89-4AFD-8154-E867E2CA942B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{887B420F-EB4F-4A46-8240-D78A3A697DD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{887B420F-EB4F-4A46-8240-D78A3A697DD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{887B420F-EB4F-4A46-8240-D78A3A697DD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{887B420F-EB4F-4A46-8240-D78A3A697DD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E427D98-951C-4EA4-8B86-8043E8E4F5E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E427D98-951C-4EA4-8B86-8043E8E4F5E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E427D98-951C-4EA4-8B86-8043E8E4F5E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E427D98-951C-4EA4-8B86-8043E8E4F5E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11157BC7-7617-482B-88EB-BEB69E258C1B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EFF39066-513A-4054-8347-2E43958476A8} = {8BBD7332-93CD-4C28-878C-314BB44A6224}
@@ -216,6 +225,7 @@ Global
 		{95A4BD99-1495-4839-989F-1B1EB98AC912} = {6FA217EB-2D53-4BE7-B4CC-963591112210}
 		{DB295F89-199F-4951-B26E-35E256761FB4} = {4CBE2AE3-2FFC-46BE-8727-0B128F849495}
 		{052722A8-E6DB-409B-95B0-19146D848586} = {F0A4CB48-845E-4B4A-B6E6-4FF6AD88C758}
-		{C7407ADD-C5DF-489C-826E-726F486ACF32} = {099AB6A8-8ECE-4BEB-9DDF-5FEA0E1D44FB}
+		{3B36D188-0E89-4AFD-8154-E867E2CA942B} = {4015B40A-C9B6-47B9-9758-67DF6C9B99D6}
+		{11157BC7-7617-482B-88EB-BEB69E258C1B} = {4015B40A-C9B6-47B9-9758-67DF6C9B99D6}
 	EndGlobalSection
 EndGlobal
