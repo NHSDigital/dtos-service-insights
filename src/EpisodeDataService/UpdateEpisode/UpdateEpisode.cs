@@ -32,7 +32,6 @@ public class UpdateEpisode
                 var postData = reader.ReadToEnd();
                 episode = JsonSerializer.Deserialize<Episode>(postData);
                 _logger.LogInformation("Request to update episode {episodeId} received.", episode.EpisodeId);
-                _logger.LogInformation("PostData: {postData}", postData);
             }
         }
         catch
@@ -60,12 +59,11 @@ public class UpdateEpisode
                 existingEpisode.EndCodeLastUpdated = episode.EndCodeLastUpdated;
                 existingEpisode.OrganisationId = episode.OrganisationId;
                 existingEpisode.BatchId = episode.BatchId;
-                existingEpisode.RecordInsertDatetime = episode.RecordInsertDatetime;
-                existingEpisode.RecordUpdateDatetime = episode.RecordUpdateDatetime;
+                existingEpisode.RecordUpdateDatetime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 try
                 {
-                    _episodeRepository.UpdateEpisode(existingEpisode);
+                    await _episodeRepository.UpdateEpisode(existingEpisode);
                     _logger.LogInformation("Episode {episodeId} updated successfully.", episode.EpisodeId);
                     return req.CreateResponse(HttpStatusCode.OK);
                 }
@@ -77,7 +75,7 @@ public class UpdateEpisode
             }
             else
             {
-                _logger.LogInformation("Episode {episodeId} not found.", episode.EpisodeId);
+                _logger.LogError("Episode {episodeId} not found.", episode.EpisodeId);
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
         }
