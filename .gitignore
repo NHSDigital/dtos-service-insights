@@ -27,9 +27,5 @@ obj
 # Local Settings
 local.settings.json
 
-
-# environment variables
-.env
-
 # Local Environment
 .env
