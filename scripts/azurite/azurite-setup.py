@@ -12,10 +12,17 @@ def setup_azurite():
 
     try:
         blob_service_client.create_container("inbound")
+        blob_service_client.create_container("sample-container")
         blob_service_client.create_container("rules")
         print("Blob containers created")
     except ResourceExistsError:
         print("Blob containers already exist")
+
+    # List all blob containers
+    print("\nListing Blob containers:")
+    containers = blob_service_client.list_containers()
+    for container in containers:
+        print(f"Container Name: {container['name']}, Last Modified: {container['last_modified']}")
 
     rules_client = blob_service_client.get_container_client("rules")
 
@@ -27,3 +34,4 @@ def setup_azurite():
     print("Rules uploaded to blob container")
 
 setup_azurite()
+

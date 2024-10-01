@@ -1,9 +1,9 @@
 name: service-insights
 
 # Define network
-# networks:
-#   app-network:
-#     driver: bridge
+networks:
+  app-network:
+    driver: bridge
 
 # Define services
 services:
@@ -26,21 +26,21 @@ services:
       dockerfile: ./azurite/Dockerfile
     depends_on:
       - azurite
-    environment:
-      - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
     # networks:
     #   - app-network
+    environment:
+      - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
 
   sql-edge:
     container_name: sql-edge
     image: mcr.microsoft.com/azure-sql-edge
+    networks:
+      - app-network
+    ports:
+      - "1433:1433"
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=${PASSWORD}
-    # networks:
-    #   - app-network
-    ports:
-      - "1433:1433"
     healthcheck:
       test:
         [
@@ -70,12 +70,12 @@ services:
   # Episode Data Service
   create-episode:
     container_name: create-episode
-    network_mode: host
+    # network_mode: host
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
     ports:
       - "6007:6007"
     environment:
@@ -84,12 +84,12 @@ services:
 
   get-episode:
     container_name: get-episode
-    network_mode: host
+    # network_mode: host
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
     ports:
       - "6070:6070"
     environment:
@@ -99,12 +99,12 @@ services:
   # Episode Integration Service
   receive-data:
     container_name: receive-data
-    network_mode: host
+    # network_mode: host
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
     ports:
       - "7071:7071"
     environment:
@@ -113,12 +113,12 @@ services:
 
   process-data:
     container_name: process-data
-    network_mode: host
+    # network_mode: host
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ProcessData/Dockerfile
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
     ports:
       - "7072:7072"
     environment:
@@ -129,12 +129,12 @@ services:
   # Episode Management Service
   create-update-episode:
     container_name: create-update-episode
-    network_mode: host
+    # network_mode: host
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
     ports:
       - "6006:6006"
     environment:
@@ -143,12 +143,12 @@ services:
 
   get-episode-mgmt:
     container_name: get-episode-mgmt
-    network_mode: host
+    # network_mode: host
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
     ports:
       - "6060:6060"
     environment:
@@ -158,12 +158,12 @@ services:
   # Participant Management Service
   get-participant:
     container_name: get-participant
-    network_mode: host
+    # network_mode: host
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
     ports:
       - "7073:7073"
     environment:
@@ -171,12 +171,12 @@ services:
 
   update-participant:
     container_name: update-participant
-    network_mode: host
+    # network_mode: host
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
     ports:
       - "7074:7074"
     environment:
