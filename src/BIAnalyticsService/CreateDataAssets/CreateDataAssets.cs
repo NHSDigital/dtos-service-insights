@@ -28,7 +28,7 @@ public class CreateDataAssets
 
         if (string.IsNullOrEmpty(episodeId))
         {
-            _logger.LogError("episodeId is null or empty");
+            _logger.LogError("episodeId is null or empty.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
@@ -65,7 +65,7 @@ public class CreateDataAssets
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
         var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
         _logger.LogInformation("Requesting participant URL: {Url}",participantUrl);
-
+        
         Participant participant;
 
         try
@@ -110,12 +110,12 @@ public class CreateDataAssets
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
-    public (string screeningEpisodeUrl, string screeningProfileUrl) GetConfigurationUrls()
+    private (string screeningEpisodeUrl, string screeningProfileUrl) GetConfigurationUrls()
     {
         return (Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl"), Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl"));
     }
 
-    public async Task SendToCreateParticipantScreeningProfileAsync(Participant participant, string screeningProfileUrl)
+    private async Task SendToCreateParticipantScreeningProfileAsync(Participant participant, string screeningProfileUrl)
     {
         if (participant != null)
         {
@@ -156,7 +156,7 @@ public class CreateDataAssets
         }
     }
 
-    public async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode, string screeningEpisodeUrl)
+    private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode, string screeningEpisodeUrl)
     {
         if (episode != null)
         {
