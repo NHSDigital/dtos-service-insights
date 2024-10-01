@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/mssql-tools
 
-COPY . .
+COPY ./database .
+
+RUN ls -lah
 
 ENTRYPOINT ["./db-setup-entrypoint.sh"]
