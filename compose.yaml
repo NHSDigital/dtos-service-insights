@@ -12,23 +12,24 @@ services:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite
     command: azurite --silent
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
+    network_mode: host
     ports:
       - "10000:10000"
 
   azurite-setup:
     container_name: azurite-setup
     build:
-      context: ./
+      context: ./scripts
       dockerfile: ./azurite/Dockerfile
-    # network_mode: host
+    network_mode: host
     depends_on:
       - azurite
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
 
   sql-edge:
     container_name: sql-edge
