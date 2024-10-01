@@ -65,33 +65,33 @@ services:
     # networks:
     #   - app-network
 
-  # Analytics Data Service
-  analytics-save-transformed-data:
-    container_name: analytics-save-transformed-data
-    # network_mode: host
-    build:
-      context: ./src/
-      dockerfile: ./AnalyticsDataService/SaveTransformedData/Dockerfile
-    networks:
-      - app-network
-    ports:
-      - "6008:6008"
-    environment:
-      - ASPNETCORE_URLS=http://*:6008
+  # # Analytics Data Service
+  # analytics-save-transformed-data:
+  #   container_name: analytics-save-transformed-data
+  #   # network_mode: host
+  #   build:
+  #     context: ./src/
+  #     dockerfile: ./AnalyticsDataService/SaveTransformedData/Dockerfile
+  #   networks:
+  #     - app-network
+  #   ports:
+  #     - "6008:6008"
+  #   environment:
+  #     - ASPNETCORE_URLS=http://*:6008
 
-  # BI Analytics Service
-  analytics-retrieve-data:
-    container_name: analytics-retrieve-data
-    # network_mode: host
-    build:
-      context: ./src/
-      dockerfile: ./BIAnalyticsService/RetrieveData/Dockerfile
-    networks:
-      - app-network
-    ports:
-      - "6009:6009"
-    environment:
-      - ASPNETCORE_URLS=http://*:6009
+  # # BI Analytics Service
+  # analytics-retrieve-data:
+  #   container_name: analytics-retrieve-data
+  #   # network_mode: host
+  #   build:
+  #     context: ./src/
+  #     dockerfile: ./BIAnalyticsService/RetrieveData/Dockerfile
+  #   networks:
+  #     - app-network
+  #   ports:
+  #     - "6009:6009"
+  #   environment:
+  #     - ASPNETCORE_URLS=http://*:6009
 
   # Episode Data Service
   create-episode:
