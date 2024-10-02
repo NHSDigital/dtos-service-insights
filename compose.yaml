@@ -99,15 +99,19 @@ services:
   # Episode Integration Service
   receive-data:
     container_name: receive-data
-    # network_mode: host
+    network_mode: host
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
-    networks:
-      - app-network
+    depends_on:
+    - azurite
+    # networks:
+    #  - app-network
     ports:
       - "7071:7071"
     environment:
+      - AzureWebJobsStorage=UseDevelopmentStorage=true
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7071
       - ProcessDataURL=http://process-data:7072/api/ProcessData
 
