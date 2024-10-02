@@ -104,7 +104,62 @@ public class CreateDataAssetsTests
         var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
         var url = $"{baseUrl}?EpisodeId={episodeId}";
 
-        var episodeJson = "{\"episode_id\": \"745396\"}";
+        var episodeJson = "{\"EpisodeId\":\"245" +
+                        "395\",\"ParticipantI" +
+                        "d\":null,\"Screening" +
+                        "Id\":null,\"NhsNumbe" +
+                        "r\":\"1111111112\"," +
+                        "\"EpisodeTypeId\":\"" +
+                        "C\",\"EpisodeOpenDat" +
+                        "e\":\"2000-01-01\"," +
+                        "\"AppointmentMadeFla" +
+                        "g\":\"TRUE\",\"First" +
+                        "OfferedAppointmentDa" +
+                        "te\":\"2000-01-01\"," +
+                        "\"ActualScreeningDat" +
+                        "e\":\"2000-01-01\"," +
+                        "\"EarlyRecallDate\":" +
+                        "null,\"CallRecallSta" +
+                        "tusAuthorisedBy\":\"" +
+                        "SCREENING_OFFICE\"," +
+                        "\"EndCodeId\":\"SC\"" +
+                        ",\"EndCodeLastUpdate" +
+                        "d\":\"2000-01-01\"," +
+                        "\"OrganisationId\":" +
+                        "\"PBO\",\"BatchId\":" +
+                        "\"ECHO\",\"RecordIns" +
+                        "ertDatetime\":null," +
+                        "\"RecordUpdateDateti" +
+                        "me\":null}";
+
+            var participantJson = "{\"nhs_number\":\"11" +
+                                "11111112\",\"next_te" +
+                                "st_due_date\":\"null" +
+                                "\",\"gp_practice_id" +
+                                "\":\"39\",\"subject_" +
+                                "status_code\":\"NORM" +
+                                "AL\",\"is_higher_ris" +
+                                "k\":\"false\",\"high" +
+                                "er_risk_next_test_du" +
+                                "e_date\":\"null\",\"" +
+                                "removal_reason\":\"n" +
+                                "ull\",\"removal_date" +
+                                "\":\"null\",\"bso_or" +
+                                "ganisation_id\":\"nu" +
+                                "ll\",\"early_recall_" +
+                                "date\":\"null\",\"la" +
+                                "test_invitation_date" +
+                                "\":\"null\",\"prefer" +
+                                "red_language\":\"nul" +
+                                "l\",\"higher_risk_re" +
+                                "ferral_reason_code\"" +
+                                ":\"null\",\"date_irr" +
+                                "adiated\":\"null\"," +
+                                "\"is_higher_risk_act" +
+                                "ive\":\"false\",\"ge" +
+                                "ne_code\":\"null\"," +
+                                "\"ntdd_calculation_m" +
+                                "ethod\":\"null\"}";
 
         _mockHttpRequestService
             .Setup(service => service.SendGet(url))
@@ -176,13 +231,46 @@ public class CreateDataAssetsTests
             ntdd_calculation_method = "null"
         };
 
+        //Act
+        string episodeId = "745396";
+
+        var queryParam = new NameValueCollection
+        {
+            { "EpisodeId", episodeId }
+        };
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
+        var url = $"{baseUrl}?EpisodeId={episodeId}";
+
+        var episodeJson = "{\"episode_id\": \"745396\"}";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(url))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(episodeJson, Encoding.UTF8, "application/json")
+            });
+
+        string nhsNumber = "1111111112";
+
+        var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
+        var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(participantUrl))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+
         // Act
-        //var (screeningEpisodeUrl, screeningProfileUrl) = _function.GetConfigurationUrls();
-        //await _function.SendToCreateParticipantScreeningEpisodeAsync(screeningEpisode, screeningEpisodeUrl);
-        //await _function.SendToCreateParticipantScreeningProfileAsync(screeningProfile, screeningProfileUrl);
+        var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        //_mockHttpRequestService.Verify(x => x.SendPost("CreateParticipantScreeningEpisodeUrl", It.IsAny<string>()), Times.Once);
-        //_mockHttpRequestService.Verify(x => x.SendPost("CreateParticipantScreeningProfileUrl", It.IsAny<string>()), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(url), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
+
+        //Assert
+        _mockHttpRequestService.Verify(x => x.SendPost("CreateParticipantScreeningEpisodeUrl", It.IsAny<string>()), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost("CreateParticipantScreeningProfileUrl", It.IsAny<string>()), Times.Once);
     }
 }
