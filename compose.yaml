@@ -109,7 +109,9 @@ services:
       - "7071:7071"
     environment:
       - ASPNETCORE_URLS=http://*:7071
+      - AzureWebJobsStorage=UseDevelopmentStorage=true
       - ProcessDataURL=http://process-data:7072/api/ProcessData
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
 
   process-data:
     container_name: process-data
