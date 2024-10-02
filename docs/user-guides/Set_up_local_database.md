@@ -95,7 +95,7 @@ If the Podman container stops shortly after starting then try:
 
 - Allocating extra resources to the Podman virtual machine
 
-- Uninstalling Docker Desktop if it is installed
+- Completely uninstalling Docker if it is installed
 
 - Reinstalling Podman
 
