@@ -21,6 +21,60 @@ public class CreateDataAssetsTests
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
+    private string episodeJson = "{\"EpisodeId\":\"245395\",\"ParticipantId\":\"123\",\"ScreeningId\":\"123\",\"NhsNumber\":\"1111111112\",\"EpisodeTypeId\":\"C\",\"EpisodeOpenDate\":\"2000-01-01\"," +
+                        "\"AppointmentMadeFlag\":\"TRUE\",\"FirstOfferedAppointmentDate\":\"2000-01-01\",\"ActualScreeningDate\":\"2000-01-01\",\"EarlyRecallDate\":\"2000-01-01\",\"CallRecallStatusAuthorisedBy\":\"" +
+                        "SCREENING_OFFICE\",\"EndCodeId\":\"SC\",\"EndCodeLastUpdated\":\"2000-01-01\",\"OrganisationId\":\"PBO\",\"BatchId\":\"ECHO\",\"RecordInsertDatetime\":\"2000-01-01\",\"RecordUpdateDatetime\":\"2000-01-01\"}";
+
+    private string participantJson = "{\"nhs_number\":\"1111111112\",\"next_test_due_date\":\"2000-01-01\",\"gp_practice_id\":\"39\",\"subject_status_code\":\"NORMAL\",\"is_higher_risk\":\"false\",\"higher_risk_next_test_du" +
+                                "e_date\":\"2000-01-01\",\"removal_reason\":\"reason\",\"removal_date\":\"2000-01-01\",\"bso_organisation_id\":\"00002\",\"early_recall_date\":\"2000-01-01\",\"latest_invitation_date\":\"2000-01-01\",\"prefer" +
+                                "red_language\":\"english\",\"higher_risk_referral_reason_code\":\"code\",\"date_irradiated\":\"2000-01-01\",\"is_higher_risk_active\":\"false\",\"gene_code\":\"geneCode\",\"ntdd_calculation_method\":\"method\"}";
+
+    
+    private ParticipantScreeningEpisode screeningEpisodeepisode = new ParticipantScreeningEpisode
+    {
+        EpisodeId = "245395",
+        ScreeningName = "",
+        NhsNumber = "1111111112",
+        EpisodeType = "C",
+        EpisodeTypeDescription = "",
+        EpisodeOpenDate = "2000-01-01",
+        AppointmentMadeFlag = "TRUE",
+        FirstOfferedAppointmentDate = "2000-01-01",
+        ActualScreeningDate = "2000-01-01",
+        EarlyRecallDate = "2000-01-01",
+        CallRecallStatusAuthorisedBy = "SCREENING_OFFICE",
+        EndCode = "SC",
+        EndCodeDescription = "",
+        EndCodeLastUpdated = "2000-01-01",
+        OrganisationCode = "PBO",
+        OrganisationName = "",
+        BatchId = "ECHO",
+        RecordInsertDatetime = "2000-01-01"
+    };
+
+    private ParticipantScreeningProfile screeningProfile = new ParticipantScreeningProfile
+    {
+        NhsNumber = "1111111112",
+        ScreeningName = "",
+        PrimaryCareProvider = "39",
+        PreferredLanguage = "english",
+        ReasonForRemoval = "reason",
+        ReasonForRemovalDt = "2000-01-01",
+        NextTestDueDate = "2000-01-01",
+        NextTestDueDateCalculationMethod = "method",
+        ParticipantScreeningStatus = "NORMAL",
+        ScreeningCeasedReason = "",
+        IsHigherRisk = "false",
+        IsHigherRiskActive = "false",
+        HigherRiskNextTestDueDate = "2000-01-01",
+        HigherRiskReferralReasonCode = "code",
+        HrReasonCodeDescription = "",
+        DateIrradiated = "2000-01-01",
+        GeneCode = "geneCode",
+        GeneCodeDescription = "",
+        RecordInsertDatetime = ""
+    };
+   
     public CreateDataAssetsTests()
     {
 
@@ -58,7 +112,7 @@ public class CreateDataAssetsTests
     }
 
     [TestMethod]
-    public async Task Run_ShouldReturnInternalServerError_WhenExceptionIsThrown()
+    public async Task Run_ShouldReturnInternalServerError_WhenExceptionIsThrownOnCallToGetEpisode()
     {
         // Arrange
         var queryParam = new NameValueCollection
@@ -67,11 +121,11 @@ public class CreateDataAssetsTests
         };
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var url = "http://localhost:6060/api/GetEpisode?EpisodeId=745396";
+        var getEpisodeUrl = "http://localhost:6060/api/GetEpisode?EpisodeId=745396";
 
         _mockHttpRequestService
-            .Setup(service => service.SendGet(url))
-            .ThrowsAsync(new HttpRequestException("System.Net.Http.HttpRequestException."));
+            .Setup(service => service.SendGet(getEpisodeUrl))
+            .ThrowsAsync(new HttpRequestException("System.Net.Http.HttpRequestException"));
 
         // Act
         var response = await _function.Run(_mockRequest.Object);
@@ -87,9 +141,8 @@ public class CreateDataAssetsTests
             Times.Once);
     }
 
-
     [TestMethod]
-    public async Task RetrieveData_MakesExpectedHttpRequestsToUrls()
+    public async Task Run_ShouldReturnInternalServerError_WhenExceptionIsThrownOnCallToGetParticipant()
     {
         // Arrange
         string episodeId = "745396";
@@ -101,137 +154,40 @@ public class CreateDataAssetsTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-        var url = $"{baseUrl}?EpisodeId={episodeId}";
-
-        var episodeJson = "{\"EpisodeId\":\"245" +
-                        "395\",\"ParticipantI" +
-                        "d\":null,\"Screening" +
-                        "Id\":null,\"NhsNumbe" +
-                        "r\":\"1111111112\"," +
-                        "\"EpisodeTypeId\":\"" +
-                        "C\",\"EpisodeOpenDat" +
-                        "e\":\"2000-01-01\"," +
-                        "\"AppointmentMadeFla" +
-                        "g\":\"TRUE\",\"First" +
-                        "OfferedAppointmentDa" +
-                        "te\":\"2000-01-01\"," +
-                        "\"ActualScreeningDat" +
-                        "e\":\"2000-01-01\"," +
-                        "\"EarlyRecallDate\":" +
-                        "null,\"CallRecallSta" +
-                        "tusAuthorisedBy\":\"" +
-                        "SCREENING_OFFICE\"," +
-                        "\"EndCodeId\":\"SC\"" +
-                        ",\"EndCodeLastUpdate" +
-                        "d\":\"2000-01-01\"," +
-                        "\"OrganisationId\":" +
-                        "\"PBO\",\"BatchId\":" +
-                        "\"ECHO\",\"RecordIns" +
-                        "ertDatetime\":null," +
-                        "\"RecordUpdateDateti" +
-                        "me\":null}";
-
-            var participantJson = "{\"nhs_number\":\"11" +
-                                "11111112\",\"next_te" +
-                                "st_due_date\":\"null" +
-                                "\",\"gp_practice_id" +
-                                "\":\"39\",\"subject_" +
-                                "status_code\":\"NORM" +
-                                "AL\",\"is_higher_ris" +
-                                "k\":\"false\",\"high" +
-                                "er_risk_next_test_du" +
-                                "e_date\":\"null\",\"" +
-                                "removal_reason\":\"n" +
-                                "ull\",\"removal_date" +
-                                "\":\"null\",\"bso_or" +
-                                "ganisation_id\":\"nu" +
-                                "ll\",\"early_recall_" +
-                                "date\":\"null\",\"la" +
-                                "test_invitation_date" +
-                                "\":\"null\",\"prefer" +
-                                "red_language\":\"nul" +
-                                "l\",\"higher_risk_re" +
-                                "ferral_reason_code\"" +
-                                ":\"null\",\"date_irr" +
-                                "adiated\":\"null\"," +
-                                "\"is_higher_risk_act" +
-                                "ive\":\"false\",\"ge" +
-                                "ne_code\":\"null\"," +
-                                "\"ntdd_calculation_m" +
-                                "ethod\":\"null\"}";
+        var baseGetEpisodeUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
+        var getEpisodeUrl = $"{baseGetEpisodeUrl}?EpisodeId={episodeId}";
 
         _mockHttpRequestService
-            .Setup(service => service.SendGet(url))
+            .Setup(service => service.SendGet(getEpisodeUrl))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(episodeJson, Encoding.UTF8, "application/json")
             });
 
-        string nhsNumber = "1111111112";
-
-        var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
-        var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
+        var getParticipantUrl = "http://localhost:6061/api/GetParticipant?nhs_number=1111111112";
 
         _mockHttpRequestService
-            .Setup(service => service.SendGet(participantUrl))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+            .Setup(service => service.SendGet(getParticipantUrl))
+            .ThrowsAsync(new HttpRequestException("System.Net.Http.HttpRequestException"));
 
         // Act
-        var result = await _function.Run(_mockRequest.Object);
+        var response = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _mockHttpRequestService.Verify(x => x.SendGet(url), Times.Once);
-        _mockHttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+        _mockLogger.Verify(log => log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Issue when getting participant from db.")),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
     }
 
     [TestMethod]
     public async Task CreateDataAssets_ShouldSendEpisodeAndProfileToDownstreamFunctions()
     {
         // Arrange
-        var screeningEpisode = new Episode
-        {
-            EpisodeId = Guid.NewGuid().ToString(),
-            ParticipantId = "test",
-            ScreeningId = "test",
-            NhsNumber = "1111111110",
-            EpisodeTypeId = "D",
-            EpisodeOpenDate = null,
-            AppointmentMadeFlag = "TRUE",
-            FirstOfferedAppointmentDate = "2000-01-02",
-            ActualScreeningDate = "2000-01-02",
-            EarlyRecallDate = "NULL",
-            CallRecallStatusAuthorisedBy = "SCREENING_OFFICE",
-            EndCodeId = "DC",
-            EndCodeLastUpdated = "2000-01-02",
-            OrganisationId = "PCO",
-            BatchId = "ECHO",
-            RecordInsertDatetime = "NULL",
-            RecordUpdateDatetime = "NULL"
-        };
-
-        var screeningProfile = new Participant
-        {
-            nhs_number = Guid.NewGuid().ToString(),
-            next_test_due_date = null,
-            gp_practice_id = null,
-            subject_status_code = "null",
-            is_higher_risk = "null",
-            higher_risk_next_test_due_date = null,
-            removal_reason = "null",
-            removal_date = "null",
-            bso_organisation_id = "NORMAL",
-            early_recall_date = null,
-            latest_invitation_date = "false",
-            preferred_language = "false",
-            higher_risk_referral_reason_code = "null",
-            date_irradiated = "null",
-            is_higher_risk_active = null,
-            gene_code = "null",
-            ntdd_calculation_method = "null"
-        };
-
-        //Act
         string episodeId = "745396";
 
         var queryParam = new NameValueCollection
@@ -241,13 +197,11 @@ public class CreateDataAssetsTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-        var url = $"{baseUrl}?EpisodeId={episodeId}";
-
-        var episodeJson = "{\"episode_id\": \"745396\"}";
+        var baseGetEpisodeUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
+        var getEpisodeUrl = $"{baseGetEpisodeUrl}?EpisodeId={episodeId}";
 
         _mockHttpRequestService
-            .Setup(service => service.SendGet(url))
+            .Setup(service => service.SendGet(getEpisodeUrl))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(episodeJson, Encoding.UTF8, "application/json")
@@ -260,17 +214,19 @@ public class CreateDataAssetsTests
 
         _mockHttpRequestService
             .Setup(service => service.SendGet(participantUrl))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(participantJson, Encoding.UTF8, "application/json")
+            });
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _mockHttpRequestService.Verify(x => x.SendGet(url), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(getEpisodeUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
-
-        //Assert
-        _mockHttpRequestService.Verify(x => x.SendPost("CreateParticipantScreeningEpisodeUrl", It.IsAny<string>()), Times.Once);
-        _mockHttpRequestService.Verify(x => x.SendPost("CreateParticipantScreeningProfileUrl", It.IsAny<string>()), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost(Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl"), It.IsAny<string>()), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost(Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl"), It.IsAny<string>()), Times.Once);
+        Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }
 }
