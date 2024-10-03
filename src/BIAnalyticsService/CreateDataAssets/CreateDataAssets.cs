@@ -65,7 +65,7 @@ public class CreateDataAssets
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
         var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
         _logger.LogInformation("Requesting participant URL: {Url}",participantUrl);
-        
+
         Participant participant;
 
         try
