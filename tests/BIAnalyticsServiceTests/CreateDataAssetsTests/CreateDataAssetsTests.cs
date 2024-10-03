@@ -28,52 +28,6 @@ public class CreateDataAssetsTests
     private string participantJson = "{\"nhs_number\":\"1111111112\",\"next_test_due_date\":\"2000-01-01\",\"gp_practice_id\":\"39\",\"subject_status_code\":\"NORMAL\",\"is_higher_risk\":\"false\",\"higher_risk_next_test_du" +
                                 "e_date\":\"2000-01-01\",\"removal_reason\":\"reason\",\"removal_date\":\"2000-01-01\",\"bso_organisation_id\":\"00002\",\"early_recall_date\":\"2000-01-01\",\"latest_invitation_date\":\"2000-01-01\",\"prefer" +
                                 "red_language\":\"english\",\"higher_risk_referral_reason_code\":\"code\",\"date_irradiated\":\"2000-01-01\",\"is_higher_risk_active\":\"false\",\"gene_code\":\"geneCode\",\"ntdd_calculation_method\":\"method\"}";
-
-    
-    private ParticipantScreeningEpisode screeningEpisodeepisode = new ParticipantScreeningEpisode
-    {
-        EpisodeId = "245395",
-        ScreeningName = "",
-        NhsNumber = "1111111112",
-        EpisodeType = "C",
-        EpisodeTypeDescription = "",
-        EpisodeOpenDate = "2000-01-01",
-        AppointmentMadeFlag = "TRUE",
-        FirstOfferedAppointmentDate = "2000-01-01",
-        ActualScreeningDate = "2000-01-01",
-        EarlyRecallDate = "2000-01-01",
-        CallRecallStatusAuthorisedBy = "SCREENING_OFFICE",
-        EndCode = "SC",
-        EndCodeDescription = "",
-        EndCodeLastUpdated = "2000-01-01",
-        OrganisationCode = "PBO",
-        OrganisationName = "",
-        BatchId = "ECHO",
-        RecordInsertDatetime = "2000-01-01"
-    };
-
-    private ParticipantScreeningProfile screeningProfile = new ParticipantScreeningProfile
-    {
-        NhsNumber = "1111111112",
-        ScreeningName = "",
-        PrimaryCareProvider = "39",
-        PreferredLanguage = "english",
-        ReasonForRemoval = "reason",
-        ReasonForRemovalDt = "2000-01-01",
-        NextTestDueDate = "2000-01-01",
-        NextTestDueDateCalculationMethod = "method",
-        ParticipantScreeningStatus = "NORMAL",
-        ScreeningCeasedReason = "",
-        IsHigherRisk = "false",
-        IsHigherRiskActive = "false",
-        HigherRiskNextTestDueDate = "2000-01-01",
-        HigherRiskReferralReasonCode = "code",
-        HrReasonCodeDescription = "",
-        DateIrradiated = "2000-01-01",
-        GeneCode = "geneCode",
-        GeneCodeDescription = "",
-        RecordInsertDatetime = ""
-    };
    
     public CreateDataAssetsTests()
     {
