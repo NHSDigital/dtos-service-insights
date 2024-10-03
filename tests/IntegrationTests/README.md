@@ -4,7 +4,7 @@ Welcome to the Integration Tests project. This project will contain automated te
 
 ## Project Structure
 
-```
+```bash
 IntegrationTests/
 ├── Config/
 │   └── appsettings.json
@@ -88,7 +88,7 @@ IntegrationTests/
 
 9. **Start Azurite**
 
-   command shift + p to open command pallete on Mac
+   command shift + p to open command palette on Mac
    type 'azurite'
    ensure you have started Azurite Table Service, Azurite Queue Service and Azurite Blob Service
 
@@ -99,19 +99,19 @@ IntegrationTests/
 
 12. **Start Azure Functions Locally**
 
-```bash
-cd into each function folder and run 'func start'
-```
+    ```bash
+    cd into each function folder and run 'func start'
+    ```
 
 13. **Run the Tests**
 
-```bash
-dotnet test
-```
+    ```bash
+    dotnet test
+    ```
 
 ## Project Components
 
-### Config
+### Configuration
 
 - **appsettings.json**
 
@@ -121,7 +121,7 @@ dotnet test
 
 - **AppSettings.cs**
 
-  - Config class which represents your `appsettings.json`.
+  - Configuration class which represents your `appsettings.json`.
 
 - **AzureFunctionRetryHelper.cs**
 
