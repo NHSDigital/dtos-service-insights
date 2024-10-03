@@ -1,37 +1,54 @@
-"""Script that automatically sets up azurite with the required blob containers and files.
-    Used in the azurite-setup container but can also be ran outside of the container."""
-
 import os
-from azure.storage.blob import BlobServiceClient, BlobClient
-from azure.core.exceptions import ResourceExistsError
+import logging
+from azure.storage.blob import BlobServiceClient
+from azure.core.exceptions import ResourceExistsError, AzureError
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def setup_azurite():
-    connect_str = os.getenv("AZURITE_CONNECTION_STRING")
-    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
-    print("Connected to Azurite")
-
     try:
-        blob_service_client.create_container("inbound")
-        blob_service_client.create_container("sample-container")
-        blob_service_client.create_container("rules")
-        print("Blob containers created")
-    except ResourceExistsError:
-        print("Blob containers already exist")
+        connect_str = os.getenv("AZURITE_CONNECTION_STRING")
+        if not connect_str:
+            logging.error("AZURITE_CONNECTION_STRING is not set.")
+            return
 
-    # List all blob containers
-    print("\nListing Blob containers:")
-    containers = blob_service_client.list_containers()
-    for container in containers:
-        print(f"Container Name: {container['name']}, Last Modified: {container['last_modified']}")
+        # Log the full connection string
+        logging.info(f"AZURITE_CONNECTION_STRING: {connect_str}")
 
-    rules_client = blob_service_client.get_container_client("rules")
+        # Establish connection to Azurite
+        try:
+            blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+            logging.info("Successfully connected to Azurite.")
 
-    for file in os.listdir("../../rules"):
-        blob_client = rules_client.get_blob_client(file)
-        with open(f"../../rules/{file}", "rb") as data:
-            blob_client.upload_blob(data)
+            # Log the Blob Service URL
+            logging.info(f"Blob Service URL: {blob_service_client.url}")
+        except AzureError as e:
+            logging.error(f"Failed to connect to Azurite: {str(e)}")
+            return
 
-    print("Rules uploaded to blob container")
+        # Create blob containers
+        try:
+            blob_service_client.create_container("inbound")
+            blob_service_client.create_container("sample-container")
+            logging.info("Blob containers created successfully.")
+        except ResourceExistsError:
+            logging.info("Blob containers already exist.")
+        except AzureError as e:
+            logging.error(f"Error while creating blob containers: {str(e)}")
+            return
 
+        # List all blob containers
+        logging.info("Listing Blob containers:")
+        try:
+            containers = blob_service_client.list_containers()
+            for container in containers:
+                logging.info(f"Container Name: {container['name']}, Last Modified: {container['last_modified']}")
+        except AzureError as e:
+            logging.error(f"Error while listing blob containers: {str(e)}")
+
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {str(e)}")
+
+# Run the setup
 setup_azurite()
-

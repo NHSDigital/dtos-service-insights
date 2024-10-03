@@ -10,24 +10,26 @@ services:
   # External Dependencies
   azurite:
     container_name: azurite
-    # network_mode: host
+    network_mode: host
     image: mcr.microsoft.com/azure-storage/azurite
     command: azurite --silent
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
     ports:
       - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
 
   azurite-setup:
     container_name: azurite-setup
-    # network_mode: host
+    network_mode: host
     build:
       context: ./scripts
       dockerfile: ./azurite/Dockerfile
     depends_on:
       - azurite
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
 
