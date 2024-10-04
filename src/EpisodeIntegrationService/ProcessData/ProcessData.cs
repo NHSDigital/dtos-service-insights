@@ -6,6 +6,9 @@ using Microsoft.Azure.Functions.Worker.Http;
 using System.Text.Json;
 using System.Net;
 using System.Text;
+using System.Data.Common;
+using CsvHelper;
+using System.Globalization;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 public class ProcessData
@@ -24,62 +27,60 @@ public class ProcessData
     {
         _logger.LogInformation("C# HTTP trigger function received a request.");
 
-        string requestBody = await ReadRequestBodyAsync(req);
-        if (requestBody == null)
-        {
-            return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "Error reading request body");
-        }
-
-        _logger.LogInformation($"Request body: {requestBody}");
-
-        var data = await DeserializeDataAsync(requestBody);
-        if (data == null)
-        {
-            return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid JSON format or no data received");
-        }
-
-        _logger.LogInformation($"Deserialized data: {JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true })}");
-
         var (episodeUrl, participantUrl) = GetConfigurationUrls();
         if (string.IsNullOrEmpty(episodeUrl) || string.IsNullOrEmpty(participantUrl))
         {
             return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
         }
+         
+        string fileName = req.Query["FileName"]; 
+        
+        if(fileName.StartsWith("episodes"))
+        {
+            var records = await DeserializeDataAsync<BssEpisode>(req.Body);
+            _logger.LogInformation($"Request body: {records}");
 
-        // Log out useful debug information
-        _logger.LogInformation(participantUrl);
-        _logger.LogInformation(episodeUrl);
+            if (records == null)
+            {
+                return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid csv file or no data received");
+            }
 
-        // Send to downstream functions
-        await ProcessParticipantDataAsync(data.Participants, participantUrl);
-        await ProcessEpisodeDataAsync(data.Episodes, episodeUrl);
+            await ProcessEpisodeDataAsync(records, participantUrl);
+        }
+        else if(fileName.StartsWith("subjects"))
+        {
+            var records = await DeserializeDataAsync<Participant>(req.Body);
+            _logger.LogInformation($"Request body: {records}");
+
+            if (records == null)
+            {
+                return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid csv file or no data received");
+            }
+
+            await ProcessParticipantDataAsync(records, participantUrl);
+        }
+        else
+        {
+            _logger.LogInformation("fileName is invalid. file name: " + fileName);
+        }
 
         _logger.LogInformation("Data processed successfully.");
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
-    private async Task<string> ReadRequestBodyAsync(HttpRequestData req)
+    private async Task<List<T>> DeserializeDataAsync<T>(Stream requestBody)
     {
         try
         {
-            using var reader = new StreamReader(req.Body);
-            return await reader.ReadToEndAsync();
+            using (var reader = new StreamReader(requestBody))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                var records = csv.GetRecords<T>().ToList();
+
+                return records;
+            }
         }
         catch (Exception ex)
-        {
-            _logger.LogError($"Error reading request body: {ex.Message}");
-            return null;
-        }
-    }
-
-    private async Task<DataPayLoad?> DeserializeDataAsync(string requestBody)
-    {
-        try
-        {
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return await JsonSerializer.DeserializeAsync<DataPayLoad>(new MemoryStream(Encoding.UTF8.GetBytes(requestBody)), options);
-        }
-        catch (JsonException ex)
         {
             _logger.LogError($"Deserialization error: {ex.Message}");
             return null;
@@ -162,14 +163,16 @@ public class ProcessData
 public class Participant
 {
     public string? nhs_number { get; set; }
+    public string? superseded_nhs_number { get; set; }
     public string? next_test_due_date { get; set; }
-    public string? gp_practice_id { get; set; }
+    public string? gp_practice_code { get; set; }
     public string? subject_status_code { get; set; }
     public string? is_higher_risk { get; set; }
     public string? higher_risk_next_test_due_date { get; set; }
+    public string? hr_recall_due_date { get; set; }
     public string? removal_reason { get; set; }
     public string? removal_date { get; set; }
-    public string? bso_organisation_id { get; set; }
+    public string? bso_organisation_code { get; set; }
     public string? early_recall_date { get; set; }
     public string? latest_invitation_date { get; set; }
     public string? preferred_language { get; set; }
@@ -178,11 +181,13 @@ public class Participant
     public string? is_higher_risk_active { get; set; }
     public string? gene_code { get; set; }
     public string? ntdd_calculation_method { get; set; }
+    public string? reason_for_ceasing_code { get; set; }
 }
 
 public class BssEpisode
 {
     public string episode_id { get; set; } = null!;
+    public string nhs_number { get; set; }
     public string? episode_type { get; set; }
     public string? episode_date { get; set; }
     public string? appointment_made { get; set; }
@@ -194,11 +199,7 @@ public class BssEpisode
     public string? end_code_last_updated { get; set; }
     public string? bso_organisation_code { get; set; }
     public string? bso_batch_id { get; set; }
-}
-
-
-public class DataPayLoad
-{
-    public List<BssEpisode> Episodes { get; set; } = new List<BssEpisode>();
-    public List<Participant> Participants { get; set; } = new List<Participant>();
+    public string? reason_closed_code { get; set; }
+    public string? end_point { get; set; }
+    public string? final_action_code { get; set; }
 }

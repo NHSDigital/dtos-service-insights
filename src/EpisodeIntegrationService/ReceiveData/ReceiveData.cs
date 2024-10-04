@@ -27,15 +27,9 @@ public class ReceiveData
         using (var reader = new StreamReader(myBlob))
         {
             var jsonData = reader.ReadToEnd();
-            if (IsValidJson(jsonData))
-            {
-                _logger.LogInformation("JSON is valid.");
-                await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("ProcessDataURL"), jsonData);
-            }
-            else
-            {
-                _logger.LogError("JSON is invalid.");
-            }
+
+            _logger.LogInformation("JSON is valid.");
+            await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("ProcessDataURL") + $"?FileName={name}", jsonData);
         }
     }
 
