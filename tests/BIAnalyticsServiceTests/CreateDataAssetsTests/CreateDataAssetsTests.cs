@@ -71,11 +71,11 @@ public class CreateDataAssetsTests
         // Arrange
         var queryParam = new NameValueCollection
         {
-            { "episodeId", "745396" }
+            { "episodeId", "245395" }
         };
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var getEpisodeUrl = "http://localhost:6060/api/GetEpisode?EpisodeId=745396";
+        var getEpisodeUrl = "http://localhost:6060/api/GetEpisode?EpisodeId=245395";
 
         _mockHttpRequestService
             .Setup(service => service.SendGet(getEpisodeUrl))
@@ -89,7 +89,7 @@ public class CreateDataAssetsTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Issue when getting episode from db.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Issue when getting episode from http://localhost:6060/api/GetEpisode?EpisodeId=245395. ")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
@@ -132,7 +132,7 @@ public class CreateDataAssetsTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Issue when getting participant from db.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Issue when getting participant from http://localhost:6061/api/GetParticipant?nhs_number=1111111112.")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
