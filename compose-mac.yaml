@@ -1,0 +1,189 @@
+name: service-insights
+
+# Define network
+networks:
+  app-network:
+    driver: bridge
+# Define services
+services:
+  # External Dependencies
+  azurite:
+    container_name: azurite
+    image: mcr.microsoft.com/azure-storage/azurite
+    # command: azurite --silent
+    command: azurite --blobHost 0.0.0.0 --blobPort 10000 --queueHost 0.0.0.0 --queuePort 10001 --tableHost 0.0.0.0 --tablePort 10002 --silent
+    networks:
+      - app-network
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+  azurite-setup:
+    container_name: azurite-setup
+    build:
+      context: ./scripts
+      dockerfile: ./azurite/Dockerfile
+    depends_on:
+      - azurite
+    networks:
+      - app-network
+    environment:
+      - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
+  sql-edge:
+    container_name: sql-edge
+    image: mcr.microsoft.com/azure-sql-edge
+    networks:
+      - app-network
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${PASSWORD}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -v --silent 127.0.0.1:1433 --stderr - | grep -q 'Empty reply from server'",
+        ]
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
+  db-setup:
+    container_name: db-setup
+    build:
+      context: ./scripts/
+      dockerfile: ./database/Dockerfile
+    depends_on:
+      sql-edge:
+        condition: service_healthy
+    networks:
+      - app-network
+    environment:
+      - PASSWORD=${PASSWORD}
+      - DB_NAME=${DB_NAME}
+  # Episode Data Service
+  create-episode:
+    container_name: create-episode
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6007:6007"
+    environment:
+      - ASPNETCORE_URLS=http://*:6007
+      - ServiceInsightsDbConnectionString=Server=sql-edge,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+  get-episode:
+    container_name: get-episode
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6070:6070"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6070
+      - ServiceInsightsDbConnectionString=Server=sql-edge,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+  update-episode:
+    container_name: update-episode
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "7777:7777"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:7777
+      - ServiceInsightsDbConnectionString=Server=sql-edge,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+  # Episode Integration Service
+  receive-data:
+    container_name: receive-data
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
+    depends_on:
+      - azurite
+    networks:
+      - app-network
+    ports:
+      - "7071:7071"
+    environment:
+      # - AzureWebJobsStorage=UseDevelopmentStorage=true
+      - AzureWebJobsStorage=${AZURITE_CONNECTION_STRING}
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:7071
+      - ProcessDataURL=http://process-data:7072/api/ProcessData
+  process-data:
+    container_name: process-data
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeIntegrationService/ProcessData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "7072:7072"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:7072
+      - EpisodeManagementUrl=http://create-update-episode:6006/api/CreateUpdateEpisode
+      - ParticipantManagementUrl=http://update-participant:7074/api/UpdateParticipant
+  # Episode Management Service
+  create-update-episode:
+    container_name: create-update-episode
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6006:6006"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6006
+      - CreateEpisodeUrl=http://create-episode:6007/api/CreateEpisode
+      - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
+      - UpdateEpisodeUrl=http://update-episode:7777/api/UpdateEpisode
+  get-episode-mgmt:
+    container_name: get-episode-mgmt
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6060:6060"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6060
+      - GetEpisodeUrl=http://get-episode:6070/api/GetEpisode
+  # Participant Management Service
+  get-participant:
+    container_name: get-participant
+    build:
+      context: ./src/
+      dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "7073:7073"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:7073
+  update-participant:
+    container_name: update-participant
+    build:
+      context: ./src/
+      dockerfile: ./ParticipantManagementService/UpdateParticipant/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "7074:7074"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:7074
