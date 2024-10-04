@@ -18,10 +18,15 @@ public class EpisodeRepository : IEpisodeRepository
         _dbContext.SaveChanges();
     }
 
-    public Episode GetEpisode(string episodeId)
+    public async Task<Episode?> GetEpisodeAsync(string episodeId)
     {
-        return _dbContext.Episodes.Find(episodeId);
 
-        throw new ArgumentException("Invalid episode ID format.");
+        return await _dbContext.Episodes.FindAsync(episodeId);
+
+    }
+    public async Task UpdateEpisode(Episode episode)
+    {
+        _dbContext.Episodes.Update(episode);
+        await _dbContext.SaveChangesAsync();
     }
 }

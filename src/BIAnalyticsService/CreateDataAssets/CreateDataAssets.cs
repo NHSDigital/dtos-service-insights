@@ -33,15 +33,14 @@ public class CreateDataAssets
         }
 
         var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-        var GetEpisodeUrl = $"{baseUrl}?EpisodeId={episodeId}";
-        _logger.LogInformation("Requesting episode URL: {Url}", GetEpisodeUrl);
+        var getEpisodeUrl = $"{baseUrl}?EpisodeId={episodeId}";
+        _logger.LogInformation("Requesting episode URL: {Url}", getEpisodeUrl);
 
-        string episodeJson;
         Episode episode;
 
         try
         {
-            var response = await _httpRequestService.SendGet(GetEpisodeUrl);
+            var response = await _httpRequestService.SendGet(getEpisodeUrl);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -49,6 +48,7 @@ public class CreateDataAssets
                 return req.CreateResponse(response.StatusCode);
             }
 
+            string episodeJson;
             episodeJson = await response.Content.ReadAsStringAsync();
             _logger.LogInformation("Episode data retrieved");
             episode = JsonSerializer.Deserialize<Episode>(episodeJson);
@@ -56,7 +56,7 @@ public class CreateDataAssets
 
         catch (Exception ex)
         {
-            _logger.LogError("Issue when getting episode from db. \nException: {ex}", ex);
+            _logger.LogError("Issue when getting episode from {getEpisodeUrl}. \nException: {ex}", getEpisodeUrl ,ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
@@ -83,24 +83,22 @@ public class CreateDataAssets
 
             participant = JsonSerializer.Deserialize<Participant>(participantJson);
         }
+
         catch (Exception ex)
         {
-            _logger.LogError("Issue when getting participant from db. \nException: {ex}", ex);
+            _logger.LogError("Issue when getting participant from {participantUrl}. \nException: {ex}", participantUrl, ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
-        var (screeningEpisodeUrl, screeningProfileUrl) = GetConfigurationUrls();
-        if (string.IsNullOrEmpty(screeningEpisodeUrl) || string.IsNullOrEmpty(screeningProfileUrl))
-        {
-            _logger.LogError("One or both URLs are not configured. \nUrl:{screeningProfileUrl}\nUrl:{screeningEpisodeUrl}", participantUrl, screeningEpisodeUrl);
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
-        }
+        var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
+        var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");
 
         try
         {
             await SendToCreateParticipantScreeningEpisodeAsync(episode, screeningEpisodeUrl);
             await SendToCreateParticipantScreeningProfileAsync(participant, screeningProfileUrl);
         }
+
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create episode or profile.");
@@ -110,89 +108,67 @@ public class CreateDataAssets
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
-    private (string screeningEpisodeUrl, string screeningProfileUrl) GetConfigurationUrls()
-    {
-        return (Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl"), Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl"));
-    }
-
     private async Task SendToCreateParticipantScreeningProfileAsync(Participant participant, string screeningProfileUrl)
     {
-        if (participant != null)
+        var screeningProfile = new ParticipantScreeningProfile
         {
-            _logger.LogInformation("Mapping participant profile data.");
+            NhsNumber = participant.nhs_number,
+            ScreeningName = String.Empty,
+            PrimaryCareProvider = String.Empty,
+            PreferredLanguage = participant.preferred_language,
+            ReasonForRemoval = participant.removal_reason,
+            ReasonForRemovalDt = String.Empty,
+            NextTestDueDate = participant.next_test_due_date,
+            NextTestDueDateCalculationMethod = participant.ntdd_calculation_method,
+            ParticipantScreeningStatus = participant.subject_status_code,
+            ScreeningCeasedReason = String.Empty,
+            IsHigherRisk = participant.is_higher_risk,
+            IsHigherRiskActive = participant.is_higher_risk_active,
+            HigherRiskNextTestDueDate = participant.higher_risk_next_test_due_date,
+            HigherRiskReferralReasonCode = participant.higher_risk_referral_reason_code,
+            HrReasonCodeDescription = String.Empty,
+            DateIrradiated = participant.date_irradiated,
+            GeneCode = participant.gene_code,
+            GeneCodeDescription = String.Empty,
+            RecordInsertDatetime = DateTime.Now.ToString()
+        };
 
-                var screeningProfile = new ParticipantScreeningProfile
-                {
-                    NhsNumber = participant.nhs_number,
-                    ScreeningName = String.Empty,
-                    PrimaryCareProvider = String.Empty,
-                    PreferredLanguage = participant.preferred_language,
-                    ReasonForRemoval = participant.removal_reason,
-                    ReasonForRemovalDt = String.Empty,
-                    NextTestDueDate = participant.next_test_due_date,
-                    NextTestDueDateCalculationMethod = participant.ntdd_calculation_method,
-                    ParticipantScreeningStatus = participant.subject_status_code,
-                    ScreeningCeasedReason = String.Empty,
-                    IsHigherRisk = participant.is_higher_risk,
-                    IsHigherRiskActive = participant.is_higher_risk_active,
-                    HigherRiskNextTestDueDate = participant.higher_risk_next_test_due_date,
-                    HigherRiskReferralReasonCode = participant.higher_risk_referral_reason_code,
-                    HrReasonCodeDescription = String.Empty,
-                    DateIrradiated = participant.date_irradiated,
-                    GeneCode = participant.gene_code,
-                    GeneCodeDescription = String.Empty,
-                    RecordInsertDatetime = DateTime.Now.ToString()
-                };
+        string serializedParticipantScreeningProfile = JsonSerializer.Serialize(screeningProfile);
 
-                string serializedParticipantScreeningProfile = JsonSerializer.Serialize(screeningProfile, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation($"Sending ParticipantScreeningProfile Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
 
-            _logger.LogInformation($"Sending ParticipantScreeningProfile Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
+        await _httpRequestService.SendPost(screeningProfileUrl, serializedParticipantScreeningProfile);
 
-            await _httpRequestService.SendPost(screeningProfileUrl, serializedParticipantScreeningProfile);
-        }
-        else
-        {
-            _logger.LogInformation("No profile data found.");
-        }
     }
 
     private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode, string screeningEpisodeUrl)
     {
-        if (episode != null)
+        var screeningEpisode = new ParticipantScreeningEpisode
         {
-            _logger.LogInformation("Processing episode data.");
+            EpisodeId = episode.EpisodeId,
+            ScreeningName = episode.ScreeningId,
+            NhsNumber= episode.NhsNumber,
+            EpisodeType = episode.EpisodeTypeId,
+            EpisodeTypeDescription = String.Empty,
+            EpisodeOpenDate = episode.EpisodeOpenDate,
+            AppointmentMadeFlag = episode.AppointmentMadeFlag,
+            FirstOfferedAppointmentDate = episode.FirstOfferedAppointmentDate,
+            ActualScreeningDate = episode.ActualScreeningDate,
+            EarlyRecallDate = episode.EarlyRecallDate,
+            CallRecallStatusAuthorisedBy = episode.CallRecallStatusAuthorisedBy,
+            EndCode = episode.EndCodeId,
+            EndCodeDescription = String.Empty,
+            EndCodeLastUpdated = episode.EndCodeLastUpdated,
+            OrganisationCode = episode.OrganisationId,
+            OrganisationName = String.Empty,
+            BatchId = episode.BatchId,
+            RecordInsertDatetime = DateTime.Now.ToString()
+        };
 
-                var screeningEpisode = new ParticipantScreeningEpisode
-                {
-                    EpisodeId = episode.EpisodeId,
-                    ScreeningName = episode.ScreeningId,
-                    NhsNumber= episode.NhsNumber,
-                    EpisodeType = episode.EpisodeTypeId,
-                    EpisodeTypeDescription = String.Empty,
-                    EpisodeOpenDate = episode.EpisodeOpenDate,
-                    AppointmentMadeFlag = episode.AppointmentMadeFlag,
-                    FirstOfferedAppointmentDate = episode.FirstOfferedAppointmentDate,
-                    ActualScreeningDate = episode.ActualScreeningDate,
-                    EarlyRecallDate = episode.EarlyRecallDate,
-                    CallRecallStatusAuthorisedBy = episode.CallRecallStatusAuthorisedBy,
-                    EndCode = episode.EndCodeId,
-                    EndCodeDescription = String.Empty,
-                    EndCodeLastUpdated = episode.EndCodeLastUpdated,
-                    OrganisationCode = episode.OrganisationId,
-                    OrganisationName = String.Empty,
-                    BatchId = episode.BatchId,
-                    RecordInsertDatetime = DateTime.Now.ToString()
-                };
+        string serializedParticipantScreeningEpisode = JsonSerializer.Serialize(screeningEpisode);
 
-                string serializedParticipantScreeningEpisode = JsonSerializer.Serialize(screeningEpisode, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation($"Sending ParticipantScreeningEpisode to {screeningEpisodeUrl}: {serializedParticipantScreeningEpisode}");
 
-                _logger.LogInformation($"Sending ParticipantScreeningEpisode to {screeningEpisodeUrl}: {serializedParticipantScreeningEpisode}");
-
-                await _httpRequestService.SendPost(screeningEpisodeUrl, serializedParticipantScreeningEpisode);
-        }
-        else
-        {
-            _logger.LogInformation("No episode data found.");
-        }
+        await _httpRequestService.SendPost(screeningEpisodeUrl, serializedParticipantScreeningEpisode);
     }
 }

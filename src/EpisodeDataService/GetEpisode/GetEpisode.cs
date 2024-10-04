@@ -21,7 +21,7 @@ public class GetEpisode
 
 
     [Function("GetEpisode")]
-    public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
     {
         string episodeId;
 
@@ -38,7 +38,7 @@ public class GetEpisode
 
         try
         {
-            Episode episode = _episodesRepository.GetEpisode(episodeId);
+            Episode episode = await _episodesRepository.GetEpisodeAsync(episodeId);
             if (episode == null)
             {
                 _logger.LogError("Episode not found.");
