@@ -114,7 +114,6 @@ services:
     ports:
       - "7071:7071"
     environment:
-      # - AzureWebJobsStorage=UseDevelopmentStorage=true
       - AzureWebJobsStorage=${AZURITE_CONNECTION_STRING}
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7071
