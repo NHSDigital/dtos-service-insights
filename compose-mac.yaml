@@ -11,6 +11,7 @@ services:
   azurite:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite
+    platform: linux/arm64
     # command: azurite --silent
     command: azurite --blobHost 0.0.0.0 --blobPort 10000 --queueHost 0.0.0.0 --queuePort 10001 --tableHost 0.0.0.0 --tablePort 10002 --silent
     networks:
@@ -19,20 +20,24 @@ services:
       - "10000:10000"
       - "10001:10001"
       - "10002:10002"
+
   azurite-setup:
     container_name: azurite-setup
     build:
       context: ./scripts
       dockerfile: ./azurite/Dockerfile
+    platform: linux/arm64
     depends_on:
       - azurite
     networks:
       - app-network
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
+
   sql-edge:
     container_name: sql-edge
     image: mcr.microsoft.com/azure-sql-edge
+    platform: linux/arm64
     networks:
       - app-network
     ports:
@@ -56,6 +61,7 @@ services:
     build:
       context: ./scripts/
       dockerfile: ./database/Dockerfile
+    platform: linux/arm64
     depends_on:
       sql-edge:
         condition: service_healthy
@@ -72,11 +78,13 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
+    platform: linux/arm64
     networks:
       - app-network
     ports:
       - "6007:6007"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://*:6007
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
@@ -85,11 +93,13 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
+    platform: linux/arm64
     networks:
       - app-network
     ports:
       - "6070:6070"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6070
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
@@ -99,11 +109,13 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
+    platform: linux/arm64
     networks:
       - app-network
     ports:
       - "7777:7777"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7777
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
@@ -114,6 +126,7 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
+    platform: linux/arm64
     depends_on:
       - azurite
     networks:
@@ -121,6 +134,7 @@ services:
     ports:
       - "7071:7071"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - AzureWebJobsStorage=${AZURITE_CONNECTION_STRING}
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7071
@@ -131,11 +145,13 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ProcessData/Dockerfile
+    platform: linux/arm64
     networks:
       - app-network
     ports:
       - "7072:7072"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7072
       - EpisodeManagementUrl=http://create-update-episode:6006/api/CreateUpdateEpisode
@@ -147,11 +163,13 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
+    platform: linux/arm64
     networks:
       - app-network
     ports:
       - "6006:6006"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6006
       - CreateEpisodeUrl=http://create-episode:6007/api/CreateEpisode
@@ -163,11 +181,13 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
+    platform: linux/arm64
     networks:
       - app-network
     ports:
       - "6060:6060"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6060
       - GetEpisodeUrl=http://get-episode:6070/api/GetEpisode
@@ -178,11 +198,13 @@ services:
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
+    platform: linux/arm64
     networks:
       - app-network
     ports:
       - "7073:7073"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7073
 
@@ -191,10 +213,12 @@ services:
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/UpdateParticipant/Dockerfile
+    platform: linux/arm64
     networks:
       - app-network
     ports:
       - "7074:7074"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7074
