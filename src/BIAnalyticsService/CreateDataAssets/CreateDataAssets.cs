@@ -90,13 +90,10 @@ public class CreateDataAssets
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
-        var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
-        var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");
-
         try
         {
-            await SendToCreateParticipantScreeningEpisodeAsync(episode, screeningEpisodeUrl);
-            await SendToCreateParticipantScreeningProfileAsync(participant, screeningProfileUrl);
+            await SendToCreateParticipantScreeningEpisodeAsync(episode);
+            await SendToCreateParticipantScreeningProfileAsync(participant);
         }
 
         catch (Exception ex)
@@ -108,7 +105,7 @@ public class CreateDataAssets
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
-    private async Task SendToCreateParticipantScreeningProfileAsync(Participant participant, string screeningProfileUrl)
+    private async Task SendToCreateParticipantScreeningProfileAsync(Participant participant)
     {
         var screeningProfile = new ParticipantScreeningProfile
         {
@@ -133,6 +130,8 @@ public class CreateDataAssets
             RecordInsertDatetime = DateTime.Now.ToString()
         };
 
+        var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");
+
         string serializedParticipantScreeningProfile = JsonSerializer.Serialize(screeningProfile);
 
         _logger.LogInformation($"Sending ParticipantScreeningProfile Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
@@ -141,7 +140,7 @@ public class CreateDataAssets
 
     }
 
-    private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode, string screeningEpisodeUrl)
+    private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode)
     {
         var screeningEpisode = new ParticipantScreeningEpisode
         {
@@ -164,6 +163,8 @@ public class CreateDataAssets
             BatchId = episode.BatchId,
             RecordInsertDatetime = DateTime.Now.ToString()
         };
+
+        var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
 
         string serializedParticipantScreeningEpisode = JsonSerializer.Serialize(screeningEpisode);
 

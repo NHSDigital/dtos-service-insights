@@ -63,6 +63,7 @@ public class CreateDataAssetsTests
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
