@@ -17,6 +17,7 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 
 2. **Start the Remaining Services**
    Once the database is running, you can start the remaining services:
+
    ```bash
    podman compose --file compose-mac.yaml up -d
    ```
@@ -32,6 +33,7 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 
 2. **Start the Remaining Services**
    Then, bring up the other services:
+
    ```bash
    podman compose --file compose.yaml up -d
    ```
@@ -39,14 +41,15 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 ## Stopping Containers
 
 - **Stop All Containers**
-   To stop all running containers:
+  To stop all running containers:
 
   ```bash
   podman compose down
   ```
 
 - **Stop a Specific Container**
-   To stop a particular service, specify the service name:
+  To stop a particular service, specify the service name:
+
   ```bash
   podman compose down get-episode
   ```
@@ -56,10 +59,12 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 If you have made changes to the code and need to rebuild the container image, use the following commands:
 
 - **Rebuild a Specific Service**
-   For example, to rebuild the `get-episode` or `sql-edge` service:
+  For example, to rebuild the `get-episode` or `sql-edge` service:
+
   ```bash
   podman compose --file compose-mac.yaml build get-episode
   ```
+
   ```bash
   podman compose --file compose-mac.yaml build sql-edge
   ```
