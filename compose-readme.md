@@ -2,6 +2,32 @@
 
 This guide explains how to start, stop, and manage containers in your environment, with tailored instructions for both macOS and Windows users.
 
+## Setting Up the .env File
+
+Before starting the containers, you need to create a `.env` file based on the provided `env.template` file.
+
+1. **Locate the Template**
+   The `env.template` file is an example file that contains environment variable placeholders.
+
+2. **Create the .env File**
+   Copy the `env.template` file to a new file named `.env`:
+
+   ```bash
+   cp env.template .env
+   ```
+
+3. **Configure the .env File**
+   Open the `.env` file and fill in the required values, such as `DB_NAME`, `PASSWORD`, and `DB_CONNECTION`. Example:
+
+   ```env
+   DB_NAME=ServiceInsightsDB
+   PASSWORD=YourSecurePassword
+   DB_CONNECTION=sql-edge  # macOS users
+   #DB_CONNECTION=127.0.0.1  # Windows users
+   ```
+
+   Ensure the correct database connection details are set based on your operating system.
+
 ## Platform-Specific Setup
 
 Due to differences in virtualization between macOS and Windows, we provide separate Docker Compose files for each platform. Follow the instructions for your operating system below.
