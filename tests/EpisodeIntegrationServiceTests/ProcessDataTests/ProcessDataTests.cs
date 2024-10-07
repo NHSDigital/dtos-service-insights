@@ -29,21 +29,21 @@ public class ProcessDataTests
     public async Task ProcessData_ShouldSendJsonToDownstreamFunctions()
     {
         // Arrange
-        DataPayLoad _DataPayLoad = new DataPayLoad
-        {
-            Episodes = new List<BssEpisode> {
-                new BssEpisode{ episode_id = "245395"
-            },
-                new BssEpisode{ episode_id = "245396"
-            }},
-            Participants = new List<Participant> {
-                new Participant{ nhs_number = "1111111112"
-            },
-                new Participant{ nhs_number = "1111111110"
-            }}
-        };
+        // DataPayLoad _DataPayLoad = new DataPayLoad
+        // {
+        //     Episodes = new List<BssEpisode> {
+        //         new BssEpisode{ episode_id = "245395"
+        //     },
+        //         new BssEpisode{ episode_id = "245396"
+        //     }},
+        //     Participants = new List<Participant> {
+        //         new Participant{ nhs_number = "1111111112"
+        //     },
+        //         new Participant{ nhs_number = "1111111110"
+        //     }}
+        // };
 
-        var json = JsonSerializer.Serialize(_DataPayLoad);
+        var json = JsonSerializer.Serialize("_DataPayLoad");
         _mockRequest = _setupRequest.Setup(json);
 
         // Act

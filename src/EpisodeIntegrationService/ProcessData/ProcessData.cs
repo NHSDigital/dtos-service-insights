@@ -25,64 +25,76 @@ public class ProcessData
     [Function("ProcessData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
-        _logger.LogInformation("C# HTTP trigger function received a request.");
-
-        var (episodeUrl, participantUrl) = GetConfigurationUrls();
-        if (string.IsNullOrEmpty(episodeUrl) || string.IsNullOrEmpty(participantUrl))
+        try
         {
-            return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
-        }
-         
-        string fileName = req.Query["FileName"]; 
-        
-        if(fileName.StartsWith("episodes"))
-        {
-            var records = await DeserializeDataAsync<BssEpisode>(req.Body);
-            _logger.LogInformation($"Request body: {records}");
+            _logger.LogInformation("C# HTTP trigger function ProcessData received a request.");
 
-            if (records == null)
+            var (episodeUrl, participantUrl) = GetConfigurationUrls();
+            if (string.IsNullOrEmpty(episodeUrl) || string.IsNullOrEmpty(participantUrl))
             {
-                return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid csv file or no data received");
+                return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
+            }
+            
+            string? fileName = req.Query["FileName"];
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return CreateErrorResponse(req, HttpStatusCode.BadRequest, "no file name provided");
+            }
+            
+            if(fileName.StartsWith("episodes"))
+            {
+                var episodesEnumerator = GetCsvEnumerator<BssEpisode>(req.Body);
+
+                if (episodesEnumerator == null)
+                {
+                    return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid episodes csv file or no records in file");
+                }
+
+                await ProcessEpisodeDataAsync(episodesEnumerator, participantUrl);
+            }
+            else if(fileName.StartsWith("subjects"))
+            {
+                var participantsEnumerator = GetCsvEnumerator<Participant>(req.Body);
+
+                if (participantsEnumerator == null)
+                {
+                    return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid subjects csv file or no records in file");
+                }
+
+                await ProcessParticipantDataAsync(participantsEnumerator, participantUrl);
+            }
+            else
+            {
+                _logger.LogInformation("fileName is invalid. file name: " + fileName);
+                return CreateErrorResponse(req, HttpStatusCode.BadRequest, "fileName is invalid. file name: " + fileName);
             }
 
-            await ProcessEpisodeDataAsync(records, participantUrl);
+            _logger.LogInformation("Data processed successfully.");
+            return req.CreateResponse(HttpStatusCode.OK);
         }
-        else if(fileName.StartsWith("subjects"))
+        catch (Exception ex)
         {
-            var records = await DeserializeDataAsync<Participant>(req.Body);
-            _logger.LogInformation($"Request body: {records}");
-
-            if (records == null)
-            {
-                return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid csv file or no data received");
-            }
-
-            await ProcessParticipantDataAsync(records, participantUrl);
+            _logger.LogError($"Error in ProcessData: {ex.Message} \n StackTrace: {ex.StackTrace}");
+            return CreateErrorResponse(req, HttpStatusCode.InternalServerError, ex.Message);
         }
-        else
-        {
-            _logger.LogInformation("fileName is invalid. file name: " + fileName);
-        }
-
-        _logger.LogInformation("Data processed successfully.");
-        return req.CreateResponse(HttpStatusCode.OK);
     }
 
-    private async Task<List<T>> DeserializeDataAsync<T>(Stream requestBody)
+    private IEnumerable<T> GetCsvEnumerator<T>(Stream requestBody)
     {
         try
         {
             using (var reader = new StreamReader(requestBody))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                var records = csv.GetRecords<T>().ToList();
+                var records = csv.GetRecords<T>();
 
                 return records;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Deserialization error: {ex.Message}");
+            _logger.LogError($"Error in GetCsvEnumerator: {ex.Message}");
             return null;
         }
     }
@@ -100,9 +112,9 @@ public class ProcessData
         return response;
     }
 
-    private async Task ProcessEpisodeDataAsync(List<BssEpisode> episodes, string episodeUrl)
+    private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
-        if (episodes != null && episodes.Any())
+        if (episodes.Any())
         {
             _logger.LogInformation("Processing episode data.");
             foreach (var episode in episodes)
@@ -138,9 +150,9 @@ public class ProcessData
         }
     }
 
-    private async Task ProcessParticipantDataAsync(List<Participant> participants, string participantUrl)
+    private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
     {
-        if (participants != null && participants.Any())
+        if (participants.Any())
         {
             _logger.LogInformation("Processing participant data.");
             foreach (var participant in participants)

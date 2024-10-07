@@ -23,28 +23,12 @@ public class ReceiveData
     {
         _logger.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
 
-        // Validate JSON
         using (var reader = new StreamReader(myBlob))
         {
-            var jsonData = reader.ReadToEnd();
+            var csvData = reader.ReadToEnd();
 
-            _logger.LogInformation("JSON is valid.");
-            await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("ProcessDataURL") + $"?FileName={name}", jsonData);
-        }
-    }
-
-    private bool IsValidJson(string jsonData)
-    {
-        try
-        {
-            _logger.LogInformation("JSON is valid:{jsonData}", jsonData);
-            var obj = JsonSerializer.Deserialize<object>(jsonData);
-            return obj != null;
-        }
-        catch (JsonException)
-        {
-            _logger.LogError("Could not validate JSON");
-            return false;
+            _logger.LogInformation("Sending CSV data to the ProcessData function");
+            await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("ProcessDataURL") + $"?FileName={name}", csvData);
         }
     }
 }
