@@ -61,6 +61,8 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 
    podman compose --file compose.yaml up -d db-setup
 
+   note: edit the db_setup_entrypoint.md and change to LF and save and rebuild the container
+
    ```
 
 2. **Start the Remaining Services**
