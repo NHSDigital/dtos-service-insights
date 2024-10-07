@@ -39,6 +39,9 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 
    ```bash
    podman compose --file compose-mac.yaml up -d sql-edge
+
+   podman compose --file compose-mac.yaml up -d db-setup
+
    ```
 
 2. **Start the Remaining Services**
@@ -55,6 +58,9 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 
    ```bash
    podman compose --file compose.yaml up -d sql-edge
+
+   podman compose --file compose.yaml up -d db-setup
+
    ```
 
 2. **Start the Remaining Services**
