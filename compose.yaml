@@ -69,6 +69,7 @@ services:
     environment:
       - PASSWORD=${PASSWORD}
       - DB_NAME=${DB_NAME}
+      - DB_CONNECTION=${DB_CONNECTION}
 
   # Episode Data Service
   create-episode:
@@ -101,20 +102,19 @@ services:
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   update-episode:
-      container_name: update-episode
-      network_mode: host
-      build:
-        context: ./src/
-        dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
-      # networks:
-      #   - app-network
-      ports:
-        - "7777:7777"
-      environment:
-        - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-        - ASPNETCORE_URLS=http://*:7777
-        - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
-
+    container_name: update-episode
+    network_mode: host
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
+    # networks:
+    #   - app-network
+    ports:
+      - "7777:7777"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:7777
+      - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # Episode Integration Service
   receive-data:

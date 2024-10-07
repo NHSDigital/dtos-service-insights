@@ -4,6 +4,7 @@ name: service-insights
 networks:
   app-network:
     driver: bridge
+
 # Define services
 services:
   # External Dependencies
@@ -49,6 +50,7 @@ services:
       timeout: 15s
       retries: 5
       start_period: 30s
+
   db-setup:
     container_name: db-setup
     build:
@@ -62,6 +64,8 @@ services:
     environment:
       - PASSWORD=${PASSWORD}
       - DB_NAME=${DB_NAME}
+      - DB_CONNECTION=${DB_CONNECTION}
+
   # Episode Data Service
   create-episode:
     container_name: create-episode
@@ -74,7 +78,8 @@ services:
       - "6007:6007"
     environment:
       - ASPNETCORE_URLS=http://*:6007
-      - ServiceInsightsDbConnectionString=Server=sql-edge,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
   get-episode:
     container_name: get-episode
     build:
@@ -87,7 +92,8 @@ services:
     environment:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6070
-      - ServiceInsightsDbConnectionString=Server=sql-edge,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
   update-episode:
     container_name: update-episode
     build:
@@ -100,7 +106,8 @@ services:
     environment:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7777
-      - ServiceInsightsDbConnectionString=Server=sql-edge,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
   # Episode Integration Service
   receive-data:
     container_name: receive-data
@@ -118,6 +125,7 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7071
       - ProcessDataURL=http://process-data:7072/api/ProcessData
+
   process-data:
     container_name: process-data
     build:
@@ -132,6 +140,7 @@ services:
       - ASPNETCORE_URLS=http://*:7072
       - EpisodeManagementUrl=http://create-update-episode:6006/api/CreateUpdateEpisode
       - ParticipantManagementUrl=http://update-participant:7074/api/UpdateParticipant
+
   # Episode Management Service
   create-update-episode:
     container_name: create-update-episode
@@ -148,6 +157,7 @@ services:
       - CreateEpisodeUrl=http://create-episode:6007/api/CreateEpisode
       - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
       - UpdateEpisodeUrl=http://update-episode:7777/api/UpdateEpisode
+
   get-episode-mgmt:
     container_name: get-episode-mgmt
     build:
@@ -161,6 +171,7 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6060
       - GetEpisodeUrl=http://get-episode:6070/api/GetEpisode
+
   # Participant Management Service
   get-participant:
     container_name: get-participant
@@ -174,6 +185,7 @@ services:
     environment:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7073
+
   update-participant:
     container_name: update-participant
     build:
