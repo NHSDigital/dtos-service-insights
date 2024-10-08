@@ -53,12 +53,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateParticipantTests", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeDataTests", "..\tests\EpisodeDataServiceTests\GetEpisodeTests\GetEpisodeDataTests.csproj", "{85B06FE6-DF2C-4C19-8969-B3D0A33719EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveDataTests", "..\tests\BIAnalyticsServiceTests\RetrieveDataTests.csproj", "{5C6B2030-0BBF-49EC-A8D7-C6E9B56E6119}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BIAnalyticsService", "BIAnalyticsService", "{F0A4CB48-845E-4B4A-B6E6-4FF6AD88C758}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveData", "BIAnalyticsService\RetrieveData\RetrieveData.csproj", "{052722A8-E6DB-409B-95B0-19146D848586}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BIAnalyticsDataService", "BIAnalyticsDataService", "{4015B40A-C9B6-47B9-9758-67DF6C9B99D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningEpisode", "BIAnalyticsDataService\CreateParticipantScreeningEpisode\CreateParticipantScreeningEpisode.csproj", "{3B36D188-0E89-4AFD-8154-E867E2CA942B}"
@@ -86,6 +80,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateEpisode", "EpisodeDataService\UpdateEpisode\UpdateEpisode.csproj", "{E3459DCC-85DA-4B35-920F-5661E6F63D52}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateEpisodeTests", "..\tests\EpisodeDataServiceTests\UpdateEpisodeTests\UpdateEpisodeTests.csproj", "{E9E8F6A1-5ECE-44D4-A07A-988B7DEE6718}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BIAnalyticsService", "BIAnalyticsService", "{4B0AD4B3-4508-4F6B-AEBF-24B4578DB1DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateDataAssets", "BIAnalyticsService\CreateDataAssets\CreateDataAssets.csproj", "{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateDataAssetsTests", "..\tests\BIAnalyticsServiceTests\CreateDataAssetsTests\CreateDataAssetsTests.csproj", "{36FDD9C2-830C-4A76-BF1F-C012C3ED8425}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -193,10 +193,6 @@ Global
 		{F7965884-3F6B-4505-8924-321895EE4512}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7965884-3F6B-4505-8924-321895EE4512}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7965884-3F6B-4505-8924-321895EE4512}.Release|Any CPU.Build.0 = Release|Any CPU
-		{052722A8-E6DB-409B-95B0-19146D848586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{052722A8-E6DB-409B-95B0-19146D848586}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{052722A8-E6DB-409B-95B0-19146D848586}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{052722A8-E6DB-409B-95B0-19146D848586}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B36D188-0E89-4AFD-8154-E867E2CA942B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B36D188-0E89-4AFD-8154-E867E2CA942B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B36D188-0E89-4AFD-8154-E867E2CA942B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -217,6 +213,14 @@ Global
 		{248A6EA6-7616-4BC9-9CA7-C9E3C7A0C1EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{248A6EA6-7616-4BC9-9CA7-C9E3C7A0C1EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{248A6EA6-7616-4BC9-9CA7-C9E3C7A0C1EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36FDD9C2-830C-4A76-BF1F-C012C3ED8425}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36FDD9C2-830C-4A76-BF1F-C012C3ED8425}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36FDD9C2-830C-4A76-BF1F-C012C3ED8425}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36FDD9C2-830C-4A76-BF1F-C012C3ED8425}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -237,10 +241,10 @@ Global
 		{9F5EE7C6-63E4-485A-ADEB-EE997A014FE1} = {7A119A5C-EAEA-4C9C-8502-E50DAD38ED18}
 		{6FA217EB-2D53-4BE7-B4CC-963591112210} = {9F5EE7C6-63E4-485A-ADEB-EE997A014FE1}
 		{95A4BD99-1495-4839-989F-1B1EB98AC912} = {6FA217EB-2D53-4BE7-B4CC-963591112210}
-		{052722A8-E6DB-409B-95B0-19146D848586} = {F0A4CB48-845E-4B4A-B6E6-4FF6AD88C758}
 		{3B36D188-0E89-4AFD-8154-E867E2CA942B} = {4015B40A-C9B6-47B9-9758-67DF6C9B99D6}
 		{11157BC7-7617-482B-88EB-BEB69E258C1B} = {4015B40A-C9B6-47B9-9758-67DF6C9B99D6}
 		{248A6EA6-7616-4BC9-9CA7-C9E3C7A0C1EA} = {4CBE2AE3-2FFC-46BE-8727-0B128F849495}
 		{E3459DCC-85DA-4B35-920F-5661E6F63D52} = {DACA4EB5-14F5-42D8-AD61-DA1FA4DBB6ED}
+		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759} = {4B0AD4B3-4508-4F6B-AEBF-24B4578DB1DC}
 	EndGlobalSection
 EndGlobal
