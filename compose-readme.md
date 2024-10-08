@@ -2,6 +2,17 @@
 
 This guide explains how to start, stop, and manage containers in your environment, with tailored instructions for both macOS and Windows users.
 
+## Update submodules (dotnesh-mesh-client)
+
+1. **Update git submodules**
+   The src/Shared/dotnet-mesh-client folder needs to be populated if you just cloned the repository.
+   Run this command in the root of the repository, you only need to do this once.
+   After you will notice the src/Shared/dotnet-mesh-client will be populated.
+
+```bash
+  git submodule update --init --recursive
+```
+
 ## Setting Up the .env File
 
 Before starting the containers, you need to create a `.env` file based on the provided `env.template` file.
