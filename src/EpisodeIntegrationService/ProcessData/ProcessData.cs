@@ -5,8 +5,6 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Text.Json;
 using System.Net;
-using System.Text;
-using System.Data.Common;
 using CsvHelper;
 using System.Globalization;
 
@@ -91,44 +89,44 @@ public class ProcessData
 
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
-            _logger.LogInformation("Processing episode data.");
-            foreach (var episode in episodes)
+        _logger.LogInformation("Processing episode data.");
+        foreach (var episode in episodes)
+        {
+            var modifiedEpisode = new Episode
             {
-                var modifiedEpisode = new Episode
-                {
-                    EpisodeId = episode.episode_id,
-                    EpisodeTypeId = episode.episode_type,
-                    EpisodeOpenDate = episode.episode_date,
-                    AppointmentMadeFlag = episode.appointment_made,
-                    FirstOfferedAppointmentDate = episode.date_of_foa,
-                    ActualScreeningDate = episode.date_of_as,
-                    EarlyRecallDate = episode.early_recall_date,
-                    CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-                    EndCodeId = episode.end_code,
-                    EndCodeLastUpdated = episode.end_code_last_updated,
-                    OrganisationId = episode.bso_organisation_code,
-                    BatchId = episode.bso_batch_id
-                };
+                EpisodeId = episode.episode_id,
+                EpisodeTypeId = episode.episode_type,
+                EpisodeOpenDate = episode.episode_date,
+                AppointmentMadeFlag = episode.appointment_made,
+                FirstOfferedAppointmentDate = episode.date_of_foa,
+                ActualScreeningDate = episode.date_of_as,
+                EarlyRecallDate = episode.early_recall_date,
+                CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
+                EndCodeId = episode.end_code,
+                EndCodeLastUpdated = episode.end_code_last_updated,
+                OrganisationId = episode.bso_organisation_code,
+                BatchId = episode.bso_batch_id
+            };
 
-                string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
+            string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
-                _logger.LogInformation($"Sending Episode to {episodeUrl}: {serializedEpisode}");
+            _logger.LogInformation($"Sending Episode to {episodeUrl}: {serializedEpisode}");
 
-                await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
-            }
+            await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
+        }
     }
 
     private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
     {
-            _logger.LogInformation("Processing participant data.");
-            foreach (var participant in participants)
-            {
-                string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation("Processing participant data.");
+        foreach (var participant in participants)
+        {
+            string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
 
-                _logger.LogInformation($"Sending participant to {participantUrl}: {serializedParticipant}");
+            _logger.LogInformation($"Sending participant to {participantUrl}: {serializedParticipant}");
 
-                await _httpRequestService.SendPost(participantUrl, serializedParticipant);
-            }
+            await _httpRequestService.SendPost(participantUrl, serializedParticipant);
+        }
     }
 }
 
