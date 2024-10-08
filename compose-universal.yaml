@@ -3,7 +3,7 @@ name: service-insights
 # Define network
 networks:
   app-network:
-    driver: ${APP-NETWORK}
+    driver: ${APP_NETWORK}
 
 # Define services
 services:
