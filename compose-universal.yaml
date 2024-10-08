@@ -10,6 +10,7 @@ services:
   # External Dependencies
   azurite:
     container_name: azurite
+    restart: on-failure
     image: mcr.microsoft.com/azure-storage/azurite
     platform: ${PLATFORM}
     # command: azurite --silent
@@ -23,6 +24,7 @@ services:
 
   azurite-setup:
     container_name: azurite-setup
+    restart: on-failure
     build:
       context: ./scripts
       dockerfile: ./azurite/Dockerfile
@@ -36,7 +38,9 @@ services:
 
   sql-edge:
     container_name: sql-edge
-    image: mcr.microsoft.com/azure-sql-edge
+    restart: on-failure
+    # image: mcr.microsoft.com/azure-sql-edge
+    image: mcr.microsoft.com/mssql/server:2022-latest
     platform: ${PLATFORM}
     networks:
       - app-network
@@ -49,7 +53,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -v --silent 127.0.0.1:1433 --stderr - | grep -q 'Empty reply from server'",
+          "grep -q 'SQL Server is now ready for client connections' /var/opt/mssql/log/errorlog || exit 1",
         ]
       interval: 15s
       timeout: 15s
@@ -58,6 +62,7 @@ services:
 
   db-setup:
     container_name: db-setup
+    restart: on-failure
     build:
       context: ./scripts/
       dockerfile: ./database/Dockerfile
@@ -75,6 +80,7 @@ services:
   # BI Analytics Data Service
   create-participant-screening-episode:
     container_name: create-participant-screening-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningEpisode/Dockerfile
@@ -91,6 +97,7 @@ services:
 
   create-participant-screening-profile:
     container_name: create-participant-screening-profile
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningProfile/Dockerfile
@@ -108,6 +115,7 @@ services:
   # BI Analytics Service
   create-data-assets:
     container_name: create-data-assets
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsService/CreateDataAssets/Dockerfile
@@ -128,6 +136,7 @@ services:
   # Episode Data Service
   create-episode:
     container_name: create-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
@@ -143,6 +152,7 @@ services:
 
   get-episode:
     container_name: get-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
@@ -159,6 +169,7 @@ services:
 
   update-episode:
     container_name: update-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
@@ -176,6 +187,7 @@ services:
   # Episode Integration Service
   receive-data:
     container_name: receive-data
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
@@ -195,6 +207,7 @@ services:
 
   process-data:
     container_name: process-data
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ProcessData/Dockerfile
@@ -213,6 +226,7 @@ services:
   # Episode Management Service
   create-update-episode:
     container_name: create-update-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
@@ -231,6 +245,7 @@ services:
 
   get-episode-mgmt:
     container_name: get-episode-mgmt
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
@@ -248,6 +263,7 @@ services:
   # Mesh Mailbox Management Service
   retrieve-mesh-file:
     container_name: retrieve-mesh-file
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./MeshIntegrationService/RetrieveMeshFile/Dockerfile
@@ -272,6 +288,7 @@ services:
   # Participant Management Service
   get-participant:
     container_name: get-participant
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
@@ -287,6 +304,7 @@ services:
 
   update-participant:
     container_name: update-participant
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/UpdateParticipant/Dockerfile
