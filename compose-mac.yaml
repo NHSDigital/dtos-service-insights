@@ -232,6 +232,8 @@ services:
       context: ./src/
       dockerfile: ./MeshIntegrationService/RetrieveMeshFile/Dockerfile
     platform: linux/arm64
+    depends_on:
+      - azurite
     networks:
       - app-network
     ports:
