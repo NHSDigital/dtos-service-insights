@@ -71,6 +71,59 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_CONNECTION=${DB_CONNECTION}
 
+  # BI Analytics Data Service
+  create-participant-screening-episode:
+    container_name: create-participant-screening-episode
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningEpisode/Dockerfile
+    platform: linux/arm64
+    networks:
+      - app-network
+    ports:
+      - "6010:6010"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6010
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
+  create-participant-screening-profile:
+    container_name: create-participant-screening-profile
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningProfile/Dockerfile
+    platform: linux/arm64
+    networks:
+      - app-network
+    ports:
+      - "6011:6011"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6011
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
+  # BI Analytics Service
+  create-data-assets:
+    container_name: create-data-assets
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsService/CreateDataAssets/Dockerfile
+    platform: linux/arm64
+    networks:
+      - app-network
+    ports:
+      - "6009:6009"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6009
+      - GetEpisodeUrl=http://127.0.0.1:6060/api/GetEpisode
+      - GetParticipantUrl=http://127.0.0.1:6061/api/GetParticipant
+      - CreateParticipantScreeningEpisodeUrl=http://127.0.0.1:6010/api/CreateParticipantScreeningEpisode
+      - CreateParticipantScreeningProfileUrl=http://127.0.0.1:6011/api/CreateParticipantScreeningProfile
+
   # Episode Data Service
   create-episode:
     container_name: create-episode
@@ -184,6 +237,28 @@ services:
       - ASPNETCORE_URLS=http://*:6060
       - GetEpisodeUrl=http://127.0.0.1:6070/api/GetEpisode
 
+      # Mesh Mailbox Management Service
+  retrieve-mesh-file:
+    container_name: retrieve-mesh-file
+    build:
+      context: ./src/
+      dockerfile: ./MeshIntegrationService/RetrieveMeshFile/Dockerfile
+    platform: linux/arm64
+    networks:
+      - app-network
+    ports:
+      - "6777:6777"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6777
+      - MeshApiBaseUrl=${MESHAPIBASEURL}
+      - BSSMailBox=${BSSMAILBOX}
+      - BSSContainerName=${BSSCONTAINERNAME}
+      - MeshPassword=${MESHPASSWORD}
+      - MeshSharedKey=${MESHSHAREDKEY}
+      - MeshKeyPassphrase=${MESHKEYPASSPHRASE}
+
   # Participant Management Service
   get-participant:
     container_name: get-participant
@@ -194,10 +269,10 @@ services:
     # networks:
     #   - app-network
     ports:
-      - "7073:7073"
+      - "6061:6061"
     environment:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-      - ASPNETCORE_URLS=http://*:7073
+      - ASPNETCORE_URLS=http://*:6061
 
   update-participant:
     container_name: update-participant
