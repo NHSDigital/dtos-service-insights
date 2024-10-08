@@ -44,29 +44,26 @@ public class ProcessData
             
             if(fileName.StartsWith("episodes"))
             {
-                var episodesEnumerator = GetCsvEnumerator<BssEpisode>(req.Body);
-
-                if (episodesEnumerator == null)
+                using (var reader = new StreamReader(req.Body))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
-                    return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid episodes csv file or no records in file");
-                }
+                    var episodesEnumerator = csv.GetRecords<BssEpisode>();
 
-                await ProcessEpisodeDataAsync(episodesEnumerator, participantUrl);
+                    await ProcessEpisodeDataAsync(episodesEnumerator, episodeUrl);
+                }
             }
             else if(fileName.StartsWith("subjects"))
             {
-                var participantsEnumerator = GetCsvEnumerator<Participant>(req.Body);
-
-                if (participantsEnumerator == null)
+                using (var reader = new StreamReader(req.Body))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
-                    return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid subjects csv file or no records in file");
-                }
+                    var participantsEnumerator = csv.GetRecords<Participant>();
 
-                await ProcessParticipantDataAsync(participantsEnumerator, participantUrl);
+                    await ProcessParticipantDataAsync(participantsEnumerator, participantUrl);
+                }
             }
             else
             {
-                _logger.LogInformation("fileName is invalid. file name: " + fileName);
                 return CreateErrorResponse(req, HttpStatusCode.BadRequest, "fileName is invalid. file name: " + fileName);
             }
 
@@ -75,30 +72,10 @@ public class ProcessData
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in ProcessData: {ex.Message} \n StackTrace: {ex.StackTrace}");
-            return CreateErrorResponse(req, HttpStatusCode.InternalServerError, ex.Message);
+            return CreateErrorResponse(req, HttpStatusCode.InternalServerError, $"Error in ProcessData: {ex.Message} \n StackTrace: {ex.StackTrace}");
         }
     }
-
-    private IEnumerable<T> GetCsvEnumerator<T>(Stream requestBody)
-    {
-        try
-        {
-            using (var reader = new StreamReader(requestBody))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                var records = csv.GetRecords<T>();
-
-                return records;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error in GetCsvEnumerator: {ex.Message}");
-            return null;
-        }
-    }
-
+    
     private (string episodeUrl, string participantUrl) GetConfigurationUrls()
     {
         return (Environment.GetEnvironmentVariable("EpisodeManagementUrl"), Environment.GetEnvironmentVariable("ParticipantManagementUrl"));
@@ -114,12 +91,9 @@ public class ProcessData
 
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
-        if (episodes.Any())
-        {
             _logger.LogInformation("Processing episode data.");
             foreach (var episode in episodes)
             {
-                // Create a new object with EpisodeId instead of episode_id
                 var modifiedEpisode = new Episode
                 {
                     EpisodeId = episode.episode_id,
@@ -138,37 +112,23 @@ public class ProcessData
 
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
-                // Log the Episode data before sending it
                 _logger.LogInformation($"Sending Episode to {episodeUrl}: {serializedEpisode}");
 
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
-        }
-        else
-        {
-            _logger.LogInformation("No episode data found.");
-        }
     }
 
     private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
     {
-        if (participants.Any())
-        {
             _logger.LogInformation("Processing participant data.");
             foreach (var participant in participants)
             {
                 string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
 
-                // Log the participant data before sending it
                 _logger.LogInformation($"Sending participant to {participantUrl}: {serializedParticipant}");
 
                 await _httpRequestService.SendPost(participantUrl, serializedParticipant);
             }
-        }
-        else
-        {
-            _logger.LogInformation("No participant data found.");
-        }
     }
 }
 
