@@ -32,14 +32,14 @@ public class ProcessData
             {
                 return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
             }
-            
+
             string? fileName = req.Query["FileName"];
 
             if (string.IsNullOrEmpty(fileName))
             {
                 return CreateErrorResponse(req, HttpStatusCode.BadRequest, "no file name provided");
             }
-            
+
             if(fileName.StartsWith("episodes"))
             {
                 using (var reader = new StreamReader(req.Body))
@@ -73,7 +73,7 @@ public class ProcessData
             return CreateErrorResponse(req, HttpStatusCode.InternalServerError, $"Error in ProcessData: {ex.Message} \n StackTrace: {ex.StackTrace}");
         }
     }
-    
+
     private (string episodeUrl, string participantUrl) GetConfigurationUrls()
     {
         return (Environment.GetEnvironmentVariable("EpisodeManagementUrl"), Environment.GetEnvironmentVariable("ParticipantManagementUrl"));
