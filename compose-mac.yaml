@@ -3,15 +3,15 @@ name: service-insights
 # Define network
 networks:
   app-network:
-    driver: bridge
+    driver: ${APP_NETWORK}
 
 # Define services
 services:
   # External Dependencies
   azurite:
     container_name: azurite
+    restart: on-failure
     image: mcr.microsoft.com/azure-storage/azurite
-    # command: azurite --silent
     command: azurite --blobHost 0.0.0.0 --blobPort 10000 --queueHost 0.0.0.0 --queuePort 10001 --tableHost 0.0.0.0 --tablePort 10002 --silent
     networks:
       - app-network
@@ -21,6 +21,7 @@ services:
       - "10002:10002"
   azurite-setup:
     container_name: azurite-setup
+    restart: on-failure
     build:
       context: ./scripts
       dockerfile: ./azurite/Dockerfile
@@ -33,8 +34,9 @@ services:
 
   sql-database:
     container_name: sql-database
+    restart: on-failure
+    # image: mcr.microsoft.com/azure-sql-database
     image: mcr.microsoft.com/mssql/server:2022-latest
-    platform: linux/arm64
     networks:
       - app-network
     ports:
@@ -46,7 +48,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -v --silent 127.0.0.1:1433 --stderr - | grep -q 'Empty reply from server'",
+          "grep -q 'SQL Server is now ready for client connections' /var/opt/mssql/log/errorlog || exit 1",
         ]
       interval: 15s
       timeout: 15s
@@ -55,6 +57,7 @@ services:
 
   database-setup:
     container_name: database-setup
+    restart: on-failure
     build:
       context: ./scripts/
       dockerfile: ./database/Dockerfile
@@ -71,10 +74,10 @@ services:
   # BI Analytics Data Service
   create-participant-screening-episode:
     container_name: create-participant-screening-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningEpisode/Dockerfile
-    platform: linux/arm64
     networks:
       - app-network
     ports:
@@ -87,10 +90,10 @@ services:
 
   create-participant-screening-profile:
     container_name: create-participant-screening-profile
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningProfile/Dockerfile
-    platform: linux/arm64
     networks:
       - app-network
     ports:
@@ -104,10 +107,10 @@ services:
   # BI Analytics Service
   create-data-assets:
     container_name: create-data-assets
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsService/CreateDataAssets/Dockerfile
-    platform: linux/arm64
     networks:
       - app-network
     ports:
@@ -124,6 +127,7 @@ services:
   # Episode Data Service
   create-episode:
     container_name: create-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
@@ -137,6 +141,7 @@ services:
 
   get-episode:
     container_name: get-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
@@ -151,6 +156,7 @@ services:
 
   update-episode:
     container_name: update-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
@@ -166,6 +172,7 @@ services:
   # Episode Integration Service
   receive-data:
     container_name: receive-data
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
@@ -183,6 +190,7 @@ services:
 
   process-data:
     container_name: process-data
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ProcessData/Dockerfile
@@ -199,6 +207,7 @@ services:
   # Episode Management Service
   create-update-episode:
     container_name: create-update-episode
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
@@ -215,6 +224,7 @@ services:
 
   get-episode-mgmt:
     container_name: get-episode-mgmt
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
@@ -230,10 +240,10 @@ services:
   # Mesh Mailbox Management Service
   retrieve-mesh-file:
     container_name: retrieve-mesh-file
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./MeshIntegrationService/RetrieveMeshFile/Dockerfile
-    platform: linux/arm64
     depends_on:
       - azurite
     networks:
@@ -242,6 +252,7 @@ services:
       - "6777:6777"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - AzureWebJobsStorage=${AZURITE_CONNECTION_STRING}
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6777
       - MeshApiBaseUrl=${MESHAPIBASEURL}
@@ -254,6 +265,7 @@ services:
   # Participant Management Service
   get-participant:
     container_name: get-participant
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
@@ -267,6 +279,7 @@ services:
 
   update-participant:
     container_name: update-participant
+    restart: on-failure
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/UpdateParticipant/Dockerfile
