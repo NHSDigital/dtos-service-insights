@@ -33,7 +33,7 @@ Before starting the containers, you need to create a `.env` file based on the pr
    ```env
    DB_NAME=ServiceInsightsDB
    PASSWORD=YourSecurePassword
-   DB_CONNECTION=sql-edge  # macOS users
+   DB_CONNECTION=sql-database  # macOS users
    #DB_CONNECTION=127.0.0.1  # Windows users
    ```
 
@@ -49,9 +49,9 @@ Due to differences in virtualization between macOS and Windows, we provide separ
    The database service is resource-intensive, so it’s recommended to start it first:
 
    ```bash
-   podman compose --file compose-mac.yaml up -d sql-edge
+   podman compose --file compose-mac.yaml up -d sql-database
 
-   podman compose --file compose-mac.yaml up -d db-setup
+   podman compose --file compose-mac.yaml up -d database-setup
 
    ```
 
@@ -68,9 +68,9 @@ Due to differences in virtualization between macOS and Windows, we provide separ
    Like on macOS, begin by starting the database service:
 
    ```bash
-   podman compose --file compose.yaml up -d sql-edge
+   podman compose --file compose.yaml up -d sql-database
 
-   podman compose --file compose.yaml up -d db-setup
+   podman compose --file compose.yaml up -d database-setup
 
    note: edit the db_setup_entrypoint.md and change to LF and save and rebuild the container
 
@@ -104,14 +104,14 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 If you have made changes to the code and need to rebuild the container image, use the following commands:
 
 - **Rebuild a Specific Service**
-  For example, to rebuild the `get-episode` or `sql-edge` service:
+  For example, to rebuild the `get-episode` or `sql-database` service:
 
   ```bash
   podman compose --file compose-mac.yaml build get-episode
   ```
 
   ```bash
-  podman compose --file compose-mac.yaml build sql-edge
+  podman compose --file compose-mac.yaml build sql-database
   ```
 
 Repeat the command for any other service you wish to rebuild.
