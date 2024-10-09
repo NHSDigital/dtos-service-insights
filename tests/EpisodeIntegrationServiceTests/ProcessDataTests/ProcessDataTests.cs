@@ -76,6 +76,32 @@ public class ProcessDataTests
     }
 
     [TestMethod]
+    public async Task ProcessData_ShouldLogErrorOnFindingABadRowInCsvFile()
+    {
+        // Arrange
+        string data = "\"nhs_number\",\"episode_id\",\"episode_type\",\"change_db_date_time\",\"episode_date\",\"appointment_made\",\"date_of_foa\",\"date_of_as\",\"early_recall_date\",\"call_recall_status_authorised_by\",\"end_code\",\"end_code_last_updated\",\"bso_organisation_code\",\"bso_batch_id\",\"reason_closed_code\",\"end_point\",\"final_action_code\"\n" +
+        "\"9999999999\",1000,\"C\",\"2022-08-17 13:02:17.110314+01\",\"2022-08-17\",,,,,,,,\"AGA\",\"AGA000000A\",,,\n" +
+        "\"9999999998\",2000,\"C\",\"2022-09-02 14:30:54.121779+01\",\"2022-09-02\",,,,,,,,\"ANE\",\"ANE000000A\",,,\n" +
+        "\"BadRow\",,,\n" +
+        "\"BadRow\",,,\n" +
+        "\"9999999998\",2000,\"C\",\"2022-09-02 14:30:54.121779+01\",\"2022-09-02\",,,,,,,,\"ANE\",\"ANE000000A\",,,\n" +
+        "\"9999999998\",2000,\"C\",\"2022-09-02 14:30:54.121779+01\",\"2022-09-02\",,,,,,,,\"ANE\",\"ANE000000A\",,,\n";
+
+        _mockRequest = _setupRequest.Setup(data);
+        _mockRequest.Setup(r => r.Query).Returns(new NameValueCollection
+        {
+            { "FileName", "episodes_test_data_20240930" }
+        });
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(4));
+        _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
+    }
+
+    [TestMethod]
     public async Task ProcessData_ShouldReturnBadRequestAndLogErrorIfFileNameIsInvalid()
     {
         // Arrange
@@ -100,33 +126,27 @@ public class ProcessDataTests
 
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
-
-        [TestMethod]
-    public async Task ProcessData_ShouldReturnInternalServerErrorAndLogErrorWhenCsvIsInvalid()
+    
+    [TestMethod]
+    public async Task ProcessData_ShouldReturnErrorIfHeadersAreNotValid()
     {
         // Arrange
-        string data = "\"change_db_date_time\",\"nhs_number\",\"superseded_nhs_number\",\"gp_practice_code\",\"bso_organisation_code\",\"next_test_due_date\",\"subject_status_code\",\"early_recall_date\",\"latest_invitation_date\",\"removal_reason\",\"removal_date\",\"reason_for_ceasing_code\",\"is_higher_risk\",\"higher_risk_next_test_due_date\",\"hr_recall_due_date\",\"higher_risk_referral_reason_code\",\"date_irradiated\",\"is_higher_risk_active\",\"gene_code\",\"ntdd_calculation_method\",\"preferred_language\"\n" +
-        "\"INVALID_DATA\",\n";
+        string data = "\"INVALID\",\"episode_id\",\"episode_type\",\"change_db_date_time\",\"episode_date\",\"date_of_foa\",\"date_of_as\",\"early_recall_date\",\"call_recall_status_authorised_by\",\"end_code\",\"end_code_last_updated\",\"bso_organisation_code\",\"bso_batch_id\",\"reason_closed_code\",\"end_point\",\"final_action_code\"\n" +
+        "\"9999999999\",1000,\"C\",\"2022-08-17 13:02:17.110314+01\",\"2022-08-17\",,,,,,,,\"AGA\",\"AGA000000A\",,,\n" +
+        "\"9999999998\",2000,\"C\",\"2022-09-02 14:30:54.121779+01\",\"2022-09-02\",,,,,,,,\"ANE\",\"ANE000000A\",,,\n";
 
         _mockRequest = _setupRequest.Setup(data);
         _mockRequest.Setup(r => r.Query).Returns(new NameValueCollection
         {
-            { "FileName", "subjects_test_data_20240930" }
+            { "FileName", "episodes_test_data_20240930" }
         });
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _mockLogger.Verify(log =>
-            log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<object>(state => state.ToString().Contains("Error in ProcessData:")),
-            null,
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Once);
-
-        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+        _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
+        _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
 }
