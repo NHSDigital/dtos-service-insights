@@ -3,7 +3,7 @@ name: service-insights
 # Define network
 networks:
   app-network:
-    driver: bridge
+    driver: host
 
 # Define services
 services:
@@ -48,7 +48,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -v --silent 127.0.0.1:1433 --stderr - | grep -q 'Empty reply from server'",
+          "grep -q 'SQL Server is now ready for client connections' /var/opt/mssql/log/errorlog || exit 1",
         ]
       interval: 15s
       timeout: 15s
@@ -74,12 +74,12 @@ services:
   # BI Analytics Data Service
   create-participant-screening-episode:
     container_name: create-participant-screening-episode
+    network_mode: host
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningEpisode/Dockerfile
-    platform: linux/arm64
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
     ports:
       - "6010:6010"
     environment:
@@ -90,12 +90,12 @@ services:
 
   create-participant-screening-profile:
     container_name: create-participant-screening-profile
+    network_mode: host
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningProfile/Dockerfile
-    platform: linux/arm64
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
     ports:
       - "6011:6011"
     environment:
@@ -107,12 +107,12 @@ services:
   # BI Analytics Service
   create-data-assets:
     container_name: create-data-assets
+    network_mode: host
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsService/CreateDataAssets/Dockerfile
-    platform: linux/arm64
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
     ports:
       - "6009:6009"
     environment:
@@ -240,17 +240,18 @@ services:
       # Mesh Mailbox Management Service
   retrieve-mesh-file:
     container_name: retrieve-mesh-file
+    network_mode: host
     build:
       context: ./src/
       dockerfile: ./MeshIntegrationService/RetrieveMeshFile/Dockerfile
-    platform: linux/arm64
     depends_on:
       - azurite
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
     ports:
       - "6777:6777"
     environment:
+      - AzureWebJobsStorage=UseDevelopmentStorage=true
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6777
