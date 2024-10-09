@@ -34,9 +34,9 @@ services:
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
 
-  sql-edge:
-    container_name: sql-edge
-    image: mcr.microsoft.com/azure-sql-edge
+  sql-database:
+    container_name: sql-database
+    image: mcr.microsoft.com/mssql/server:2022-latest
     platform: linux/arm64
     networks:
       - app-network
@@ -56,14 +56,14 @@ services:
       retries: 5
       start_period: 30s
 
-  db-setup:
-    container_name: db-setup
+  database-setup:
+    container_name: database-setup
     build:
       context: ./scripts/
       dockerfile: ./database/Dockerfile
     platform: linux/arm64
     depends_on:
-      sql-edge:
+      sql-database:
         condition: service_healthy
     networks:
       - app-network
