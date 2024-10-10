@@ -135,7 +135,7 @@ public class ProcessDataTests
 
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
-    
+
     [TestMethod]
     public async Task ProcessData_ShouldReturnErrorIfHeadersAreNotValid()
     {

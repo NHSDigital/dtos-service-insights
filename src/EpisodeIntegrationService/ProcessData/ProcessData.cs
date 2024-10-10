@@ -55,7 +55,7 @@ public class ProcessData
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var episodesEnumerator = csv.GetRecords<BssEpisode>();
-                    
+
                     await ProcessEpisodeDataAsync(episodesEnumerator, episodeUrl);
                 }
             }
@@ -110,7 +110,7 @@ public class ProcessData
             csv.ReadHeader();
 
             var actualHeaders = csv.Context.Reader.HeaderRecord;
-            
+
             if (!actualHeaders.SequenceEqual(expectedHeaders))
             {
                 return false;
