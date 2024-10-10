@@ -1,13 +1,11 @@
 using Moq;
 using System.Net;
 using System.Text;
-using System.Text.Json;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.BIAnalyticsService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Common;
-using NHS.ServiceInsights.Model;
 using System.Collections.Specialized;
 
 
@@ -29,6 +27,7 @@ public class CreateDataAssetsTests
                                 "e_date\":\"2000-01-01\",\"removal_reason\":\"reason\",\"removal_date\":\"2000-01-01\",\"bso_organisation_id\":\"00002\",\"early_recall_date\":\"2000-01-01\",\"latest_invitation_date\":\"2000-01-01\",\"prefer" +
                                 "red_language\":\"english\",\"higher_risk_referral_reason_code\":\"code\",\"date_irradiated\":\"2000-01-01\",\"is_higher_risk_active\":\"false\",\"gene_code\":\"geneCode\",\"ntdd_calculation_method\":\"method\"}";
 
+    private string demographicsJson = "{\"PrimaryCareProvider\":\"A81002\",\"PreferredLanguage\":\"EN\"}";
     public CreateDataAssetsTests()
     {
 
@@ -174,12 +173,23 @@ public class CreateDataAssetsTests
                 Content = new StringContent(participantJson, Encoding.UTF8, "application/json")
             });
 
+        var baseDemographicsServiceUrl = Environment.GetEnvironmentVariable("DemographicsServiceUrl");
+        var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={nhsNumber}";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(demographicsServiceUrl))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(demographicsJson, Encoding.UTF8, "application/json")
+            });
+
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendGet(getEpisodeUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(demographicsServiceUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl"), It.IsAny<string>()), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl"), It.IsAny<string>()), Times.Once);
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
