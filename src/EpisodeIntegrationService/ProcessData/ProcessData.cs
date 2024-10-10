@@ -120,6 +120,7 @@ public class ProcessData
             return true;
         }
     }
+
     private HttpResponseData CreateErrorResponse(HttpRequestData req, HttpStatusCode statusCode, string message)
     {
         _logger.LogError(message);
@@ -161,7 +162,7 @@ public class ProcessData
         catch (Exception ex)
         {
             _logger.LogError("Error in ProcessEpisodeDataAsync: " + ex.Message);
-            ProcessEpisodeDataAsync(episodes, episodeUrl);
+            await ProcessEpisodeDataAsync(episodes, episodeUrl);
         }
     }
 
