@@ -19,6 +19,11 @@ public class HttpRequestService : IHttpRequestService
 
     }
 
+    public async Task<HttpResponseMessage> SendPut(string url, string putData)
+    {
+        return await SendHttpRequestAsync(url, putData, HttpMethod.Put);
+    }
+
     private async Task<HttpResponseMessage> SendHttpRequestAsync(string url, string dataToSend, HttpMethod method)
     {
         using var request = new HttpRequestMessage(method, url)

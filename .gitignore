@@ -24,8 +24,11 @@ TestResults
 bin
 obj
 
-# local.settings.json
+# Local Settings
 local.settings.json
 
 # Ignore appsettings.json
 appsettings.json
+
+# Local Environment
+.env

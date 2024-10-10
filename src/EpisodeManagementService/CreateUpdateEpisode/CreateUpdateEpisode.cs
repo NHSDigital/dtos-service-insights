@@ -34,21 +34,40 @@ public class CreateUpdateEpisode
                 _logger.LogInformation("PostData: {postData}", postData);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            _logger.LogError("Could not read episode data.");
+            _logger.LogError("Could not read episode data. Error: {ex}", ex.Message);
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
         try
         {
-            var json = JsonSerializer.Serialize(episode);
-            await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), json);
-
-            return req.CreateResponse(HttpStatusCode.OK);
+            // Check if episode exists
+            var getEpisodeUrl = $"{Environment.GetEnvironmentVariable("GetEpisodeUrl")}?EpisodeId={episode.EpisodeId}";
+            var getEpisodeResponse = await _httpRequestService.SendGet(getEpisodeUrl);
+            if (getEpisodeResponse.StatusCode == HttpStatusCode.OK)
+            {
+                _logger.LogInformation("Episode {episodeId} already exists and will be updated.", episode.EpisodeId);
+                await _httpRequestService.SendPut(Environment.GetEnvironmentVariable("UpdateEpisodeUrl"), JsonSerializer.Serialize(episode));
+                _logger.LogInformation("UpdateEpisode function called successfully.");
+                return req.CreateResponse(HttpStatusCode.OK);
+            }
+            else if (getEpisodeResponse.StatusCode == HttpStatusCode.NotFound)
+            {
+                _logger.LogInformation("Episode {episodeId} does not exist and will be created.", episode.EpisodeId);
+                await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), JsonSerializer.Serialize(episode));
+                _logger.LogInformation("CreateEpisode function called successfully.");
+                return req.CreateResponse(HttpStatusCode.OK);
+            }
+            else
+            {
+                _logger.LogError("Error occurred while checking episode existence. Status code: {statusCode}", getEpisodeResponse.StatusCode);
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
+            }
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError("Error occurred while processing episode. Error: {ex}", ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

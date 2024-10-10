@@ -1,22 +1,13 @@
-# Repository Template
+# Service Insights
 
-[![CI/CD Pull Request](https://github.com/nhs-england-tools/repository-template/actions/workflows/cicd-1-pull-request.yaml/badge.svg)](https://github.com/nhs-england-tools/repository-template/actions/workflows/cicd-1-pull-request.yaml)
+[![CI/CD Pull Request](https://github.com/nhs-england-tools/repository-template/actions/workflows/cicd-1-pull-request.yaml/badge.svg)](https://github.com/NHSDigital/dtos-service-insights/actions/workflows/cicd-1-pull-request.yaml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=repository-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=repository-template)
 
-Start with an overview or a brief description of what the project is about and what it does. For example -
-
-Welcome to our repository template designed to streamline your project setup! This robust template provides a reliable starting point for your new projects, covering an essential tech stack and encouraging best practices in documenting.
-
-This repository template aims to foster a user-friendly development environment by ensuring that every included file is concise and adequately self-documented. By adhering to this standard, we can promote increased clarity and maintainability throughout your project's lifecycle. Bundled within this template are resources that pave the way for seamless repository creation. Currently supported technologies are:
-
-- Terraform
-- Docker
-
-Make use of this repository template to expedite your project setup and enhance your productivity right from the get-go. Enjoy the advantage of having a well-structured, self-documented project that reduces overhead and increases focus on what truly matters - coding!
+Code repository for the Service Insights product, part of the National Screening Platform (NSP).
 
 ## Table of Contents
 
-- [Repository Template](#repository-template)
+- [Service Insights](#service-insights)
   - [Table of Contents](#table-of-contents)
   - [Setup](#setup)
     - [Prerequisites](#prerequisites)
@@ -32,46 +23,37 @@ Make use of this repository template to expedite your project setup and enhance 
 
 ## Setup
 
-By including preferably a one-liner or if necessary a set of clear CLI instructions we improve user experience. This should be a frictionless installation process that works on various operating systems (macOS, Linux, Windows WSL) and handles all the dependencies.
-
 Clone the repository
 
 ```shell
-git clone https://github.com/nhs-england-tools/repository-template.git
-cd nhs-england-tools/repository-template
+git clone https://github.com/NHSDigital/dtos-service-insights.git
+cd dtos-service-insights
 ```
 
 ### Prerequisites
 
 The following software packages, or their equivalents, are expected to be installed and configured:
 
-- [Docker](https://www.docker.com/) container runtime or a compatible tool, e.g. [Podman](https://podman.io/),
-- [asdf](https://asdf-vm.com/) version manager,
-- [GNU make](https://www.gnu.org/software/make/) 3.82 or later,
-- [GNU coreutils](https://www.gnu.org/software/coreutils/) and [GNU binutils](https://www.gnu.org/software/binutils/) may be required to build dependencies like Python, which may need to be compiled during installation. For macOS users, this has been scripted and automated by the `dotfiles` project; please see this [script](https://github.com/nhs-england-tools/dotfiles/blob/main/assets/20-install-base-packages.macos.sh) for details,
-- [Python](https://www.python.org/) required to run Git hooks,
-- [`jq`](https://jqlang.github.io/jq/) a lightweight and flexible command-line JSON processor.
-
-> [!NOTE]<br>
-> The version of GNU make available by default on macOS is earlier than 3.82. You will need to upgrade it or certain `make` tasks will fail. On macOS, you will need [Homebrew](https://brew.sh/) installed, then to install `make`, like so:
->
-> ```shell
-> brew install make
-> ```
->
-> You will then see instructions to fix your `$PATH` variable to make the newly installed version available. If you are using [dotfiles](https://github.com/nhs-england-tools/dotfiles), this is all done for you.
+- [Git](https://git-scm.com/) version control
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+- [Azure Storage Explorer](https://azure.microsoft.com/en-us/products/storage/storage-explorer)
 
 ### Configuration
 
-Installation and configuration of the toolchain dependencies
+1. Select the [NHS DToS profile](NHS_DToS.code-profile) as your VS Code profile to install all the recommended VS Code extensions
 
-```shell
-make config
-```
+2. [Set up local settings](docs/user-guides/Set_up_local_settings.md)
+
+3. [Set up local database](docs/user-guides/Set_up_local_database.md)
+
+4. [Set up commit signing](https://github.com/NHSDigital/software-engineering-quality-framework/blob/main/practices/guides/commit-signing.md#from-workstations)
 
 ## Usage
 
-After a successful installation, provide an informative example of how this project can be used. Additional code snippets, screenshots and demos work well in this space. You may also link to the other documentation resources, e.g. the [User Guide](./docs/user-guide.md) to demonstrate more use cases and to show more features.
+1. Start the Azurite Blob Service and Azurite Queue Service
+
+2. Run `func start` in the folder of each function project you wish to run
 
 ### Testing
 

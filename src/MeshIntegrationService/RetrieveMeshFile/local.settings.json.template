@@ -1,0 +1,17 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+        "MeshApiBaseUrl" : "http://localhost:8700/messageexchange",
+        "BSSMailBox": "X26ABC1",
+        "BSSContainerName": "sample-container",
+        "MeshPassword": "password",
+        "MeshSharedKey": "TestKey",
+        "MeshKeyPassphrase":"test123"
+
+    },
+    "Host": {
+      "LocalHttpPort": 6777
+    }
+}
