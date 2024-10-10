@@ -87,6 +87,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateDataAssets", "BIAnaly
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateDataAssetsTests", "..\tests\BIAnalyticsServiceTests\CreateDataAssetsTests\CreateDataAssetsTests.csproj", "{36FDD9C2-830C-4A76-BF1F-C012C3ED8425}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DemographicsService", "DemographicsService", "{1A0A629C-9BA1-4A19-8253-5137C2C0BA0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetDemographicsData", "DemographicsService\GetDemographicsData\GetDemographicsData.csproj", "{8004251F-AF5A-4030-B40F-0C3EA8948040}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetDemographicsDataTests", "..\tests\DemographicsServiceTests\GetDemographicsDataTests\GetDemographicsDataTests.csproj", "{5AC79E9B-0FC9-4B3F-9049-81419C6E41B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -221,6 +227,14 @@ Global
 		{36FDD9C2-830C-4A76-BF1F-C012C3ED8425}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36FDD9C2-830C-4A76-BF1F-C012C3ED8425}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36FDD9C2-830C-4A76-BF1F-C012C3ED8425}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8004251F-AF5A-4030-B40F-0C3EA8948040}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8004251F-AF5A-4030-B40F-0C3EA8948040}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8004251F-AF5A-4030-B40F-0C3EA8948040}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8004251F-AF5A-4030-B40F-0C3EA8948040}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AC79E9B-0FC9-4B3F-9049-81419C6E41B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AC79E9B-0FC9-4B3F-9049-81419C6E41B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AC79E9B-0FC9-4B3F-9049-81419C6E41B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AC79E9B-0FC9-4B3F-9049-81419C6E41B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -246,5 +260,6 @@ Global
 		{248A6EA6-7616-4BC9-9CA7-C9E3C7A0C1EA} = {4CBE2AE3-2FFC-46BE-8727-0B128F849495}
 		{E3459DCC-85DA-4B35-920F-5661E6F63D52} = {DACA4EB5-14F5-42D8-AD61-DA1FA4DBB6ED}
 		{A6C9E7C1-7A8A-41F9-A08C-F26D92C3F759} = {4B0AD4B3-4508-4F6B-AEBF-24B4578DB1DC}
+		{8004251F-AF5A-4030-B40F-0C3EA8948040} = {1A0A629C-9BA1-4A19-8253-5137C2C0BA0B}
 	EndGlobalSection
 EndGlobal
