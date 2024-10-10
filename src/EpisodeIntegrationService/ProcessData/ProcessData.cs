@@ -183,7 +183,7 @@ public class ProcessData
         catch (Exception ex)
         {
             _logger.LogError("Error in ProcessParticipantDataAsync: " + ex.Message);
-            ProcessParticipantDataAsync(participants, participantUrl);
+            await ProcessParticipantDataAsync(participants, participantUrl);
         }
     }
 }
