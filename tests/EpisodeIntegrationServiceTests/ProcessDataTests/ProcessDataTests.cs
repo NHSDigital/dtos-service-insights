@@ -97,6 +97,15 @@ public class ProcessDataTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<object>(state => state.ToString().Contains("Error in ProcessEpisodeDataAsync: ")),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Exactly(2));
+
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(4));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
     }
