@@ -24,8 +24,6 @@ IntegrationTests/
 ├── BaseIntegrationTest.cs
 ├── IntegrationTests.csproj
 ├── README.md
-└── TestData/
-    ├── test-happy-path.json
 ```
 
 ## Getting Started

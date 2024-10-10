@@ -1,5 +1,0 @@
-# Ignore appsettings.json
-appsettings.json
-
-# Ignore all CSV & JSON files
-*.csv

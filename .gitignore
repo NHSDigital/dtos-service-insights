@@ -26,3 +26,6 @@ obj
 
 # local.settings.json
 local.settings.json
+
+# Ignore appsettings.json
+appsettings.json

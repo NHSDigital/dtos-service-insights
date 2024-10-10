@@ -46,6 +46,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\TestData\**\*">
+      <link>TestData\%(RecursiveDir)%(Filename)%(Extension)</link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Shared\Model\Model.csproj" />
     <ProjectReference Include="..\..\src\Shared\Data\Data.csproj" />
   </ItemGroup>
