@@ -35,7 +35,7 @@ public class ReceiveData
         }
         catch (Exception ex)
         {
-            _logger.LogInformation("Error in ReceiveData function: " + ex.Message);
+            _logger.LogError("Error in ReceiveData function: " + ex.Message);
         }
     }
 }
