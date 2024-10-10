@@ -1,17 +1,16 @@
 # Running Containers Guide
 
-This guide explains how to start, stop, and manage containers in your environment, with tailored instructions for both macOS and Windows users.
+This guide explains how to start, stop, restart, and manage containers in your environment, with tailored instructions for both macOS and Windows users.
 
 ## Update submodules (dotnesh-mesh-client)
 
 1. **Update git submodules**
-   The src/Shared/dotnet-mesh-client folder needs to be populated if you just cloned the repository.
-   Run this command in the root of the repository, you only need to do this once.
-   After you will notice the src/Shared/dotnet-mesh-client will be populated.
+   The `src/Shared/dotnet-mesh-client` folder needs to be populated if you just cloned the repository.
+   Run this command in the root of the repository, you only need to do this once. Afterward, the `src/Shared/dotnet-mesh-client` will be populated.
 
-```bash
-  git submodule update --init --recursive
-```
+   ```bash
+   git submodule update --init --recursive
+   ```
 
 ## Setting Up the .env File
 
@@ -50,13 +49,25 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 
    ```bash
    podman compose --file compose-mac.yaml up -d sql-database
-
    podman compose --file compose-mac.yaml up -d database-setup
-
    ```
 
-2. **Start the Remaining Services**
-   Once the database is running, you can start the remaining services:
+2. **Start Azurite and Azurite Setup**
+   After the database is running, start Azurite and its setup service:
+
+   ```bash
+   podman compose --file compose-mac.yaml up -d azurite
+   podman compose --file compose-mac.yaml up -d azurite-setup
+   ```
+
+3. **Verify Access to Azurite and SQL**
+   Once both the database and Azurite services are running, you can check their availability:
+
+   - **For Azurite (Blob Storage)**: Use **Azure Storage Explorer** to ensure access to Azurite’s blob storage.
+   - **For SQL Database**: Use **Azure Data Studio** to connect to your SQL database and verify that the connection is working.
+
+4. **Start the Remaining Services**
+   Once the database and Azurite are confirmed to be running correctly, start the remaining services:
 
    ```bash
    podman compose --file compose-mac.yaml up -d
@@ -68,19 +79,30 @@ Due to differences in virtualization between macOS and Windows, we provide separ
    Like on macOS, begin by starting the database service:
 
    ```bash
-   podman compose --file compose.yaml up -d sql-database
-
-   podman compose --file compose.yaml up -d database-setup
+   podman compose --file compose-win.yaml up -d sql-database
+   podman compose --file compose-win.yaml up -d database-setup
 
    note: edit the db_setup_entrypoint.md and change to LF and save and rebuild the container
-
    ```
 
-2. **Start the Remaining Services**
-   Then, bring up the other services:
+2. **Start Azurite and Azurite Setup**
+   After the database, start Azurite and its setup service:
 
    ```bash
-   podman compose --file compose.yaml up -d
+   podman compose --file compose-win.yaml up -d azurite
+   podman compose --file compose-win.yaml up -d azurite-setup
+   ```
+
+3. **Verify Access to Azurite and SQL**
+
+   - **For Azurite (Blob Storage)**: Use **Azure Storage Explorer** to verify access to Azurite’s blob storage.
+   - **For SQL Database**: Use **Azure Data Studio** to check the connection to the SQL database.
+
+4. **Start the Remaining Services**
+   Once both the database and Azurite are confirmed to be running correctly, bring up the other services:
+
+   ```bash
+   podman compose --file compose-win.yaml up -d
    ```
 
 ## Stopping Containers
@@ -104,7 +126,7 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 If you have made changes to the code and need to rebuild the container image, use the following commands:
 
 - **Rebuild a Specific Service**
-  For example, to rebuild the `get-episode` or `sql-database` service:
+   For example, to rebuild the `get-episode` or `sql-database` service:
 
   ```bash
   podman compose --file compose-mac.yaml build get-episode
@@ -115,3 +137,19 @@ If you have made changes to the code and need to rebuild the container image, us
   ```
 
 Repeat the command for any other service you wish to rebuild.
+
+## Restarting Containers
+
+- **Restart All Containers**
+  To restart all containers using your compose file:
+
+  ```bash
+  podman compose --file compose-mac.yaml restart
+  ```
+
+- **Restart All Containers (With Stop and Start)**
+  Alternatively, if you want to fully stop and restart the containers:
+
+  ```bash
+  podman compose --file compose-mac.yaml down && podman compose --file compose-mac.yaml up -d
+  ```
