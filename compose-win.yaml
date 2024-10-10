@@ -13,8 +13,6 @@ services:
     network_mode: host
     image: mcr.microsoft.com/azure-storage/azurite
     command: azurite --silent
-    # networks:
-    #   - app-network
     ports:
       - "10000:10000"
       - "10001:10001"
@@ -28,8 +26,6 @@ services:
       dockerfile: ./azurite/Dockerfile
     depends_on:
       - azurite
-    # networks:
-    #   - app-network
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
 
@@ -37,8 +33,6 @@ services:
     container_name: sql-database
     network_mode: host
     image: mcr.microsoft.com/mssql/server:2022-latest
-    # networks:
-    #   - app-network
     ports:
       - "1433:1433"
     environment:
@@ -64,8 +58,6 @@ services:
     depends_on:
       sql-database:
         condition: service_healthy
-    # networks:
-    #   - app-network
     environment:
       - PASSWORD=${PASSWORD}
       - DB_NAME=${DB_NAME}
@@ -78,8 +70,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningEpisode/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "6010:6010"
     environment:
@@ -94,8 +84,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningProfile/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "6011:6011"
     environment:
@@ -111,8 +99,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsService/CreateDataAssets/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "6009:6009"
     environment:
@@ -131,8 +117,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "6007:6007"
     environment:
@@ -145,8 +129,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "6070:6070"
     environment:
@@ -160,8 +142,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "7777:7777"
     environment:
@@ -178,8 +158,6 @@ services:
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
     depends_on:
       - azurite
-    # networks:
-    #  - app-network
     ports:
       - "7071:7071"
     environment:
@@ -194,8 +172,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ProcessData/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "7072:7072"
     environment:
@@ -211,8 +187,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "6006:6006"
     environment:
@@ -228,8 +202,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "6060:6060"
     environment:
@@ -246,8 +218,6 @@ services:
       dockerfile: ./MeshIntegrationService/RetrieveMeshFile/Dockerfile
     depends_on:
       - azurite
-    # networks:
-    #   - app-network
     ports:
       - "6777:6777"
     environment:
@@ -269,8 +239,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "6061:6061"
     environment:
@@ -283,8 +251,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/UpdateParticipant/Dockerfile
-    # networks:
-    #   - app-network
     ports:
       - "7074:7074"
     environment:
