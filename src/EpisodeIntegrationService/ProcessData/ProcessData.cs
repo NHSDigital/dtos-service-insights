@@ -9,6 +9,7 @@ using CsvHelper;
 using System.Globalization;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
+
 public class ProcessData
 {
     private readonly ILogger<ProcessData> _logger;
@@ -25,7 +26,7 @@ public class ProcessData
     }
 
     [Function("ProcessData")]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    public async Task Run([BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
     {
         try
         {
@@ -34,24 +35,24 @@ public class ProcessData
             var (episodeUrl, participantUrl) = GetConfigurationUrls();
             if (string.IsNullOrEmpty(episodeUrl) || string.IsNullOrEmpty(participantUrl))
             {
-                return CreateErrorResponse(req, HttpStatusCode.InternalServerError, "One or both URLs are not configured");
+                _logger.LogError("One or both URLs are not configured");
             }
 
-            string? fileName = req.Query["FileName"];
+            string? fileName = name;
 
             if (string.IsNullOrEmpty(fileName))
             {
-                return CreateErrorResponse(req, HttpStatusCode.BadRequest, "no file name provided");
+                _logger.LogError("no file name provided");
             }
 
             if(fileName.StartsWith("episodes"))
             {
-                if(!CheckCsvFileHeaders(req.Body, FileType.Episodes))
+                if(!CheckCsvFileHeaders(myBlob, FileType.Episodes))
                 {
-                    return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Episodes CSV file headers are invalid.");
+                    _logger.LogError("Episodes CSV file headers are invalid.");
                 }
 
-                using (var reader = new StreamReader(req.Body))
+                using (var reader = new StreamReader(myBlob))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var episodesEnumerator = csv.GetRecords<BssEpisode>();
@@ -61,12 +62,12 @@ public class ProcessData
             }
             else if(fileName.StartsWith("subjects"))
             {
-                if(!CheckCsvFileHeaders(req.Body, FileType.Subjects))
+                if(!CheckCsvFileHeaders(myBlob, FileType.Subjects))
                 {
-                    return CreateErrorResponse(req, HttpStatusCode.BadRequest, "Subjects CSV file headers are invalid.");
+                    _logger.LogError("Subjects CSV file headers are invalid.");
                 }
 
-                using (var reader = new StreamReader(req.Body))
+                using (var reader = new StreamReader(myBlob))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var participantsEnumerator = csv.GetRecords<Participant>();
@@ -76,15 +77,14 @@ public class ProcessData
             }
             else
             {
-                return CreateErrorResponse(req, HttpStatusCode.BadRequest, "fileName is invalid. file name: " + fileName);
+                _logger.LogError("fileName is invalid. file name: " + fileName);
             }
 
             _logger.LogInformation("Data processed successfully.");
-            return req.CreateResponse(HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
-            return CreateErrorResponse(req, HttpStatusCode.InternalServerError, $"Error in ProcessData: {ex.Message} \n StackTrace: {ex.StackTrace}");
+            _logger.LogError($"Error in ProcessData: {ex.Message} \n StackTrace: {ex.StackTrace}");
         }
     }
 
@@ -119,14 +119,6 @@ public class ProcessData
             requestBody.Position = 0;
             return true;
         }
-    }
-
-    private HttpResponseData CreateErrorResponse(HttpRequestData req, HttpStatusCode statusCode, string message)
-    {
-        _logger.LogError(message);
-        var response = req.CreateResponse(statusCode);
-        response.WriteString(message);
-        return response;
     }
 
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)

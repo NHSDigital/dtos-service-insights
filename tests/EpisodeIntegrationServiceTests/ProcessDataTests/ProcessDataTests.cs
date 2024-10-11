@@ -14,17 +14,17 @@ namespace NHS.ServiceInsights.EpisodeIntegrationServiceTests;
 public class ProcessDataTests
 {
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
-    private readonly Mock<ILogger<ProcessData>> _mockLogger = new();
+    private readonly Mock<ILogger<NHS.ServiceInsights.EpisodeIntegrationService.ProcessData>> _mockLogger = new();
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
-    private readonly ProcessData _function;
+    private readonly NHS.ServiceInsights.EpisodeIntegrationService.ProcessData _function;
 
     public ProcessDataTests()
     {
         Environment.SetEnvironmentVariable("EpisodeManagementUrl", "EpisodeManagementUrl");
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
 
-        _function = new ProcessData(_mockLogger.Object, _mockHttpRequestService.Object);
+        _function = new NHS.ServiceInsights.EpisodeIntegrationService.ProcessData(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
     [TestMethod]
@@ -168,8 +168,6 @@ public class ProcessDataTests
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
-
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
 
     [TestMethod]
@@ -192,7 +190,14 @@ public class ProcessDataTests
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<object>(state => state.ToString().Contains("Episodes CSV file headers are invalid.")),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
     }
 
     [TestMethod]
@@ -217,7 +222,14 @@ public class ProcessDataTests
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<object>(state => state.ToString().Contains("Episodes CSV file headers are invalid.")),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
     }
 
     [TestMethod]
