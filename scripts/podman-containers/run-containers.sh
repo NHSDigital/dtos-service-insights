@@ -22,12 +22,12 @@ start_containers() {
 # macOS
 if [ "$OS" == "Darwin" ]; then
   echo "Running on macOS..."
-  start_containers "compose-mac.yaml"
+  start_containers "../../compose-mac.yaml"
 
 # Windows (using Windows Subsystem for Linux)
 elif [[ "$OS" == "Linux" && "$(uname -r)" == *"microsoft"* ]]; then
   echo "Running on Windows (WSL)..."
-  start_containers "compose-win.yaml"
+  start_containers "../../compose-win.yaml"
 
 else
   echo "Unsupported operating system: $OS"
