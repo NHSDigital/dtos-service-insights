@@ -36,6 +36,7 @@ public class ProcessData
             if (string.IsNullOrEmpty(episodeUrl) || string.IsNullOrEmpty(participantUrl))
             {
                 _logger.LogError("One or both URLs are not configured");
+                return;
             }
 
             string? fileName = name;
@@ -43,6 +44,7 @@ public class ProcessData
             if (string.IsNullOrEmpty(fileName))
             {
                 _logger.LogError("no file name provided");
+                return;
             }
 
             if(fileName.StartsWith("episodes"))
@@ -50,6 +52,7 @@ public class ProcessData
                 if(!CheckCsvFileHeaders(myBlob, FileType.Episodes))
                 {
                     _logger.LogError("Episodes CSV file headers are invalid.");
+                    return;
                 }
 
                 using (var reader = new StreamReader(myBlob))
@@ -65,6 +68,7 @@ public class ProcessData
                 if(!CheckCsvFileHeaders(myBlob, FileType.Subjects))
                 {
                     _logger.LogError("Subjects CSV file headers are invalid.");
+                    return;
                 }
 
                 using (var reader = new StreamReader(myBlob))
@@ -78,6 +82,7 @@ public class ProcessData
             else
             {
                 _logger.LogError("fileName is invalid. file name: " + fileName);
+                return;
             }
 
             _logger.LogInformation("Data processed successfully.");
@@ -85,6 +90,7 @@ public class ProcessData
         catch (Exception ex)
         {
             _logger.LogError($"Error in ProcessData: {ex.Message} \n StackTrace: {ex.StackTrace}");
+            return;
         }
     }
 
