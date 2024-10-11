@@ -27,7 +27,7 @@ public class GetDemographicsData
 
         if (string.IsNullOrEmpty(nhsNumber))
         {
-            _logger.LogError("Please enter a valid NHS Number.");
+            _logger.LogError("Missing NHS Number.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
