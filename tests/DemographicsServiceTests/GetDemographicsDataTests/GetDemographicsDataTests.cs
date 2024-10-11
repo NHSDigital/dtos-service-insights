@@ -46,7 +46,7 @@ public class GetDemographicsDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString() == "Please enter a valid NHS Number."),
+            It.Is<It.IsAnyType>((state, type) => state.ToString() == "Missing NHS Number."),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
