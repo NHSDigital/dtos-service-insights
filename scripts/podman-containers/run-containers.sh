@@ -16,7 +16,7 @@ start_containers() {
   podman compose --file "$compose_file" up -d azurite-setup
 
   echo "Starting remaining services..."
-  podman compose --file "$compose_file" up -d
+  podman compose --file "$compose_file" up -d  --no-parallel
 }
 
 # macOS
