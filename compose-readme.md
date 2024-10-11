@@ -5,8 +5,7 @@ This guide explains how to start, stop, restart, and manage containers in your e
 ## Update submodules (dotnesh-mesh-client)
 
 1. **Update git submodules**
-   The `src/Shared/dotnet-mesh-client` folder needs to be populated if you just cloned the repository.
-   Run this command in the root of the repository, you only need to do this once. Afterward, the `src/Shared/dotnet-mesh-client` will be populated.
+   The `src/Shared/dotnet-mesh-client` folder needs to be populated if you just cloned the repository. Run this command in the root of the repository (you only need to do this once). Afterward, the `src/Shared/dotnet-mesh-client` will be populated.
 
    ```bash
    git submodule update --init --recursive
@@ -38,11 +37,32 @@ Before starting the containers, you need to create a `.env` file based on the pr
 
    Ensure the correct database connection details are set based on your operating system.
 
-## Platform-Specific Setup
+## Starting Containers
 
-Due to differences in virtualization between macOS and Windows, we provide separate Docker Compose files for each platform. Follow the instructions for your operating system below.
+There are two options for starting your containers: using a provided shell script or manually running the Podman Compose commands. Choose the method that works best for your workflow.
 
-### Starting Containers on macOS
+### Option 1: Using the Shell Script
+
+For simplicity there is a script that will run all the `podman compose` commands in the correct order, based on your operating system.
+
+1. **Run the Script**
+   The script automatically detects your operating system (macOS or Windows via WSL) and starts the necessary containers.
+
+   ```bash
+   ./run-containers.sh
+   ```
+
+This script handles the following steps:
+
+- Starts the SQL Database and its setup service
+- Starts Azurite and its setup service
+- Brings up the remaining services
+
+### Option 2: Running Podman Compose Commands Manually
+
+If you prefer to run the commands manually, follow the instructions for your operating system below.
+
+#### Starting Containers on macOS
 
 1. **Start the Database First**
    The database service is resource-intensive, so it’s recommended to start it first:
@@ -73,10 +93,10 @@ Due to differences in virtualization between macOS and Windows, we provide separ
    podman compose --file compose-mac.yaml up -d
    ```
 
-### Starting Containers on Windows
+#### Starting Containers on Windows
 
 1. **Start the Database First**
-   Like on macOS, begin by starting the database service:
+   Begin by starting the database service:
 
    ```bash
    podman compose --file compose-win.yaml up -d sql-database
@@ -126,7 +146,7 @@ Due to differences in virtualization between macOS and Windows, we provide separ
 If you have made changes to the code and need to rebuild the container image, use the following commands:
 
 - **Rebuild a Specific Service**
-   For example, to rebuild the `get-episode` or `sql-database` service:
+  For example, to rebuild the `get-episode` or `sql-database` service:
 
   ```bash
   podman compose --file compose-mac.yaml build get-episode
