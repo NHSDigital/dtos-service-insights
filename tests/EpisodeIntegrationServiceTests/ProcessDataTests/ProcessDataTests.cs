@@ -98,7 +98,6 @@ public class ProcessDataTests
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(4));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
     }
-
     
     [TestMethod]
     public async Task ProcessData_ShouldLogErrorOnFindingABadRowInSubjectsCsvFile()
