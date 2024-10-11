@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
-using System.Text;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
@@ -105,14 +104,34 @@ public class CreateDataAssets
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
+    private async Task<DemographicsData> GetDemographicsDataAsync(string nhsNumber)
+    {
+        var baseDemographicsServiceUrl = Environment.GetEnvironmentVariable("DemographicsServiceUrl");
+        var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={nhsNumber}";
+        _logger.LogInformation("Requesting demographic service URL: {Url}",demographicsServiceUrl);
+
+        DemographicsData demographicsData;
+
+        var demographicsResponse = await _httpRequestService.SendGet(demographicsServiceUrl);
+        demographicsResponse.EnsureSuccessStatusCode();
+
+        var demographicsJson = await demographicsResponse.Content.ReadAsStringAsync();
+        _logger.LogInformation("Demographics data retrieved");
+        demographicsData = JsonSerializer.Deserialize<DemographicsData>(demographicsJson);
+
+        return demographicsData;
+    }
+
     private async Task SendToCreateParticipantScreeningProfileAsync(Participant participant)
     {
+        DemographicsData demographicsData = await GetDemographicsDataAsync(participant.nhs_number);
+
         var screeningProfile = new ParticipantScreeningProfile
         {
             NhsNumber = participant.nhs_number,
             ScreeningName = String.Empty,
-            PrimaryCareProvider = String.Empty,
-            PreferredLanguage = participant.preferred_language,
+            PrimaryCareProvider = demographicsData.PrimaryCareProvider,
+            PreferredLanguage = demographicsData.PreferredLanguage,
             ReasonForRemoval = participant.removal_reason,
             ReasonForRemovalDt = String.Empty,
             NextTestDueDate = participant.next_test_due_date,
