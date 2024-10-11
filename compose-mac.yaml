@@ -74,7 +74,7 @@ services:
   # BI Analytics Data Service
   create-participant-screening-episode:
     container_name: create-participant-screening-episode
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningEpisode/Dockerfile
@@ -90,7 +90,7 @@ services:
 
   create-participant-screening-profile:
     container_name: create-participant-screening-profile
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningProfile/Dockerfile
@@ -107,7 +107,7 @@ services:
   # BI Analytics Service
   create-data-assets:
     container_name: create-data-assets
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsService/CreateDataAssets/Dockerfile
@@ -127,7 +127,7 @@ services:
   # Episode Data Service
   create-episode:
     container_name: create-episode
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
@@ -141,7 +141,7 @@ services:
 
   get-episode:
     container_name: get-episode
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
@@ -156,7 +156,7 @@ services:
 
   update-episode:
     container_name: update-episode
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
@@ -172,7 +172,7 @@ services:
   # Episode Integration Service
   receive-data:
     container_name: receive-data
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
@@ -190,7 +190,7 @@ services:
 
   process-data:
     container_name: process-data
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ProcessData/Dockerfile
@@ -207,7 +207,7 @@ services:
   # Episode Management Service
   create-update-episode:
     container_name: create-update-episode
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
@@ -224,7 +224,7 @@ services:
 
   get-episode-mgmt:
     container_name: get-episode-mgmt
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
@@ -240,7 +240,7 @@ services:
   # Mesh Mailbox Management Service
   retrieve-mesh-file:
     container_name: retrieve-mesh-file
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./MeshIntegrationService/RetrieveMeshFile/Dockerfile
@@ -265,7 +265,7 @@ services:
   # Participant Management Service
   get-participant:
     container_name: get-participant
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
@@ -279,7 +279,7 @@ services:
 
   update-participant:
     container_name: update-participant
-    restart: on-failure
+    restart: always
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/UpdateParticipant/Dockerfile
