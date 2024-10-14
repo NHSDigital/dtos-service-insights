@@ -49,7 +49,8 @@ For simplicity there is a script that will run all the `podman compose` commands
    The script automatically detects your operating system (macOS or Windows via WSL) and starts the necessary containers.
 
    ```bash
-   ./scripts/podman-containers/run-containers.sh
+   cd scripts/podman-containers
+   sh ./run-containers.sh
    ```
 
 This script handles the following steps:

@@ -32,6 +32,7 @@ services:
       - app-network
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
+      - AZURITE_CONTAINER_NAME=${AZURITE_CONTAINER_NAME}
 
   sql-database:
     container_name: sql-database
