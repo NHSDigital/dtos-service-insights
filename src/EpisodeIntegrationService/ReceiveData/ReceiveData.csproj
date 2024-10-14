@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="33.0.1" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.19.0" />
-    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.13" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.15.1" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs" Version="6.6.0" />
   </ItemGroup>
@@ -22,10 +22,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Shared\Common\Common.csproj" />
     <ProjectReference Include="..\..\Shared\Model\Model.csproj" />
   </ItemGroup>
-  </Project>
+</Project>

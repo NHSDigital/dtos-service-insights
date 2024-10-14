@@ -36,7 +36,7 @@ namespace Tests.Integration.EndToEndTests
             await _databaseHelper.CleanDatabaseAsync();
 
             // Extract all Episode IDs from the JSON file
-            var localFilePath = Path.Combine(AppContext.BaseDirectory, AppSettings.FilePaths.LocalJsonFile);
+            var localFilePath = Path.Combine(AppContext.BaseDirectory, AppSettings.FilePaths.LocalEpisodesCSVFile);
             _episodeIds = JsonHelper.ExtractEpisodeIds(localFilePath);
             Assert.IsTrue(_episodeIds.Count > 0, "No Episode IDs found in the JSON file.");
         }
@@ -55,7 +55,7 @@ namespace Tests.Integration.EndToEndTests
 
         private async Task UploadFileToBlobStorageAsync()
         {
-            var localFilePath = Path.Combine(AppContext.BaseDirectory, AppSettings.FilePaths.LocalJsonFile);
+            var localFilePath = Path.Combine(AppContext.BaseDirectory, AppSettings.FilePaths.LocalEpisodesCSVFile);
             Assert.IsTrue(File.Exists(localFilePath), $"File not found at {localFilePath}");
 
             bool success = await _blobStorageHelper.UploadFileToBlobStorageAsync(localFilePath, _blobContainerName);
