@@ -145,7 +145,6 @@ public class ReceiveDataTests
         // Act
         await _function.Run(stream, "invalid_file_name");
 
-
         // Assert
         _mockLogger.Verify(log =>
             log.Log(
