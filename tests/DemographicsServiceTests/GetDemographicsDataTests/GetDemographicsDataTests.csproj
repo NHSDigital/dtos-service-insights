@@ -4,11 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
-  <ItemGroup>
+<ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
@@ -20,9 +21,11 @@
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 
+
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\EpisodeIntegrationService\ProcessData\ProcessData.csproj" />
+    <ProjectReference Include="..\..\..\src\DemographicsService\GetDemographicsData\GetDemographicsData.csproj" />
     <ProjectReference Include="..\..\TestUtils\TestUtils.csproj" />
+    <ProjectReference Include="..\..\..\src\Shared\Common\Common.csproj" />
   </ItemGroup>
 
 </Project>
