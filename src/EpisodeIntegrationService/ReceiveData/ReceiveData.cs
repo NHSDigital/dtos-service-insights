@@ -25,7 +25,7 @@ public class ReceiveData
     }
 
     [Function("ReceiveData")]
-    public async Task Run([BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string fileName)
+    public async Task Run([BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
     {
         try
         {
@@ -38,7 +38,7 @@ public class ReceiveData
                 return;
             }
 
-            if(fileName.StartsWith("episodes"))
+            if(name.StartsWith("episodes"))
             {
                 if(!CheckCsvFileHeaders(myBlob, FileType.Episodes))
                 {
@@ -54,7 +54,7 @@ public class ReceiveData
                     await ProcessEpisodeDataAsync(episodesEnumerator, episodeUrl);
                 }
             }
-            else if(fileName.StartsWith("subjects"))
+            else if(name.StartsWith("subjects"))
             {
                 if(!CheckCsvFileHeaders(myBlob, FileType.Subjects))
                 {
@@ -72,7 +72,7 @@ public class ReceiveData
             }
             else
             {
-                _logger.LogError("fileName is invalid. file name: " + fileName);
+                _logger.LogError("fileName is invalid. file name: " + name);
                 return;
             }
 
