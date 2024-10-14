@@ -228,7 +228,7 @@ services:
       - ASPNETCORE_URLS=http://*:6777
       - MeshApiBaseUrl=${MESHAPIBASEURL}
       - BSSMailBox=${BSSMAILBOX}
-      - BSSContainerName=${BSSCONTAINERNAME}
+      - BSSContainerName=${AZURITE_CONTAINER_NAME}
       - MeshPassword=${MESHPASSWORD}
       - MeshSharedKey=${MESHSHAREDKEY}
       - MeshKeyPassphrase=${MESHKEYPASSPHRASE}
