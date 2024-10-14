@@ -12,24 +12,24 @@ using System.Text;
 namespace NHS.ServiceInsights.EpisodeIntegrationServiceTests;
 
 [TestClass]
-public class ProcessDataTests
+public class ReceiveDataTests
 {
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
-    private readonly Mock<ILogger<EpisodeIntegrationService.ProcessData>> _mockLogger = new();
+    private readonly Mock<ILogger<EpisodeIntegrationService.ReceiveData>> _mockLogger = new();
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
-    private readonly EpisodeIntegrationService.ProcessData _function;
+    private readonly EpisodeIntegrationService.ReceiveData _function;
 
-    public ProcessDataTests()
+    public ReceiveDataTests()
     {
         Environment.SetEnvironmentVariable("EpisodeManagementUrl", "EpisodeManagementUrl");
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
 
-        _function = new EpisodeIntegrationService.ProcessData(_mockLogger.Object, _mockHttpRequestService.Object);
+        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
     [TestMethod]
-    public async Task ProcessData_ShouldSendEpisodeDataToDownstreamFunctions()
+    public async Task ReceiveData_ShouldSendEpisodeDataToDownstreamFunctions()
     {
         // Arrange
         string data = "\"nhs_number\",\"episode_id\",\"episode_type\",\"change_db_date_time\",\"episode_date\",\"appointment_made\",\"date_of_foa\",\"date_of_as\",\"early_recall_date\",\"call_recall_status_authorised_by\",\"end_code\",\"end_code_last_updated\",\"bso_organisation_code\",\"bso_batch_id\",\"reason_closed_code\",\"end_point\",\"final_action_code\"\n" +
@@ -49,7 +49,7 @@ public class ProcessDataTests
     }
 
     [TestMethod]
-    public async Task ProcessData_ShouldSendParticipantDataToDownstreamFunctions()
+    public async Task ReceiveData_ShouldSendParticipantDataToDownstreamFunctions()
     {
         // Arrange
         string data = "\"change_db_date_time\",\"nhs_number\",\"superseded_nhs_number\",\"gp_practice_code\",\"bso_organisation_code\",\"next_test_due_date\",\"subject_status_code\",\"early_recall_date\",\"latest_invitation_date\",\"removal_reason\",\"removal_date\",\"reason_for_ceasing_code\",\"is_higher_risk\",\"higher_risk_next_test_due_date\",\"hr_recall_due_date\",\"higher_risk_referral_reason_code\",\"date_irradiated\",\"is_higher_risk_active\",\"gene_code\",\"ntdd_calculation_method\",\"preferred_language\"\n" +
@@ -69,7 +69,7 @@ public class ProcessDataTests
     }
 
     [TestMethod]
-    public async Task ProcessData_ShouldLogErrorOnFindingABadRowInEpisodesCsvFile()
+    public async Task ReceiveData_ShouldLogErrorOnFindingABadRowInEpisodesCsvFile()
     {
         // Arrange
         string data = "\"nhs_number\",\"episode_id\",\"episode_type\",\"change_db_date_time\",\"episode_date\",\"appointment_made\",\"date_of_foa\",\"date_of_as\",\"early_recall_date\",\"call_recall_status_authorised_by\",\"end_code\",\"end_code_last_updated\",\"bso_organisation_code\",\"bso_batch_id\",\"reason_closed_code\",\"end_point\",\"final_action_code\"\n" +
@@ -98,9 +98,9 @@ public class ProcessDataTests
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(4));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
     }
-    
+
     [TestMethod]
-    public async Task ProcessData_ShouldLogErrorOnFindingABadRowInSubjectsCsvFile()
+    public async Task ReceiveData_ShouldLogErrorOnFindingABadRowInSubjectsCsvFile()
     {
         // Arrange
         string data = "\"change_db_date_time\",\"nhs_number\",\"superseded_nhs_number\",\"gp_practice_code\",\"bso_organisation_code\",\"next_test_due_date\",\"subject_status_code\",\"early_recall_date\",\"latest_invitation_date\",\"removal_reason\",\"removal_date\",\"reason_for_ceasing_code\",\"is_higher_risk\",\"higher_risk_next_test_due_date\",\"hr_recall_due_date\",\"higher_risk_referral_reason_code\",\"date_irradiated\",\"is_higher_risk_active\",\"gene_code\",\"ntdd_calculation_method\",\"preferred_language\"\n" +
@@ -131,7 +131,7 @@ public class ProcessDataTests
     }
 
     [TestMethod]
-    public async Task ProcessData_ShouldReturnBadRequestAndLogErrorIfFileNameIsInvalid()
+    public async Task ReceiveData_ShouldReturnBadRequestAndLogErrorIfFileNameIsInvalid()
     {
         // Arrange
         string data = "\"change_db_date_time\",\"nhs_number\",\"superseded_nhs_number\",\"gp_practice_code\",\"bso_organisation_code\",\"next_test_due_date\",\"subject_status_code\",\"early_recall_date\",\"latest_invitation_date\",\"removal_reason\",\"removal_date\",\"reason_for_ceasing_code\",\"is_higher_risk\",\"higher_risk_next_test_due_date\",\"hr_recall_due_date\",\"higher_risk_referral_reason_code\",\"date_irradiated\",\"is_higher_risk_active\",\"gene_code\",\"ntdd_calculation_method\",\"preferred_language\"\n" +
@@ -158,7 +158,7 @@ public class ProcessDataTests
     }
 
     [TestMethod]
-    public async Task ProcessData_ShouldReturnErrorIfEpisodesFileHeadersAreNotValid()
+    public async Task ReceiveData_ShouldReturnErrorIfEpisodesFileHeadersAreNotValid()
     {
         // Arrange
         string data = "\"INVALID\",\"episode_id\",\"episode_type\",\"change_db_date_time\",\"episode_date\",\"date_of_foa\",\"date_of_as\",\"early_recall_date\",\"call_recall_status_authorised_by\",\"end_code\",\"end_code_last_updated\",\"bso_organisation_code\",\"bso_batch_id\",\"reason_closed_code\",\"end_point\",\"final_action_code\"\n" +
@@ -184,7 +184,7 @@ public class ProcessDataTests
     }
 
     [TestMethod]
-    public async Task ProcessData_ShouldReturnErrorIfSubjectsFileHeadersAreNotValid()
+    public async Task ReceiveData_ShouldReturnErrorIfSubjectsFileHeadersAreNotValid()
     {
         // Arrange
         string data = "\"INVALID\",\"nhs_number\",\"superseded_nhs_number\",\"gp_practice_code\",\"bso_organisation_code\",\"next_test_due_date\",\"subject_status_code\",\"early_recall_date\",\"latest_invitation_date\",\"removal_reason\",\"removal_date\",\"reason_for_ceasing_code\",\"is_higher_risk\",\"higher_risk_next_test_due_date\",\"hr_recall_due_date\",\"higher_risk_referral_reason_code\",\"date_irradiated\",\"is_higher_risk_active\",\"gene_code\",\"ntdd_calculation_method\",\"preferred_language\"\n" +
@@ -212,7 +212,7 @@ public class ProcessDataTests
     }
 
     [TestMethod]
-    public async Task ProcessData_ShouldSkipEpisodesRowIfSendPostThrowsException()
+    public async Task ReceiveData_ShouldSkipEpisodesRowIfSendPostThrowsException()
     {
         // Arrange
         string data = "\"nhs_number\",\"episode_id\",\"episode_type\",\"change_db_date_time\",\"episode_date\",\"appointment_made\",\"date_of_foa\",\"date_of_as\",\"early_recall_date\",\"call_recall_status_authorised_by\",\"end_code\",\"end_code_last_updated\",\"bso_organisation_code\",\"bso_batch_id\",\"reason_closed_code\",\"end_point\",\"final_action_code\"\n" +
@@ -233,7 +233,7 @@ public class ProcessDataTests
     }
 
     [TestMethod]
-    public async Task ProcessData_ShouldSkipSubjectsRowIfSendPostThrowsException()
+    public async Task ReceiveData_ShouldSkipSubjectsRowIfSendPostThrowsException()
     {
         // Arrange
         string data = "\"change_db_date_time\",\"nhs_number\",\"superseded_nhs_number\",\"gp_practice_code\",\"bso_organisation_code\",\"next_test_due_date\",\"subject_status_code\",\"early_recall_date\",\"latest_invitation_date\",\"removal_reason\",\"removal_date\",\"reason_for_ceasing_code\",\"is_higher_risk\",\"higher_risk_next_test_due_date\",\"hr_recall_due_date\",\"higher_risk_referral_reason_code\",\"date_irradiated\",\"is_higher_risk_active\",\"gene_code\",\"ntdd_calculation_method\",\"preferred_language\"\n" +

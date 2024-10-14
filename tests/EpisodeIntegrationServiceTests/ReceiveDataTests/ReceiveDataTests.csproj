@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\EpisodeIntegrationService\ProcessData\ProcessData.csproj" />
+    <ProjectReference Include="..\..\..\src\EpisodeIntegrationService\ReceiveData\ReceiveData.csproj" />
     <ProjectReference Include="..\..\TestUtils\TestUtils.csproj" />
   </ItemGroup>
 
