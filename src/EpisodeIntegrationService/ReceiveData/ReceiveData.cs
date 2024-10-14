@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using System.Text.Json;
 using System.Net;
 using CsvHelper;
@@ -26,7 +25,7 @@ public class ReceiveData
     }
 
     [Function("ReceiveData")]
-    public async Task Run([BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
+    public async Task Run([BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string fileName)
     {
         try
         {
@@ -36,14 +35,6 @@ public class ReceiveData
             if (string.IsNullOrEmpty(episodeUrl) || string.IsNullOrEmpty(participantUrl))
             {
                 _logger.LogError("One or both URLs are not configured");
-                return;
-            }
-
-            string? fileName = name;
-
-            if (string.IsNullOrEmpty(fileName))
-            {
-                _logger.LogError("no file name provided");
                 return;
             }
 
