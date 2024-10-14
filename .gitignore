@@ -27,5 +27,8 @@ obj
 # Local Settings
 local.settings.json
 
+# Ignore appsettings.json
+appsettings.json
+
 # Local Environment
 .env
