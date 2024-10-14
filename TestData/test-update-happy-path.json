@@ -1,0 +1,86 @@
+{
+  "Participants": [
+    {
+      "nhs_number": "1111111112",
+      "next_test_due_date": "null",
+      "gp_practice_id": "39",
+      "subject_status_code": "NORMAL",
+      "is_higher_risk": "null",
+      "higher_risk_next_test_due_date": "null",
+      "removal_reason": "null",
+      "removal_date": "null",
+      "bso_organisation_id": "null",
+      "early_recall_date": "null",
+      "latest_invitation_date": "null",
+      "preferred_language": "null",
+      "higher_risk_referral_reason_code": "null",
+      "date_irradiated": "null",
+      "is_higher_risk_active": "null",
+      "gene_code": "null",
+      "ntdd_calculation_method": "null"
+    },
+    {
+      "nhs_number": "1111111110",
+      "next_test_due_date": "null",
+      "gp_practice_id": "null",
+      "subject_status_code": "NORMAL",
+      "is_higher_risk": "null",
+      "higher_risk_next_test_due_date": "null",
+      "removal_reason": "MENTAL_HOSPITAL",
+      "removal_date": "2017-07-28",
+      "bso_organisation_id": "null",
+      "early_recall_date": "null",
+      "latest_invitation_date": "null",
+      "preferred_language": "null",
+      "higher_risk_referral_reason_code": "null",
+      "date_irradiated": "null",
+      "is_higher_risk_active": "null",
+      "gene_code": "null",
+      "ntdd_calculation_method": "null"
+    }
+  ],
+  "Episodes": [
+    {
+      "episode_id": "745395",
+      "episode_type": "AAA",
+      "episode_date": "01/01/2000",
+      "appointment_made": "TRUE",
+      "date_of_foa": "01/01/2000",
+      "date_of_as": "01/01/2000",
+      "early_recall_date": "NULL",
+      "call_recall_status_authorised_by": "SCREENING_OFFICE",
+      "end_code": "SC",
+      "end_code_last_updated": "01/01/2000",
+      "bso_organisation_code": "PBO",
+      "bso_batch_id": "ECHO"
+    },
+    {
+      "episode_id": "756047",
+      "episode_type": "EEE",
+      "episode_date": "25/08/2017",
+      "appointment_made": "TRUE",
+      "date_of_foa": "25/08/2017",
+      "date_of_as": "NULL",
+      "early_recall_date": "NULL",
+      "call_recall_status_authorised_by": "SCREENING_OFFICE",
+      "end_code": "WF",
+      "end_code_last_updated": "25/08/2017",
+      "bso_organisation_code": "TEST",
+      "bso_batch_id": "WFONCHANGE"
+    },
+    {
+      "episode_id": "712994",
+      "episode_type": "ZZ",
+      "episode_date": "01/02/2017",
+      "appointment_made": "TRUE",
+      "date_of_foa": "01/04/2017",
+      "date_of_as": "NULL",
+      "early_recall_date": "NULL",
+      "call_recall_status_authorised_by": "NULL",
+      "end_code": "NULL",
+      "end_code_last_updated": "NULL",
+      "bso_organisation_code": "AGA",
+      "bso_batch_id": "AGA787442W"
+    }
+  ]
+}
