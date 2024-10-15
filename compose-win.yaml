@@ -160,22 +160,9 @@ services:
     depends_on:
       - azurite
     ports:
-      - "7071:7071"
-    environment:
-      - AzureWebJobsStorage=UseDevelopmentStorage=true
-      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-      - ASPNETCORE_URLS=http://*:7071
-      - ProcessDataURL=http://127.0.0.1:7072/api/ProcessData
-
-  process-data:
-    container_name: process-data
-    network_mode: host
-    build:
-      context: ./src/
-      dockerfile: ./EpisodeIntegrationService/ProcessData/Dockerfile
-    ports:
       - "7072:7072"
     environment:
+      - AzureWebJobsStorage=UseDevelopmentStorage=true
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7072
       - EpisodeManagementUrl=http://127.0.0.1:6006/api/CreateUpdateEpisode
