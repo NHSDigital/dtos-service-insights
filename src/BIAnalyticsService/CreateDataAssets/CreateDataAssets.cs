@@ -55,7 +55,7 @@ public class CreateDataAssets
 
         catch (Exception ex)
         {
-            _logger.LogError("Issue when getting episode from {getEpisodeUrl}. \nException: {ex}", getEpisodeUrl ,ex);
+            _logger.LogError("Issue when getting episode from {getEpisodeUrl}. \nException: {ex}", getEpisodeUrl, ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
@@ -63,7 +63,7 @@ public class CreateDataAssets
 
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
         var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
-        _logger.LogInformation("Requesting participant URL: {Url}",participantUrl);
+        _logger.LogInformation("Requesting participant URL: {Url}", participantUrl);
 
         Participant participant;
 
@@ -108,7 +108,7 @@ public class CreateDataAssets
     {
         var baseDemographicsServiceUrl = Environment.GetEnvironmentVariable("DemographicsServiceUrl");
         var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={nhsNumber}";
-        _logger.LogInformation("Requesting demographic service URL: {Url}",demographicsServiceUrl);
+        _logger.LogInformation("Requesting demographic service URL: {Url}", demographicsServiceUrl);
 
         DemographicsData demographicsData;
 
@@ -165,7 +165,7 @@ public class CreateDataAssets
         {
             EpisodeId = episode.EpisodeId,
             ScreeningName = episode.ScreeningId,
-            NhsNumber= episode.NhsNumber,
+            NhsNumber = episode.NhsNumber,
             EpisodeType = episode.EpisodeTypeId,
             EpisodeTypeDescription = String.Empty,
             EpisodeOpenDate = episode.EpisodeOpenDate,
