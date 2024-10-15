@@ -4,8 +4,8 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NHS.ServiceInsights.Common;
+using NHS.ServiceInsights.ParticipantManagementService;
 using NHS.ServiceInsights.TestUtils;
-using updateParticipant;
 
 namespace NHS.ServiceInsights.ParticipantManagementServiceTests;
 

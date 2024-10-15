@@ -1,5 +1,3 @@
-namespace updateParticipant;
-
 using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -7,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
-using NHS.ServiceInsights.Model;
 
+namespace NHS.ServiceInsights.ParticipantManagementService;
 
 public class UpdateParticipant
 {
@@ -46,5 +44,3 @@ public class UpdateParticipant
         }
     }
 }
-
-

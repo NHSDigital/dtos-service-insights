@@ -16,7 +16,6 @@ public class HttpRequestService : IHttpRequestService
         var response = await _httpClient.GetAsync(url);
 
         return response;
-
     }
 
     public async Task<HttpResponseMessage> SendPut(string url, string putData)

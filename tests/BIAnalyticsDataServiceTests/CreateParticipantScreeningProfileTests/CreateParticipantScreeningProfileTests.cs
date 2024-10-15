@@ -7,9 +7,8 @@ using NHS.ServiceInsights.BIAnalyticsDataService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
-using System.Security.Cryptography.X509Certificates;
 
-namespace NHS.ServiceInsights.CreateParticipantScreeningProfileTests;
+namespace NHS.ServiceInsights.BIAnalyticsDataServiceTests;
 
 [TestClass]
 public class CreateParticipantScreeningProfileTests
@@ -20,7 +19,8 @@ public class CreateParticipantScreeningProfileTests
     private readonly SetupRequest _setupRequest = new();
     private readonly CreateParticipantScreeningProfile _function;
 
-    private readonly ParticipantScreeningProfile ValidParticipantScreeningProfile = new ParticipantScreeningProfile() {
+    private readonly ParticipantScreeningProfile ValidParticipantScreeningProfile = new ParticipantScreeningProfile()
+    {
         NhsNumber = "123456789",
         ScreeningName = "TestScreeningName",
         PrimaryCareProvider = "TestPrimaryCareProvider",

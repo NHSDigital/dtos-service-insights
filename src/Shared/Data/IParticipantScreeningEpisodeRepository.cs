@@ -1,4 +1,3 @@
-
 using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.Data;

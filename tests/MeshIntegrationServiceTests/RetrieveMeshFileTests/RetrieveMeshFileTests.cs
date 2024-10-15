@@ -7,6 +7,7 @@ using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.MeshIntegrationService;
 
 namespace NHS.ServiceInsights.MeshIntegrationServiceTests;
+
 [TestClass]
 public class RetrieveMeshFileTests
 {
@@ -58,10 +59,7 @@ public class RetrieveMeshFileTests
         _mockMeshInboxService.Verify(i => i.GetMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         _mockBlobStorageHelper.Verify(i => i.UploadFileToBlobStorage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<BlobFile>()), Times.Once);
         _mockMeshInboxService.Verify(i => i.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-
-
     }
-
 
     [TestMethod]
     public async Task Run_DownloadSingleChunkedFileFromMesh_Success()

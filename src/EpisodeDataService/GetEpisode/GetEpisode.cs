@@ -19,12 +19,10 @@ public class GetEpisode
         _episodesRepository = episodeRepository;
     }
 
-
     [Function("GetEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
     {
         string episodeId;
-
 
         episodeId = req.Query["episodeId"];
         if (string.IsNullOrEmpty(episodeId))
@@ -34,7 +32,6 @@ public class GetEpisode
         }
 
         _logger.LogInformation("Getting Episode ID: {episodeId}", episodeId);
-
 
         try
         {
@@ -61,5 +58,4 @@ public class GetEpisode
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
-
 }

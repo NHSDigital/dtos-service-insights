@@ -8,8 +8,8 @@ using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Common;
 using System.Collections.Specialized;
 
-
 namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
+
 [TestClass]
 public class CreateDataAssetsTests
 {

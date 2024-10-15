@@ -7,9 +7,8 @@ using NHS.ServiceInsights.BIAnalyticsDataService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
-using System.Security.Cryptography.X509Certificates;
 
-namespace NHS.ServiceInsights.CreateParticipantScreeningEpisodeTests;
+namespace NHS.ServiceInsights.BIAnalyticsDataServiceTests;
 
 [TestClass]
 public class CreateParticipantScreeningEpisodeTests
@@ -20,7 +19,8 @@ public class CreateParticipantScreeningEpisodeTests
     private readonly SetupRequest _setupRequest = new();
     private readonly CreateParticipantScreeningEpisode _function;
 
-    private readonly ParticipantScreeningEpisode ValidParticipantScreeningEpisode = new ParticipantScreeningEpisode() {
+    private readonly ParticipantScreeningEpisode ValidParticipantScreeningEpisode = new ParticipantScreeningEpisode()
+    {
         EpisodeId = "1",
         ScreeningName = "TestScreeningName",
         NhsNumber = "123456789",

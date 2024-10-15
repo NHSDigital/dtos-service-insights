@@ -25,4 +25,3 @@ public static class ParticipantRepository
         return Participants.FirstOrDefault(p => p.nhs_number == NhsNumber);
     }
 }
-
