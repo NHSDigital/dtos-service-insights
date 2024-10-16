@@ -33,7 +33,8 @@ public class RetrieveMeshFile
     {
         _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
-        static bool messageFilter(MessageMetaData i) => true; // No current filter defined there might be business rules here
+        static bool messageFilter(MessageMetaData i) =>
+            (i.FileName.StartsWith("bss_subjects") || i.FileName.StartsWith("bss_episodes")) && i.FileName.EndsWith(".csv");
 
         try
         {
