@@ -16,7 +16,7 @@ public static class MeshResponseTestHelper
         };
     }
 
-    public static MessageMetaData CreateMessageMetaData(string mailboxId, string messageId, string? filename = null, string? messageType = "DATA", string? chunkRange = null, int? TotalChunks = null)
+    public static MessageMetaData CreateMessageMetaData(string mailboxId, string messageId, string? filename = "bss_episodes.csv", string? messageType = "DATA", string? chunkRange = null, int? TotalChunks = null)
     {
         return new MessageMetaData
         {
@@ -31,7 +31,7 @@ public static class MeshResponseTestHelper
         };
     }
 
-    public static MeshResponse<HeadMessageResponse> CreateSuccessfulMeshHeadResponse(string mailboxId, string messageId, string? filename = null, string? messageType = "DATA", string? chunkRange = null, int? TotalChunks = null)
+    public static MeshResponse<HeadMessageResponse> CreateSuccessfulMeshHeadResponse(string mailboxId, string messageId, string? filename = "bss_episodes.csv", string? messageType = "DATA", string? chunkRange = null, int? TotalChunks = null)
     {
         return new MeshResponse<HeadMessageResponse>
         {
