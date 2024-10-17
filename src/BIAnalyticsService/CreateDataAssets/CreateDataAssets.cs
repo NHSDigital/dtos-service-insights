@@ -156,7 +156,6 @@ public class CreateDataAssets
         _logger.LogInformation($"Sending ParticipantScreeningProfile Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
 
         await _httpRequestService.SendPost(screeningProfileUrl, serializedParticipantScreeningProfile);
-
     }
 
     private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode)

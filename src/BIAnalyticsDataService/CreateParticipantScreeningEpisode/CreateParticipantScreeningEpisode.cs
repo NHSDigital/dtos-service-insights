@@ -33,7 +33,7 @@ public class CreateParticipantScreeningEpisode
                 episode = JsonSerializer.Deserialize<ParticipantScreeningEpisode>(postData);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError("CreateParticipantScreeningEpisode: Could not read Json data.\nException: {ex}", ex);
             return req.CreateResponse(HttpStatusCode.BadRequest);

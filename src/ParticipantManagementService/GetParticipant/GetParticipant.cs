@@ -4,19 +4,16 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-
 namespace NHS.ServiceInsights.ParticipantManagementService;
 
 public class GetParticipant
 {
     private readonly ILogger<GetParticipant> _logger;
 
-
-public GetParticipant(ILogger<GetParticipant> logger)
-{
-    _logger = logger;
-
-}
+    public GetParticipant(ILogger<GetParticipant> logger)
+    {
+        _logger = logger;
+    }
 
     [Function("GetParticipant")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)

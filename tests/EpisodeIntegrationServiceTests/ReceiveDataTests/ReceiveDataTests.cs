@@ -1,12 +1,8 @@
 using Moq;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
-using NHS.ServiceInsights.EpisodeIntegrationService;
 using Microsoft.Azure.Functions.Worker.Http;
 using NHS.ServiceInsights.TestUtils;
-using System.Text.Json;
-using System.Collections.Specialized;
-using System.Net;
 using System.Text;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationServiceTests;

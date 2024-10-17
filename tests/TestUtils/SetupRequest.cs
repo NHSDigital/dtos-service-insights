@@ -1,10 +1,10 @@
-namespace NHS.ServiceInsights.TestUtils;
-
 using System.Text;
 using Moq;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker;
 using System.Collections.Specialized;
+
+namespace NHS.ServiceInsights.TestUtils;
 
 public class SetupRequest
 {
@@ -50,4 +50,3 @@ public class SetupRequest
         return _request;
     }
 }
-

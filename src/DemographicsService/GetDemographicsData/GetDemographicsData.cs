@@ -11,11 +11,9 @@ public class GetDemographicsData
 {
     private readonly ILogger<GetDemographicsData> _logger;
 
-
     public GetDemographicsData(ILogger<GetDemographicsData> logger)
     {
         _logger = logger;
-
     }
 
     [Function("GetDemographicsData")]
@@ -44,6 +42,3 @@ public class GetDemographicsData
         return response;
     }
 }
-
-
-

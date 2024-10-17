@@ -1,4 +1,3 @@
-
 using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.Data;
@@ -22,8 +21,8 @@ public class EpisodeRepository : IEpisodeRepository
     {
 
         return await _dbContext.Episodes.FindAsync(episodeId);
-
     }
+
     public async Task UpdateEpisode(Episode episode)
     {
         _dbContext.Episodes.Update(episode);

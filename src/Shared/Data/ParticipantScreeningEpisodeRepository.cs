@@ -1,4 +1,3 @@
-
 using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.Data;
@@ -22,6 +21,5 @@ public class ParticipantScreeningEpisodeRepository : IParticipantScreeningEpisod
         }
 
         return false;
-
     }
 }

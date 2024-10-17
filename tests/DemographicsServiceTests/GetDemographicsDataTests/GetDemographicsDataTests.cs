@@ -18,7 +18,6 @@ public class GetDemographicsDataTests
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
-
     public GetDemographicsDataTests()
     {
         _function = new GetDemographicsData(_mockLogger.Object);
@@ -51,7 +50,6 @@ public class GetDemographicsDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
     }
-
 
     [TestMethod]
     public async Task Run_ShouldReturnOk_WhenNhsNumberIsProvided()

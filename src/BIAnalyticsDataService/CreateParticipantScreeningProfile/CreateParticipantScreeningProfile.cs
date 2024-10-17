@@ -33,7 +33,7 @@ public class CreateParticipantScreeningProfile
                 profile = JsonSerializer.Deserialize<ParticipantScreeningProfile>(postData);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError("CreateParticipantScreeningProfile: Could not read Json data.\nException: {ex}", ex);
             return req.CreateResponse(HttpStatusCode.BadRequest);
