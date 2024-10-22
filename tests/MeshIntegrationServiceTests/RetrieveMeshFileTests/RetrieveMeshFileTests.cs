@@ -36,12 +36,12 @@ public class RetrieveMeshFileTests
     {
         //arrange
         var messageId = "MessageId";
-        var fileName = "testFile.json";
+        var fileName = "bss_episodes.csv";
         var content = System.Text.Encoding.UTF8.GetBytes("{}");
 
         MeshResponse<CheckInboxResponse> inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse([messageId]);
         MeshResponse<HeadMessageResponse> headResponse = MeshResponseTestHelper.CreateSuccessfulMeshHeadResponse(mailboxId, messageId, fileName);
-        MeshResponse<GetMessageResponse> messageResponse = MeshResponseTestHelper.CreateSuccessfulGetMessageResponse(mailboxId, messageId, fileName, content, "application/json");
+        MeshResponse<GetMessageResponse> messageResponse = MeshResponseTestHelper.CreateSuccessfulGetMessageResponse(mailboxId, messageId, fileName, content, "application/csv");
         MeshResponse<AcknowledgeMessageResponse> acknowledgeMessageResponse = MeshResponseTestHelper.CreateSuccessfulAcknowledgeResponse(messageId);
 
         _mockMeshInboxService.Setup(i => i.GetMessagesAsync(mailboxId)).ReturnsAsync(inboxResponse);
@@ -66,13 +66,13 @@ public class RetrieveMeshFileTests
     {
         //arrange
         var messageId = "MessageId";
-        var fileName = "testFile.json";
+        var fileName = "bss_episodes.csv";
 
         var content = new List<byte[]> { System.Text.Encoding.UTF8.GetBytes("{}"), System.Text.Encoding.UTF8.GetBytes("{}") };
 
         MeshResponse<CheckInboxResponse> inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse([messageId]);
         MeshResponse<HeadMessageResponse> headResponse = MeshResponseTestHelper.CreateSuccessfulMeshHeadResponse(mailboxId, messageId, fileName, "DATA", "1:2", 2);
-        MeshResponse<GetChunkedMessageResponse> messageResponse = MeshResponseTestHelper.CreateSuccessfulGetChunkedMessageResponse(mailboxId, messageId, fileName, "application/json", content);
+        MeshResponse<GetChunkedMessageResponse> messageResponse = MeshResponseTestHelper.CreateSuccessfulGetChunkedMessageResponse(mailboxId, messageId, fileName, "application/csv", content);
         MeshResponse<AcknowledgeMessageResponse> acknowledgeMessageResponse = MeshResponseTestHelper.CreateSuccessfulAcknowledgeResponse(messageId);
 
         _mockMeshInboxService.Setup(i => i.GetMessagesAsync(mailboxId)).ReturnsAsync(inboxResponse);
@@ -108,7 +108,7 @@ public class RetrieveMeshFileTests
         foreach (var message in messages)
         {
             headResponses.Enqueue(MeshResponseTestHelper.CreateSuccessfulMeshHeadResponse(mailboxId, message));
-            messageResponses.Enqueue(MeshResponseTestHelper.CreateSuccessfulGetMessageResponse(mailboxId, message, "File.json", content, "application/json"));
+            messageResponses.Enqueue(MeshResponseTestHelper.CreateSuccessfulGetMessageResponse(mailboxId, message, "bss_episodes.csv", content, "application/csv"));
         }
         MeshResponse<AcknowledgeMessageResponse> acknowledgeMessageResponse = MeshResponseTestHelper.CreateSuccessfulAcknowledgeResponse("DummyData");
 
@@ -155,11 +155,11 @@ public class RetrieveMeshFileTests
     {
         //arrange
         var messageId = "MessageId";
-        var fileName = "testFile.json";
+        var fileName = "bss_episodes.csv";
         var content = System.Text.Encoding.UTF8.GetBytes("{}");
         MeshResponse<CheckInboxResponse> inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse([messageId]);
         MeshResponse<HeadMessageResponse> headResponse = MeshResponseTestHelper.CreateSuccessfulMeshHeadResponse(mailboxId, messageId, fileName);
-        MeshResponse<GetMessageResponse> messageResponse = MeshResponseTestHelper.CreateSuccessfulGetMessageResponse(mailboxId, messageId, fileName, content, "application/json");
+        MeshResponse<GetMessageResponse> messageResponse = MeshResponseTestHelper.CreateSuccessfulGetMessageResponse(mailboxId, messageId, fileName, content, "application/csv");
         MeshResponse<AcknowledgeMessageResponse> acknowledgeMessageResponse = MeshResponseTestHelper.CreateSuccessfulAcknowledgeResponse(messageId);
 
         _mockMeshInboxService.Setup(i => i.GetMessagesAsync(mailboxId)).ReturnsAsync(inboxResponse);
@@ -184,7 +184,7 @@ public class RetrieveMeshFileTests
     {
         //arrange
         var messageId = "MessageId";
-        var fileName = "testFile.json";
+        var fileName = "bss_episodes.csv";
         var content = System.Text.Encoding.UTF8.GetBytes("{}");
         MeshResponse<CheckInboxResponse> inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse([messageId]);
         MeshResponse<HeadMessageResponse> headResponse = new MeshResponse<HeadMessageResponse>
@@ -221,7 +221,7 @@ public class RetrieveMeshFileTests
     {
         //arrange
         var messageId = "MessageId";
-        var fileName = "testFile.json";
+        var fileName = "bss_episodes.csv";
         var content = System.Text.Encoding.UTF8.GetBytes("{}");
         MeshResponse<CheckInboxResponse> inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse([messageId]);
         MeshResponse<HeadMessageResponse> headResponse = MeshResponseTestHelper.CreateSuccessfulMeshHeadResponse(mailboxId, messageId, fileName);
@@ -291,7 +291,7 @@ public class RetrieveMeshFileTests
     {
         //arrange
         var messageId = "MessageId";
-        var fileName = "testFile.json";
+        var fileName = "bss_episodes.csv";
         MeshResponse<CheckInboxResponse> inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse([messageId]);
         MeshResponse<HeadMessageResponse> headResponse = MeshResponseTestHelper.CreateSuccessfulMeshHeadResponse(mailboxId, messageId, fileName, "DATA", "1:2", 2);
         MeshResponse<GetChunkedMessageResponse> messageResponse = new MeshResponse<GetChunkedMessageResponse>
@@ -324,4 +324,33 @@ public class RetrieveMeshFileTests
 
     }
 
+    [TestMethod]
+    [DataRow("invalid_file.csv", "application/csv")]
+    [DataRow("bss_episodes.json", "application/json")]
+    public async Task Run_DoesNotTransferFile_IfFileNameIsInvalid(string invalidFileName, string contentType)
+    {
+        //arrange
+        var messageId = "MessageId";
+        var content = System.Text.Encoding.UTF8.GetBytes("{}");
+        MeshResponse<CheckInboxResponse> inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse([messageId]);
+        MeshResponse<HeadMessageResponse> headResponse = MeshResponseTestHelper.CreateSuccessfulMeshHeadResponse(mailboxId, messageId, invalidFileName);
+        MeshResponse<GetMessageResponse> messageResponse = MeshResponseTestHelper.CreateSuccessfulGetMessageResponse(mailboxId, messageId, invalidFileName, content, contentType);
+        MeshResponse<AcknowledgeMessageResponse> acknowledgeMessageResponse = MeshResponseTestHelper.CreateSuccessfulAcknowledgeResponse(messageId);
+
+        _mockMeshInboxService.Setup(i => i.GetMessagesAsync(mailboxId)).ReturnsAsync(inboxResponse);
+        _mockMeshInboxService.Setup(i => i.GetHeadMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(headResponse);
+        _mockMeshInboxService.Setup(i => i.GetMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(messageResponse);
+        _mockBlobStorageHelper.Setup(i => i.UploadFileToBlobStorage("BlobStorage_ConnectionString", "inbound", It.IsAny<BlobFile>())).ReturnsAsync(true);
+        _mockMeshInboxService.Setup(i => i.AcknowledgeMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(acknowledgeMessageResponse);
+
+        //act
+        await _retrieveMeshFile.RunAsync(new Microsoft.Azure.Functions.Worker.TimerInfo());
+
+        //assert
+        _mockMeshInboxService.Verify(i => i.GetMessagesAsync(It.IsAny<string>()), Times.Once);
+        _mockMeshInboxService.Verify(i => i.GetHeadMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _mockMeshInboxService.Verify(i => i.GetMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockBlobStorageHelper.Verify(i => i.UploadFileToBlobStorage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<BlobFile>()), Times.Never);
+        _mockMeshInboxService.Verify(i => i.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
 }
