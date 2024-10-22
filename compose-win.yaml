@@ -219,6 +219,7 @@ services:
       - MeshPassword=${MESHPASSWORD}
       - MeshSharedKey=${MESHSHAREDKEY}
       - MeshKeyPassphrase=${MESHKEYPASSPHRASE}
+      - TimerExpression=*/5 * * * *
 
   # Participant Management Service
   get-participant:

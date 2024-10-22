@@ -8,8 +8,8 @@
         "BSSContainerName": "sample-container",
         "MeshPassword": "password",
         "MeshSharedKey": "TestKey",
-        "MeshKeyPassphrase":"test123"
-
+        "MeshKeyPassphrase":"test123",
+        "TimerExpression":"*/5 * * * *"
     },
     "Host": {
       "LocalHttpPort": 6777
