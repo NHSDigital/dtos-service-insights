@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NHS.ServiceInsights.Model;
 
@@ -13,5 +12,6 @@ public partial class EndCodeLkp
     public string? EndCode { get; set; }
 
     public string? EndCodeDescription { get; set; }
+
     public virtual ICollection<Episode> Episodes { get; set; } = new List<Episode>();
 }
