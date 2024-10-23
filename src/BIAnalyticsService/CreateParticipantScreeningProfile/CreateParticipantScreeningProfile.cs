@@ -8,57 +8,19 @@ using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
-public class CreateDataAssets
+public class CreateParticipantScreeningProfile
 {
-    private readonly ILogger<CreateDataAssets> _logger;
+    private readonly ILogger<CreateParticipantScreeningProfile> _logger;
     private readonly IHttpRequestService _httpRequestService;
-    public CreateDataAssets(ILogger<CreateDataAssets> logger, IHttpRequestService httpRequestService)
+    public CreateParticipantScreeningProfile(ILogger<CreateParticipantScreeningProfile> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
     }
 
-    [Function("CreateDataAssets")]
+    [Function("CreateParticipantScreeningProfile")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        _logger.LogInformation("CreateDataAssets function start");
-
-        string episodeId = req.Query["EpisodeId"];
-
-        if (string.IsNullOrEmpty(episodeId))
-        {
-            _logger.LogError("episodeId is null or empty.");
-            return req.CreateResponse(HttpStatusCode.BadRequest);
-        }
-
-        var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-        var getEpisodeUrl = $"{baseUrl}?EpisodeId={episodeId}";
-        _logger.LogInformation("Requesting episode URL: {Url}", getEpisodeUrl);
-
-        Episode episode;
-
-        try
-        {
-            var response = await _httpRequestService.SendGet(getEpisodeUrl);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogError($"Failed to retrieve episode with Episode ID {episodeId}. Status Code: {response.StatusCode}");
-                return req.CreateResponse(response.StatusCode);
-            }
-
-            string episodeJson;
-            episodeJson = await response.Content.ReadAsStringAsync();
-            _logger.LogInformation("Episode data retrieved");
-            episode = JsonSerializer.Deserialize<Episode>(episodeJson);
-        }
-
-        catch (Exception ex)
-        {
-            _logger.LogError("Issue when getting episode from {getEpisodeUrl}. \nException: {ex}", getEpisodeUrl, ex);
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
-        }
-
         string nhsNumber = "1111111112";
 
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
@@ -91,13 +53,12 @@ public class CreateDataAssets
 
         try
         {
-            await SendToCreateParticipantScreeningEpisodeAsync(episode);
             await SendToCreateParticipantScreeningProfileAsync(participant);
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create episode or profile.");
+            _logger.LogError(ex, "Failed to create profile.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
@@ -156,38 +117,5 @@ public class CreateDataAssets
         _logger.LogInformation($"Sending ParticipantScreeningProfile Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
 
         await _httpRequestService.SendPost(screeningProfileUrl, serializedParticipantScreeningProfile);
-    }
-
-    private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode)
-    {
-        var screeningEpisode = new ParticipantScreeningEpisode
-        {
-            EpisodeId = episode.EpisodeId,
-            ScreeningName = episode.ScreeningId,
-            NhsNumber = episode.NhsNumber,
-            EpisodeType = episode.EpisodeTypeId,
-            EpisodeTypeDescription = String.Empty,
-            EpisodeOpenDate = episode.EpisodeOpenDate,
-            AppointmentMadeFlag = episode.AppointmentMadeFlag,
-            FirstOfferedAppointmentDate = episode.FirstOfferedAppointmentDate,
-            ActualScreeningDate = episode.ActualScreeningDate,
-            EarlyRecallDate = episode.EarlyRecallDate,
-            CallRecallStatusAuthorisedBy = episode.CallRecallStatusAuthorisedBy,
-            EndCode = episode.EndCodeId,
-            EndCodeDescription = String.Empty,
-            EndCodeLastUpdated = episode.EndCodeLastUpdated,
-            OrganisationCode = episode.OrganisationId,
-            OrganisationName = String.Empty,
-            BatchId = episode.BatchId,
-            RecordInsertDatetime = DateTime.Now.ToString()
-        };
-
-        var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
-
-        string serializedParticipantScreeningEpisode = JsonSerializer.Serialize(screeningEpisode);
-
-        _logger.LogInformation($"Sending ParticipantScreeningEpisode to {screeningEpisodeUrl}: {serializedParticipantScreeningEpisode}");
-
-        await _httpRequestService.SendPost(screeningEpisodeUrl, serializedParticipantScreeningEpisode);
     }
 }
