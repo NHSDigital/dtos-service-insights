@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
+using NHS.ServiceInsights.Data;
 using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
 using CsvHelper;
@@ -12,13 +13,19 @@ public class ReceiveData
 {
     private readonly ILogger<ReceiveData> _logger;
     private readonly IHttpRequestService _httpRequestService;
+    private readonly IEndCodeLkpRepository _endCodeLkpRepository;
+    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
+    private readonly IOrganisationLkpRepository _organisationLkpRepository;
     private readonly string[] episodesExpectedHeaders = new[] { "nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code" };
     private readonly string[] subjectsExpectedHeaders = new[] { "change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language" };
 
-    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService)
+    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService, ServiceInsightsDbContext dbContext)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
+        _endCodeLkpRepository = new EndCodeLkpRepository(dbContext);
+        _episodeTypeLkpRepository = new EpisodeTypeLkpRepository(dbContext);
+        _organisationLkpRepository = new OrganisationLkpRepository(dbContext);
     }
 
     [Function("ReceiveData")]
@@ -127,16 +134,16 @@ public class ReceiveData
                 var modifiedEpisode = new Episode
                 {
                     EpisodeId = episode.episode_id,
-                    EpisodeTypeId = episode.episode_type,
-                    EpisodeOpenDate = episode.episode_date,
+                    EpisodeTypeId = _episodeTypeLkpRepository.GetEpisodeTypeId(episode.episode_type),
+                    EpisodeOpenDate = DateOnly.ParseExact(episode.episode_date, "dd/MM/yyyy", CultureInfo.InvariantCulture),
                     AppointmentMadeFlag = episode.appointment_made,
-                    FirstOfferedAppointmentDate = episode.date_of_foa,
+                    FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.ParseExact(episode.date_of_foa, "dd/MM/yyyy", CultureInfo.InvariantCulture),
                     ActualScreeningDate = episode.date_of_as,
-                    EarlyRecallDate = episode.early_recall_date,
+                    EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.ParseExact(episode.early_recall_date, "dd/MM/yyyy", CultureInfo.InvariantCulture),
                     CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-                    EndCodeId = episode.end_code,
+                    EndCodeId = _endCodeLkpRepository.GetEndCodeId(episode.end_code),
                     EndCodeLastUpdated = episode.end_code_last_updated,
-                    OrganisationId = episode.bso_organisation_code,
+                    OrganisationId = _organisationLkpRepository.GetOrganisationId(episode.bso_organisation_code),
                     BatchId = episode.bso_batch_id
                 };
 
@@ -178,17 +185,18 @@ public class ReceiveData
 
 public class BssEpisode
 {
-    public string episode_id { get; set; } = null!;
-    public string nhs_number { get; set; }
+    public long episode_id { get; set; }
+    public long nhs_number { get; set; }
     public string? episode_type { get; set; }
+    public DateTime change_db_date_time { get; set; }
     public string? episode_date { get; set; }
     public string? appointment_made { get; set; }
     public string? date_of_foa { get; set; }
-    public string? date_of_as { get; set; }
+    public DateOnly? date_of_as { get; set; }
     public string? early_recall_date { get; set; }
     public string? call_recall_status_authorised_by { get; set; }
     public string? end_code { get; set; }
-    public string? end_code_last_updated { get; set; }
+    public DateTime? end_code_last_updated { get; set; }
     public string? bso_organisation_code { get; set; }
     public string? bso_batch_id { get; set; }
     public string? reason_closed_code { get; set; }
