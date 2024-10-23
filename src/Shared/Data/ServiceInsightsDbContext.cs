@@ -12,7 +12,15 @@ public partial class ServiceInsightsDbContext : DbContext
     {
     }
 
+    public virtual DbSet<Analytic> Analytics { get; set; }
+
+    public virtual DbSet<EndCodeLkp> EndCodeLkps { get; set; }
+
     public virtual DbSet<Episode> Episodes { get; set; }
+
+    public virtual DbSet<EpisodeTypeLkp> EpisodeTypeLkps { get; set; }
+
+    public virtual DbSet<OrganisationLkp> OrganisationLkps { get; set; }
 
     public virtual DbSet<ParticipantScreeningEpisode> ParticipantScreeningEpisodes { get; set; }
 
@@ -20,61 +28,228 @@ public partial class ServiceInsightsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Analytic>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_ID");
+
+            entity.ToTable("ANALYTICS");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.AppointmentMade)
+                .HasMaxLength(50)
+                .HasColumnName("APPOINTMENT_MADE");
+            entity.Property(e => e.BsoBatchId)
+                .HasMaxLength(50)
+                .HasColumnName("BSO_BATCH_ID");
+            entity.Property(e => e.BsoOrganisationCode)
+                .HasMaxLength(50)
+                .HasColumnName("BSO_ORGANISATION_CODE");
+            entity.Property(e => e.BsoOrganisationId)
+                .HasMaxLength(50)
+                .HasColumnName("BSO_ORGANISATION_ID");
+            entity.Property(e => e.CallRecallStatusAuthorisedBy)
+                .HasMaxLength(50)
+                .HasColumnName("CALL_RECALL_STATUS_AUTHORISED_BY");
+            entity.Property(e => e.CeasedReason)
+                .HasMaxLength(50)
+                .HasColumnName("CEASED_REASON");
+            entity.Property(e => e.DateIrradiated)
+                .HasMaxLength(50)
+                .HasColumnName("DATE_IRRADIATED");
+            entity.Property(e => e.DateOfAs)
+                .HasMaxLength(50)
+                .HasColumnName("DATE_OF_AS");
+            entity.Property(e => e.DateOfFoa)
+                .HasMaxLength(50)
+                .HasColumnName("DATE_OF_FOA");
+            entity.Property(e => e.EarlyRecallDate)
+                .HasMaxLength(50)
+                .HasColumnName("EARLY_RECALL_DATE");
+            entity.Property(e => e.EndCode)
+                .HasMaxLength(50)
+                .HasColumnName("END_CODE");
+            entity.Property(e => e.EndCodeLastUpdated)
+                .HasMaxLength(50)
+                .HasColumnName("END_CODE_LAST_UPDATED");
+            entity.Property(e => e.EpisodeDate)
+                .HasMaxLength(50)
+                .HasColumnName("EPISODE_DATE");
+            entity.Property(e => e.EpisodeId)
+                .HasMaxLength(50)
+                .HasColumnName("EPISODE_ID");
+            entity.Property(e => e.EpisodeType)
+                .HasMaxLength(50)
+                .HasColumnName("EPISODE_TYPE");
+            entity.Property(e => e.GeneCode)
+                .HasMaxLength(50)
+                .HasColumnName("GENE_CODE");
+            entity.Property(e => e.GpPracticeId)
+                .HasMaxLength(50)
+                .HasColumnName("GP_PRACTICE_ID");
+            entity.Property(e => e.HigherRiskNextTestDueDate)
+                .HasMaxLength(50)
+                .HasColumnName("HIGHER_RISK_NEXT_TEST_DUE_DATE");
+            entity.Property(e => e.HigherRiskReferralReasonCode)
+                .HasMaxLength(50)
+                .HasColumnName("HIGHER_RISK_REFERRAL_REASON_CODE");
+            entity.Property(e => e.IsHigherRisk)
+                .HasMaxLength(50)
+                .HasColumnName("IS_HIGHER_RISK");
+            entity.Property(e => e.IsHigherRiskActive)
+                .HasMaxLength(50)
+                .HasColumnName("IS_HIGHER_RISK_ACTIVE");
+            entity.Property(e => e.LatestInvitationDate)
+                .HasMaxLength(50)
+                .HasColumnName("LATEST_INVITATION_DATE");
+            entity.Property(e => e.NextTestDueDate)
+                .HasMaxLength(50)
+                .HasColumnName("NEXT_TEST_DUE_DATE");
+            entity.Property(e => e.NhsNumber)
+                .HasMaxLength(50)
+                .HasColumnName("NHS_NUMBER");
+            entity.Property(e => e.NtddCalculationMethod)
+                .HasMaxLength(50)
+                .HasColumnName("NTDD_CALCULATION_METHOD");
+            entity.Property(e => e.PreferredLanguage)
+                .HasMaxLength(50)
+                .HasColumnName("PREFERRED_LANGUAGE");
+            entity.Property(e => e.ReasonDeducted)
+                .HasMaxLength(50)
+                .HasColumnName("REASON_DEDUCTED");
+            entity.Property(e => e.ReasonForCeasedCode)
+                .HasMaxLength(50)
+                .HasColumnName("REASON_FOR_CEASED_CODE");
+            entity.Property(e => e.RemovalDate)
+                .HasMaxLength(50)
+                .HasColumnName("REMOVAL_DATE");
+            entity.Property(e => e.RemovalReason)
+                .HasMaxLength(50)
+                .HasColumnName("REMOVAL_REASON");
+            entity.Property(e => e.SubjectStatusCode)
+                .HasMaxLength(50)
+                .HasColumnName("SUBJECT_STATUS_CODE");
+        });
+
+        modelBuilder.Entity<EndCodeLkp>(entity =>
+        {
+            entity.HasKey(e => e.EndCodeId);
+
+            entity.ToTable("END_CODE_LKP");
+
+            entity.Property(e => e.EndCodeId)
+                .ValueGeneratedNever()
+                .HasColumnName("END_CODE_ID");
+            entity.Property(e => e.EndCode)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("END_CODE");
+            entity.Property(e => e.EndCodeDescription)
+                .HasMaxLength(300)
+                .IsUnicode(false)
+                .HasColumnName("END_CODE_DESCRIPTION");
+            entity.Property(e => e.LegacyEndCode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("LEGACY_END_CODE");
+        });
+
         modelBuilder.Entity<Episode>(entity =>
         {
             entity.ToTable("EPISODE");
 
             entity.Property(e => e.EpisodeId)
-                .HasMaxLength(50)
+                .ValueGeneratedNever()
                 .HasColumnName("EPISODE_ID");
-            entity.Property(e => e.ActualScreeningDate)
-                .HasMaxLength(50)
-                .HasColumnName("ACTUAL_SCREENING_DATE");
+            entity.Property(e => e.ActualScreeningDate).HasColumnName("ACTUAL_SCREENING_DATE");
             entity.Property(e => e.AppointmentMadeFlag)
-                .HasMaxLength(50)
+                .HasMaxLength(10)
+                .IsUnicode(false)
                 .HasColumnName("APPOINTMENT_MADE_FLAG");
             entity.Property(e => e.BatchId)
-                .HasMaxLength(50)
+                .HasMaxLength(100)
+                .IsUnicode(false)
                 .HasColumnName("BATCH_ID");
             entity.Property(e => e.CallRecallStatusAuthorisedBy)
-                .HasMaxLength(50)
+                .HasMaxLength(200)
+                .IsUnicode(false)
                 .HasColumnName("CALL_RECALL_STATUS_AUTHORISED_BY");
-            entity.Property(e => e.EarlyRecallDate)
-                .HasMaxLength(50)
-                .HasColumnName("EARLY_RECALL_DATE");
-            entity.Property(e => e.EndCodeId)
-                .HasMaxLength(50)
-                .HasColumnName("END_CODE_ID");
+            entity.Property(e => e.EarlyRecallDate).HasColumnName("EARLY_RECALL_DATE");
+            entity.Property(e => e.EndCodeId).HasColumnName("END_CODE_ID");
             entity.Property(e => e.EndCodeLastUpdated)
-                .HasMaxLength(50)
+                .HasColumnType("datetime")
                 .HasColumnName("END_CODE_LAST_UPDATED");
-            entity.Property(e => e.EpisodeOpenDate)
-                .HasMaxLength(50)
-                .HasColumnName("EPISODE_OPEN_DATE");
-            entity.Property(e => e.EpisodeTypeId)
-                .HasMaxLength(50)
-                .HasColumnName("EPISODE_TYPE_ID");
-            entity.Property(e => e.FirstOfferedAppointmentDate)
-                .HasMaxLength(50)
-                .HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
-            entity.Property(e => e.NhsNumber)
-                .HasMaxLength(50)
-                .HasColumnName("NHS_NUMBER");
-            entity.Property(e => e.OrganisationId)
-                .HasMaxLength(50)
-                .HasColumnName("ORGANISATION_ID");
-            entity.Property(e => e.ParticipantId)
-                .HasMaxLength(50)
-                .HasColumnName("PARTICIPANT_ID");
+            entity.Property(e => e.EpisodeIdSystem).HasColumnName("EPISODE_ID_SYSTEM");
+            entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
+            entity.Property(e => e.EpisodeTypeId).HasColumnName("EPISODE_TYPE_ID");
+            entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
+            entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
+            entity.Property(e => e.OrganisationId).HasColumnName("ORGANISATION_ID");
             entity.Property(e => e.RecordInsertDatetime)
-                .HasMaxLength(50)
+                .HasColumnType("datetime")
                 .HasColumnName("RECORD_INSERT_DATETIME");
             entity.Property(e => e.RecordUpdateDatetime)
-                .HasMaxLength(50)
+                .HasColumnType("datetime")
                 .HasColumnName("RECORD_UPDATE_DATETIME");
-            entity.Property(e => e.ScreeningId)
+            entity.Property(e => e.ScreeningId).HasColumnName("SCREENING_ID");
+
+            entity.HasOne(d => d.EndCode).WithMany(p => p.Episodes)
+                .HasForeignKey(d => d.EndCodeId)
+                .HasConstraintName("FK_EPISODE_STATUS_OF_END_CODE");
+
+            entity.HasOne(d => d.EpisodeType).WithMany(p => p.Episodes)
+                .HasForeignKey(d => d.EpisodeTypeId)
+                .HasConstraintName("FK_EPISODE_TYPE_OF_E_EPISODE_");
+
+            entity.HasOne(d => d.Organisation).WithMany(p => p.Episodes)
+                .HasForeignKey(d => d.OrganisationId)
+                .HasConstraintName("FK_EPISODE_ORGANISATION_OF_ORGANISATION");
+        });
+
+        modelBuilder.Entity<EpisodeTypeLkp>(entity =>
+        {
+            entity.HasKey(e => e.EpisodeTypeId);
+
+            entity.ToTable("EPISODE_TYPE_LKP");
+
+            entity.Property(e => e.EpisodeTypeId)
+                .ValueGeneratedNever()
+                .HasColumnName("EPISODE_TYPE_ID");
+            entity.Property(e => e.EpisodeDescription)
+                .HasMaxLength(300)
+                .IsUnicode(false)
+                .HasColumnName("EPISODE_DESCRIPTION");
+            entity.Property(e => e.EpisodeType)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("EPISODE_TYPE");
+        });
+
+        modelBuilder.Entity<OrganisationLkp>(entity =>
+        {
+            entity.HasKey(e => e.OrganisationId);
+
+            entity.ToTable("ORGANISATION_LKP");
+
+            entity.Property(e => e.OrganisationId)
+                .ValueGeneratedNever()
+                .HasColumnName("ORGANISATION_ID");
+            entity.Property(e => e.IsActive).HasColumnName("IS_ACTIVE");
+            entity.Property(e => e.OrganisationCode)
                 .HasMaxLength(50)
-                .HasColumnName("SCREENING_ID");
+                .IsUnicode(false)
+                .HasColumnName("ORGANISATION_CODE");
+            entity.Property(e => e.OrganisationName)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .HasColumnName("ORGANISATION_NAME");
+            entity.Property(e => e.OrganisationType)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ORGANISATION_TYPE");
+            entity.Property(e => e.ScreeningName)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .HasColumnName("SCREENING_NAME");
         });
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
