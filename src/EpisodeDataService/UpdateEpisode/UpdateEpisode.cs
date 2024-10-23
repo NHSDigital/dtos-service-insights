@@ -45,7 +45,6 @@ public class UpdateEpisode
             var existingEpisode = await _episodeRepository.GetEpisodeAsync(episode.EpisodeId);
             if (existingEpisode != null)
             {
-                existingEpisode.ParticipantId = episode.ParticipantId;
                 existingEpisode.ScreeningId = episode.ScreeningId;
                 existingEpisode.NhsNumber = episode.NhsNumber;
                 existingEpisode.EpisodeTypeId = episode.EpisodeTypeId;
@@ -59,7 +58,7 @@ public class UpdateEpisode
                 existingEpisode.EndCodeLastUpdated = episode.EndCodeLastUpdated;
                 existingEpisode.OrganisationId = episode.OrganisationId;
                 existingEpisode.BatchId = episode.BatchId;
-                existingEpisode.RecordUpdateDatetime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
 
                 try
                 {
