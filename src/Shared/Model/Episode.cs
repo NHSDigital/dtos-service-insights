@@ -5,37 +5,43 @@ namespace NHS.ServiceInsights.Model;
 
 public partial class Episode
 {
-    public string EpisodeId { get; set; } = null!;
+    public long EpisodeId { get; set; }
 
-    public string? ParticipantId { get; set; }
+    public long? EpisodeIdSystem { get; set; }
 
-    public string? ScreeningId { get; set; }
+    public long ScreeningId { get; set; }
 
-    public string? NhsNumber { get; set; }
+    public long NhsNumber { get; set; }
 
-    public string? EpisodeTypeId { get; set; }
+    public long? EpisodeTypeId { get; set; }
 
-    public string? EpisodeOpenDate { get; set; }
+    public DateOnly? EpisodeOpenDate { get; set; }
 
     public string? AppointmentMadeFlag { get; set; }
 
-    public string? FirstOfferedAppointmentDate { get; set; }
+    public DateOnly? FirstOfferedAppointmentDate { get; set; }
 
-    public string? ActualScreeningDate { get; set; }
+    public DateOnly? ActualScreeningDate { get; set; }
 
-    public string? EarlyRecallDate { get; set; }
+    public DateOnly? EarlyRecallDate { get; set; }
 
     public string? CallRecallStatusAuthorisedBy { get; set; }
 
-    public string? EndCodeId { get; set; }
+    public long? EndCodeId { get; set; }
 
-    public string? EndCodeLastUpdated { get; set; }
+    public DateTime? EndCodeLastUpdated { get; set; }
 
-    public string? OrganisationId { get; set; }
+    public long? OrganisationId { get; set; }
 
     public string? BatchId { get; set; }
 
-    public string? RecordInsertDatetime { get; set; }
+    public DateTime? RecordInsertDatetime { get; set; }
 
-    public string? RecordUpdateDatetime { get; set; }
+    public DateTime? RecordUpdateDatetime { get; set; }
+
+    public virtual EndCodeLkp? EndCode { get; set; }
+
+    public virtual EpisodeTypeLkp? EpisodeType { get; set; }
+
+    public virtual OrganisationLkp? Organisation { get; set; }
 }
