@@ -2,10 +2,8 @@
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"
-    "GetEpisodeUrl": "http://localhost:6060/api/GetEpisode",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "GetParticipantUrl": "http://localhost:6061/api/GetParticipant",
-    "CreateParticipantScreeningEpisodeUrl":"http://localhost:6010/api/CreateParticipantScreeningEpisode",
     "CreateParticipantScreeningProfileUrl":"http://localhost:6011/api/CreateParticipantScreeningProfile",
     "DemographicsServiceUrl": "http://localhost:6080/api/GetDemographicsData"
   },
