@@ -1,6 +1,7 @@
 using Moq;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
+using NHS.ServiceInsights.Data;
 using Microsoft.Azure.Functions.Worker.Http;
 using NHS.ServiceInsights.TestUtils;
 using System.Text;
@@ -15,13 +16,17 @@ public class ReceiveDataTests
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
     private readonly EpisodeIntegrationService.ReceiveData _function;
+    private readonly ServiceInsightsDbContext _dbContext;
+
+
+
 
     public ReceiveDataTests()
     {
         Environment.SetEnvironmentVariable("EpisodeManagementUrl", "EpisodeManagementUrl");
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
 
-        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object);
+        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _dbContext);
     }
 
     [TestMethod]
