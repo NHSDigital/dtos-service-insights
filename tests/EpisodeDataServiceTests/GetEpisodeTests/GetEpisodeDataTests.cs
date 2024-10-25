@@ -59,7 +59,7 @@ public class GetEpisodeTests
         };
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync("12345")).ReturnsAsync((Episode)null);
+        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync(12345)).ReturnsAsync((Episode)null);
 
         // Act
         var response = await _function.Run(_mockRequest.Object);
@@ -87,10 +87,10 @@ public class GetEpisodeTests
 
         var episode = new Episode
         {
-            EpisodeId = "245395"
+            EpisodeId = 245395
         };
 
-        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync("245395")).ReturnsAsync(episode);
+        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync(245395)).ReturnsAsync(episode);
 
         // Act
         var response = await _function.Run(_mockRequest.Object);
@@ -99,7 +99,7 @@ public class GetEpisodeTests
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         response.Body.Seek(0, SeekOrigin.Begin);
         var episodeResponse = await JsonSerializer.DeserializeAsync<Episode>(response.Body);
-        Assert.AreEqual<string>("245395", episodeResponse.EpisodeId);
+        Assert.AreEqual<long>(245395, episodeResponse.EpisodeId);
 
         _mockLogger.Verify(log => log.Log(
             LogLevel.Information,
@@ -120,7 +120,7 @@ public class GetEpisodeTests
         };
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync("12345"))
+        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync(12345))
             .Throws(new Exception("Database error"));
 
         // Act

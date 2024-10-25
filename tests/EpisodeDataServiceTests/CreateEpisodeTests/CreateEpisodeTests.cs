@@ -44,7 +44,7 @@ public class CreateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "245395"
+            EpisodeId = 245395
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -63,7 +63,7 @@ public class CreateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "245395"
+            EpisodeId = 245395
         };
 
         var json = JsonSerializer.Serialize(episode);
