@@ -35,7 +35,7 @@ public class ReceiveData
                 return;
             }
 
-            if (name.StartsWith("episodes"))
+            if (name.StartsWith("bss_episodes"))
             {
                 if (!CheckCsvFileHeaders(myBlob, FileType.Episodes))
                 {
@@ -51,7 +51,7 @@ public class ReceiveData
                     await ProcessEpisodeDataAsync(episodesEnumerator, episodeUrl);
                 }
             }
-            else if (name.StartsWith("subjects"))
+            else if (name.StartsWith("bss_subjects"))
             {
                 if (!CheckCsvFileHeaders(myBlob, FileType.Subjects))
                 {
