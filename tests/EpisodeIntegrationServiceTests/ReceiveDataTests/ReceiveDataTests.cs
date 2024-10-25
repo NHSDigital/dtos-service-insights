@@ -37,7 +37,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(4));
@@ -57,7 +57,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -79,7 +79,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930");
 
         // Assert
         _mockLogger.Verify(log =>
@@ -110,7 +110,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930");
 
         // Assert
         _mockLogger.Verify(log =>
@@ -163,7 +163,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -191,7 +191,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -220,7 +220,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(4));
@@ -242,7 +242,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
