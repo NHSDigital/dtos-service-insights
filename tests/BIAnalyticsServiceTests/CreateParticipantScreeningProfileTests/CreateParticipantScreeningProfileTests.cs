@@ -25,8 +25,6 @@ public class CreateParticipantScreeningProfileTests
     private string demographicsJson = "{\"PrimaryCareProvider\":\"A81002\",\"PreferredLanguage\":\"EN\"}";
     public CreateParticipantScreeningProfileTests()
     {
-
-        Environment.SetEnvironmentVariable("GetEpisodeUrl", "http://localhost:6060/api/GetEpisode");
         Environment.SetEnvironmentVariable("GetParticipantUrl", "http://localhost:6061/api/GetParticipant");
         Environment.SetEnvironmentVariable("CreateParticipantScreeningProfileUrl", "http://localhost:6011/api/CreateParticipantScreeningProfile");
         Environment.SetEnvironmentVariable("DemographicsServiceUrl", "http://localhost:6080/api/GetDemographicsData");
@@ -64,6 +62,7 @@ public class CreateParticipantScreeningProfileTests
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
