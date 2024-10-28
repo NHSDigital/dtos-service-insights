@@ -2,9 +2,12 @@ using Moq;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Data;
+using NHS.ServiceInsights.EpisodeIntegrationService;
 using Microsoft.Azure.Functions.Worker.Http;
 using NHS.ServiceInsights.TestUtils;
 using System.Text;
+using System.Globalization;
+using System.Text.Json;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationServiceTests;
 
@@ -16,7 +19,9 @@ public class ReceiveDataTests
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
     private readonly EpisodeIntegrationService.ReceiveData _function;
-    private readonly ServiceInsightsDbContext _dbContext;
+    private readonly Mock<IEndCodeLkpRepository> _mockEndCodeLkpRepository = new();
+    private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
+    private readonly Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
 
 
 
@@ -26,7 +31,7 @@ public class ReceiveDataTests
         Environment.SetEnvironmentVariable("EpisodeManagementUrl", "EpisodeManagementUrl");
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
 
-        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _dbContext);
+        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockOrganisationLkpRepository.Object);
     }
 
     [TestMethod]
@@ -47,6 +52,7 @@ public class ReceiveDataTests
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(4));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
+
     }
 
     [TestMethod]
