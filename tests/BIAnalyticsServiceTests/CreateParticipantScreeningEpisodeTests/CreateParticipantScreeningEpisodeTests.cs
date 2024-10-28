@@ -82,7 +82,7 @@ public class CreateParticipantScreeningEpisodeTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Issue when getting episode from http://localhost:6060/api/GetEpisode?EpisodeId=245395. ")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to deserialise or retrieve episode from http://localhost:6060/api/GetEpisode?EpisodeId=245395. ")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);

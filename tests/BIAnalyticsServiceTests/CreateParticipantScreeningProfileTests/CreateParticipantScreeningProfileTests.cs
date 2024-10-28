@@ -60,7 +60,7 @@ public class CreateParticipantScreeningProfileTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Issue when getting participant from http://localhost:6061/api/GetParticipant?nhs_number=1111111112.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to deserialise or retrieve participant from http://localhost:6061/api/GetParticipant?nhs_number=1111111112.")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);

@@ -19,7 +19,7 @@ public class CreateParticipantScreeningProfile
     }
 
     [Function("CreateParticipantScreeningProfile")]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
         string nhsNumber = "1111111112";
 
@@ -36,18 +36,17 @@ public class CreateParticipantScreeningProfile
             if (!participantResponse.IsSuccessStatusCode)
             {
                 _logger.LogError($"Failed to retrieve participant data with NHS number {nhsNumber}. Status Code: {participantResponse.StatusCode}");
-                return req.CreateResponse(participantResponse.StatusCode);
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
             var participantJson = await participantResponse.Content.ReadAsStringAsync();
-            _logger.LogInformation("Participant data retrieved");
-
             participant = JsonSerializer.Deserialize<Participant>(participantJson);
+            _logger.LogInformation("Participant data retrieved and deserialised");
         }
 
         catch (Exception ex)
         {
-            _logger.LogError("Issue when getting participant from {participantUrl}. \nException: {ex}", participantUrl, ex);
+            _logger.LogError("Failed to deserialise or retrieve participant from {participantUrl}. \nException: {ex}", participantUrl, ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
@@ -58,7 +57,7 @@ public class CreateParticipantScreeningProfile
 
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create profile.");
+            _logger.LogError(ex, "Failed to create participant screening profile.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 

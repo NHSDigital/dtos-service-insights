@@ -19,9 +19,9 @@ public class CreateParticipantScreeningEpisode
     }
 
     [Function("CreateParticipantScreeningEpisode")]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
-        _logger.LogInformation("Create Participant Screening Episode function start");
+        _logger.LogInformation("Create Participant Screening Episode function start,");
 
         string episodeId = req.Query["EpisodeId"];
 
@@ -44,18 +44,17 @@ public class CreateParticipantScreeningEpisode
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError($"Failed to retrieve episode with Episode ID {episodeId}. Status Code: {response.StatusCode}");
-                return req.CreateResponse(response.StatusCode);
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
-            string episodeJson;
-            episodeJson = await response.Content.ReadAsStringAsync();
-            _logger.LogInformation("Episode data retrieved");
+            string episodeJson = await response.Content.ReadAsStringAsync();
             episode = JsonSerializer.Deserialize<Episode>(episodeJson);
+            _logger.LogInformation("Episode data retrieved and deserialised");
         }
 
         catch (Exception ex)
         {
-            _logger.LogError("Issue when getting episode from {getEpisodeUrl}. \nException: {ex}", getEpisodeUrl, ex);
+            _logger.LogError("Failed to deserialise or retrieve episode from {getEpisodeUrl}. \nException: {ex}", getEpisodeUrl, ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
@@ -66,7 +65,7 @@ public class CreateParticipantScreeningEpisode
 
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create episode.");
+            _logger.LogError(ex, "Failed to create participant screening episode.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
