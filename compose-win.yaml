@@ -108,8 +108,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6008
-      - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
-      - CreateParticipantScreeningEpisodeUrl=http://create-participant-screening-episode:6010/api/CreateParticipantScreeningEpisode
+      - GetEpisodeUrl=http://127.0.0.1:6060/api/GetEpisode
+      - CreateParticipantScreeningEpisodeUrl=http://127.0.0.1:6010/api/CreateParticipantScreeningEpisode
 
     create-participant-screening-profile:
     container_name: create-participant-screening-profile
@@ -125,9 +125,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6009
-      - GetParticipantUrl=http://get-participant:6061/api/GetParticipant
-      - CreateParticipantScreeningProfileUrl=http://create-participant-screening-profile:6011/api/CreateParticipantScreeningProfile
-      - DemographicsServiceUrl=http://localhost:6080/api/GetDemographicsData
+      - GetParticipantUrl=http://127.0.0.1:6061/api/GetParticipant
+      - CreateParticipantScreeningProfileUrl=http://127.0.0.1:6011/api/CreateParticipantScreeningProfile
+      - DemographicsServiceUrl=http://127.0.0.1:6080/api/GetDemographicsData
 
   # Demographics Service
   get-demographics-data:
