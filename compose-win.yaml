@@ -65,8 +65,8 @@ services:
       - DB_CONNECTION=${DB_CONNECTION}
 
   # BI Analytics Data Service
-  create-participant-screening-episode:
-    container_name: create-participant-screening-episode
+  create-participant-screening-episode-data:
+    container_name: create-participant-screening-episode-data
     network_mode: host
     build:
       context: ./src/
@@ -79,8 +79,8 @@ services:
       - ASPNETCORE_URLS=http://*:6010
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  create-participant-screening-profile:
-    container_name: create-participant-screening-profile
+  create-participant-screening-profile-data:
+    container_name: create-participant-screening-profile-data
     network_mode: host
     build:
       context: ./src/
@@ -94,22 +94,55 @@ services:
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # BI Analytics Service
-  create-data-assets:
-    container_name: create-data-assets
-    network_mode: host
+  create-participant-screening-episode:
+    container_name: create-participant-screening-episode
+    restart: always
     build:
       context: ./src/
-      dockerfile: ./BIAnalyticsService/CreateDataAssets/Dockerfile
+      dockerfile: ./BIAnalyticsService/CreateParticipantScreeningEpisode/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6008:6008"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6008
+      - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
+      - CreateParticipantScreeningEpisodeUrl=http://create-participant-screening-episode:6010/api/CreateParticipantScreeningEpisode
+
+    create-participant-screening-profile:
+    container_name: create-participant-screening-profile
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsService/CreateParticipantScreeningProfile/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6009:6009"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6009
-      - GetEpisodeUrl=http://127.0.0.1:6060/api/GetEpisode
-      - GetParticipantUrl=http://127.0.0.1:6061/api/GetParticipant
-      - CreateParticipantScreeningEpisodeUrl=http://127.0.0.1:6010/api/CreateParticipantScreeningEpisode
-      - CreateParticipantScreeningProfileUrl=http://127.0.0.1:6011/api/CreateParticipantScreeningProfile
+      - GetParticipantUrl=http://get-participant:6061/api/GetParticipant
+      - CreateParticipantScreeningProfileUrl=http://create-participant-screening-profile:6011/api/CreateParticipantScreeningProfile
+      - DemographicsServiceUrl=http://localhost:6080/api/GetDemographicsData
+
+  # Demographics Service
+  get-demographics-data:
+    container_name: get-demographics-data
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./DemographicsService/GetDemographicsData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6080:6080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:6080
 
   # Episode Data Service
   create-episode:
