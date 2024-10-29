@@ -8,7 +8,7 @@ if ($pythonVersion) {
 } else {
     # Python is not installed, proceed to install it
     Write-Host "Python not found. Installing Python..."
-    
+
     # Define Python download URL
     $pythonInstallerUrl = "https://www.python.org/ftp/python/3.13.0/python-3.13.0-amd64.exe"  # Replace with the latest version if needed
     $installerPath = "$env:TEMP\python-installer.exe"

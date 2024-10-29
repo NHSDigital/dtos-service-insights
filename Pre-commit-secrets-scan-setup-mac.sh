@@ -9,7 +9,7 @@ then
 else
     # Python is not installed, proceed to install via Homebrew
     echo "Python not found. Installing Python using Homebrew..."
-    
+
     # Check if Homebrew is installed, and install it if not
     if ! command -v brew &> /dev/null
     then
