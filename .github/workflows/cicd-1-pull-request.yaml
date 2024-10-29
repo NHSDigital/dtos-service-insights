@@ -10,10 +10,13 @@ on:
     types: [opened, reopened]
 
 jobs:
+
   metadata:
     name: "Set CI/CD metadata"
     runs-on: ubuntu-latest
     timeout-minutes: 1
+    permissions:
+      pull-requests: read
     outputs:
       build_datetime_london: ${{ steps.variables.outputs.build_datetime_london }}
       build_datetime: ${{ steps.variables.outputs.build_datetime }}
@@ -45,7 +48,7 @@ jobs:
       - name: "Check if pull request exists for this branch"
         id: pr_exists
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           branch_name=${GITHUB_HEAD_REF:-$(echo $GITHUB_REF | sed 's#refs/heads/##')}
           echo "Current branch is '$branch_name'"
@@ -95,18 +98,15 @@ jobs:
       version: "${{ needs.metadata.outputs.version }}"
     secrets: inherit
   build-stage: # Recommended maximum execution time is 3 minutes
-    name: "Build stage"
-    needs: [metadata, test-stage]
-    uses: ./.github/workflows/stage-3-build.yaml
+    name: Image build stage
+    needs: [metadata, commit-stage, test-stage]
+    uses: NHSDigital/dtos-devops-templates/.github/workflows/stage-3-build-images.yaml@main
     if: needs.metadata.outputs.does_pull_request_exist == 'true' || (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened'))
     with:
-      build_datetime: "${{ needs.metadata.outputs.build_datetime }}"
-      build_timestamp: "${{ needs.metadata.outputs.build_timestamp }}"
-      build_epoch: "${{ needs.metadata.outputs.build_epoch }}"
-      nodejs_version: "${{ needs.metadata.outputs.nodejs_version }}"
-      python_version: "${{ needs.metadata.outputs.python_version }}"
-      terraform_version: "${{ needs.metadata.outputs.terraform_version }}"
-      version: "${{ needs.metadata.outputs.version }}"
+      docker_compose_file_path: .
+      environment_tag: "${{ needs.metadata.outputs.environment_tag }}"
+      function_app_source_code_path: src
+      project_name: service-insights
     secrets: inherit
   acceptance-stage: # Recommended maximum execution time is 10 minutes
     name: "Acceptance stage"
