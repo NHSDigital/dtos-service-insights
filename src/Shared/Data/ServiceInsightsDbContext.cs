@@ -14,6 +14,8 @@ public partial class ServiceInsightsDbContext : DbContext
 
     public virtual DbSet<Episode> Episodes { get; set; }
 
+    public virtual DbSet<OrganisationLkp> OrganisationLkps { get; set; }
+
     public virtual DbSet<ParticipantScreeningEpisode> ParticipantScreeningEpisodes { get; set; }
 
     public virtual DbSet<ParticipantScreeningProfile> ParticipantScreeningProfiles { get; set; }
@@ -75,6 +77,37 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.ScreeningId)
                 .HasMaxLength(50)
                 .HasColumnName("SCREENING_ID");
+        });
+
+        modelBuilder.Entity<OrganisationLkp>(entity =>
+        {
+            entity.HasKey(e => e.OrganisationId).HasName("PK_ORGANISATION_ID");
+
+            entity.ToTable("ORGANISATION_LKP");
+
+            entity.Property(e => e.OrganisationId)
+                .HasMaxLength(50)
+                .HasColumnName("ORGANISATION_ID");
+            entity.Property(e => e.IsActive)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("IS_ACTIVE");
+            entity.Property(e => e.OrganisationCode)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ORGANISATION_CODE");
+            entity.Property(e => e.OrganisationName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ORGANISATION_NAME");
+            entity.Property(e => e.OrganisationType)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ORGANISATION_TYPE");
+            entity.Property(e => e.ScreeningName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("SCREENING_NAME");
         });
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>

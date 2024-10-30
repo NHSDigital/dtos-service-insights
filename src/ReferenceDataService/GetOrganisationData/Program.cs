@@ -7,7 +7,7 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
-        services.AddScoped<IEpisodeRepository, EpisodeRepository>();
+        services.AddScoped<IOrganisationLkpRepository, OrganisationLkpRepository>();
         services.AddDbContext<ServiceInsightsDbContext>(
             options => options.UseSqlServer(Environment.GetEnvironmentVariable("ServiceInsightsDbConnectionString")));
     })
