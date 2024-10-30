@@ -134,16 +134,16 @@ public class ReceiveData
                 var modifiedEpisode = new Episode
                 {
                     EpisodeId = episode.episode_id,
-                    EpisodeTypeId = _episodeTypeLkpRepository.GetEpisodeTypeId(episode.episode_type),
-                    EpisodeOpenDate = DateOnly.ParseExact(episode.episode_date, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    //EpisodeTypeId = _episodeTypeLkpRepository.GetEpisodeTypeId(episode.episode_type),
+                    EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.ParseExact(episode.episode_date, "dd/MM/yyyy", CultureInfo.InvariantCulture),
                     AppointmentMadeFlag = episode.appointment_made,
                     FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.ParseExact(episode.date_of_foa, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-                    ActualScreeningDate = episode.date_of_as,
+                    ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.ParseExact(episode.date_of_as, "dd/MM/yyyy", CultureInfo.InvariantCulture),
                     EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.ParseExact(episode.early_recall_date, "dd/MM/yyyy", CultureInfo.InvariantCulture),
                     CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-                    EndCodeId = _endCodeLkpRepository.GetEndCodeId(episode.end_code),
-                    EndCodeLastUpdated = episode.end_code_last_updated,
-                    OrganisationId = _organisationLkpRepository.GetOrganisationId(episode.bso_organisation_code),
+                    //EndCodeId = _endCodeLkpRepository.GetEndCodeId(episode.end_code),
+                    EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTimeOffset.ParseExact(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:sszz", CultureInfo.InvariantCulture).LocalDateTime,
+                    //OrganisationId = _organisationLkpRepository.GetOrganisationId(episode.bso_organisation_code),
                     BatchId = episode.bso_batch_id
                 };
 
@@ -192,11 +192,11 @@ public class BssEpisode
     public string? episode_date { get; set; }
     public string? appointment_made { get; set; }
     public string? date_of_foa { get; set; }
-    public DateOnly? date_of_as { get; set; }
+    public string? date_of_as { get; set; }
     public string? early_recall_date { get; set; }
     public string? call_recall_status_authorised_by { get; set; }
     public string? end_code { get; set; }
-    public DateTime? end_code_last_updated { get; set; }
+    public string? end_code_last_updated { get; set; }
     public string? bso_organisation_code { get; set; }
     public string? bso_batch_id { get; set; }
     public string? reason_closed_code { get; set; }
