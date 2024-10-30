@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ../../
+
 # Script to install Python if not already installed, add it to PATH, install pre-commit, and set up gitleaks in pre-commit hooks on macOS
 
 # Step 1: Check if Python is installed
