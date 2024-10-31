@@ -245,3 +245,17 @@ services:
     environment:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7074
+
+    # Reference Data Service
+    get-organisation-data:
+      container_name: get-organisation-data
+      network_mode: host
+      build:
+        context: ./src/
+        dockerfile: ./ReferenceDataService/GetOrganisationData/Dockerfile
+      ports:
+        - "6081:6081"
+      environment:
+        - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+        - ASPNETCORE_URLS=http://*:6081
+        - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
