@@ -27,11 +27,12 @@ public class RetrieveMeshFile
     /// If there is a file in there will move the file to the Service Insights Blob Storage where it will be picked up by the ReceiveData Function.
     /// </summary>
     [Function("RetrieveMeshFile")]
-    public async Task RunAsync([TimerTrigger("*/5 * * * *")] TimerInfo myTimer)
+    public async Task RunAsync([TimerTrigger("%TimerExpression%")] TimerInfo myTimer)
     {
         _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
-        static bool messageFilter(MessageMetaData i) => true; // No current filter defined there might be business rules here
+        static bool messageFilter(MessageMetaData i) =>
+            (i.FileName.StartsWith("bss_subjects") || i.FileName.StartsWith("bss_episodes")) && i.FileName.EndsWith(".csv");
 
         try
         {
