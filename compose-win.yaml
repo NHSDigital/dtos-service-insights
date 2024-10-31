@@ -96,12 +96,10 @@ services:
   # BI Analytics Service
   create-participant-screening-episode:
     container_name: create-participant-screening-episode
-    restart: always
+    network_mode: host
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsService/CreateParticipantScreeningEpisode/Dockerfile
-    networks:
-      - app-network
     ports:
       - "6008:6008"
     environment:
@@ -113,12 +111,10 @@ services:
 
   create-participant-screening-profile:
     container_name: create-participant-screening-profile
-    restart: always
+    network_mode: host
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsService/CreateParticipantScreeningProfile/Dockerfile
-    networks:
-      - app-network
     ports:
       - "6009:6009"
     environment:
@@ -132,12 +128,10 @@ services:
   # Demographics Service
   get-demographics-data:
     container_name: get-demographics-data
-    restart: always
+    network_mode: host
     build:
       context: ./src/
       dockerfile: ./DemographicsService/GetDemographicsData/Dockerfile
-    networks:
-      - app-network
     ports:
       - "6080:6080"
     environment:
