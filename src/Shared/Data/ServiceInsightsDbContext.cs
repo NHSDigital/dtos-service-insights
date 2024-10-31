@@ -112,13 +112,11 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.EpisodeId).HasName("PK_EPISODE_ID");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27B3329D1F");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
-            entity.Property(e => e.EpisodeId)
-                .HasMaxLength(50)
-                .HasColumnName("EPISODE_ID");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.ActualScreeningDate)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -151,6 +149,9 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("END_CODE_LAST_UPDATED");
+            entity.Property(e => e.EpisodeId)
+                .HasMaxLength(50)
+                .HasColumnName("EPISODE_ID");
             entity.Property(e => e.EpisodeOpenDate)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -191,13 +192,11 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.NhsNumber).HasName("PK_NHS_NUMBER");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC2790D38411");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
-            entity.Property(e => e.NhsNumber)
-                .HasMaxLength(50)
-                .HasColumnName("NHS_NUMBER");
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.DateIrradiated)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -238,6 +237,9 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("NEXT_TEST_DUE_DATE_CALCULATION_METHOD");
+            entity.Property(e => e.NhsNumber)
+                .HasMaxLength(50)
+                .HasColumnName("NHS_NUMBER");
             entity.Property(e => e.ParticipantScreeningStatus)
                 .HasMaxLength(50)
                 .IsUnicode(false)

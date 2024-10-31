@@ -5,6 +5,8 @@ namespace NHS.ServiceInsights.Model;
 
 public partial class ParticipantScreeningProfile
 {
+    public long Id { get; set; }
+
     public string NhsNumber { get; set; } = null!;
 
     public string? ScreeningName { get; set; }
