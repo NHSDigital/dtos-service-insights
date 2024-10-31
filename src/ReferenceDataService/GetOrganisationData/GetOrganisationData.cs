@@ -23,7 +23,7 @@ public class GetOrganisationData
     [Function("GetOrganisationData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        _logger.LogInformation("Request to retrieve a participant's demographic information has been processed.");
+        _logger.LogInformation("GetOrganisationData: start");
 
         string organisationId = req.Query["organisation_id"];
 
