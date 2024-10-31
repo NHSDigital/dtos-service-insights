@@ -85,13 +85,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetDemographicsData", "Demo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetDemographicsDataTests", "..\tests\DemographicsServiceTests\GetDemographicsDataTests\GetDemographicsDataTests.csproj", "{5AC79E9B-0FC9-4B3F-9049-81419C6E41B2}"
 EndProject
-<<<<<<< HEAD
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReferenceDataService", "ReferenceDataService", "{7C74117F-B2F9-4266-83C8-49E96E453F39}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetOrganisationData", "ReferenceDataService\GetOrganisationData\GetOrganisationData.csproj", "{30831BEE-6271-4CA9-ADE4-074E97D08ABE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetOrganisationDataTests", "..\tests\ReferenceDataServiceTests\GetOrganisationDataTests\GetOrganisationDataTests.csproj", "{9419D8D3-17A2-4A5D-B7BC-83900A5311C3}"
-=======
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningEpisode", "BIAnalyticsService\CreateParticipantScreeningEpisode\CreateParticipantScreeningEpisode.csproj", "{92FBB2E6-847E-424F-BBCB-1A01F4FCB31A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningProfile", "BIAnalyticsService\CreateParticipantScreeningProfile\CreateParticipantScreeningProfile.csproj", "{2554A6DE-634A-4D88-9161-E7CA281989AD}"
@@ -99,7 +97,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningEpisodeTests", "..\tests\BIAnalyticsServiceTests\CreateParticipantScreeningEpisodeTests\CreateParticipantScreeningEpisodeTests.csproj", "{6EB01C56-7964-4C35-9F59-FD7DFB49C364}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningProfileTests", "..\tests\BIAnalyticsServiceTests\CreateParticipantScreeningProfileTests\CreateParticipantScreeningProfileTests.csproj", "{D000017C-3E3D-4B38-8106-60F608948575}"
->>>>>>> main
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -223,7 +220,6 @@ Global
 		{5AC79E9B-0FC9-4B3F-9049-81419C6E41B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AC79E9B-0FC9-4B3F-9049-81419C6E41B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AC79E9B-0FC9-4B3F-9049-81419C6E41B2}.Release|Any CPU.Build.0 = Release|Any CPU
-<<<<<<< HEAD
 		{30831BEE-6271-4CA9-ADE4-074E97D08ABE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30831BEE-6271-4CA9-ADE4-074E97D08ABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30831BEE-6271-4CA9-ADE4-074E97D08ABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -232,7 +228,6 @@ Global
 		{9419D8D3-17A2-4A5D-B7BC-83900A5311C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9419D8D3-17A2-4A5D-B7BC-83900A5311C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9419D8D3-17A2-4A5D-B7BC-83900A5311C3}.Release|Any CPU.Build.0 = Release|Any CPU
-=======
 		{92FBB2E6-847E-424F-BBCB-1A01F4FCB31A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{92FBB2E6-847E-424F-BBCB-1A01F4FCB31A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92FBB2E6-847E-424F-BBCB-1A01F4FCB31A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -249,7 +244,6 @@ Global
 		{D000017C-3E3D-4B38-8106-60F608948575}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D000017C-3E3D-4B38-8106-60F608948575}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D000017C-3E3D-4B38-8106-60F608948575}.Release|Any CPU.Build.0 = Release|Any CPU
->>>>>>> main
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -274,11 +268,8 @@ Global
 		{E3459DCC-85DA-4B35-920F-5661E6F63D52} = {DACA4EB5-14F5-42D8-AD61-DA1FA4DBB6ED}
 		{5B4FE7BC-8FCE-4B7B-8E43-BCB726A7B10B} = {B079A490-6D52-4428-8A63-BD596589C16E}
 		{8004251F-AF5A-4030-B40F-0C3EA8948040} = {1A0A629C-9BA1-4A19-8253-5137C2C0BA0B}
-<<<<<<< HEAD
 		{30831BEE-6271-4CA9-ADE4-074E97D08ABE} = {7C74117F-B2F9-4266-83C8-49E96E453F39}
-=======
 		{92FBB2E6-847E-424F-BBCB-1A01F4FCB31A} = {4B0AD4B3-4508-4F6B-AEBF-24B4578DB1DC}
 		{2554A6DE-634A-4D88-9161-E7CA281989AD} = {4B0AD4B3-4508-4F6B-AEBF-24B4578DB1DC}
->>>>>>> main
 	EndGlobalSection
 EndGlobal

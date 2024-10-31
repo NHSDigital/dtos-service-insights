@@ -319,7 +319,7 @@ services:
       - ASPNETCORE_URLS=http://*:7074
 
   # Reference Data Service
-    get-organisation-data:
+  get-organisation-data:
     container_name: get-organisation-data
     restart: always
     build:
