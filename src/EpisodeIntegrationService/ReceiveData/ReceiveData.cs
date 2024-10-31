@@ -134,16 +134,16 @@ public class ReceiveData
                 var modifiedEpisode = new Episode
                 {
                     EpisodeId = episode.episode_id,
-                    //EpisodeTypeId = _episodeTypeLkpRepository.GetEpisodeTypeId(episode.episode_type),
-                    EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.ParseExact(episode.episode_date, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    //EpisodeTypeId = _episodeTypeLkpRepository.GetEpisodeTypeId(episode.episode_type), Looking to include this as part of Episode Management Service
+                    EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.Parse(episode.episode_date),
                     AppointmentMadeFlag = episode.appointment_made,
-                    FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.ParseExact(episode.date_of_foa, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-                    ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.ParseExact(episode.date_of_as, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-                    EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.ParseExact(episode.early_recall_date, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.Parse(episode.date_of_foa),
+                    ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.Parse(episode.date_of_as),
+                    EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.Parse(episode.early_recall_date),
                     CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-                    //EndCodeId = _endCodeLkpRepository.GetEndCodeId(episode.end_code),
-                    EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTimeOffset.ParseExact(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:sszz", CultureInfo.InvariantCulture).LocalDateTime,
-                    //OrganisationId = _organisationLkpRepository.GetOrganisationId(episode.bso_organisation_code),
+                    //EndCodeId = _endCodeLkpRepository.GetEndCodeId(episode.end_code), Looking to include this as part of Episode Management Service
+                    EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTime.Parse(episode.end_code_last_updated),
+                    //OrganisationId = _organisationLkpRepository.GetOrganisationId(episode.bso_organisation_code), Looking to include this as part of Episode Management Service
                     BatchId = episode.bso_batch_id
                 };
 
