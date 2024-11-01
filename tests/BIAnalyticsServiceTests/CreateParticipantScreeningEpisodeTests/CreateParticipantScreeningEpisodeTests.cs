@@ -19,9 +19,9 @@ public class CreateParticipantScreeningEpisodeTests
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
-    private string episodeJson = "{\"EpisodeId\":\"245395\",\"ParticipantId\":\"123\",\"ScreeningId\":\"123\",\"NhsNumber\":\"1111111112\",\"EpisodeTypeId\":\"C\",\"EpisodeOpenDate\":\"2000-01-01\"," +
+    private string episodeJson = "{\"EpisodeId\":245395,\"ParticipantId\":123,\"ScreeningId\":123,\"NhsNumber\":1111111112,\"EpisodeTypeId\":11111,\"EpisodeOpenDate\":\"2000-01-01\"," +
                         "\"AppointmentMadeFlag\":\"TRUE\",\"FirstOfferedAppointmentDate\":\"2000-01-01\",\"ActualScreeningDate\":\"2000-01-01\",\"EarlyRecallDate\":\"2000-01-01\",\"CallRecallStatusAuthorisedBy\":\"" +
-                        "SCREENING_OFFICE\",\"EndCodeId\":\"SC\",\"EndCodeLastUpdated\":\"2000-01-01\",\"OrganisationId\":\"PBO\",\"BatchId\":\"ECHO\",\"RecordInsertDatetime\":\"2000-01-01\",\"RecordUpdateDatetime\":\"2000-01-01\"}";
+                        "SCREENING_OFFICE\",\"EndCodeId\":1000,\"EndCodeLastUpdated\":\"2000-01-01\",\"OrganisationId\":1010,\"BatchId\":\"ECHO\",\"RecordInsertDatetime\":\"2000-01-01\",\"RecordUpdateDatetime\":\"2000-01-01\"}";
 
     public CreateParticipantScreeningEpisodeTests()
     {
@@ -93,7 +93,7 @@ public class CreateParticipantScreeningEpisodeTests
     public async Task CreateParticipantScreeningEpisode_ShouldSendEpisodeToDownstreamFunctions()
     {
         // Arrange
-        string episodeId = "745396";
+        string episodeId = "245395";
 
         var queryParam = new NameValueCollection
         {
