@@ -131,19 +131,20 @@ public class ReceiveData
             _logger.LogInformation("Processing episode data.");
             foreach (var episode in episodes)
             {
-                var modifiedEpisode = new Episode
+                var modifiedEpisode = new EpisodeDto
                 {
                     EpisodeId = episode.episode_id,
-                    //EpisodeTypeId = _episodeTypeLkpRepository.GetEpisodeTypeId(episode.episode_type), Looking to include this as part of Episode Management Service
+                    EpisodeType = episode.episode_type,
+                    NhsNumber = episode.nhs_number,
                     EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.Parse(episode.episode_date),
                     AppointmentMadeFlag = episode.appointment_made,
                     FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.Parse(episode.date_of_foa),
                     ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.Parse(episode.date_of_as),
                     EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.Parse(episode.early_recall_date),
                     CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-                    //EndCodeId = _endCodeLkpRepository.GetEndCodeId(episode.end_code), Looking to include this as part of Episode Management Service
+                    EndCode = episode.end_code,
                     EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTime.Parse(episode.end_code_last_updated),
-                    //OrganisationId = _organisationLkpRepository.GetOrganisationId(episode.bso_organisation_code), Looking to include this as part of Episode Management Service
+                    OrganisationCode = episode.bso_organisation_code,
                     BatchId = episode.bso_batch_id
                 };
 
