@@ -2,12 +2,7 @@ using Moq;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Data;
-using NHS.ServiceInsights.EpisodeIntegrationService;
-using Microsoft.Azure.Functions.Worker.Http;
-using NHS.ServiceInsights.TestUtils;
 using System.Text;
-using System.Globalization;
-using System.Text.Json;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationServiceTests;
 
@@ -16,8 +11,6 @@ public class ReceiveDataTests
 {
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
     private readonly Mock<ILogger<EpisodeIntegrationService.ReceiveData>> _mockLogger = new();
-    private Mock<HttpRequestData> _mockRequest;
-    private readonly SetupRequest _setupRequest = new();
     private readonly EpisodeIntegrationService.ReceiveData _function;
     private readonly Mock<IEndCodeLkpRepository> _mockEndCodeLkpRepository = new();
     private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
