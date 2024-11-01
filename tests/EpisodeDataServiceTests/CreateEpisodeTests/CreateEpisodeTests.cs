@@ -18,10 +18,13 @@ public class CreateEpisodeTests
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
     private readonly CreateEpisode _function;
+    private readonly Mock<IEndCodeLkpRepository> _mockEndCodeLkpRepository = new();
+    private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
+    private readonly Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
 
     public CreateEpisodeTests()
     {
-        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object);
+        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockOrganisationLkpRepository.Object);
     }
 
     [TestMethod]
