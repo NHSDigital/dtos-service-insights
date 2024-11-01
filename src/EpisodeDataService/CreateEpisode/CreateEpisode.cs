@@ -13,24 +13,30 @@ public class CreateEpisode
 {
     private readonly ILogger<CreateEpisode> _logger;
     private readonly IEpisodeRepository _episodesRepository;
+    private readonly IEndCodeLkpRepository _endCodeLkpRepository;
+    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
+    private readonly IOrganisationLkpRepository _organisationLkpRepository;
 
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IOrganisationLkpRepository organisationLkpRepository)
     {
         _logger = logger;
         _episodesRepository = episodeRepository;
+        _endCodeLkpRepository = endCodeLkpRepository;
+        _episodeTypeLkpRepository = episodeTypeLkpRepository;
+        _organisationLkpRepository = organisationLkpRepository;
     }
 
     [Function("CreateEpisode")]
     public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
-        Episode episode;
+        EpisodeDto episodeDto;
 
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = reader.ReadToEnd();
-                episode = JsonSerializer.Deserialize<Episode>(postData);
+                episodeDto = JsonSerializer.Deserialize<EpisodeDto>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
             }
         }
@@ -42,6 +48,26 @@ public class CreateEpisode
 
         try
         {
+
+            var episode = new Episode
+            {
+                EpisodeId = episodeDto.EpisodeId,
+                EpisodeTypeId = _episodeTypeLkpRepository.GetEpisodeTypeId(episodeDto.EpisodeType),
+                NhsNumber = episodeDto.NhsNumber,
+                EpisodeOpenDate = episodeDto.EpisodeOpenDate,
+                AppointmentMadeFlag = episodeDto.AppointmentMadeFlag,
+                FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate,
+                ActualScreeningDate = episodeDto.ActualScreeningDate,
+                EarlyRecallDate = episodeDto.EarlyRecallDate,
+                CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy,
+                EndCodeId = _endCodeLkpRepository.GetEndCodeId(episodeDto.EndCode),
+                EndCodeLastUpdated = episodeDto.EndCodeLastUpdated,
+                OrganisationId = _organisationLkpRepository.GetOrganisationId(episodeDto.OrganisationCode),
+                BatchId = episodeDto.BatchId,
+                RecordInsertDatetime = DateTime.UtcNow,
+                RecordUpdateDatetime = DateTime.UtcNow
+            };
+
             _logger.LogInformation("Calling CreateEpisode method...");
             _episodesRepository.CreateEpisode(episode);
             _logger.LogInformation("Episode created successfully.");
