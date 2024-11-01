@@ -21,7 +21,7 @@ public class CreateParticipantScreeningEpisodeTests
 
     private readonly ParticipantScreeningEpisode ValidParticipantScreeningEpisode = new ParticipantScreeningEpisode()
     {
-        EpisodeId = "1",
+        EpisodeId = 1,
         ScreeningName = "TestScreeningName",
         NhsNumber = "123456789",
         EpisodeType = "TestEpisodeType",
