@@ -13,25 +13,31 @@ public class UpdateEpisode
 {
     private readonly ILogger<UpdateEpisode> _logger;
     private readonly IEpisodeRepository _episodeRepository;
+    private readonly IEndCodeLkpRepository _endCodeLkpRepository;
+    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
+    private readonly IOrganisationLkpRepository _organisationLkpRepository;
 
-    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository)
+    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IOrganisationLkpRepository organisationLkpRepository)
     {
         _logger = logger;
         _episodeRepository = episodeRepository;
+        _endCodeLkpRepository = endCodeLkpRepository;
+        _episodeTypeLkpRepository = episodeTypeLkpRepository;
+        _organisationLkpRepository = organisationLkpRepository;
     }
 
     [Function("UpdateEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put")] HttpRequestData req)
     {
-        Episode episode;
+        EpisodeDto episodeDto;
 
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = reader.ReadToEnd();
-                episode = JsonSerializer.Deserialize<Episode>(postData);
-                _logger.LogInformation("Request to update episode {episodeId} received.", episode.EpisodeId);
+                episodeDto = JsonSerializer.Deserialize<EpisodeDto>(postData);
+                _logger.LogInformation("Request to update episode {episodeId} received.", episodeDto.EpisodeId);
             }
         }
         catch
@@ -42,45 +48,45 @@ public class UpdateEpisode
 
         try
         {
-            var existingEpisode = await _episodeRepository.GetEpisodeAsync(episode.EpisodeId);
+            var existingEpisode = await _episodeRepository.GetEpisodeAsync(episodeDto.EpisodeId);
             if (existingEpisode != null)
             {
-                existingEpisode.ScreeningId = episode.ScreeningId;
-                existingEpisode.NhsNumber = episode.NhsNumber;
-                existingEpisode.EpisodeTypeId = episode.EpisodeTypeId;
-                existingEpisode.EpisodeOpenDate = episode.EpisodeOpenDate;
-                existingEpisode.AppointmentMadeFlag = episode.AppointmentMadeFlag;
-                existingEpisode.FirstOfferedAppointmentDate = episode.FirstOfferedAppointmentDate;
-                existingEpisode.ActualScreeningDate = episode.ActualScreeningDate;
-                existingEpisode.EarlyRecallDate = episode.EarlyRecallDate;
-                existingEpisode.CallRecallStatusAuthorisedBy = episode.CallRecallStatusAuthorisedBy;
-                existingEpisode.EndCodeId = episode.EndCodeId;
-                existingEpisode.EndCodeLastUpdated = episode.EndCodeLastUpdated;
-                existingEpisode.OrganisationId = episode.OrganisationId;
-                existingEpisode.BatchId = episode.BatchId;
+                existingEpisode.ScreeningId = episodeDto.ScreeningId;
+                existingEpisode.NhsNumber = episodeDto.NhsNumber;
+                existingEpisode.EpisodeTypeId = _episodeTypeLkpRepository.GetEpisodeTypeId(episodeDto.EpisodeType);
+                existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
+                existingEpisode.AppointmentMadeFlag = episodeDto.AppointmentMadeFlag;
+                existingEpisode.FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate;
+                existingEpisode.ActualScreeningDate = episodeDto.ActualScreeningDate;
+                existingEpisode.EarlyRecallDate = episodeDto.EarlyRecallDate;
+                existingEpisode.CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy;
+                existingEpisode.EndCodeId = _endCodeLkpRepository.GetEndCodeId(episodeDto.EndCode);
+                existingEpisode.EndCodeLastUpdated = episodeDto.EndCodeLastUpdated;
+                existingEpisode.OrganisationId = _organisationLkpRepository.GetOrganisationId(episodeDto.OrganisationCode);
+                existingEpisode.BatchId = episodeDto.BatchId;
                 existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
 
                 try
                 {
                     await _episodeRepository.UpdateEpisode(existingEpisode);
-                    _logger.LogInformation("Episode {episodeId} updated successfully.", episode.EpisodeId);
+                    _logger.LogInformation("Episode {episodeId} updated successfully.", episodeDto.EpisodeId);
                     return req.CreateResponse(HttpStatusCode.OK);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error updating episode {episodeId}.", episode.EpisodeId);
+                    _logger.LogError(ex, "Error updating episode {episodeId}.", episodeDto.EpisodeId);
                     return req.CreateResponse(HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                _logger.LogError("Episode {episodeId} not found.", episode.EpisodeId);
+                _logger.LogError("Episode {episodeId} not found.", episodeDto.EpisodeId);
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating episode {episodeId}.", episode.EpisodeId);
+            _logger.LogError(ex, "Error updating episode {episodeId}.", episodeDto.EpisodeId);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
