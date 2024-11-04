@@ -26,13 +26,11 @@ public class GetEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_ShouldReturnBadRequest_WhenEpisodeIdIsNotProvided()
+    public async Task Run_ShouldReturnBadRequest_WhenEpisodeIdIsNotProvidedOrInvalid()
     {
         // Arrange
-        var queryParam = new NameValueCollection()
-        {
-            { "EpisodeId", null }
-        };
+        var queryParam = new NameValueCollection();
+
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
         // Act
@@ -43,7 +41,7 @@ public class GetEpisodeTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Episode ID is not provided.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Invalid episode ID format.")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
