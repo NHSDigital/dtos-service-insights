@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace NHS.ServiceInsights.Data;
 
 public class EpisodeTypeLkpRepository : IEpisodeTypeLkpRepository
@@ -9,8 +11,9 @@ public class EpisodeTypeLkpRepository : IEpisodeTypeLkpRepository
         _dbContext = dbContext;
     }
 
-    public long GetEpisodeTypeId(string episodeType)
+    public async Task<long> GetEpisodeTypeIdAsync(string episodeType)
     {
-        return _dbContext.EpisodeTypeLkps.FirstOrDefault(et => et.EpisodeType == episodeType)?.EpisodeTypeId ?? 0;
+        var episodeTypeLkp = await _dbContext.EpisodeTypeLkps.FirstOrDefaultAsync(et => et.EpisodeType == episodeType);
+        return episodeTypeLkp?.EpisodeTypeId ?? 0;
     }
 }

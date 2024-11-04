@@ -2,5 +2,5 @@ namespace NHS.ServiceInsights.Data;
 
 public interface IEndCodeLkpRepository
 {
-    long GetEndCodeId(string endCode);
+    Task<long> GetEndCodeIdAsync(string endCode);
 }

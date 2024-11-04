@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace NHS.ServiceInsights.Data;
 
 public class EndCodeLkpRepository : IEndCodeLkpRepository
@@ -9,8 +11,9 @@ public class EndCodeLkpRepository : IEndCodeLkpRepository
         _dbContext = dbContext;
     }
 
-    public long GetEndCodeId(string endCode)
+    public async Task<long> GetEndCodeIdAsync(string endCode)
     {
-        return _dbContext.EndCodeLkps.FirstOrDefault(ec => ec.EndCode == endCode)?.EndCodeId ?? 0;
+        var endCodeLkp = await _dbContext.EndCodeLkps.FirstOrDefaultAsync(ec => ec.EndCode == endCode);
+        return endCodeLkp?.EndCodeId ?? 0;
     }
 }
