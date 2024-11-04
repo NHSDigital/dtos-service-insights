@@ -137,7 +137,7 @@ public class GetReferenceDataTests
             LogLevel.Error,
             0,
             It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to get organisation from the db") &&
-                                                    state.ToString().Contains("Exception: System.Exception: Database error")),
+                                                    state.ToString().Contains("Exception: Database error")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);

@@ -53,7 +53,7 @@ public class GetReferenceData
         }
         catch (Exception ex)
         {
-            _logger.LogError("GetReferenceData: Failed to get organisation from the db.\nException: {ex.Message}", ex);
+            _logger.LogError("GetReferenceData: Failed to get organisation from the db.\nException: " + ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
