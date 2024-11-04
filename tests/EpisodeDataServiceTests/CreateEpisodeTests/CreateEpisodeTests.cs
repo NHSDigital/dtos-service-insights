@@ -20,11 +20,10 @@ public class CreateEpisodeTests
     private readonly CreateEpisode _function;
     private readonly Mock<IEndCodeLkpRepository> _mockEndCodeLkpRepository = new();
     private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
-    private readonly Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
 
     public CreateEpisodeTests()
     {
-        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockOrganisationLkpRepository.Object);
+        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object);
     }
 
     [TestMethod]
@@ -35,7 +34,7 @@ public class CreateEpisodeTests
         _mockRequest = _setupRequest.Setup(json);
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
@@ -54,7 +53,7 @@ public class CreateEpisodeTests
         _mockRequest = _setupRequest.Setup(json);
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
@@ -75,7 +74,7 @@ public class CreateEpisodeTests
         _mockEpisodeRepository.Setup(repo => repo.CreateEpisode(It.IsAny<Episode>())).Throws<Exception>();
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);

@@ -21,12 +21,12 @@ public class UpdateEpisodeTests
     private readonly UpdateEpisode _function;
     private readonly Mock<IEndCodeLkpRepository> _mockEndCodeLkpRepository = new();
     private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
-    private readonly Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
+
 
     public UpdateEpisodeTests()
     {
         _mockRequest = _setupRequest.Setup("");
-        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockOrganisationLkpRepository.Object);
+        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object);
     }
 
     [TestMethod]

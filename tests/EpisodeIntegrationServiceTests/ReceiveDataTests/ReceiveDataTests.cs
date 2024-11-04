@@ -14,17 +14,13 @@ public class ReceiveDataTests
     private readonly EpisodeIntegrationService.ReceiveData _function;
     private readonly Mock<IEndCodeLkpRepository> _mockEndCodeLkpRepository = new();
     private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
-    private readonly Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
-
-
-
 
     public ReceiveDataTests()
     {
         Environment.SetEnvironmentVariable("EpisodeManagementUrl", "EpisodeManagementUrl");
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
 
-        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockOrganisationLkpRepository.Object);
+        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object);
     }
 
     [TestMethod]
