@@ -61,7 +61,7 @@ END
 
 
 alter table EPISODE
-   add constraint FK_EPISODE_STATUS_OF_END_CODE foreign key (END_CODE_ID)
+    add constraint FK_EPISODE_STATUS_OF_END_CODE foreign key (END_CODE_ID)
       references END_CODE_LKP (END_CODE_ID)
 
 
@@ -88,7 +88,7 @@ END
 
 
 alter table EPISODE
-   add constraint FK_EPISODE_TYPE_OF_E_EPISODE_ foreign key (EPISODE_TYPE_ID)
+    add constraint FK_EPISODE_TYPE_OF_E_EPISODE_ foreign key (EPISODE_TYPE_ID)
       references EPISODE_TYPE_LKP (EPISODE_TYPE_ID)
 
 
@@ -118,7 +118,7 @@ END
 
 
 alter table EPISODE
-   add constraint FK_EPISODE_ORGANISATION_OF_ORGANISATION foreign key (ORGANISATION_ID)
+    add constraint FK_EPISODE_ORGANISATION_OF_ORGANISATION foreign key (ORGANISATION_ID)
       references ORGANISATION_LKP (ORGANISATION_ID)
 
 
@@ -195,4 +195,3 @@ BEGIN
       RECORD_INSERT_DATETIME           VARCHAR(50) NULL
     );
 END
-
