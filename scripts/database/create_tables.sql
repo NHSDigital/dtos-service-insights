@@ -93,36 +93,6 @@ alter table EPISODE
 
 
 /*==============================================================*/
-/* Table: ORGANISATION_LKP                                      */
-/*==============================================================*/
-
-IF NOT EXISTS
-(
-    SELECT *
-    FROM INFORMATION_SCHEMA.TABLES
-    WHERE TABLE_SCHEMA = 'dbo'
-    AND TABLE_NAME = 'ORGANISATION_LKP'
-)
-BEGIN
-    CREATE TABLE ORGANISATION_LKP
-    (
-      ORGANISATION_ID                BIGINT               not null,
-      SCREENING_NAME                 VARCHAR(200)         null,
-      ORGANISATION_CODE              VARCHAR(50)          null,
-      ORGANISATION_NAME              VARCHAR(200)         null,
-      ORGANISATION_TYPE              VARCHAR(50)          null,
-      IS_ACTIVE                      BIT                  null,
-      constraint PK_ORGANISATION_LKP primary key (ORGANISATION_ID)
-    );
-END
-
-
-alter table EPISODE
-    add constraint FK_EPISODE_ORGANISATION_OF_ORGANISATION foreign key (ORGANISATION_ID)
-      references ORGANISATION_LKP (ORGANISATION_ID)
-
-
-/*==============================================================*/
 /* Table: PARTICIPANT_SCREENING_PROFILE                         */
 /*==============================================================*/
 
