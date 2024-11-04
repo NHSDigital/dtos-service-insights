@@ -42,6 +42,4 @@ public partial class Episode
     public virtual EndCodeLkp? EndCode { get; set; }
 
     public virtual EpisodeTypeLkp? EpisodeType { get; set; }
-
-    public virtual OrganisationLkp? Organisation { get; set; }
 }
