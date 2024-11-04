@@ -24,12 +24,6 @@ public class GetEpisode
     {
         string episodeIdString = req.Query["episodeId"];
 
-        if (string.IsNullOrEmpty(episodeIdString))
-        {
-            _logger.LogError("Episode ID is not provided.");
-            return req.CreateResponse(HttpStatusCode.BadRequest);
-        }
-
         if (!long.TryParse(episodeIdString, out long episodeId))
         {
             _logger.LogError("Invalid episode ID format.");
