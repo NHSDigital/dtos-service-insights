@@ -15,15 +15,13 @@ public class UpdateEpisode
     private readonly IEpisodeRepository _episodeRepository;
     private readonly IEndCodeLkpRepository _endCodeLkpRepository;
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
-    private readonly IOrganisationLkpRepository _organisationLkpRepository;
 
-    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IOrganisationLkpRepository organisationLkpRepository)
+    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository)
     {
         _logger = logger;
         _episodeRepository = episodeRepository;
         _endCodeLkpRepository = endCodeLkpRepository;
         _episodeTypeLkpRepository = episodeTypeLkpRepository;
-        _organisationLkpRepository = organisationLkpRepository;
     }
 
     [Function("UpdateEpisode")]
@@ -51,18 +49,21 @@ public class UpdateEpisode
             var existingEpisode = await _episodeRepository.GetEpisodeAsync(episodeDto.EpisodeId);
             if (existingEpisode != null)
             {
+                var episodeTypeId = await _episodeTypeLkpRepository.GetEpisodeTypeIdAsync(episodeDto.EpisodeType);
+                var endCodeId = await _endCodeLkpRepository.GetEndCodeIdAsync(episodeDto.EndCode);
+
                 existingEpisode.ScreeningId = episodeDto.ScreeningId;
                 existingEpisode.NhsNumber = episodeDto.NhsNumber;
-                existingEpisode.EpisodeTypeId = _episodeTypeLkpRepository.GetEpisodeTypeId(episodeDto.EpisodeType);
+                existingEpisode.EpisodeTypeId = episodeTypeId;
                 existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
                 existingEpisode.AppointmentMadeFlag = episodeDto.AppointmentMadeFlag;
                 existingEpisode.FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate;
                 existingEpisode.ActualScreeningDate = episodeDto.ActualScreeningDate;
                 existingEpisode.EarlyRecallDate = episodeDto.EarlyRecallDate;
                 existingEpisode.CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy;
-                existingEpisode.EndCodeId = _endCodeLkpRepository.GetEndCodeId(episodeDto.EndCode);
+                existingEpisode.EndCodeId = endCodeId;
                 existingEpisode.EndCodeLastUpdated = episodeDto.EndCodeLastUpdated;
-                existingEpisode.OrganisationId = _organisationLkpRepository.GetOrganisationId(episodeDto.OrganisationCode);
+                existingEpisode.OrganisationId = null;
                 existingEpisode.BatchId = episodeDto.BatchId;
                 existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
 
