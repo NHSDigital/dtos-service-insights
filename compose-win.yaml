@@ -279,7 +279,7 @@ services:
     network_mode: host
     build:
       context: ./src/
-      dockerfile: ./ReferenceDataService/GetOrganisationData/Dockerfile
+      dockerfile: ./ReferenceDataService/GetReferenceData/Dockerfile
     ports:
       - "6081:6081"
     environment:

@@ -8,22 +8,22 @@ using NHS.ServiceInsights.Data;
 
 namespace NHS.ServiceInsights.ReferenceDataService;
 
-public class GetOrganisationData
+public class GetReferenceData
 {
-    private readonly ILogger<GetOrganisationData> _logger;
+    private readonly ILogger<GetReferenceData> _logger;
 
     private readonly IOrganisationLkpRepository _organisationLkpRepository;
 
-    public GetOrganisationData(ILogger<GetOrganisationData> logger, IOrganisationLkpRepository organisationLkpRepository)
+    public GetReferenceData(ILogger<GetReferenceData> logger, IOrganisationLkpRepository organisationLkpRepository)
     {
         _logger = logger;
         _organisationLkpRepository = organisationLkpRepository;
     }
 
-    [Function("GetOrganisationData")]
+    [Function("GetReferenceData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        _logger.LogInformation("GetOrganisationData: start");
+        _logger.LogInformation("GetReferenceData: start");
 
         string organisationId = req.Query["organisation_id"];
 
@@ -47,13 +47,13 @@ public class GetOrganisationData
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-            response.WriteString(jsonResponse);
+            await response.WriteStringAsync(jsonResponse);
 
             return response;
         }
         catch (Exception ex)
         {
-            _logger.LogError("GetOrganisationData: Failed to get organisation from the db.\nException: {ex}", ex);
+            _logger.LogError("GetReferenceData: Failed to get organisation from the db.\nException: {ex.Message}", ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

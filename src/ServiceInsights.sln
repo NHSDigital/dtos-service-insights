@@ -87,9 +87,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetDemographicsDataTests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReferenceDataService", "ReferenceDataService", "{7C74117F-B2F9-4266-83C8-49E96E453F39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetOrganisationData", "ReferenceDataService\GetOrganisationData\GetOrganisationData.csproj", "{30831BEE-6271-4CA9-ADE4-074E97D08ABE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetReferenceData", "ReferenceDataService\GetReferenceData\GetReferenceData.csproj", "{30831BEE-6271-4CA9-ADE4-074E97D08ABE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetOrganisationDataTests", "..\tests\ReferenceDataServiceTests\GetOrganisationDataTests\GetOrganisationDataTests.csproj", "{9419D8D3-17A2-4A5D-B7BC-83900A5311C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetReferenceDataTests", "..\tests\ReferenceDataServiceTests\GetReferenceDataTests\GetReferenceDataTests.csproj", "{9419D8D3-17A2-4A5D-B7BC-83900A5311C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningEpisode", "BIAnalyticsService\CreateParticipantScreeningEpisode\CreateParticipantScreeningEpisode.csproj", "{92FBB2E6-847E-424F-BBCB-1A01F4FCB31A}"
 EndProject

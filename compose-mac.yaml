@@ -324,7 +324,7 @@ services:
     restart: always
     build:
       context: ./src/
-      dockerfile: ./ReferenceDataService/GetOrganisationData/Dockerfile
+      dockerfile: ./ReferenceDataService/GetReferenceData/Dockerfile
     networks:
       - app-network
     ports:

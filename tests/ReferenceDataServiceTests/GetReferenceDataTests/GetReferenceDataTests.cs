@@ -12,17 +12,17 @@ using NHS.ServiceInsights.TestUtils;
 namespace NHS.ServiceInsights.ReferenceDataServiceTests;
 
 [TestClass]
-public class GetOrganisationDataTests
+public class GetReferenceDataTests
 {
-    private Mock<ILogger<GetOrganisationData>> _mockLogger = new();
+    private Mock<ILogger<GetReferenceData>> _mockLogger = new();
     private Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
-    private GetOrganisationData _function;
+    private GetReferenceData _function;
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
-    public GetOrganisationDataTests()
+    public GetReferenceDataTests()
     {
-        _function = new GetOrganisationData(_mockLogger.Object, _mockOrganisationLkpRepository.Object);
+        _function = new GetReferenceData(_mockLogger.Object, _mockOrganisationLkpRepository.Object);
     }
 
     [TestMethod]

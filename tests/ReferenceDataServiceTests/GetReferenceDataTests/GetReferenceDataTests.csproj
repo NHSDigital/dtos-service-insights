@@ -23,7 +23,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\ReferenceDataService\GetOrganisationData\GetOrganisationData.csproj" />
+    <ProjectReference Include="..\..\..\src\ReferenceDataService\GetReferenceData\GetReferenceData.csproj" />
     <ProjectReference Include="..\..\TestUtils\TestUtils.csproj" />
   </ItemGroup>
 
