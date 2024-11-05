@@ -20,9 +20,13 @@ public partial class ServiceInsightsDbContext : DbContext
 
     public virtual DbSet<EpisodeTypeLkp> EpisodeTypeLkps { get; set; }
 
+    public virtual DbSet<FinalActionCodeLkp> FinalActionCodeLkps { get; set; }
+
     public virtual DbSet<ParticipantScreeningEpisode> ParticipantScreeningEpisodes { get; set; }
 
     public virtual DbSet<ParticipantScreeningProfile> ParticipantScreeningProfiles { get; set; }
+
+    public virtual DbSet<ReasonClosedCodeLkp> ReasonClosedCodeLkps { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -159,10 +163,7 @@ public partial class ServiceInsightsDbContext : DbContext
                 .ValueGeneratedNever()
                 .HasColumnName("EPISODE_ID");
             entity.Property(e => e.ActualScreeningDate).HasColumnName("ACTUAL_SCREENING_DATE");
-            entity.Property(e => e.AppointmentMadeFlag)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("APPOINTMENT_MADE_FLAG");
+            entity.Property(e => e.AppointmentMadeFlag).HasColumnName("APPOINTMENT_MADE_FLAG");
             entity.Property(e => e.BatchId)
                 .HasMaxLength(100)
                 .IsUnicode(false)
@@ -176,12 +177,18 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.EndCodeLastUpdated)
                 .HasColumnType("datetime")
                 .HasColumnName("END_CODE_LAST_UPDATED");
+            entity.Property(e => e.EndPoint)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .HasColumnName("END_POINT");
             entity.Property(e => e.EpisodeIdSystem).HasColumnName("EPISODE_ID_SYSTEM");
             entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
             entity.Property(e => e.EpisodeTypeId).HasColumnName("EPISODE_TYPE_ID");
+            entity.Property(e => e.FinalActionCodeId).HasColumnName("FINAL_ACTION_CODE_ID");
             entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
             entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
             entity.Property(e => e.OrganisationId).HasColumnName("ORGANISATION_ID");
+            entity.Property(e => e.ReasonClosedCodeId).HasColumnName("REASON_CLOSED_CODE_ID");
             entity.Property(e => e.RecordInsertDatetime)
                 .HasColumnType("datetime")
                 .HasColumnName("RECORD_INSERT_DATETIME");
@@ -192,11 +199,19 @@ public partial class ServiceInsightsDbContext : DbContext
 
             entity.HasOne(d => d.EndCode).WithMany(p => p.Episodes)
                 .HasForeignKey(d => d.EndCodeId)
-                .HasConstraintName("FK_EPISODE_STATUS_OF_END_CODE");
+                .HasConstraintName("FK_EPISODE_END_CODE_LKP");
 
             entity.HasOne(d => d.EpisodeType).WithMany(p => p.Episodes)
                 .HasForeignKey(d => d.EpisodeTypeId)
-                .HasConstraintName("FK_EPISODE_TYPE_OF_E_EPISODE_");
+                .HasConstraintName("FK_EPISODE_EPISODE_TYPE_LKP");
+
+            entity.HasOne(d => d.FinalActionCode).WithMany(p => p.Episodes)
+                .HasForeignKey(d => d.FinalActionCodeId)
+                .HasConstraintName("FK_EPISODE_FINAL_ACTION_CODE_LKP");
+
+            entity.HasOne(d => d.ReasonClosedCode).WithMany(p => p.Episodes)
+                .HasForeignKey(d => d.ReasonClosedCodeId)
+                .HasConstraintName("FK_EPISODE_REASON_CLOSED_CODE_LKP");
         });
 
         modelBuilder.Entity<EpisodeTypeLkp>(entity =>
@@ -216,6 +231,25 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("EPISODE_TYPE");
+        });
+
+        modelBuilder.Entity<FinalActionCodeLkp>(entity =>
+        {
+            entity.HasKey(e => e.FinalActionCodeId);
+
+            entity.ToTable("FINAL_ACTION_CODE_LKP");
+
+            entity.Property(e => e.FinalActionCodeId)
+                .ValueGeneratedNever()
+                .HasColumnName("FINAL_ACTION_CODE_ID");
+            entity.Property(e => e.FinalActionCode)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("FINAL_ACTION_CODE");
+            entity.Property(e => e.FinalActionCodeDescription)
+                .HasMaxLength(300)
+                .IsUnicode(false)
+                .HasColumnName("FINAL_ACTION_CODE_DESCRIPTION");
         });
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
@@ -378,6 +412,25 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
+        });
+
+        modelBuilder.Entity<ReasonClosedCodeLkp>(entity =>
+        {
+            entity.HasKey(e => e.ReasonClosedCodeId);
+
+            entity.ToTable("REASON_CLOSED_CODE_LKP");
+
+            entity.Property(e => e.ReasonClosedCodeId)
+                .ValueGeneratedNever()
+                .HasColumnName("REASON_CLOSED_CODE_ID");
+            entity.Property(e => e.ReasonClosedCode)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("REASON_CLOSED_CODE");
+            entity.Property(e => e.ReasonClosedCodeDescription)
+                .HasMaxLength(300)
+                .IsUnicode(false)
+                .HasColumnName("REASON_CLOSED_CODE_DESCRIPTION");
         });
 
         OnModelCreatingPartial(modelBuilder);
