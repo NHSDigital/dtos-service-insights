@@ -35,6 +35,12 @@ public class EpisodeDto
 
     public string? BatchId { get; set; }
 
+    public string? EndPoint { get; set; }
+
+    public string? ReasonClosedCode { get; set; }
+
+    public string? FinalActionCode { get; set; }
+
 
 
 
