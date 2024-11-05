@@ -15,13 +15,17 @@ public class CreateEpisode
     private readonly IEpisodeRepository _episodesRepository;
     private readonly IEndCodeLkpRepository _endCodeLkpRepository;
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
+    private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
+    private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
 
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository)
     {
         _logger = logger;
         _episodesRepository = episodeRepository;
         _endCodeLkpRepository = endCodeLkpRepository;
         _episodeTypeLkpRepository = episodeTypeLkpRepository;
+        _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
+        _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
     }
 
     [Function("CreateEpisode")]
@@ -49,20 +53,27 @@ public class CreateEpisode
 
             var episodeTypeId = await _episodeTypeLkpRepository.GetEpisodeTypeIdAsync(episodeDto.EpisodeType);
             var endCodeId = await _endCodeLkpRepository.GetEndCodeIdAsync(episodeDto.EndCode);
+            var reasonClosedCodeId = await _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync(episodeDto.ReasonClosedCode);
+            var finalActionCodeId = await _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync(episodeDto.FinalActionCode);
 
             var episode = new Episode
             {
                 EpisodeId = episodeDto.EpisodeId,
-                EpisodeTypeId = episodeTypeId,
+                EpisodeIdSystem = null,
+                ScreeningId = episodeDto.ScreeningId,
                 NhsNumber = episodeDto.NhsNumber,
+                EpisodeTypeId = episodeTypeId,
                 EpisodeOpenDate = episodeDto.EpisodeOpenDate,
-                AppointmentMadeFlag = episodeDto.AppointmentMadeFlag,
+                AppointmentMadeFlag = string.IsNullOrEmpty(episodeDto.AppointmentMadeFlag) ? null : (episodeDto.AppointmentMadeFlag == "TRUE" ? (short?)1 : (short?)0),
                 FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate,
                 ActualScreeningDate = episodeDto.ActualScreeningDate,
                 EarlyRecallDate = episodeDto.EarlyRecallDate,
                 CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy,
                 EndCodeId = endCodeId,
                 EndCodeLastUpdated = episodeDto.EndCodeLastUpdated,
+                ReasonClosedCodeId = reasonClosedCodeId,
+                FinalActionCodeId = finalActionCodeId,
+                EndPoint = null,
                 OrganisationId = null,
                 BatchId = episodeDto.BatchId,
                 RecordInsertDatetime = DateTime.UtcNow,
