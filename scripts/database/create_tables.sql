@@ -62,7 +62,7 @@ BEGIN
       DATE_IRRADIATED                        VARCHAR(50) NULL,
       GENE_CODE                              VARCHAR(50) NULL,
       GENE_CODE_DESCRIPTION                  VARCHAR(50) NULL,
-      RECORD_INSERT_DATETIME                 VARCHAR(50) NULL
+      RECORD_INSERT_DATETIME                 DATETIME NULL
     );
 END
 
