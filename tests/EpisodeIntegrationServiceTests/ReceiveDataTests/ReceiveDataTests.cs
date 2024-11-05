@@ -1,7 +1,6 @@
 using Moq;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
-using NHS.ServiceInsights.Data;
 using System.Text;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationServiceTests;
@@ -12,15 +11,13 @@ public class ReceiveDataTests
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
     private readonly Mock<ILogger<EpisodeIntegrationService.ReceiveData>> _mockLogger = new();
     private readonly EpisodeIntegrationService.ReceiveData _function;
-    private readonly Mock<IEndCodeLkpRepository> _mockEndCodeLkpRepository = new();
-    private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
 
     public ReceiveDataTests()
     {
         Environment.SetEnvironmentVariable("EpisodeManagementUrl", "EpisodeManagementUrl");
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
 
-        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object);
+        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
     [TestMethod]
