@@ -82,7 +82,7 @@ public class CreateParticipantScreeningEpisode
             EpisodeType = episode.EpisodeTypeId.ToString(),
             EpisodeTypeDescription = String.Empty,
             EpisodeOpenDate = episode.EpisodeOpenDate.ToString(),
-            AppointmentMadeFlag = episode.AppointmentMadeFlag,
+            AppointmentMadeFlag = episode.AppointmentMadeFlag.ToString(),
             FirstOfferedAppointmentDate = episode.FirstOfferedAppointmentDate.ToString(),
             ActualScreeningDate = episode.ActualScreeningDate.ToString(),
             EarlyRecallDate = episode.EarlyRecallDate.ToString(),
