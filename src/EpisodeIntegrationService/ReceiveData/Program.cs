@@ -9,8 +9,6 @@ var host = new HostBuilder()
     .ConfigureServices(services =>
     {
         services.AddSingleton<IHttpRequestService, HttpRequestService>();
-        services.AddTransient<IEndCodeLkpRepository, EndCodeLkpRepository>();
-        services.AddTransient<IEpisodeTypeLkpRepository, EpisodeTypeLkpRepository>();
         services.AddDbContext<ServiceInsightsDbContext>(
             options => options.UseSqlServer(Environment.GetEnvironmentVariable("ServiceInsightsDbConnectionString")));
     })
