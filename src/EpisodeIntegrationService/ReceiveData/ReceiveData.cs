@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
-using NHS.ServiceInsights.Data;
 using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
 using CsvHelper;
@@ -13,17 +12,13 @@ public class ReceiveData
 {
     private readonly ILogger<ReceiveData> _logger;
     private readonly IHttpRequestService _httpRequestService;
-    private readonly IEndCodeLkpRepository _endCodeLkpRepository;
-    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
     private readonly string[] episodesExpectedHeaders = new[] { "nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code" };
     private readonly string[] subjectsExpectedHeaders = new[] { "change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language" };
 
-    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository)
+    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
-        _endCodeLkpRepository = endCodeLkpRepository;
-        _episodeTypeLkpRepository = episodeTypeLkpRepository;
     }
 
     [Function("ReceiveData")]
@@ -135,7 +130,7 @@ public class ReceiveData
                     EpisodeType = episode.episode_type,
                     NhsNumber = episode.nhs_number,
                     EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.Parse(episode.episode_date),
-                    AppointmentMadeFlag = episode.appointment_made,
+                    AppointmentMadeFlag = string.IsNullOrEmpty(episode.appointment_made) ? null : episode.appointment_made.ToUpper() == "TRUE" ? "TRUE" : "FALSE",
                     FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.Parse(episode.date_of_foa),
                     ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.Parse(episode.date_of_as),
                     EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.Parse(episode.early_recall_date),
@@ -143,7 +138,10 @@ public class ReceiveData
                     EndCode = episode.end_code,
                     EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTime.Parse(episode.end_code_last_updated),
                     OrganisationCode = episode.bso_organisation_code,
-                    BatchId = episode.bso_batch_id
+                    BatchId = episode.bso_batch_id,
+                    EndPoint = episode.end_point,
+                    ReasonClosedCode = episode.reason_closed_code,
+                    FinalActionCode = episode.final_action_code
                 };
 
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
