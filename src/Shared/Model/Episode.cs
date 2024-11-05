@@ -17,7 +17,7 @@ public partial class Episode
 
     public DateOnly? EpisodeOpenDate { get; set; }
 
-    public string? AppointmentMadeFlag { get; set; }
+    public short? AppointmentMadeFlag { get; set; }
 
     public DateOnly? FirstOfferedAppointmentDate { get; set; }
 
@@ -31,6 +31,12 @@ public partial class Episode
 
     public DateTime? EndCodeLastUpdated { get; set; }
 
+    public long? ReasonClosedCodeId { get; set; }
+
+    public long? FinalActionCodeId { get; set; }
+
+    public string? EndPoint { get; set; }
+
     public long? OrganisationId { get; set; }
 
     public string? BatchId { get; set; }
@@ -42,4 +48,8 @@ public partial class Episode
     public virtual EndCodeLkp? EndCode { get; set; }
 
     public virtual EpisodeTypeLkp? EpisodeType { get; set; }
+
+    public virtual FinalActionCodeLkp? FinalActionCode { get; set; }
+
+    public virtual ReasonClosedCodeLkp? ReasonClosedCode { get; set; }
 }
