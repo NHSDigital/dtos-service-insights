@@ -44,18 +44,9 @@ public class GetReferenceData
             }
             _logger.LogInformation("organisation found successfully.");
 
-            string jsonResponse;
-
-            using (var memoryStream = new MemoryStream())
-            {
-                await JsonSerializer.SerializeAsync<OrganisationLkp?>(memoryStream, organisationLkp);
-                jsonResponse = Encoding.UTF8.GetString(memoryStream.ToArray());
-            }
-
             var response = req.CreateResponse(HttpStatusCode.OK);
+            await JsonSerializer.SerializeAsync(response.Body, organisationLkp);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-            await response.WriteStringAsync(jsonResponse);
-
             return response;
         }
         catch (Exception ex)
