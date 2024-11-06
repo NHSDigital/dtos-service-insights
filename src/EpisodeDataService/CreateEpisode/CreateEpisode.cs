@@ -37,7 +37,7 @@ public class CreateEpisode
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
-                var postData = reader.ReadToEnd();
+                var postData = await reader.ReadToEndAsync();
                 episodeDto = JsonSerializer.Deserialize<EpisodeDto>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
             }
@@ -64,7 +64,6 @@ public class CreateEpisode
                 NhsNumber = episodeDto.NhsNumber,
                 EpisodeTypeId = episodeTypeId,
                 EpisodeOpenDate = episodeDto.EpisodeOpenDate,
-                AppointmentMadeFlag = string.IsNullOrEmpty(episodeDto.AppointmentMadeFlag) ? null : (episodeDto.AppointmentMadeFlag == "TRUE" ? (short?)1 : (short?)0),
                 FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate,
                 ActualScreeningDate = episodeDto.ActualScreeningDate,
                 EarlyRecallDate = episodeDto.EarlyRecallDate,
@@ -79,6 +78,9 @@ public class CreateEpisode
                 RecordInsertDatetime = DateTime.UtcNow,
                 RecordUpdateDatetime = DateTime.UtcNow
             };
+
+            short? appointmentMadeFlagValue = episodeDto.AppointmentMadeFlag?.ToUpper() == "TRUE" ? 1 : (episodeDto.AppointmentMadeFlag != null ? 0 : null);
+            episode.AppointmentMadeFlag = appointmentMadeFlagValue;
 
             _logger.LogInformation("Calling CreateEpisode method...");
             _episodesRepository.CreateEpisode(episode);
