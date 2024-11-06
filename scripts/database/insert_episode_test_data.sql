@@ -121,45 +121,6 @@ VALUES
 
 
 /*==============================================================*/
-/* Table: ORGANISATION_LKP                                      */
-/*==============================================================*/
-
-INSERT INTO ORGANISATION_LKP (
-    ORGANISATION_ID,
-    SCREENING_NAME,
-    ORGANISATION_CODE,
-    ORGANISATION_NAME,
-    ORGANISATION_TYPE,
-    IS_ACTIVE
-)
-VALUES
-    (
-        1010,
-        'Screening 1',
-        'AGA',
-        'Organisation 1',
-        'Type A',
-        1
-    ),
-    (
-        2020,
-        'Screening 2',
-        'ANE',
-        'Organisation 2',
-        'Type B',
-        1
-    ),
-    (
-        3030,
-        'Screening 3',
-        'AZA',
-        'Organisation 3',
-        'Type C',
-        0
-    );
-
-
-/*==============================================================*/
 /* Table: REASON_CLOSED_CODE_LKP                                */
 /*==============================================================*/
 
