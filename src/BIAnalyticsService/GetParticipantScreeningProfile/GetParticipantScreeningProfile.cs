@@ -34,8 +34,9 @@ public class GetParticipantScreeningProfile
             return badRequestResponse;
         }
 
-        if (page <= 0) page = 1;
-        if (pageSize <= 0 || pageSize > 10000) pageSize = 1000;
+        if (page < 1) page = 1;
+        if (pageSize < 20) pageSize = 20;
+        if (pageSize > 5000) pageSize = 5000;
 
         var baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
         var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate}&endDate={endDate}";

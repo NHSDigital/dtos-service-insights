@@ -35,17 +35,20 @@ public class ParticipantScreeningProfileRepository : IParticipantScreeningProfil
 
         var data = await query.ToListAsync();
 
-        bool hasMoreData = await _dbContext.ParticipantScreeningProfiles
+        int count = await _dbContext.ParticipantScreeningProfiles
             .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
                         (!endDate.HasValue || x.RecordInsertDatetime <= endDate))
-            .CountAsync() > skip + pageSize;
+            .CountAsync();
+
+        int totalPages = (int)Math.Ceiling((double)count/(double)pageSize);
+        int totalRemainingPages = totalPages - page;
 
         var profilesPage = new ProfilesDataPage()
         {
             profiles = data,
-            page = page,
-            pageSize = pageSize,
-            hasMoreData = hasMoreData
+            TotalResults = count,
+            TotalPages = totalPages,
+            TotalRemainingPages = totalRemainingPages
         };
 
         return profilesPage;
