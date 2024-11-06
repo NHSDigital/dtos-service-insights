@@ -157,3 +157,67 @@ VALUES
         'Type C',
         0
     );
+
+
+/*==============================================================*/
+/* Table: REASON_CLOSED_CODE_LKP                                */
+/*==============================================================*/
+
+INSERT INTO REASON_CLOSED_CODE_LKP (
+    REASON_CLOSED_CODE_ID,
+    REASON_CLOSED_CODE,
+    REASON_CLOSED_CODE_DESCRIPTION
+)
+VALUES
+    (
+        111222,
+        'INFORMED_SUBJECT_CHOICE',
+        'Informed Choice'
+    ),
+    (
+        111333,
+        'BILATERAL_MASTECTOMY',
+        'Bilateral Mastectomy'
+    ),
+    (
+        111444,
+        'MENTAL_CAPACITY_ACT',
+        'Mental Capacity Act'
+    ),
+    (
+        111555,
+        'PERSONAL_WELFARE',
+        'Personal Welfare'
+    );
+
+
+/*==============================================================*/
+/* Table: FINAL_ACTION_CODE_LKP                                 */
+/*==============================================================*/
+
+INSERT INTO FINAL_ACTION_CODE_LKP (
+    FINAL_ACTION_CODE_ID,
+    FINAL_ACTION_CODE,
+    FINAL_ACTION_CODE_DESCRIPTION
+)
+VALUES
+    (
+        112233,
+        'EC',
+        'Short term recall (early clinic)'
+    ),
+    (
+        223344,
+        'MT',
+        'Medical treatment'
+    ),
+    (
+        334455,
+        'FP',
+        'Follow-up'
+    ),
+    (
+        445566,
+        'RR',
+        'Routine recall'
+    );

@@ -93,6 +93,60 @@ alter table EPISODE
 
 
 /*==============================================================*/
+/* Table: FINAL_ACTION_CODE_LKP                                 */
+/*==============================================================*/
+
+IF NOT EXISTS
+(
+    SELECT *
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = 'dbo'
+    AND TABLE_NAME = 'FINAL_ACTION_CODE_LKP'
+)
+BEGIN
+    CREATE TABLE FINAL_ACTION_CODE_LKP
+    (
+      FINAL_ACTION_CODE_ID BIGINT               not null,
+      FINAL_ACTION_CODE    VARCHAR(50)          not null,
+      FINAL_ACTION_CODE_DESCRIPTION VARCHAR(300)         null,
+      constraint PK_FINAL_ACTION_CODE_LKP primary key (FINAL_ACTION_CODE_ID)
+    );
+END
+
+
+alter table EPISODE
+   add constraint FK_EPISODE_FINAL_ACTION_CODE_LKP foreign key (FINAL_ACTION_CODE_ID)
+      references FINAL_ACTION_CODE_LKP (FINAL_ACTION_CODE_ID)
+
+
+/*==============================================================*/
+/* Table: REASON_CLOSED_CODE_LKP                                */
+/*==============================================================*/
+
+IF NOT EXISTS
+(
+    SELECT *
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = 'dbo'
+    AND TABLE_NAME = 'REASON_CLOSED_CODE_LKP'
+)
+BEGIN
+    CREATE TABLE REASON_CLOSED_CODE_LKP
+    (
+      REASON_CLOSED_CODE_ID BIGINT               not null,
+      REASON_CLOSED_CODE   VARCHAR(50)          not null,
+      REASON_CLOSED_CODE_DESCRIPTION VARCHAR(300)         null,
+      constraint PK_REASON_CLOSED_CODE_LKP primary key (REASON_CLOSED_CODE_ID)
+    );
+END
+
+
+alter table EPISODE
+   add constraint FK_EPISODE_REASON_CLOSED_CODE_LKP foreign key (REASON_CLOSED_CODE_ID)
+      references REASON_CLOSED_CODE_LKP (REASON_CLOSED_CODE_ID)
+
+
+/*==============================================================*/
 /* Table: PARTICIPANT_SCREENING_PROFILE                         */
 /*==============================================================*/
 
