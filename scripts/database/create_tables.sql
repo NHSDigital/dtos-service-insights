@@ -115,7 +115,7 @@ END
 
 
 alter table EPISODE
-   add constraint FK_EPISODE_FINAL_ACTION_CODE_LKP foreign key (FINAL_ACTION_CODE_ID)
+    add constraint FK_EPISODE_FINAL_ACTION_CODE_LKP foreign key (FINAL_ACTION_CODE_ID)
       references FINAL_ACTION_CODE_LKP (FINAL_ACTION_CODE_ID)
 
 
@@ -142,7 +142,7 @@ END
 
 
 alter table EPISODE
-   add constraint FK_EPISODE_REASON_CLOSED_CODE_LKP foreign key (REASON_CLOSED_CODE_ID)
+    add constraint FK_EPISODE_REASON_CLOSED_CODE_LKP foreign key (REASON_CLOSED_CODE_ID)
       references REASON_CLOSED_CODE_LKP (REASON_CLOSED_CODE_ID)
 
 
