@@ -124,30 +124,10 @@ public class ReceiveData
             _logger.LogInformation("Processing episode data.");
             foreach (var episode in episodes)
             {
-                var modifiedEpisode = new EpisodeDto
-                {
-                    EpisodeId = episode.episode_id,
-                    EpisodeType = episode.episode_type,
-                    NhsNumber = episode.nhs_number,
-                    EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.Parse(episode.episode_date),
-                    AppointmentMadeFlag = string.IsNullOrEmpty(episode.appointment_made) ? null : episode.appointment_made.ToUpper() == "TRUE" ? "TRUE" : "FALSE",
-                    FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.Parse(episode.date_of_foa),
-                    ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.Parse(episode.date_of_as),
-                    EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.Parse(episode.early_recall_date),
-                    CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-                    EndCode = episode.end_code,
-                    EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTime.Parse(episode.end_code_last_updated),
-                    OrganisationCode = episode.bso_organisation_code,
-                    BatchId = episode.bso_batch_id,
-                    EndPoint = episode.end_point,
-                    ReasonClosedCode = episode.reason_closed_code,
-                    FinalActionCode = episode.final_action_code
-                };
-
+                var modifiedEpisode = ProcessEpisode(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
                 _logger.LogInformation($"Sending Episode to {episodeUrl}: {serializedEpisode}");
-
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
         }
@@ -156,6 +136,34 @@ public class ReceiveData
             _logger.LogError("Error in ProcessEpisodeDataAsync: " + ex.Message);
             await ProcessEpisodeDataAsync(episodes, episodeUrl);
         }
+    }
+
+    private EpisodeDto ProcessEpisode(BssEpisode episode)
+    {
+        return new EpisodeDto
+        {
+            EpisodeId = episode.episode_id,
+            EpisodeType = episode.episode_type,
+            NhsNumber = episode.nhs_number,
+            EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.episode_date, "dd/MM/yyyy", CultureInfo.InvariantCulture)),
+            AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),
+            FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_foa, "dd/MM/yyyy", CultureInfo.InvariantCulture)),
+            ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_as, "dd/MM/yyyy", CultureInfo.InvariantCulture)),
+            EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.early_recall_date, "dd/MM/yyyy", CultureInfo.InvariantCulture)),
+            CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
+            EndCode = episode.end_code,
+            EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTime.ParseExact(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz", CultureInfo.InvariantCulture),
+            OrganisationCode = episode.bso_organisation_code,
+            BatchId = episode.bso_batch_id,
+            EndPoint = episode.end_point,
+            ReasonClosedCode = episode.reason_closed_code,
+            FinalActionCode = episode.final_action_code
+        };
+    }
+
+    private string GetAppointmentMadeFlag(string appointmentMade)
+    {
+        return string.IsNullOrEmpty(appointmentMade) ? null : appointmentMade.ToUpper() == "TRUE" ? "TRUE" : "FALSE";
     }
 
     private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
