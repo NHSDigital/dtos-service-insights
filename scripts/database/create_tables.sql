@@ -119,3 +119,16 @@ BEGIN
     );
 END
 
+INSERT INTO ORGANISATION_LKP
+(ORGANISATION_ID, SCREENING_NAME, ORGANISATION_CODE, ORGANISATION_NAME, ORGANISATION_TYPE, IS_ACTIVE)
+VALUES
+('ORG001', 'Cancer Screening', 'C001', 'Health Screening Center A', 'Clinic', 'Yes'),
+('ORG002', 'Diabetes Screening', 'D001', 'Diabetes Care Center', 'Specialty Clinic', 'Yes'),
+('ORG003', 'Cardiac Screening', 'C002', 'Heart Health Hospital', 'Hospital', 'Yes'),
+('ORG004', 'Lung Screening', 'L001', 'Lung Screening Facility', 'Clinic', 'No'),
+('ORG005', 'Blood Pressure Screening', 'BP001', 'Primary Care Clinic B', 'Primary Care', 'Yes'),
+('ORG006', 'Cancer Screening', 'C003', 'Oncology Associates', 'Specialty Clinic', 'Yes'),
+('ORG007', 'Hypertension Screening', 'H001', 'Hypertension Specialty Clinic', 'Specialty Clinic', 'No'),
+('ORG008', 'Cardiac Screening', 'C004', 'Cardiac Care Clinic', 'Clinic', 'Yes'),
+('ORG009', 'Cancer Screening', 'C005', 'Cancer Center C', 'Hospital', 'Yes'),
+('ORG010', 'General Health Screening', 'G001', 'Community Health Clinic', 'Primary Care', 'Yes');

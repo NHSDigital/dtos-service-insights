@@ -48,8 +48,8 @@ public class GetReferenceData
 
             using (var memoryStream = new MemoryStream())
             {
-                    await JsonSerializer.SerializeAsync<OrganisationLkp?>(memoryStream, organisationLkp);
-                    jsonResponse = Encoding.UTF8.GetString(memoryStream.ToArray());                
+                await JsonSerializer.SerializeAsync<OrganisationLkp?>(memoryStream, organisationLkp);
+                jsonResponse = Encoding.UTF8.GetString(memoryStream.ToArray());                
             }
 
             var response = req.CreateResponse(HttpStatusCode.OK);
