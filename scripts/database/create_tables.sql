@@ -94,7 +94,7 @@ BEGIN
       ORGANISATION_CODE                VARCHAR(50) NULL,
       ORGANISATION_NAME                VARCHAR(50) NULL,
       BATCH_ID                         VARCHAR(50) NULL,
-      RECORD_INSERT_DATETIME           VARCHAR(50) NULL
+      RECORD_INSERT_DATETIME           DATETIME NULL
     );
 END
 

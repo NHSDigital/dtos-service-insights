@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "GetParticipantScreeningEpisodeUrl":"http://localhost:6007/api/GetParticipantScreeningEpisode"
+  },
+  "Host": {
+    "LocalHttpPort": 6006
+  }
+}
+

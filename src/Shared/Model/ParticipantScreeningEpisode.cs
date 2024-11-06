@@ -41,5 +41,5 @@ public partial class ParticipantScreeningEpisode
 
     public string? BatchId { get; set; }
 
-    public string? RecordInsertDatetime { get; set; }
+    public DateTime? RecordInsertDatetime { get; set; }
 }

@@ -79,7 +79,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27B3329D1F");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27CC6C8464");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
@@ -148,8 +148,7 @@ public partial class ServiceInsightsDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("ORGANISATION_NAME");
             entity.Property(e => e.RecordInsertDatetime)
-                .HasMaxLength(50)
-                .IsUnicode(false)
+                .HasColumnType("datetime")
                 .HasColumnName("RECORD_INSERT_DATETIME");
             entity.Property(e => e.ScreeningName)
                 .HasMaxLength(50)
@@ -159,7 +158,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC2790D38411");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27431877C7");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 

@@ -93,7 +93,7 @@ public class CreateParticipantScreeningEpisode
             OrganisationCode = episode.OrganisationId,
             OrganisationName = String.Empty,
             BatchId = episode.BatchId,
-            RecordInsertDatetime = DateTime.Now.ToString()
+            RecordInsertDatetime = DateTime.Now
         };
 
         var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
