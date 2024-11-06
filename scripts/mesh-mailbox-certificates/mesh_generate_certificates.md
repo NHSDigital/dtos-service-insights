@@ -90,6 +90,7 @@ Here’s a full example of the process for a Mesh Mailbox with identifier `X26OT
 3. **Receive the signed certificate** and save it as `mesh_X26OT023.crt`.
 
 4. **Complete the certificate setup** by running the second script:
+
    ```bash
    sh ./mesh_step_2_generate_actual_certificate.sh X26OT023
    ```
