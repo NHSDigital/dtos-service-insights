@@ -24,10 +24,10 @@ public class GetParticipantScreeningProfileData
     [Function("GetParticipantScreeningProfileData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
-        int page = req.Query["page"];
-        int pageSize = req.Query["pageSize"];
-        DateTime? startDate = req.Query["startDate"];
-        DateTime? endDate = req.Query["endDate"];
+        int page = int.Parse(req.Query["page"]);
+        int pageSize = int.Parse(req.Query["pageSize"]);
+        DateTime startDate = DateTime.Parse(req.Query["startDate"]);
+        DateTime endDate = DateTime.Parse(req.Query["endDate"]);
 
         var numberOfRowsToSkip = (page - 1) * pageSize;
 
@@ -36,7 +36,7 @@ public class GetParticipantScreeningProfileData
             ProfilesDataPage result = await _participantScreeningProfileRepository.GetParticipantProfile(page, pageSize, startDate, endDate, numberOfRowsToSkip);
             if (result.profiles.Count == 0)
             {
-                _logger.LogInformation("GetParticipantScreeningProfileData: Could not find any participant profiles between the dates specified.");
+                _logger.LogInformation("GetParticipantScreeningProfileData: Could not find any participant profiles.");
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 

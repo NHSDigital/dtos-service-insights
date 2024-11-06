@@ -24,10 +24,10 @@ public class GetParticipantScreeningProfile
 
         int page;
         int pageSize;
-        DateTime? startDate;
-        DateTime? endDate;
+        DateTime startDate;
+        DateTime endDate;
 
-        if(!int.TryParse(req.Query["page"], out page) || int.TryParse(req.Query["pageSize"], out pageSize))
+        if(!int.TryParse(req.Query["page"], out page) || !int.TryParse(req.Query["pageSize"], out pageSize))
         {
             _logger.LogError("Invalid page or pageSize");
             var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);

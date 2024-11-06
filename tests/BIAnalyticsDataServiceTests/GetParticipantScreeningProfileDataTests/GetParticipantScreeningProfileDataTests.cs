@@ -11,7 +11,7 @@ using NHS.ServiceInsights.Data;
 namespace NHS.ServiceInsights.BIAnalyticsDataServiceTests;
 
 [TestClass]
-public class CreateParticipantScreeningProfileTests
+public class GetParticipantScreeningProfileDataTests
 {
     private readonly Mock<ILogger<CreateParticipantScreeningProfile>> _mockLogger = new();
     private readonly Mock<IParticipantScreeningProfileRepository> _mockParticipantScreeningProfileRepository = new();
