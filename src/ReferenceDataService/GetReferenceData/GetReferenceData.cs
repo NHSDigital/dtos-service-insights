@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
+using System.Text;
 
 namespace NHS.ServiceInsights.ReferenceDataService;
 
@@ -43,7 +44,13 @@ public class GetReferenceData
             }
             _logger.LogInformation("organisation found successfully.");
 
-            string jsonResponse = JsonSerializer.Serialize(organisationLkp);
+            string jsonResponse;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                    await JsonSerializer.SerializeAsync<OrganisationLkp?>(memoryStream, organisationLkp);
+                    jsonResponse = Encoding.UTF8.GetString(memoryStream.ToArray());                
+            }
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
