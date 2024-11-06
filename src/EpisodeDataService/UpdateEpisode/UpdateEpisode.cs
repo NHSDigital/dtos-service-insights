@@ -63,6 +63,10 @@ public class UpdateEpisode
                 existingEpisode.NhsNumber = episodeDto.NhsNumber;
                 existingEpisode.EpisodeTypeId = episodeTypeId;
                 existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
+
+                short? appointmentMadeFlagValue = episodeDto.AppointmentMadeFlag?.ToUpper() == "TRUE" ? 1 : (episodeDto.AppointmentMadeFlag != null ? 0 : (short?)null);
+                existingEpisode.AppointmentMadeFlag = appointmentMadeFlagValue;
+
                 existingEpisode.AppointmentMadeFlag = string.IsNullOrEmpty(episodeDto.AppointmentMadeFlag) ? null : (episodeDto.AppointmentMadeFlag == "TRUE" ? (short?)1 : (short?)0);
                 existingEpisode.FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate;
                 existingEpisode.ActualScreeningDate = episodeDto.ActualScreeningDate;
