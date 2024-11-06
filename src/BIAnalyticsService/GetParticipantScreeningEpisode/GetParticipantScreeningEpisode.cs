@@ -2,9 +2,7 @@ using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 using NHS.ServiceInsights.Common;
-using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
@@ -23,17 +21,28 @@ public class GetParticipantScreeningEpisode
     {
         _logger.LogInformation("GetParticipantScreeningEpisode start");
 
-        int page = int.TryParse(req.Query["page"], out int p) ? p : 1;
-        int pageSize = int.TryParse(req.Query["pageSize"], out int ps) ? ps : 1000;
+        int page;
+        int pageSize;
+        DateTime startDate;
+        DateTime endDate;
 
-        DateTime? startDate = DateTime.TryParse(req.Query["startDate"], out DateTime start) ? start : (DateTime?)null;
-        DateTime? endDate = DateTime.TryParse(req.Query["endDate"], out DateTime end) ? end : (DateTime?)null;
-
-        if (startDate == null || endDate == null)
+        if(!int.TryParse(req.Query["page"], out page) || !int.TryParse(req.Query["pageSize"], out pageSize))
         {
-            _logger.LogError("Please enter a valid start and end date");
+            _logger.LogError("Invalid page or pageSize");
             var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            return badRequestResponse;
         }
+
+        if(!DateTime.TryParse(req.Query["startDate"], out startDate) || !DateTime.TryParse(req.Query["endDate"], out endDate))
+        {
+            _logger.LogError("Invalid startDate or endDate");
+            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            return badRequestResponse;
+        }
+
+        if (page < 1) page = 1;
+        if (pageSize < 20) pageSize = 20;
+        if (pageSize > 5000) pageSize = 5000;
 
         var baseUrl = Environment.GetEnvironmentVariable("GetParticipantScreeningEpisodeUrl");
         var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate}&endDate={endDate}";
@@ -45,14 +54,14 @@ public class GetParticipantScreeningEpisode
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve participant screening episodes with parameters: page {page}, page size {pageSize}, start date {startDate}, end date {endDate}. Status Code: {response.StatusCode}");
+                _logger.LogError($"Failed to retrieve episodes. Status Code: {response.StatusCode}");
                 var errorResponse = req.CreateResponse(response.StatusCode);
                 return errorResponse;
             }
 
             var episodesPageJson = await response.Content.ReadAsStringAsync();
 
-            _logger.LogInformation("Participant Screening Episode pages retrieved");
+            _logger.LogInformation("Episode data retrieved");
 
             var successResponse = req.CreateResponse(HttpStatusCode.OK);
             successResponse.Headers.Add("Content-Type", "application/json");
@@ -62,7 +71,7 @@ public class GetParticipantScreeningEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to call the GetParticipantScreeningEpisode Data Service. \nUrl:{url}\nException: {ex}", url, ex);
+            _logger.LogError("Exception when calling the GetParticipantScreeningEpisode Data Service. \nUrl:{url}\nException: {ex}", url, ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
