@@ -1,3 +1,4 @@
+
 # Mesh Mailbox Certificate Generation
 
 This project contains two scripts, `mesh_step_1_generate_cert_signing_request.sh` and `mesh_step_2_generate_actual_certificate.sh`, to create certificates for each unique Mesh Mailbox. Each certificate and associated files are named according to the specific identifier of the Mesh Mailbox (e.g., `X26OT023`), making it easy to manage multiple certificates.
