@@ -22,14 +22,21 @@ public class GetParticipantScreeningProfile
     {
         _logger.LogInformation("GetParticipantScreeningProfile start");
 
-        int page = int.TryParse(req.Query["page"], out int p) ? p : 1;
-        int pageSize = int.TryParse(req.Query["pageSize"], out int ps) ? ps : 1000;
+        int page;
+        int pageSize;
+        DateTime? startDate;
+        DateTime? endDate;
 
-        DateTime? startDate = DateTime.TryParse(req.Query["startDate"], out DateTime start) ? start : (DateTime?)null;
-        DateTime? endDate = DateTime.TryParse(req.Query["endDate"], out DateTime end) ? end : (DateTime?)null;
+        if(!int.TryParse(req.Query["page"], out page) || int.TryParse(req.Query["pageSize"], out pageSize))
+        {
+            _logger.LogError("Invalid page or pageSize");
+            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            return badRequestResponse;
+        }
 
-        if (startDate == null || endDate == null){
-            _logger.LogError("Please enter a valid start and end date");
+        if(!DateTime.TryParse(req.Query["startDate"], out startDate) || !DateTime.TryParse(req.Query["endDate"], out endDate))
+        {
+            _logger.LogError("Invalid startDate or endDate");
             var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
             return badRequestResponse;
         }
@@ -48,14 +55,14 @@ public class GetParticipantScreeningProfile
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"");
+                _logger.LogError($"Failed to retrieve profiles. Status Code: {response.StatusCode}");
                 var errorResponse = req.CreateResponse(response.StatusCode);
                 return errorResponse;
             }
 
             var profilesPageJson = await response.Content.ReadAsStringAsync();
 
-            _logger.LogInformation("Episode data retrieved");
+            _logger.LogInformation("Profile data retrieved");
 
             var successResponse = req.CreateResponse(HttpStatusCode.OK);
             successResponse.Headers.Add("Content-Type", "application/json");
@@ -65,7 +72,7 @@ public class GetParticipantScreeningProfile
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to call the GetEpisode Data Service. \nUrl:{url}\nException: {ex}", url, ex);
+            _logger.LogError("Exception when calling the GetParticipantScreeningProfileData function. \nUrl:{url}\nException: {ex}", url, ex);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

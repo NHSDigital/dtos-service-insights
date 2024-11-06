@@ -36,21 +36,29 @@ public class GetParticipantScreeningProfileData
             ProfilesDataPage result = await _participantScreeningProfileRepository.GetParticipantProfile(page, pageSize, startDate, endDate, numberOfRowsToSkip);
             if (result.profiles.Count == 0)
             {
-                _logger.LogError("CreateParticipantScreeningProfile: Could not find any participant profiles between the dates specified.");
+                _logger.LogInformation("GetParticipantScreeningProfileData: Could not find any participant profiles between the dates specified.");
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 
-            _logger.LogInformation("CreateParticipantScreeningProfile: participant profiles found successfully");
+            _logger.LogInformation("GetParticipantScreeningProfileData: Participant profiles found successfully.");
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json");
-            var json = JsonSerializer.Serialize(result);
-            await response.WriteStringAsync(json);
+
+            string jsonProfilesDataPage;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await JsonSerializer.SerializeAsync<ProfilesDataPage?>(memoryStream, result);
+                jsonProfilesDataPage = Encoding.UTF8.GetString(memoryStream.ToArray());
+            }
+
+            await response.WriteStringAsync(jsonProfilesDataPage);
             return response;
         }
         catch (Exception ex)
         {
-            _logger.LogError("CreateParticipantScreeningProfile: Failed to get participant profiles from the database.\nException: " + ex.Message);
+            _logger.LogError("GetParticipantScreeningProfileData: Failed to get participant profiles from the database.\nException: " + ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
