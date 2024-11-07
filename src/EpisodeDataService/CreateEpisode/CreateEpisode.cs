@@ -29,7 +29,7 @@ public class CreateEpisode
     }
 
     [Function("CreateEpisode")]
-    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
         EpisodeDto episodeDto;
 
@@ -64,6 +64,7 @@ public class CreateEpisode
                 NhsNumber = episodeDto.NhsNumber,
                 EpisodeTypeId = episodeTypeId,
                 EpisodeOpenDate = episodeDto.EpisodeOpenDate,
+                AppointmentMadeFlag = episodeDto.AppointmentMadeFlag,
                 FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate,
                 ActualScreeningDate = episodeDto.ActualScreeningDate,
                 EarlyRecallDate = episodeDto.EarlyRecallDate,
@@ -78,23 +79,6 @@ public class CreateEpisode
                 RecordInsertDatetime = DateTime.UtcNow,
                 RecordUpdateDatetime = DateTime.UtcNow
             };
-
-            short? appointmentMadeFlagValue;
-
-            if (episodeDto.AppointmentMadeFlag == null)
-            {
-                appointmentMadeFlagValue = null;
-            }
-            else if (episodeDto.AppointmentMadeFlag.ToUpper() == "TRUE")
-            {
-                appointmentMadeFlagValue = 1;
-            }
-            else
-            {
-                appointmentMadeFlagValue = 0;
-            }
-
-            episode.AppointmentMadeFlag = appointmentMadeFlagValue;
 
             _logger.LogInformation("Calling CreateEpisode method...");
             _episodesRepository.CreateEpisode(episode);
