@@ -117,14 +117,14 @@ public class ReceiveData
         }
     }
 
-    public async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
+    private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
         try
         {
             _logger.LogInformation("Processing episode data.");
             foreach (var episode in episodes)
             {
-                var modifiedEpisode = ProcessEpisode(episode);
+                var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
                 _logger.LogInformation($"Sending Episode to {episodeUrl}: {serializedEpisode}");
@@ -139,7 +139,7 @@ public class ReceiveData
     }
 
     private const string DateFormat = "dd/MM/yyyy";
-    private EpisodeDto ProcessEpisode(BssEpisode episode)
+    private EpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
         return new EpisodeDto
         {
@@ -162,15 +162,14 @@ public class ReceiveData
         };
     }
 
-    private static string GetAppointmentMadeFlag(string appointmentMade)
+    private static short? GetAppointmentMadeFlag(string appointmentMade)
     {
         if (string.IsNullOrEmpty(appointmentMade))
         {
             return null;
         }
 
-        string isAppointmentMade = appointmentMade.ToUpper() == "TRUE" ? "TRUE" : "FALSE";
-        return isAppointmentMade;
+        return appointmentMade.ToUpper() == "TRUE" ? (short)1 : (short)0;
     }
 
     private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
