@@ -79,7 +79,21 @@ public class CreateEpisode
                 RecordUpdateDatetime = DateTime.UtcNow
             };
 
-            short? appointmentMadeFlagValue = episodeDto.AppointmentMadeFlag?.ToUpper() == "TRUE" ? 1 : (episodeDto.AppointmentMadeFlag != null ? 0 : null);
+            short? appointmentMadeFlagValue;
+
+            if (episodeDto.AppointmentMadeFlag == null)
+            {
+                appointmentMadeFlagValue = null;
+            }
+            else if (episodeDto.AppointmentMadeFlag.ToUpper() == "TRUE")
+            {
+                appointmentMadeFlagValue = 1;
+            }
+            else
+            {
+                appointmentMadeFlagValue = 0;
+            }
+
             episode.AppointmentMadeFlag = appointmentMadeFlagValue;
 
             _logger.LogInformation("Calling CreateEpisode method...");
