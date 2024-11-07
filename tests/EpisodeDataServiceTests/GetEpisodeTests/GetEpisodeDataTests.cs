@@ -41,7 +41,7 @@ public class GetEpisodeTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Invalid episode ID format.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Episode ID missing or not valid.")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
