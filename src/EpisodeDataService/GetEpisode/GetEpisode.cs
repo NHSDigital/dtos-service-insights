@@ -26,7 +26,7 @@ public class GetEpisode
 
         if (!long.TryParse(episodeIdString, out long episodeId))
         {
-            _logger.LogError("Invalid episode ID format.");
+            _logger.LogError("Episode ID missing or not valid.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
