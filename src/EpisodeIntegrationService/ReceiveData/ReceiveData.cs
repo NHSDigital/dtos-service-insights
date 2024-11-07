@@ -138,6 +138,7 @@ public class ReceiveData
         }
     }
 
+    private const string DateFormat = "dd/MM/yyyy";
     private EpisodeDto ProcessEpisode(BssEpisode episode)
     {
         return new EpisodeDto
@@ -145,11 +146,11 @@ public class ReceiveData
             EpisodeId = episode.episode_id,
             EpisodeType = episode.episode_type,
             NhsNumber = episode.nhs_number,
-            EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.episode_date, "dd/MM/yyyy", CultureInfo.InvariantCulture)),
+            EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.episode_date, DateFormat, CultureInfo.InvariantCulture)),
             AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),
-            FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_foa, "dd/MM/yyyy", CultureInfo.InvariantCulture)),
-            ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_as, "dd/MM/yyyy", CultureInfo.InvariantCulture)),
-            EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.early_recall_date, "dd/MM/yyyy", CultureInfo.InvariantCulture)),
+            FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_foa, DateFormat, CultureInfo.InvariantCulture)),
+            ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_as, DateFormat, CultureInfo.InvariantCulture)),
+            EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.early_recall_date, DateFormat, CultureInfo.InvariantCulture)),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = episode.end_code,
             EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTime.ParseExact(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz", CultureInfo.InvariantCulture),
@@ -161,9 +162,15 @@ public class ReceiveData
         };
     }
 
-    private string GetAppointmentMadeFlag(string appointmentMade)
+    private static string GetAppointmentMadeFlag(string appointmentMade)
     {
-        return string.IsNullOrEmpty(appointmentMade) ? null : appointmentMade.ToUpper() == "TRUE" ? "TRUE" : "FALSE";
+        if (string.IsNullOrEmpty(appointmentMade))
+        {
+            return null;
+        }
+
+        string isAppointmentMade = appointmentMade.ToUpper() == "TRUE" ? "TRUE" : "FALSE";
+        return isAppointmentMade;
     }
 
     private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
