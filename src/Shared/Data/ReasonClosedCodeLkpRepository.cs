@@ -11,9 +11,9 @@ public class ReasonClosedCodeLkpRepository : IReasonClosedCodeLkpRepository
         _dbContext = dbContext;
     }
 
-    public async Task<long> GetReasonClosedCodeIdAsync(string reasonClosedCode)
+    public async Task<long?> GetReasonClosedCodeIdAsync(string reasonClosedCode)
     {
         var reasonClosedCodeLkp = await _dbContext.ReasonClosedCodeLkps.FirstOrDefaultAsync(ec => ec.ReasonClosedCode == reasonClosedCode);
-        return reasonClosedCodeLkp?.ReasonClosedCodeId ?? 0;
+        return reasonClosedCodeLkp?.ReasonClosedCodeId;
     }
 }

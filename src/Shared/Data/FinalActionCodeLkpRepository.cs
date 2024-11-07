@@ -11,9 +11,9 @@ public class FinalActionCodeLkpRepository : IFinalActionCodeLkpRepository
         _dbContext = dbContext;
     }
 
-    public async Task<long> GetFinalActionCodeIdAsync(string finalActionCode)
+    public async Task<long?> GetFinalActionCodeIdAsync(string finalActionCode)
     {
         var finalActionCodeLkp = await _dbContext.FinalActionCodeLkps.FirstOrDefaultAsync(ec => ec.FinalActionCode == finalActionCode);
-        return finalActionCodeLkp?.FinalActionCodeId ?? 0;
+        return finalActionCodeLkp?.FinalActionCodeId;
     }
 }
