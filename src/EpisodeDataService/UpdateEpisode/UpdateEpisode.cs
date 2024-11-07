@@ -63,8 +63,6 @@ public class UpdateEpisode
                 appointmentMadeFlagValue = 0;
             }
 
-            existingEpisode.AppointmentMadeFlag = appointmentMadeFlagValue;
-
             if (existingEpisode != null)
             {
                 var episodeTypeId = await _episodeTypeLkpRepository.GetEpisodeTypeIdAsync(episodeDto.EpisodeType);
@@ -77,6 +75,7 @@ public class UpdateEpisode
                 existingEpisode.NhsNumber = episodeDto.NhsNumber;
                 existingEpisode.EpisodeTypeId = episodeTypeId;
                 existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
+                existingEpisode.AppointmentMadeFlag = appointmentMadeFlagValue;
                 existingEpisode.FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate;
                 existingEpisode.ActualScreeningDate = episodeDto.ActualScreeningDate;
                 existingEpisode.EarlyRecallDate = episodeDto.EarlyRecallDate;
