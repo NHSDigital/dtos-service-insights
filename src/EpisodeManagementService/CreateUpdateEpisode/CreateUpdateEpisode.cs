@@ -21,7 +21,7 @@ public class CreateUpdateEpisode
     }
 
     [Function("CreateUpdateEpisode")]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
         EpisodeDto episode;
 
