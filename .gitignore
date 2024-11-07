@@ -6,6 +6,7 @@
 *vulnerabilities*report*.json
 *report*json.zip
 .version
+.DS_Store
 
 *.code-workspace
 !project.code-workspace
