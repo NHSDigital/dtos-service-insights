@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace NHS.ServiceInsights.Model;
+﻿namespace NHS.ServiceInsights.Model;
 
 public class EpisodeDto
 {
@@ -17,7 +14,7 @@ public class EpisodeDto
 
     public DateOnly? EpisodeOpenDate { get; set; }
 
-    public string? AppointmentMadeFlag { get; set; }
+    public short? AppointmentMadeFlag { get; set; }
 
     public DateOnly? FirstOfferedAppointmentDate { get; set; }
 
