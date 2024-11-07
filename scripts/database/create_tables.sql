@@ -64,7 +64,7 @@ END
 
 
 alter table EPISODE
-    add constraint FK_EPISODE_STATUS_OF_END_CODE_LKP foreign key (END_CODE_ID)
+    add constraint FK_EPISODE_END_CODE_LKP foreign key (END_CODE_ID)
       references END_CODE_LKP (END_CODE_ID)
 
 
@@ -91,7 +91,7 @@ END
 
 
 alter table EPISODE
-    add constraint FK_EPISODE_TYPE_OF_E_EPISODE_LKP foreign key (EPISODE_TYPE_ID)
+    add constraint FK_EPISODE_EPISODE_TYPE_LKP foreign key (EPISODE_TYPE_ID)
       references EPISODE_TYPE_LKP (EPISODE_TYPE_ID)
 
 
