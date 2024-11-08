@@ -1,9 +1,7 @@
 USE ServiceInsightsDB;
 GO
 
-/*==============================================================*/
-/* Table: EPISODE                                               */
-/*==============================================================*/
+-- Table: EPISODE
 
 IF NOT EXISTS
 (
@@ -40,9 +38,7 @@ BEGIN
 END
 
 
-/*==============================================================*/
-/* Table: END_CODE_LKP                                          */
-/*==============================================================*/
+-- Table: END_CODE_LKP
 
 IF NOT EXISTS
 (
@@ -68,9 +64,7 @@ alter table EPISODE
       references END_CODE_LKP (END_CODE_ID)
 
 
-/*==============================================================*/
-/* Table: EPISODE_TYPE_LKP                                      */
-/*==============================================================*/
+-- Table: EPISODE_TYPE_LKP
 
 IF NOT EXISTS
 (
@@ -95,9 +89,7 @@ alter table EPISODE
       references EPISODE_TYPE_LKP (EPISODE_TYPE_ID)
 
 
-/*==============================================================*/
-/* Table: FINAL_ACTION_CODE_LKP                                 */
-/*==============================================================*/
+-- Table: FINAL_ACTION_CODE_LKP
 
 IF NOT EXISTS
 (
@@ -122,9 +114,7 @@ alter table EPISODE
       references FINAL_ACTION_CODE_LKP (FINAL_ACTION_CODE_ID)
 
 
-/*==============================================================*/
-/* Table: REASON_CLOSED_CODE_LKP                                */
-/*==============================================================*/
+-- Table: REASON_CLOSED_CODE_LKP
 
 IF NOT EXISTS
 (
@@ -149,9 +139,7 @@ alter table EPISODE
       references REASON_CLOSED_CODE_LKP (REASON_CLOSED_CODE_ID)
 
 
-/*==============================================================*/
-/* Table: PARTICIPANT_SCREENING_PROFILE                         */
-/*==============================================================*/
+-- Table: PARTICIPANT_SCREENING_PROFILE
 
 IF NOT EXISTS
 (
@@ -187,9 +175,7 @@ BEGIN
 END
 
 
-/*==============================================================*/
-/* Table: PARTICIPANT_SCREENING_EPISODE                         */
-/*==============================================================*/
+-- Table: PARTICIPANT_SCREENING_EPISODE
 
 IF NOT EXISTS
 (
@@ -222,37 +208,3 @@ BEGIN
       RECORD_INSERT_DATETIME           VARCHAR(50) NULL
     );
 END
-IF NOT EXISTS
-(
-    SELECT *
-    FROM INFORMATION_SCHEMA.TABLES
-    WHERE TABLE_SCHEMA = 'dbo'
-    AND TABLE_NAME = 'ORGANISATION_LKP'
-)
-BEGIN
-    CREATE TABLE ORGANISATION_LKP
-    (
-      ORGANISATION_ID NVARCHAR (50) NOT NULL,
-        CONSTRAINT PK_ORGANISATION_ID
-          PRIMARY KEY (ORGANISATION_ID),
-      SCREENING_NAME                  VARCHAR(50) NULL,
-      ORGANISATION_CODE               VARCHAR(50) NULL,
-      ORGANISATION_NAME               VARCHAR(50) NULL,
-      ORGANISATION_TYPE               VARCHAR(50) NULL,
-      IS_ACTIVE                       VARCHAR(50) NULL,
-    );
-END
-
-INSERT INTO ORGANISATION_LKP
-(ORGANISATION_ID, SCREENING_NAME, ORGANISATION_CODE, ORGANISATION_NAME, ORGANISATION_TYPE, IS_ACTIVE)
-VALUES
-('ORG001', 'Cancer Screening', 'C001', 'Health Screening Center A', 'Clinic', 'Yes'),
-('ORG002', 'Diabetes Screening', 'D001', 'Diabetes Care Center', 'Specialty Clinic', 'Yes'),
-('ORG003', 'Cardiac Screening', 'C002', 'Heart Health Hospital', 'Hospital', 'Yes'),
-('ORG004', 'Lung Screening', 'L001', 'Lung Screening Facility', 'Clinic', 'No'),
-('ORG005', 'Blood Pressure Screening', 'BP001', 'Primary Care Clinic B', 'Primary Care', 'Yes'),
-('ORG006', 'Cancer Screening', 'C003', 'Oncology Associates', 'Specialty Clinic', 'Yes'),
-('ORG007', 'Hypertension Screening', 'H001', 'Hypertension Specialty Clinic', 'Specialty Clinic', 'No'),
-('ORG008', 'Cardiac Screening', 'C004', 'Cardiac Care Clinic', 'Clinic', 'Yes'),
-('ORG009', 'Cancer Screening', 'C005', 'Cancer Center C', 'Hospital', 'Yes'),
-('ORG010', 'General Health Screening', 'G001', 'Community Health Clinic', 'Primary Care', 'Yes');
