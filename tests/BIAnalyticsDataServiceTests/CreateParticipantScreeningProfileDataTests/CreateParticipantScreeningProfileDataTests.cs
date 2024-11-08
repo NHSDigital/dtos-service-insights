@@ -11,7 +11,7 @@ using NHS.ServiceInsights.Data;
 namespace NHS.ServiceInsights.BIAnalyticsDataServiceTests;
 
 [TestClass]
-public class CreateParticipantScreeningProfileTests
+public class CreateParticipantScreeningProfileDataTests
 {
     private readonly Mock<ILogger<CreateParticipantScreeningProfile>> _mockLogger = new();
     private readonly Mock<IParticipantScreeningProfileRepository> _mockParticipantScreeningProfileRepository = new();
@@ -42,7 +42,7 @@ public class CreateParticipantScreeningProfileTests
         RecordInsertDatetime = DateTime.Parse("2019-08-01"),
     };
 
-    public CreateParticipantScreeningProfileTests()
+    public CreateParticipantScreeningProfileDataTests()
     {
         _function = new CreateParticipantScreeningProfile(_mockLogger.Object, _mockParticipantScreeningProfileRepository.Object);
     }
