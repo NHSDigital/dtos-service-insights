@@ -3,16 +3,18 @@ name: service-insights
 # Define network
 networks:
   app-network:
-    driver: host
+    driver: bridge
 
 # Define services
 services:
   # External Dependencies
   azurite:
     container_name: azurite
-    network_mode: host
+    restart: on-failure
     image: mcr.microsoft.com/azure-storage/azurite
-    command: azurite --silent
+    command: azurite --blobHost 0.0.0.0 --blobPort 10000 --queueHost 0.0.0.0 --queuePort 10001 --tableHost 0.0.0.0 --tablePort 10002 --silent
+    networks:
+      - app-network
     ports:
       - "10000:10000"
       - "10001:10001"
@@ -20,20 +22,25 @@ services:
 
   azurite-setup:
     container_name: azurite-setup
-    network_mode: host
+    restart: on-failure
     build:
       context: ./scripts
       dockerfile: ./azurite/Dockerfile
     depends_on:
       - azurite
+    networks:
+      - app-network
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
       - AZURITE_CONTAINER_NAME=${AZURITE_CONTAINER_NAME}
 
   sql-database:
     container_name: sql-database
-    network_mode: host
+    restart: on-failure
+    # image: mcr.microsoft.com/azure-sql-database
     image: mcr.microsoft.com/mssql/server:2022-latest
+    networks:
+      - app-network
     ports:
       - "1433:1433"
     environment:
@@ -52,13 +59,15 @@ services:
 
   database-setup:
     container_name: database-setup
-    network_mode: host
+    restart: on-failure
     build:
       context: ./scripts/
       dockerfile: ./database/Dockerfile
     depends_on:
       sql-database:
         condition: service_healthy
+    networks:
+      - app-network
     environment:
       - PASSWORD=${PASSWORD}
       - DB_NAME=${DB_NAME}
@@ -67,10 +76,12 @@ services:
   # BI Analytics Data Service
   create-participant-screening-episode-data:
     container_name: create-participant-screening-episode-data
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6010:6010"
     environment:
@@ -81,10 +92,12 @@ services:
 
   create-participant-screening-profile-data:
     container_name: create-participant-screening-profile-data
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningProfile/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6011:6011"
     environment:
@@ -96,42 +109,48 @@ services:
   # BI Analytics Service
   create-participant-screening-episode:
     container_name: create-participant-screening-episode
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsService/CreateParticipantScreeningEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6008:6008"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6008
-      - GetEpisodeUrl=http://127.0.0.1:6060/api/GetEpisode
-      - CreateParticipantScreeningEpisodeUrl=http://127.0.0.1:6010/api/CreateParticipantScreeningEpisode
+      - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
+      - CreateParticipantScreeningEpisodeUrl=http://create-participant-screening-episode-data:6010/api/CreateParticipantScreeningEpisode
 
   create-participant-screening-profile:
     container_name: create-participant-screening-profile
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsService/CreateParticipantScreeningProfile/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6009:6009"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6009
-      - GetParticipantUrl=http://127.0.0.1:6061/api/GetParticipant
-      - CreateParticipantScreeningProfileUrl=http://127.0.0.1:6011/api/CreateParticipantScreeningProfile
-      - DemographicsServiceUrl=http://127.0.0.1:6080/api/GetDemographicsData
+      - GetParticipantUrl=http://get-participant:6061/api/GetParticipant
+      - CreateParticipantScreeningProfileUrl=http://create-participant-screening-profile-data:6011/api/CreateParticipantScreeningProfile
+      - DemographicsServiceUrl=http://get-demographics-data:6080/api/GetDemographicsData
 
   # Demographics Service
   get-demographics-data:
     container_name: get-demographics-data
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./DemographicsService/GetDemographicsData/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6080:6080"
     environment:
@@ -141,103 +160,123 @@ services:
   # Episode Data Service
   create-episode:
     container_name: create-episode
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6007:6007"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://*:6007
-      - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   get-episode:
     container_name: get-episode
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6070:6070"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6070
-      - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  update-episode:
-    container_name: update-episode
-    network_mode: host
-    build:
-      context: ./src/
-      dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
-    ports:
-      - "7777:7777"
-    environment:
-      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-      - ASPNETCORE_URLS=http://*:7777
-      - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+  # update-episode:
+  #   container_name: update-episode
+  #   restart: always
+  #   build:
+  #     context: ./src/
+  #     dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
+  #   networks:
+  #     - app-network
+  #   ports:
+  #     - "7777:7777"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+  #     - ASPNETCORE_URLS=http://*:7777
+  #     - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # Episode Integration Service
   receive-data:
     container_name: receive-data
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
     depends_on:
       - azurite
+    networks:
+      - app-network
     ports:
       - "7072:7072"
     environment:
-      - AzureWebJobsStorage=UseDevelopmentStorage=true
+      - ASPNETCORE_ENVIRONMENT=Development
+      - AzureWebJobsStorage=${AZURITE_CONNECTION_STRING}
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7072
-      - EpisodeManagementUrl=http://127.0.0.1:6006/api/CreateUpdateEpisode
-      - ParticipantManagementUrl=http://127.0.0.1:7074/api/UpdateParticipant
+      - EpisodeManagementUrl=http://create-update-episode:6006/api/CreateUpdateEpisode
+      - ParticipantManagementUrl=http://update-participant:7074/api/UpdateParticipant
 
   # Episode Management Service
   create-update-episode:
     container_name: create-update-episode
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6006:6006"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6006
-      - CreateEpisodeUrl=http://127.0.0.1:6007/api/CreateEpisode
-      - GetEpisodeUrl=http://127.0.0.1:6060/api/GetEpisode
-      - UpdateEpisodeUrl=http://127.0.0.1:7777/api/UpdateEpisode
+      - CreateEpisodeUrl=http://create-episode:6007/api/CreateEpisode
+      - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
+      - UpdateEpisodeUrl=http://update-episode:7777/api/UpdateEpisode
 
   get-episode-mgmt:
     container_name: get-episode-mgmt
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6060:6060"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6060
-      - GetEpisodeUrl=http://127.0.0.1:6070/api/GetEpisode
+      - GetEpisodeUrl=http://get-episode:6070/api/GetEpisode
 
-      # Mesh Mailbox Management Service
+  # Mesh Mailbox Management Service
   retrieve-mesh-file:
     container_name: retrieve-mesh-file
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./MeshIntegrationService/RetrieveMeshFile/Dockerfile
     depends_on:
       - azurite
+    networks:
+      - app-network
     ports:
       - "6777:6777"
     environment:
-      - AzureWebJobsStorage=UseDevelopmentStorage=true
       - ASPNETCORE_ENVIRONMENT=Development
+      - AzureWebJobsStorage=${AZURITE_CONNECTION_STRING}
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6777
       - MeshApiBaseUrl=${MESHAPIBASEURL}
@@ -251,38 +290,30 @@ services:
   # Participant Management Service
   get-participant:
     container_name: get-participant
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
+    networks:
+      - app-network
     ports:
       - "6061:6061"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6061
 
   update-participant:
     container_name: update-participant
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/UpdateParticipant/Dockerfile
+    networks:
+      - app-network
     ports:
       - "7074:7074"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7074
-
-  # Reference Data Service
-  get-organisation-data:
-    container_name: get-organisation-data
-    network_mode: host
-    build:
-      context: ./src/
-      dockerfile: ./ReferenceDataService/GetReferenceData/Dockerfile
-    ports:
-      - "6081:6081"
-    environment:
-      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-      - ASPNETCORE_URLS=http://*:6081
-      - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
