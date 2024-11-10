@@ -20,6 +20,8 @@ public partial class ServiceInsightsDbContext : DbContext
 
     public virtual DbSet<FinalActionCodeLkp> FinalActionCodeLkps { get; set; }
 
+    public virtual DbSet<OrganisationLkp> OrganisationLkps { get; set; }
+
     public virtual DbSet<ParticipantScreeningEpisode> ParticipantScreeningEpisodes { get; set; }
 
     public virtual DbSet<ParticipantScreeningProfile> ParticipantScreeningProfiles { get; set; }
@@ -83,7 +85,9 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.FinalActionCodeId).HasColumnName("FINAL_ACTION_CODE_ID");
             entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
             entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
-            entity.Property(e => e.OrganisationId).HasColumnName("ORGANISATION_ID");
+            entity.Property(e => e.OrganisationId)
+                .HasMaxLength(50)
+                .HasColumnName("ORGANISATION_ID");
             entity.Property(e => e.ReasonClosedCodeId).HasColumnName("REASON_CLOSED_CODE_ID");
             entity.Property(e => e.RecordInsertDatetime)
                 .HasColumnType("datetime")
@@ -146,6 +150,37 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(300)
                 .IsUnicode(false)
                 .HasColumnName("FINAL_ACTION_CODE_DESCRIPTION");
+        });
+
+        modelBuilder.Entity<OrganisationLkp>(entity =>
+        {
+            entity.HasKey(e => e.OrganisationId).HasName("PK_ORGANISATION_ID");
+
+            entity.ToTable("ORGANISATION_LKP");
+
+            entity.Property(e => e.OrganisationId)
+                .HasMaxLength(50)
+                .HasColumnName("ORGANISATION_ID");
+            entity.Property(e => e.IsActive)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("IS_ACTIVE");
+            entity.Property(e => e.OrganisationCode)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ORGANISATION_CODE");
+            entity.Property(e => e.OrganisationName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ORGANISATION_NAME");
+            entity.Property(e => e.OrganisationType)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ORGANISATION_TYPE");
+            entity.Property(e => e.ScreeningName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("SCREENING_NAME");
         });
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
