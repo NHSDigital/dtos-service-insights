@@ -1,8 +1,11 @@
-﻿namespace NHS.ServiceInsights.Model;
+﻿using System;
+using System.Collections.Generic;
+
+namespace NHS.ServiceInsights.Model;
 
 public partial class OrganisationLkp
 {
-    public long OrganisationId { get; set; }
+    public string OrganisationId { get; set; } = null!;
 
     public string? ScreeningName { get; set; }
 
@@ -12,7 +15,5 @@ public partial class OrganisationLkp
 
     public string? OrganisationType { get; set; }
 
-    public bool? IsActive { get; set; }
-
-    public virtual ICollection<Episode> Episodes { get; set; } = new List<Episode>();
+    public string? IsActive { get; set; }
 }
