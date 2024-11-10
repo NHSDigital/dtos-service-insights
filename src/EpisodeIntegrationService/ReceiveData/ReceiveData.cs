@@ -164,12 +164,18 @@ public class ReceiveData
 
     private static short? GetAppointmentMadeFlag(string appointmentMade)
     {
-        if (string.IsNullOrEmpty(appointmentMade))
+        if (appointmentMade.ToUpper() == "TRUE")
+        {
+            return (short)1;
+        }
+        else if (appointmentMade.ToUpper() == "FALSE")
+        {
+            return (short)0;
+        }
+        else
         {
             return null;
         }
-
-        return appointmentMade.ToUpper() == "TRUE" ? (short)1 : (short)0;
     }
 
     private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
