@@ -21,7 +21,15 @@ public class CreateParticipantScreeningProfile
     [Function("CreateParticipantScreeningProfile")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
-        string nhsNumber = "1111111112";
+        _logger.LogInformation("Create Participant Screening Profile function start,");
+
+        string nhsNumber = req.Query["nhs_number"];
+
+        if (string.IsNullOrEmpty(nhsNumber))
+        {
+            _logger.LogError("nhsNumber is null or empty.");
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
 
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
         var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
