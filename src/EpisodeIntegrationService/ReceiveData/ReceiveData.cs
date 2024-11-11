@@ -145,6 +145,7 @@ public class ReceiveData
         {
             EpisodeId = episode.episode_id,
             EpisodeType = episode.episode_type,
+            ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
             EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.episode_date, DateFormat, CultureInfo.InvariantCulture)),
             AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),

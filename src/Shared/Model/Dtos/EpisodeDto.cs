@@ -6,7 +6,7 @@ public class EpisodeDto
 
     public long? EpisodeIdSystem { get; set; }
 
-    public long ScreeningId { get; set; }
+    public string ScreeningName { get; set; }
 
     public long NhsNumber { get; set; }
 
