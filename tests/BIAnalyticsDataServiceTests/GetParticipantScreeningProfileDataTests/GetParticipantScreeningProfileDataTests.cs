@@ -139,12 +139,12 @@ public class GetParticipantScreeningProfileDataTests
 
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
-        _mockLogger.Verify(log => log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("GetParticipantScreeningProfileData: Failed to get participant profiles from the database.")),
-            null,
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Once);
+
+        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
+        It.IsAny<EventId>(),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningProfileData: Failed to get participant profiles from the database.")),
+        It.IsAny<Exception>(),
+        It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+        Times.Once);
     }
 }
