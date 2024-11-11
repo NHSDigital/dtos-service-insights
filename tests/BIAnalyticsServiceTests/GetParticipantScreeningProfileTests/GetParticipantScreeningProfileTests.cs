@@ -5,20 +5,21 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Collections.Specialized;
 using NHS.ServiceInsights.TestUtils;
+using NHS.ServiceInsights.BIAnalyticsService;
+using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
-using NHS.ServiceInsights.Data;
-using NHS.ServiceInsights.BIAnalyticsDataService;
+using System.Text;
 
-namespace NHS.ServiceInsights.BIAnalyticsDataServiceTests;
+namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
 
 [TestClass]
-public class GetParticipantScreeningProfileDataTests
+public class GetParticipantScreeningProfileTests
 {
-    private readonly Mock<ILogger<GetParticipantScreeningProfileData>> _mockLogger = new();
-    private readonly Mock<IParticipantScreeningProfileRepository> _mockParticipantScreeningProfileRepository = new();
+    private readonly Mock<ILogger<GetParticipantScreeningProfile>> _mockLogger = new();
+    private Mock<IHttpRequestService> _httpRequestService = new();
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
-    private readonly GetParticipantScreeningProfileData _function;
+    private readonly GetParticipantScreeningProfile _function;
 
     private readonly ProfilesDataPage profilesDataPage = new ProfilesDataPage
     {
@@ -44,9 +45,10 @@ public class GetParticipantScreeningProfileDataTests
         }
     };
 
-    public GetParticipantScreeningProfileDataTests()
+    public GetParticipantScreeningProfileTests()
     {
-        _function = new GetParticipantScreeningProfileData(_mockLogger.Object, _mockParticipantScreeningProfileRepository.Object);
+        Environment.SetEnvironmentVariable("GetProfilesUrl", "http://localhost:6062/api/GetParticipantScreeningProfileData");
+        _function = new GetParticipantScreeningProfile(_mockLogger.Object, _httpRequestService.Object);
     }
 
     [TestMethod]
@@ -62,15 +64,24 @@ public class GetParticipantScreeningProfileDataTests
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
-        _mockParticipantScreeningProfileRepository.Setup(r => r.GetParticipantProfile(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>())).Returns(Task.FromResult(profilesDataPage));
 
+        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=20&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+
+        var jsonResponse = JsonSerializer.Serialize(profilesDataPage);
+
+        _httpRequestService
+            .Setup(service => service.SendGet(expectedUri))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonResponse, Encoding.UTF8, "application/json")
+            });
         // Act
         var response = await _function.Run(_mockRequest.Object);
 
         // Assert
         _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Information),
         It.IsAny<EventId>(),
-        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningProfileData: Participant profiles found successfully.")),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Profile data retrieved")),
         It.IsAny<Exception>(),
         It.IsAny<Func<It.IsAnyType, Exception, string>>()),
         Times.Once);
@@ -78,14 +89,14 @@ public class GetParticipantScreeningProfileDataTests
 
         response.Body.Seek(0, SeekOrigin.Begin);
         var profilesDataPageResult = await JsonSerializer.DeserializeAsync<ProfilesDataPage>(response.Body);
-        Assert.IsTrue(profilesDataPageResult.profiles.Count() == 2);
+        Assert.IsTrue(profilesDataPageResult.Profiles.Count() == 2);
         Assert.IsTrue(profilesDataPageResult.TotalResults == 2);
         Assert.IsTrue(profilesDataPageResult.TotalPages == 1);
         Assert.IsTrue(profilesDataPageResult.TotalRemainingPages == 0);
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_NotFound_When_It_Doesnt_Find_Any_Profiles()
+    public async Task Run_Should_Return_Unsuccessful_Status_Code_If_Call_To_Data_Function_Returns_Unsuccessful_Status_Code()
     {
         // Arrange
         var queryParam = new NameValueCollection()
@@ -96,23 +107,23 @@ public class GetParticipantScreeningProfileDataTests
             { "endDate", "2023-07-05 08:30:00" }
         };
 
-        var emptyprofilesDataPage = new ProfilesDataPage(){
-            TotalResults = 0,
-            TotalPages = 0,
-            TotalRemainingPages = 0,
-            Profiles = new List<ParticipantScreeningProfile>()
-        };
-
         _mockRequest = _setupRequest.SetupGet(queryParam);
-        _mockParticipantScreeningProfileRepository.Setup(r => r.GetParticipantProfile(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>())).Returns(Task.FromResult(emptyprofilesDataPage));
 
+        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=20&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+
+        var jsonResponse = JsonSerializer.Serialize(profilesDataPage);
+
+        _httpRequestService
+            .Setup(service => service.SendGet(expectedUri))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
+        
         // Act
         var response = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Information),
+        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
         It.IsAny<EventId>(),
-        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningProfileData: Could not find any participant profiles.")),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to retrieve profiles. Status Code:")),
         It.IsAny<Exception>(),
         It.IsAny<Func<It.IsAnyType, Exception, string>>()),
         Times.Once);
@@ -132,19 +143,25 @@ public class GetParticipantScreeningProfileDataTests
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
-        _mockParticipantScreeningProfileRepository.Setup(r => r.GetParticipantProfile(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>())).Throws(new Exception("Database error"));
 
+        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=20&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+
+        var jsonResponse = JsonSerializer.Serialize(profilesDataPage);
+
+        _httpRequestService
+            .Setup(service => service.SendGet(expectedUri))
+            .ThrowsAsync(new HttpRequestException("Exception: System.Net.Http.HttpRequestException:"));
+        
         // Act
         var response = await _function.Run(_mockRequest.Object);
 
         // Assert
+        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
+        It.IsAny<EventId>(),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Exception when calling the GetParticipantScreeningProfileData function.")),
+        It.IsAny<Exception>(),
+        It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+        Times.Once);
         Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
-        _mockLogger.Verify(log => log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("GetParticipantScreeningProfileData: Failed to get participant profiles from the database.")),
-            null,
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Once);
     }
 }

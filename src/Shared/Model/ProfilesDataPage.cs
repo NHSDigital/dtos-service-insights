@@ -5,7 +5,7 @@ namespace NHS.ServiceInsights.Model;
 
 public partial class ProfilesDataPage
 {
-    public List<ParticipantScreeningProfile>? profiles { get; set; } = null!;
+    public List<ParticipantScreeningProfile>? Profiles { get; set; } = null!;
 
     public int TotalResults { get; set; }
 

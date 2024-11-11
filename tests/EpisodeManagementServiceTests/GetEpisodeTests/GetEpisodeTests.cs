@@ -22,7 +22,6 @@ public class GetEpisodeTests
 
     public GetEpisodeTests()
     {
-
         Environment.SetEnvironmentVariable("GetEpisodeUrl", "http://localhost:6070/api/GetEpisode");
         _function = new GetEpisode(_mockLogger.Object, _httpRequestService.Object);
     }

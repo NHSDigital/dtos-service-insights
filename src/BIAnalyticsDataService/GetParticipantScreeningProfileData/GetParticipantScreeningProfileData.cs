@@ -7,7 +7,7 @@ using System.Text.Json;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 
-namespace NHS.ServiceInsights.EpisodeManagementService;
+namespace NHS.ServiceInsights.BIAnalyticsDataService;
 
 public class GetParticipantScreeningProfileData
 {
@@ -23,7 +23,7 @@ public class GetParticipantScreeningProfileData
 
     [Function("GetParticipantScreeningProfileData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
-        {
+    {
         int page = int.Parse(req.Query["page"]);
         int pageSize = int.Parse(req.Query["pageSize"]);
         DateTime startDate = DateTime.Parse(req.Query["startDate"]);
@@ -44,21 +44,12 @@ public class GetParticipantScreeningProfileData
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json");
-
-            string jsonProfilesDataPage;
-
-            using (var memoryStream = new MemoryStream())
-            {
-                await JsonSerializer.SerializeAsync<ProfilesDataPage?>(memoryStream, result);
-                jsonProfilesDataPage = Encoding.UTF8.GetString(memoryStream.ToArray());
-            }
-
-            await response.WriteStringAsync(jsonProfilesDataPage);
+            await JsonSerializer.SerializeAsync(response.Body, result);
             return response;
         }
         catch (Exception ex)
         {
-            _logger.LogError("GetParticipantScreeningProfileData: Failed to get participant profiles from the database.\nException: " + ex.Message);
+            _logger.LogError(ex, "GetParticipantScreeningProfileData: Failed to get participant profiles from the database.\nException: " + ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

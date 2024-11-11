@@ -42,10 +42,11 @@ public class ParticipantScreeningProfileRepository : IParticipantScreeningProfil
 
         int totalPages = (int)Math.Ceiling((double)count/(double)pageSize);
         int totalRemainingPages = totalPages - page;
+        if (totalRemainingPages < 0) totalRemainingPages = 0;
 
         var profilesPage = new ProfilesDataPage()
         {
-            profiles = data,
+            Profiles = data,
             TotalResults = count,
             TotalPages = totalPages,
             TotalRemainingPages = totalRemainingPages

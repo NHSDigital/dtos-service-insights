@@ -101,6 +101,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateParticipantScreeningP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetParticipantScreeningProfileDataTests", "..\tests\BIAnalyticsDataServiceTests\GetParticipantScreeningProfileDataTests\GetParticipantScreeningProfileDataTests.csproj", "{9B0BC460-3542-4F66-A9BC-5135A9E893AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetParticipantScreeningProfileTests", "..\tests\BIAnalyticsServiceTests\GetParticipantScreeningProfileTests\GetParticipantScreeningProfileTests.csproj", "{DA99AF83-D3F3-49C5-9D81-1E97023124B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -251,6 +253,10 @@ Global
 		{9B0BC460-3542-4F66-A9BC-5135A9E893AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B0BC460-3542-4F66-A9BC-5135A9E893AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B0BC460-3542-4F66-A9BC-5135A9E893AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA99AF83-D3F3-49C5-9D81-1E97023124B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA99AF83-D3F3-49C5-9D81-1E97023124B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA99AF83-D3F3-49C5-9D81-1E97023124B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA99AF83-D3F3-49C5-9D81-1E97023124B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
