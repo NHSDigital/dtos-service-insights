@@ -21,7 +21,6 @@
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\ReferenceDataService\GetReferenceData\GetReferenceData.csproj" />
     <ProjectReference Include="..\..\TestUtils\TestUtils.csproj" />

@@ -124,26 +124,10 @@ public class ReceiveData
             _logger.LogInformation("Processing episode data.");
             foreach (var episode in episodes)
             {
-                var modifiedEpisode = new Episode
-                {
-                    EpisodeId = episode.episode_id,
-                    EpisodeTypeId = episode.episode_type,
-                    EpisodeOpenDate = episode.episode_date,
-                    AppointmentMadeFlag = episode.appointment_made,
-                    FirstOfferedAppointmentDate = episode.date_of_foa,
-                    ActualScreeningDate = episode.date_of_as,
-                    EarlyRecallDate = episode.early_recall_date,
-                    CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-                    EndCodeId = episode.end_code,
-                    EndCodeLastUpdated = episode.end_code_last_updated,
-                    OrganisationId = episode.bso_organisation_code,
-                    BatchId = episode.bso_batch_id
-                };
-
+                var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
                 _logger.LogInformation($"Sending Episode to {episodeUrl}: {serializedEpisode}");
-
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
         }
@@ -151,6 +135,47 @@ public class ReceiveData
         {
             _logger.LogError("Error in ProcessEpisodeDataAsync: " + ex.Message);
             await ProcessEpisodeDataAsync(episodes, episodeUrl);
+        }
+    }
+
+    private const string DateFormat = "dd/MM/yyyy";
+    private EpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
+    {
+        return new EpisodeDto
+        {
+            EpisodeId = episode.episode_id,
+            EpisodeType = episode.episode_type,
+            ScreeningName = "Breast Screening",
+            NhsNumber = episode.nhs_number,
+            EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.episode_date, DateFormat, CultureInfo.InvariantCulture)),
+            AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),
+            FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_foa, DateFormat, CultureInfo.InvariantCulture)),
+            ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_as, DateFormat, CultureInfo.InvariantCulture)),
+            EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.early_recall_date, DateFormat, CultureInfo.InvariantCulture)),
+            CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
+            EndCode = episode.end_code,
+            EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTime.ParseExact(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz", CultureInfo.InvariantCulture),
+            OrganisationCode = episode.bso_organisation_code,
+            BatchId = episode.bso_batch_id,
+            EndPoint = episode.end_point,
+            ReasonClosedCode = episode.reason_closed_code,
+            FinalActionCode = episode.final_action_code
+        };
+    }
+
+    private static short? GetAppointmentMadeFlag(string appointmentMade)
+    {
+        if (appointmentMade.ToUpper() == "TRUE")
+        {
+            return (short)1;
+        }
+        else if (appointmentMade.ToUpper() == "FALSE")
+        {
+            return (short)0;
+        }
+        else
+        {
+            return null;
         }
     }
 
@@ -178,9 +203,10 @@ public class ReceiveData
 
 public class BssEpisode
 {
-    public string episode_id { get; set; } = null!;
-    public string nhs_number { get; set; }
+    public long episode_id { get; set; }
+    public long nhs_number { get; set; }
     public string? episode_type { get; set; }
+    public DateTime change_db_date_time { get; set; }
     public string? episode_date { get; set; }
     public string? appointment_made { get; set; }
     public string? date_of_foa { get; set; }
