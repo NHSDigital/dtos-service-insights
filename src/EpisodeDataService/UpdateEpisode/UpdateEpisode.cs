@@ -73,7 +73,7 @@ public class UpdateEpisode
                 existingEpisode.EndCodeLastUpdated = episodeDto.EndCodeLastUpdated;
                 existingEpisode.ReasonClosedCodeId = reasonClosedCodeId;
                 existingEpisode.FinalActionCodeId = finalActionCodeId;
-                existingEpisode.EndPoint = null;
+                existingEpisode.EndPoint = episodeDto.EndPoint;
                 existingEpisode.OrganisationId = null;
                 existingEpisode.BatchId = episodeDto.BatchId;
                 existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;

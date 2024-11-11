@@ -73,7 +73,7 @@ public class CreateEpisode
                 EndCodeLastUpdated = episodeDto.EndCodeLastUpdated,
                 ReasonClosedCodeId = reasonClosedCodeId,
                 FinalActionCodeId = finalActionCodeId,
-                EndPoint = null,
+                EndPoint = episodeDto.EndPoint,
                 OrganisationId = null,
                 BatchId = episodeDto.BatchId,
                 RecordInsertDatetime = DateTime.UtcNow,
