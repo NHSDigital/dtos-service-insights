@@ -34,7 +34,7 @@ public class GetParticipantScreeningProfileData
         try
         {
             ProfilesDataPage result = await _participantScreeningProfileRepository.GetParticipantProfile(page, pageSize, startDate, endDate, numberOfRowsToSkip);
-            if (result.profiles.Count == 0)
+            if (result.Profiles.Count == 0)
             {
                 _logger.LogInformation("GetParticipantScreeningProfileData: Could not find any participant profiles.");
                 return req.CreateResponse(HttpStatusCode.NotFound);

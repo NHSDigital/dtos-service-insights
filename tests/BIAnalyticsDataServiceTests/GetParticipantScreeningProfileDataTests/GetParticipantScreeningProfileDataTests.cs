@@ -78,7 +78,7 @@ public class GetParticipantScreeningProfileDataTests
 
         response.Body.Seek(0, SeekOrigin.Begin);
         var profilesDataPageResult = await JsonSerializer.DeserializeAsync<ProfilesDataPage>(response.Body);
-        Assert.IsTrue(profilesDataPageResult.profiles.Count() == 2);
+        Assert.IsTrue(profilesDataPageResult.Profiles.Count() == 2);
         Assert.IsTrue(profilesDataPageResult.TotalResults == 2);
         Assert.IsTrue(profilesDataPageResult.TotalPages == 1);
         Assert.IsTrue(profilesDataPageResult.TotalRemainingPages == 0);
