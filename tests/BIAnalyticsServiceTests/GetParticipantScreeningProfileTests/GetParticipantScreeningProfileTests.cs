@@ -116,7 +116,7 @@ public class GetParticipantScreeningProfileTests
         _httpRequestService
             .Setup(service => service.SendGet(expectedUri))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
-        
+
         // Act
         var response = await _function.Run(_mockRequest.Object);
 
@@ -151,7 +151,7 @@ public class GetParticipantScreeningProfileTests
         _httpRequestService
             .Setup(service => service.SendGet(expectedUri))
             .ThrowsAsync(new HttpRequestException("Exception: System.Net.Http.HttpRequestException:"));
-        
+
         // Act
         var response = await _function.Run(_mockRequest.Object);
 
