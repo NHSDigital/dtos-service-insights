@@ -233,16 +233,3 @@ BEGIN
     );
 END
 
-INSERT INTO ORGANISATION_LKP
-(ORGANISATION_ID, SCREENING_NAME, ORGANISATION_CODE, ORGANISATION_NAME, ORGANISATION_TYPE, IS_ACTIVE)
-VALUES
-(178453, 'Cancer Screening', 'C001', 'Health Screening Center A', 'Clinic', 'Yes'),
-(196345, 'Diabetes Screening', 'D001', 'Diabetes Care Center', 'Specialty Clinic', 'Yes'),
-(228466, 'Cardiac Screening', 'C002', 'Heart Health Hospital', 'Hospital', 'Yes'),
-(239879, 'Lung Screening', 'L001', 'Lung Screening Facility', 'Clinic', 'No'),
-(257742, 'Blood Pressure Screening', 'BP001', 'Primary Care Clinic B', 'Primary Care', 'Yes'),
-(328701, 'Cancer Screening', 'C003', 'Oncology Associates', 'Specialty Clinic', 'Yes'),
-(428765, 'Hypertension Screening', 'H001', 'Hypertension Specialty Clinic', 'Specialty Clinic', 'No'),
-(569123, 'Cardiac Screening', 'C004', 'Cardiac Care Clinic', 'Clinic', 'Yes'),
-(656786, 'Cancer Screening', 'C005', 'Cancer Center C', 'Hospital', 'Yes'),
-(928567, 'General Health Screening', 'G001', 'Community Health Clinic', 'Primary Care', 'Yes');
