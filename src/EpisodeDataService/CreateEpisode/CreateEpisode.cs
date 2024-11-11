@@ -60,7 +60,7 @@ public class CreateEpisode
             {
                 EpisodeId = episodeDto.EpisodeId,
                 EpisodeIdSystem = null,
-                ScreeningId = episodeDto.ScreeningId,
+                ScreeningId = 1, // Need to get ScreeningId from ScreeningName
                 NhsNumber = episodeDto.NhsNumber,
                 EpisodeTypeId = episodeTypeId,
                 EpisodeOpenDate = episodeDto.EpisodeOpenDate,
@@ -74,7 +74,7 @@ public class CreateEpisode
                 ReasonClosedCodeId = reasonClosedCodeId,
                 FinalActionCodeId = finalActionCodeId,
                 EndPoint = episodeDto.EndPoint,
-                OrganisationId = null,
+                OrganisationId = 111111, // Need to get OrganisationId from Reference Management Data Store
                 BatchId = episodeDto.BatchId,
                 RecordInsertDatetime = DateTime.UtcNow,
                 RecordUpdateDatetime = DateTime.UtcNow

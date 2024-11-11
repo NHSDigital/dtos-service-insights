@@ -60,7 +60,7 @@ public class UpdateEpisode
                 var finalActionCodeId = await _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync(episodeDto.FinalActionCode);
 
                 existingEpisode.EpisodeIdSystem = null;
-                existingEpisode.ScreeningId = episodeDto.ScreeningId;
+                existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
                 existingEpisode.NhsNumber = episodeDto.NhsNumber;
                 existingEpisode.EpisodeTypeId = episodeTypeId;
                 existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
@@ -74,7 +74,7 @@ public class UpdateEpisode
                 existingEpisode.ReasonClosedCodeId = reasonClosedCodeId;
                 existingEpisode.FinalActionCodeId = finalActionCodeId;
                 existingEpisode.EndPoint = episodeDto.EndPoint;
-                existingEpisode.OrganisationId = null;
+                existingEpisode.OrganisationId = 111111; // Need to get OrganisationId from Reference Management Data Store
                 existingEpisode.BatchId = episodeDto.BatchId;
                 existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
 
