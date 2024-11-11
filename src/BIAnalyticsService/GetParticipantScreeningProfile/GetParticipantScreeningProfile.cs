@@ -52,7 +52,7 @@ public class GetParticipantScreeningProfile
         if (pageSize > 5000) pageSize = 5000;
 
         var baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
-        var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate}&endDate={endDate}";
+        var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
         _logger.LogInformation("Requesting URL: {Url}", url);
 
         try
