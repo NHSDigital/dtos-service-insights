@@ -106,7 +106,7 @@ public class CreateParticipantScreeningProfile
             DateIrradiated = participant.date_irradiated,
             GeneCode = participant.gene_code,
             GeneCodeDescription = String.Empty,
-            RecordInsertDatetime = DateTime.Now.ToString()
+            RecordInsertDatetime = DateTime.Now
         };
 
         var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");
