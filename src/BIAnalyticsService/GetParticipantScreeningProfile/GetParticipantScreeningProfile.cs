@@ -1,4 +1,5 @@
 using System.Net;
+using System.Globalization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ public class GetParticipantScreeningProfile
             return badRequestResponse;
         }
 
-        if(!DateTime.TryParse(req.Query["startDate"], out startDate) || !DateTime.TryParse(req.Query["endDate"], out endDate))
+        if(!DateTime.TryParse(req.Query["startDate"], CultureInfo.InvariantCulture, out startDate) || !DateTime.TryParse(req.Query["endDate"],  CultureInfo.InvariantCulture, out endDate))
         {
             _logger.LogError("Invalid startDate or endDate");
             var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);

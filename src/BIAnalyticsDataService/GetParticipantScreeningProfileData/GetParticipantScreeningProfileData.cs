@@ -4,6 +4,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
+using System.Globalization;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 
@@ -26,8 +27,8 @@ public class GetParticipantScreeningProfileData
     {
         int page = int.Parse(req.Query["page"]);
         int pageSize = int.Parse(req.Query["pageSize"]);
-        DateTime startDate = DateTime.Parse(req.Query["startDate"]);
-        DateTime endDate = DateTime.Parse(req.Query["endDate"]);
+        DateTime startDate = DateTime.Parse(req.Query["startDate"], CultureInfo.InvariantCulture);
+        DateTime endDate = DateTime.Parse(req.Query["endDate"], CultureInfo.InvariantCulture);
 
         var numberOfRowsToSkip = (page - 1) * pageSize;
 
