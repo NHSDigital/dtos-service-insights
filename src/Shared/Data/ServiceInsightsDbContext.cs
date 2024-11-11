@@ -85,9 +85,7 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.FinalActionCodeId).HasColumnName("FINAL_ACTION_CODE_ID");
             entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
             entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
-            entity.Property(e => e.OrganisationId)
-                .HasMaxLength(50)
-                .HasColumnName("ORGANISATION_ID");
+            entity.Property(e => e.OrganisationId).HasColumnName("ORGANISATION_ID");
             entity.Property(e => e.ReasonClosedCodeId).HasColumnName("REASON_CLOSED_CODE_ID");
             entity.Property(e => e.RecordInsertDatetime)
                 .HasColumnType("datetime")
@@ -159,7 +157,7 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.ToTable("ORGANISATION_LKP");
 
             entity.Property(e => e.OrganisationId)
-                .HasMaxLength(50)
+                .ValueGeneratedNever()
                 .HasColumnName("ORGANISATION_ID");
             entity.Property(e => e.IsActive)
                 .HasMaxLength(50)

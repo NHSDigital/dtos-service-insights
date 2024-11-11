@@ -37,7 +37,7 @@ public partial class Episode
 
     public string? EndPoint { get; set; }
 
-    public string? OrganisationId { get; set; }
+    public long? OrganisationId { get; set; }
 
     public string? BatchId { get; set; }
 
