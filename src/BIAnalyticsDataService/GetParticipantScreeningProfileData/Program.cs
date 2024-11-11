@@ -12,5 +12,4 @@ var host = new HostBuilder()
             options => options.UseSqlServer(Environment.GetEnvironmentVariable("ServiceInsightsDbConnectionString")));
     })
     .Build();
-    
 await host.RunAsync();

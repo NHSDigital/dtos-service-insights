@@ -9,5 +9,4 @@ var host = new HostBuilder()
         services.AddSingleton<IHttpRequestService, HttpRequestService>();
     })
     .Build();
-
 await host.RunAsync();
