@@ -12,6 +12,4 @@ public partial class EndCodeLkp
     public string? EndCode { get; set; }
 
     public string? EndCodeDescription { get; set; }
-
-    public virtual ICollection<Episode> Episodes { get; set; } = new List<Episode>();
 }

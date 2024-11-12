@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
+using Grpc.Net.Client.Balancer;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
@@ -64,7 +65,7 @@ public class CreateParticipantScreeningProfile
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
-    private async Task<DemographicsData> GetDemographicsDataAsync(string nhsNumber)
+    private async Task<DemographicsData> GetDemographicsDataAsync(long nhsNumber)
     {
         var baseDemographicsServiceUrl = Environment.GetEnvironmentVariable("DemographicsServiceUrl");
         var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={nhsNumber}";
@@ -93,9 +94,9 @@ public class CreateParticipantScreeningProfile
             PrimaryCareProvider = demographicsData.PrimaryCareProvider,
             PreferredLanguage = demographicsData.PreferredLanguage,
             ReasonForRemoval = participant.removal_reason,
-            ReasonForRemovalDt = String.Empty,
+            ReasonForRemovalDt = new DateOnly(),
             NextTestDueDate = participant.next_test_due_date,
-            NextTestDueDateCalculationMethod = participant.ntdd_calculation_method,
+            NextTestDueDateCalcMethod = participant.ntdd_calculation_method,
             ParticipantScreeningStatus = participant.subject_status_code,
             ScreeningCeasedReason = String.Empty,
             IsHigherRisk = participant.is_higher_risk,

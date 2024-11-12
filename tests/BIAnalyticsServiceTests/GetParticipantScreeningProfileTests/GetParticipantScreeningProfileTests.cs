@@ -31,14 +31,14 @@ public class GetParticipantScreeningProfileTests
             new ParticipantScreeningProfile
             {
                 Id = 1,
-                NhsNumber = "1234567890",
+                NhsNumber = 1234567890,
                 ScreeningName = "John Doe",
                 RecordInsertDatetime = DateTime.Parse("2023-07-05 10:30:00")
             },
             new ParticipantScreeningProfile
             {
                 Id = 2,
-                NhsNumber = "9876543210",
+                NhsNumber = 9876543210,
                 ScreeningName = "Jane Smith",
                 RecordInsertDatetime = DateTime.Parse("2023-07-05 11:30:00")
             }

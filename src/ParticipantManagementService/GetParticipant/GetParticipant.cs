@@ -20,19 +20,18 @@ public class GetParticipant
     {
         _logger.LogInformation("Request to retrieve a participant has been processed.");
 
-        string NhsNumber = req.Query["nhs_number"];
-
-        if (string.IsNullOrEmpty(NhsNumber))
+        long nhsNumber;
+        if (!long.TryParse(req.Query["nhs_number"], out nhsNumber))
         {
             _logger.LogError("Please enter a valid NHS Number.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
-        var participant = ParticipantRepository.GetParticipantByNhsNumber(NhsNumber);
+        var participant = ParticipantRepository.GetParticipantByNhsNumber(nhsNumber);
 
         if (participant == null)
         {
-            _logger.LogError($"Participant with NHS Number {NhsNumber} not found.");
+            _logger.LogError($"Participant with NHS Number {nhsNumber} not found.");
             return req.CreateResponse(HttpStatusCode.NotFound);
         }
 

@@ -29,7 +29,7 @@ public partial class Episode
 
     public long? EndCodeId { get; set; }
 
-    public DateTime? EndCodeLastUpdated { get; set; }
+    public DateOnly? EndCodeLastUpdated { get; set; }
 
     public long? ReasonClosedCodeId { get; set; }
 
@@ -44,12 +44,4 @@ public partial class Episode
     public DateTime? RecordInsertDatetime { get; set; }
 
     public DateTime? RecordUpdateDatetime { get; set; }
-
-    public virtual EndCodeLkp? EndCode { get; set; }
-
-    public virtual EpisodeTypeLkp? EpisodeType { get; set; }
-
-    public virtual FinalActionCodeLkp? FinalActionCode { get; set; }
-
-    public virtual ReasonClosedCodeLkp? ReasonClosedCode { get; set; }
 }

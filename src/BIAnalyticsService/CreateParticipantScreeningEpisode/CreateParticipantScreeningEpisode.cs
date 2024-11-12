@@ -78,22 +78,22 @@ public class CreateParticipantScreeningEpisode
         {
             EpisodeId = episode.EpisodeId,
             ScreeningName = episode.ScreeningId.ToString(),
-            NhsNumber = episode.NhsNumber.ToString(),
+            NhsNumber = episode.NhsNumber,
             EpisodeType = episode.EpisodeTypeId.ToString(),
             EpisodeTypeDescription = String.Empty,
-            EpisodeOpenDate = episode.EpisodeOpenDate.ToString(),
-            AppointmentMadeFlag = episode.AppointmentMadeFlag.ToString(),
-            FirstOfferedAppointmentDate = episode.FirstOfferedAppointmentDate.ToString(),
-            ActualScreeningDate = episode.ActualScreeningDate.ToString(),
-            EarlyRecallDate = episode.EarlyRecallDate.ToString(),
+            EpisodeOpenDate = episode.EpisodeOpenDate,
+            AppointmentMadeFlag = episode.AppointmentMadeFlag,
+            FirstOfferedAppointmentDate = episode.FirstOfferedAppointmentDate,
+            ActualScreeningDate = episode.ActualScreeningDate,
+            EarlyRecallDate = episode.EarlyRecallDate,
             CallRecallStatusAuthorisedBy = episode.CallRecallStatusAuthorisedBy,
             EndCode = episode.EndCodeId.ToString(),
             EndCodeDescription = String.Empty,
-            EndCodeLastUpdated = episode.EndCodeLastUpdated.ToString(),
+            EndCodeLastUpdated = episode.EndCodeLastUpdated,
             OrganisationCode = episode.OrganisationId.ToString(),
             OrganisationName = String.Empty,
             BatchId = episode.BatchId,
-            RecordInsertDatetime = DateTime.Now.ToString()
+            RecordInsertDatetime = DateTime.Now
         };
 
         var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");

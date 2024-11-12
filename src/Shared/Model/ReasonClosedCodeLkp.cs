@@ -10,6 +10,4 @@ public partial class ReasonClosedCodeLkp
     public string ReasonClosedCode { get; set; } = null!;
 
     public string? ReasonClosedCodeDescription { get; set; }
-
-    public virtual ICollection<Episode> Episodes { get; set; } = new List<Episode>();
 }
