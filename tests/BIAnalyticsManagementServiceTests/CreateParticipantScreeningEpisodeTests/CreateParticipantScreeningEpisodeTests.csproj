@@ -23,7 +23,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BIAnalyticsService\CreateParticipantScreeningEpisode\CreateParticipantScreeningEpisode.csproj" />
+    <ProjectReference Include="..\..\..\src\BIAnalyticsManagementService\CreateParticipantScreeningEpisode\CreateParticipantScreeningEpisode.csproj" />
     <ProjectReference Include="..\..\TestUtils\TestUtils.csproj" />
   </ItemGroup>
 

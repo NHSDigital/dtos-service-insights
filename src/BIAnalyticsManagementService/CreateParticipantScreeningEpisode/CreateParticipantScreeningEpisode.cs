@@ -6,7 +6,7 @@ using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 
-namespace NHS.ServiceInsights.BIAnalyticsService;
+namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
 public class CreateParticipantScreeningEpisode
 {

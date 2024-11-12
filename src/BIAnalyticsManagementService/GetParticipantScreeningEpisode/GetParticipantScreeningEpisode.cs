@@ -1,10 +1,11 @@
+using System.Globalization;
 using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
 
-namespace NHS.ServiceInsights.BIAnalyticsService;
+namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
 public class GetParticipantScreeningEpisode
 {
@@ -33,7 +34,7 @@ public class GetParticipantScreeningEpisode
             return badRequestResponse;
         }
 
-        if(!DateTime.TryParse(req.Query["startDate"], out startDate) || !DateTime.TryParse(req.Query["endDate"], out endDate))
+        if(!DateTime.TryParse(req.Query["startDate"], CultureInfo.InvariantCulture, out startDate) || !DateTime.TryParse(req.Query["endDate"],  CultureInfo.InvariantCulture, out endDate))
         {
             _logger.LogError("Invalid startDate or endDate");
             var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
@@ -49,8 +50,8 @@ public class GetParticipantScreeningEpisode
         if (pageSize < 1) pageSize = 1;
         if (pageSize > 5000) pageSize = 5000;
 
-        var baseUrl = Environment.GetEnvironmentVariable("GetParticipantScreeningEpisodeUrl");
-        var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate}&endDate={endDate}";
+        var baseUrl = Environment.GetEnvironmentVariable("GetParticipantScreeningEpisodeDataUrl");
+        var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
         _logger.LogInformation("Requesting URL: {Url}", url);
 
         try
@@ -76,7 +77,7 @@ public class GetParticipantScreeningEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception when calling the GetParticipantScreeningEpisode data service. \nUrl:{url}\nException: " + ex.Message, url);
+            _logger.LogError(ex, "Exception when calling the GetParticipantScreeningData function. \nUrl:{url}\nException: " + ex.Message, url);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

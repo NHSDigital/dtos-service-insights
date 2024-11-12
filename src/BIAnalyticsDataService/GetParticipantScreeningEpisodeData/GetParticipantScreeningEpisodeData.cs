@@ -8,12 +8,12 @@ using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.BIAnalyticsDataService;
 
-public class GetParticipantScreeningEpisode
+public class GetParticipantScreeningEpisodeData
 {
-    private readonly ILogger<GetParticipantScreeningEpisode> _logger;
+    private readonly ILogger<GetParticipantScreeningEpisodeData> _logger;
 
     private readonly IParticipantScreeningEpisodeRepository _participantScreeningEpisodeRepository;
-    public GetParticipantScreeningEpisode(ILogger<GetParticipantScreeningEpisode> logger, IParticipantScreeningEpisodeRepository participantScreeningEpisodeRepository)
+    public GetParticipantScreeningEpisodeData(ILogger<GetParticipantScreeningEpisodeData> logger, IParticipantScreeningEpisodeRepository participantScreeningEpisodeRepository)
     {
         _logger = logger;
         _participantScreeningEpisodeRepository = participantScreeningEpisodeRepository;

@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BIAnalyticsDataService\GetParticipantScreeningEpisode\GetParticipantScreeningEpisode.csproj" />
+    <ProjectReference Include="..\..\..\src\BIAnalyticsDataService\GetParticipantScreeningEpisodeData\GetParticipantScreeningEpisodeData.csproj" />
     <ProjectReference Include="..\..\TestUtils\TestUtils.csproj" />
   </ItemGroup>
 

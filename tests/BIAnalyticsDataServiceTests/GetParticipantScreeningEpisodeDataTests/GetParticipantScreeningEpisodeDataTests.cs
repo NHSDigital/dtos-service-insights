@@ -14,11 +14,11 @@ namespace NHS.ServiceInsights.BIAnalyticsDataServiceTests;
 [TestClass]
 public class GetParticipantScreeningEpisodeTests
 {
-    private readonly Mock<ILogger<GetParticipantScreeningEpisode>> _mockLogger = new();
+    private readonly Mock<ILogger<GetParticipantScreeningEpisodeData>> _mockLogger = new();
     private readonly Mock<IParticipantScreeningEpisodeRepository> _mockParticipantScreeningEpisodeRepository = new();
     private Mock<HttpRequestData> _mockRequest = new();
     private readonly SetupRequest _setupRequest = new();
-    private readonly GetParticipantScreeningEpisode _function;
+    private readonly GetParticipantScreeningEpisodeData _function;
 
     private readonly EpisodesDataPage episodesDataPage = new EpisodesDataPage
     {
@@ -46,7 +46,7 @@ public class GetParticipantScreeningEpisodeTests
 
     public GetParticipantScreeningEpisodeTests()
     {
-        _function = new GetParticipantScreeningEpisode(_mockLogger.Object, _mockParticipantScreeningEpisodeRepository.Object);
+        _function = new GetParticipantScreeningEpisodeData(_mockLogger.Object, _mockParticipantScreeningEpisodeRepository.Object);
     }
 
     [TestMethod]
