@@ -21,7 +21,7 @@ public class CreateParticipantScreeningProfile
     [Function("CreateParticipantScreeningProfile")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
-        _logger.LogInformation("Create Participant Screening Profile function start,");
+        _logger.LogInformation("Create Participant Screening Profile function start");
 
         string nhsNumber = req.Query["nhs_number"];
 
