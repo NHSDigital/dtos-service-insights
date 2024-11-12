@@ -26,9 +26,9 @@ public class GetParticipantScreeningEpisode
         DateTime startDate;
         DateTime endDate;
 
-        if(!int.TryParse(req.Query["page"], out page) || !int.TryParse(req.Query["pageSize"], out pageSize))
+        if(!int.TryParse(req.Query["page"], out page))
         {
-            _logger.LogError("Invalid page or pageSize");
+            _logger.LogError("Invalid page number");
             var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
             return badRequestResponse;
         }
@@ -40,8 +40,13 @@ public class GetParticipantScreeningEpisode
             return badRequestResponse;
         }
 
+        if(!int.TryParse(req.Query["pageSize"], out pageSize))
+        {
+            pageSize = 1000;
+        }
+
         if (page < 1) page = 1;
-        if (pageSize < 20) pageSize = 20;
+        if (pageSize < 1) pageSize = 1;
         if (pageSize > 5000) pageSize = 5000;
 
         var baseUrl = Environment.GetEnvironmentVariable("GetParticipantScreeningEpisodeUrl");
@@ -71,7 +76,7 @@ public class GetParticipantScreeningEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError("Exception when calling the GetParticipantScreeningEpisode Data Service. \nUrl:{url}\nException: {ex}", url, ex);
+            _logger.LogError(ex, "Exception when calling the GetParticipantScreeningEpisode data service. \nUrl:{url}\nException: " + ex.Message, url);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

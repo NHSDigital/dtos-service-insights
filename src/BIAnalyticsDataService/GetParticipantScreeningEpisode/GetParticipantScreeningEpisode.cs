@@ -2,9 +2,7 @@ using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using System.Text;
 using System.Text.Json;
-using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 
@@ -13,12 +11,11 @@ namespace NHS.ServiceInsights.BIAnalyticsDataService;
 public class GetParticipantScreeningEpisode
 {
     private readonly ILogger<GetParticipantScreeningEpisode> _logger;
-    private readonly IHttpRequestService _httpRequestService;
+
     private readonly IParticipantScreeningEpisodeRepository _participantScreeningEpisodeRepository;
-    public GetParticipantScreeningEpisode(ILogger<GetParticipantScreeningEpisode> logger, IHttpRequestService httpRequestService, IParticipantScreeningEpisodeRepository participantScreeningEpisodeRepository)
+    public GetParticipantScreeningEpisode(ILogger<GetParticipantScreeningEpisode> logger, IParticipantScreeningEpisodeRepository participantScreeningEpisodeRepository)
     {
         _logger = logger;
-        _httpRequestService = httpRequestService;
         _participantScreeningEpisodeRepository = participantScreeningEpisodeRepository;
     }
 
@@ -41,26 +38,17 @@ public class GetParticipantScreeningEpisode
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 
-            _logger.LogInformation("CreateParticipantScreeningEpisode: participant episodes found successfully");
+            _logger.LogInformation("CreateParticipantScreeningEpisode: Participant episodes found successfully");
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json");
-
-            string jsonEpisodesDataPage;
-
-            using (var memoryStream = new MemoryStream())
-            {
-                await JsonSerializer.SerializeAsync<EpisodesDataPage?>(memoryStream, result);
-                jsonEpisodesDataPage = Encoding.UTF8.GetString(memoryStream.ToArray());
-            }
-
-            await response.WriteStringAsync(jsonEpisodesDataPage);
+            await JsonSerializer.SerializeAsync(response.Body, result);
             return response;
 
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to get participant screening episodes from database.\nException: {ex}", ex);
+            _logger.LogError(ex, "GetParticipantScreeningEpisode: Failed to get participant episodes from the database.\nException: " + ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
