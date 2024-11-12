@@ -76,25 +76,28 @@ IF NOT EXISTS
 BEGIN
     CREATE TABLE PARTICIPANT_SCREENING_EPISODE
     (
-      ID BIGINT IDENTITY(1,1) PRIMARY KEY,
-      EPISODE_ID                       NVARCHAR (50) NOT NULL,
-      SCREENING_NAME                   VARCHAR(50) NULL,
-      NHS_NUMBER                       VARCHAR(50) NULL,
-      EPISODE_TYPE                     VARCHAR(50) NULL,
-      EPISODE_TYPE_DESCRIPTION         VARCHAR(50) NULL,
-      EPISODE_OPEN_DATE                VARCHAR(50) NULL,
-      APPOINTMENT_MADE_FLAG            VARCHAR(10) NULL,
-      FIRST_OFFERED_APPOINTMENT_DATE   VARCHAR(50) NULL,
-      ACTUAL_SCREENING_DATE            VARCHAR(50) NULL,
-      EARLY_RECALL_DATE                VARCHAR(50) NULL,
-      CALL_RECALL_STATUS_AUTHORISED_BY VARCHAR(50) NULL,
-      END_CODE                         VARCHAR(50) NULL,
-      END_CODE_DESCRIPTION             VARCHAR(50) NULL,
-      END_CODE_LAST_UPDATED            VARCHAR(50) NULL,
-      ORGANISATION_CODE                VARCHAR(50) NULL,
-      ORGANISATION_NAME                VARCHAR(50) NULL,
-      BATCH_ID                         VARCHAR(50) NULL,
-      RECORD_INSERT_DATETIME           DATETIME NULL
-    );
+      EPISODE_ID                            BIGINT NOT NULL,
+      NHS_NUMBER                            BIGINT NOT NULL,
+      SCREENING_NAME                        VARCHAR(200) NULL,
+      EPISODE_TYPE                          VARCHAR(50) NULL,
+      EPISODE_TYPE_DESCRIPTION              VARCHAR(300) NULL,
+      EPISODE_OPEN_DATE                     DATE NULL,
+      APPOINTMENT_MADE_FLAG                 SMALLINT NULL,
+      FIRST_OFFERED_APPOINTMENT_DATE        DATE NULL,
+      ACTUAL_SCREENING_DATE                 DATE NULL,
+      EARLY_RECALL_DATE                     DATE NULL,
+      CALL_RECALL_STATUS_AUTHORISED_BY      VARCHAR(200) NULL,
+      END_CODE                              VARCHAR(50) NULL,
+      END_CODE_DESCRIPTION                  VARCHAR(300) NULL,
+      END_CODE_LAST_UPDATED                 DATE NULL,
+      REASON_CLOSED_CODE                    VARCHAR(50) NULL,
+      REASON_CLOSED_CODE_DESCRIPTION        VARCHAR(300) NULL,
+      FINAL_ACTION_CODE                     VARCHAR(50) NULL,
+      FINAL_ACTION_CODE_DESCRIPTION         VARCHAR(300) NULL,
+      END_POINT                             VARCHAR(200) NULL,
+      ORGANISATION_CODE                     VARCHAR(50) NULL,
+      ORGANISATION_NAME                     VARCHAR(300) NULL,
+      BATCH_ID                              VARCHAR(100) NULL,
+      RECORD_INSERT_DATETIME                DATETIME NULL
+)
 END
-

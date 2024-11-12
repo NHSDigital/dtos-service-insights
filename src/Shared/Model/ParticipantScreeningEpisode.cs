@@ -5,27 +5,25 @@ namespace NHS.ServiceInsights.Model;
 
 public partial class ParticipantScreeningEpisode
 {
-    public long Id { get; set; }
+    public long EpisodeId { get; set; }
 
-    public string EpisodeId { get; set; } = null!;
+    public long NhsNumber { get; set; }
 
     public string? ScreeningName { get; set; }
-
-    public string? NhsNumber { get; set; }
 
     public string? EpisodeType { get; set; }
 
     public string? EpisodeTypeDescription { get; set; }
 
-    public string? EpisodeOpenDate { get; set; }
+    public DateOnly? EpisodeOpenDate { get; set; }
 
-    public string? AppointmentMadeFlag { get; set; }
+    public short? AppointmentMadeFlag { get; set; }
 
-    public string? FirstOfferedAppointmentDate { get; set; }
+    public DateOnly? FirstOfferedAppointmentDate { get; set; }
 
-    public string? ActualScreeningDate { get; set; }
+    public DateOnly? ActualScreeningDate { get; set; }
 
-    public string? EarlyRecallDate { get; set; }
+    public DateOnly? EarlyRecallDate { get; set; }
 
     public string? CallRecallStatusAuthorisedBy { get; set; }
 
@@ -33,7 +31,17 @@ public partial class ParticipantScreeningEpisode
 
     public string? EndCodeDescription { get; set; }
 
-    public string? EndCodeLastUpdated { get; set; }
+    public DateOnly? EndCodeLastUpdated { get; set; }
+
+    public string? ReasonClosedCode { get; set; }
+
+    public string? ReasonClosedCodeDescription { get; set; }
+
+    public string? FinalActionCode { get; set; }
+
+    public string? FinalActionCodeDescription { get; set; }
+
+    public string? EndPoint { get; set; }
 
     public string? OrganisationCode { get; set; }
 

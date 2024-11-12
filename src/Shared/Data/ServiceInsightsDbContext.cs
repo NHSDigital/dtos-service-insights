@@ -79,86 +79,82 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27CC6C8464");
+            entity
+                .HasNoKey()
+                .ToTable("PARTICIPANT_SCREENING_EPISODE");
 
-            entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
-
-            entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.ActualScreeningDate)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("ACTUAL_SCREENING_DATE");
-            entity.Property(e => e.AppointmentMadeFlag)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("APPOINTMENT_MADE_FLAG");
+            entity.Property(e => e.ActualScreeningDate).HasColumnName("ACTUAL_SCREENING_DATE");
+            entity.Property(e => e.AppointmentMadeFlag).HasColumnName("APPOINTMENT_MADE_FLAG");
             entity.Property(e => e.BatchId)
-                .HasMaxLength(50)
+                .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("BATCH_ID");
             entity.Property(e => e.CallRecallStatusAuthorisedBy)
-                .HasMaxLength(50)
+                .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("CALL_RECALL_STATUS_AUTHORISED_BY");
-            entity.Property(e => e.EarlyRecallDate)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("EARLY_RECALL_DATE");
+            entity.Property(e => e.EarlyRecallDate).HasColumnName("EARLY_RECALL_DATE");
             entity.Property(e => e.EndCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("END_CODE");
             entity.Property(e => e.EndCodeDescription)
-                .HasMaxLength(50)
+                .HasMaxLength(300)
                 .IsUnicode(false)
                 .HasColumnName("END_CODE_DESCRIPTION");
-            entity.Property(e => e.EndCodeLastUpdated)
-                .HasMaxLength(50)
+            entity.Property(e => e.EndCodeLastUpdated).HasColumnName("END_CODE_LAST_UPDATED");
+            entity.Property(e => e.EndPoint)
+                .HasMaxLength(200)
                 .IsUnicode(false)
-                .HasColumnName("END_CODE_LAST_UPDATED");
-            entity.Property(e => e.EpisodeId)
-                .HasMaxLength(50)
-                .HasColumnName("EPISODE_ID");
-            entity.Property(e => e.EpisodeOpenDate)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("EPISODE_OPEN_DATE");
+                .HasColumnName("END_POINT");
+            entity.Property(e => e.EpisodeId).HasColumnName("EPISODE_ID");
+            entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
             entity.Property(e => e.EpisodeType)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("EPISODE_TYPE");
             entity.Property(e => e.EpisodeTypeDescription)
-                .HasMaxLength(50)
+                .HasMaxLength(300)
                 .IsUnicode(false)
                 .HasColumnName("EPISODE_TYPE_DESCRIPTION");
-            entity.Property(e => e.FirstOfferedAppointmentDate)
+            entity.Property(e => e.FinalActionCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
-            entity.Property(e => e.NhsNumber)
-                .HasMaxLength(50)
+                .HasColumnName("FINAL_ACTION_CODE");
+            entity.Property(e => e.FinalActionCodeDescription)
+                .HasMaxLength(300)
                 .IsUnicode(false)
-                .HasColumnName("NHS_NUMBER");
+                .HasColumnName("FINAL_ACTION_CODE_DESCRIPTION");
+            entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
+            entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
             entity.Property(e => e.OrganisationCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("ORGANISATION_CODE");
             entity.Property(e => e.OrganisationName)
-                .HasMaxLength(50)
+                .HasMaxLength(300)
                 .IsUnicode(false)
                 .HasColumnName("ORGANISATION_NAME");
+            entity.Property(e => e.ReasonClosedCode)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("REASON_CLOSED_CODE");
+            entity.Property(e => e.ReasonClosedCodeDescription)
+                .HasMaxLength(300)
+                .IsUnicode(false)
+                .HasColumnName("REASON_CLOSED_CODE_DESCRIPTION");
             entity.Property(e => e.RecordInsertDatetime)
                 .HasColumnType("datetime")
                 .HasColumnName("RECORD_INSERT_DATETIME");
             entity.Property(e => e.ScreeningName)
-                .HasMaxLength(50)
+                .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
         });
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27431877C7");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27FE32C9C6");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
