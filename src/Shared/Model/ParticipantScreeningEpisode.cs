@@ -7,7 +7,7 @@ public partial class ParticipantScreeningEpisode
 {
     public long Id { get; set; }
 
-    public string EpisodeId { get; set; } = null!;
+    public long EpisodeId { get; set; }
 
     public string? ScreeningName { get; set; }
 

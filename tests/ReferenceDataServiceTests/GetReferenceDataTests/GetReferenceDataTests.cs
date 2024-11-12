@@ -87,7 +87,7 @@ public class GetReferenceDataTests
 
         var organisationLkp = new OrganisationLkp
         {
-            OrganisationId = "12345",
+            OrganisationId = 12345,
             ScreeningName = "",
             OrganisationCode = "",
             OrganisationName = "",
@@ -104,7 +104,7 @@ public class GetReferenceDataTests
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         response.Body.Seek(0, SeekOrigin.Begin);
         var organisationResponse = await JsonSerializer.DeserializeAsync<OrganisationLkp>(response.Body);
-        Assert.AreEqual<string>("12345", organisationResponse.OrganisationId);
+        Assert.AreEqual<long>(12345, organisationResponse.OrganisationId);
 
         _mockLogger.Verify(log => log.Log(
             LogLevel.Information,

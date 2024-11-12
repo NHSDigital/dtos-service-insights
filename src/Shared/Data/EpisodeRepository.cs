@@ -17,7 +17,7 @@ public class EpisodeRepository : IEpisodeRepository
         _dbContext.SaveChanges();
     }
 
-    public async Task<Episode?> GetEpisodeAsync(string episodeId)
+    public async Task<Episode?> GetEpisodeAsync(long episodeId)
     {
 
         return await _dbContext.Episodes.FindAsync(episodeId);

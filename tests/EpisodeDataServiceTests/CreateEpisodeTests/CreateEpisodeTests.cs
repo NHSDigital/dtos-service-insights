@@ -18,10 +18,14 @@ public class CreateEpisodeTests
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
     private readonly CreateEpisode _function;
+    private readonly Mock<IEndCodeLkpRepository> _mockEndCodeLkpRepository = new();
+    private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
+    private readonly Mock<IReasonClosedCodeLkpRepository> _mockReasonClosedCodeLkpRepository = new();
+    private readonly Mock<IFinalActionCodeLkpRepository> _mockFinalActionCodeLkpRepository = new();
 
     public CreateEpisodeTests()
     {
-        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object);
+        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object);
     }
 
     [TestMethod]
@@ -32,7 +36,7 @@ public class CreateEpisodeTests
         _mockRequest = _setupRequest.Setup(json);
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
@@ -44,14 +48,14 @@ public class CreateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "245395"
+            EpisodeId = 245395
         };
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
@@ -63,7 +67,7 @@ public class CreateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "245395"
+            EpisodeId = 245395
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -72,7 +76,7 @@ public class CreateEpisodeTests
         _mockEpisodeRepository.Setup(repo => repo.CreateEpisode(It.IsAny<Episode>())).Throws<Exception>();
 
         // Act
-        var result = _function.Run(_mockRequest.Object);
+        var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);

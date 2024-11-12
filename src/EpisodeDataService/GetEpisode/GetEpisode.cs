@@ -22,12 +22,11 @@ public class GetEpisode
     [Function("GetEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
     {
-        string episodeId;
+        string episodeIdString = req.Query["episodeId"];
 
-        episodeId = req.Query["episodeId"];
-        if (string.IsNullOrEmpty(episodeId))
+        if (!long.TryParse(episodeIdString, out long episodeId))
         {
-            _logger.LogError("Episode ID is not provided.");
+            _logger.LogError("Episode ID missing or not valid.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
