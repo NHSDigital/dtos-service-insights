@@ -19,7 +19,7 @@ public class GetParticipantScreeningEpisodeData
         _participantScreeningEpisodeRepository = participantScreeningEpisodeRepository;
     }
 
-    [Function("GetParticipantScreeningEpisode")]
+    [Function("GetParticipantScreeningEpisodeData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
         int page = int.Parse(req.Query["page"]);
