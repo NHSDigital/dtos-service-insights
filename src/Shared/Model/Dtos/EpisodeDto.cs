@@ -26,7 +26,7 @@ public class EpisodeDto
 
     public string? EndCode { get; set; }
 
-    public DateTime? EndCodeLastUpdated { get; set; }
+    public DateOnly? EndCodeLastUpdated { get; set; }
 
     public string? OrganisationCode { get; set; }
 
