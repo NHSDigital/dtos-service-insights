@@ -10,4 +10,6 @@ public partial class FinalActionCodeLkp
     public string FinalActionCode { get; set; } = null!;
 
     public string? FinalActionCodeDescription { get; set; }
+
+    public virtual ICollection<Episode> Episodes { get; set; } = new List<Episode>();
 }

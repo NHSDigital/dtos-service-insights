@@ -10,4 +10,6 @@ public partial class EpisodeTypeLkp
     public string? EpisodeType { get; set; }
 
     public string? EpisodeDescription { get; set; }
+
+    public virtual ICollection<Episode> Episodes { get; set; } = new List<Episode>();
 }
