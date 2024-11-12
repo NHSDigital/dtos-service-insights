@@ -70,7 +70,7 @@ public class GetParticipantScreeningEpisodeTests
         // Assert
         _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Information),
         It.IsAny<EventId>(),
-        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningEpisode: Participant episodes found successfully.")),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningEpisode: Participant episodes found successfully")),
         It.IsAny<Exception>(),
         It.IsAny<Func<It.IsAnyType, Exception, string>>()),
         Times.Once);
@@ -110,9 +110,9 @@ public class GetParticipantScreeningEpisodeTests
         var response = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Information),
+        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
         It.IsAny<EventId>(),
-        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningEpisode: Could not find any participant episodes.")),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningEpisode: Could not find any participant episodes")),
         It.IsAny<Exception>(),
         It.IsAny<Func<It.IsAnyType, Exception, string>>()),
         Times.Once);
@@ -142,7 +142,7 @@ public class GetParticipantScreeningEpisodeTests
 
         _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
         It.IsAny<EventId>(),
-        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningProfileData: Failed to get participant profiles from the database.")),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningEpisode: Failed to get participant episodes from the database.")),
         It.IsAny<Exception>(),
         It.IsAny<Func<It.IsAnyType, Exception, string>>()),
         Times.Once);
