@@ -54,7 +54,7 @@ public class CreateParticipantScreeningEpisode
 
         catch (Exception ex)
         {
-            _logger.LogError("Failed to deserialise or retrieve episode from {getEpisodeUrl}. \nException: {ex}", getEpisodeUrl, ex);
+            _logger.LogError(ex, $"Failed to deserialise or retrieve episode from {getEpisodeUrl}.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 

@@ -87,7 +87,7 @@ public class CreateEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to create episode in database.\nException: {ex}", ex);
+            _logger.LogError(ex, "Failed to create episode in database.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

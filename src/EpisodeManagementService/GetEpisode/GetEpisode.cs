@@ -58,7 +58,7 @@ public class GetEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to call the GetEpisode Data Service. \nUrl:{url}\nException: {ex}", url, ex);
+            _logger.LogError(ex, "Failed to call the GetEpisode Data Service. Url: {url}", url);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

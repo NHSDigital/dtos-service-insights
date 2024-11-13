@@ -54,7 +54,7 @@ public class CreateParticipantScreeningProfile
 
         catch (Exception ex)
         {
-            _logger.LogError("Failed to deserialise or retrieve participant from {participantUrl}. \nException: {ex}", participantUrl, ex);
+            _logger.LogError(ex, "Failed to deserialise or retrieve participant from {participantUrl}.", participantUrl);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
