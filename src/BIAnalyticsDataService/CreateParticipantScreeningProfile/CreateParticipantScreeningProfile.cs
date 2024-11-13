@@ -29,13 +29,13 @@ public class CreateParticipantScreeningProfile
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
-                var postData = reader.ReadToEnd();
+                var postData = await reader.ReadToEndAsync();
                 profile = JsonSerializer.Deserialize<ParticipantScreeningProfile>(postData);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("CreateParticipantScreeningProfile: Could not read Json data.\nException: {ex}", ex);
+            _logger.LogError(ex, "CreateParticipantScreeningProfile: Could not read Json data.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
@@ -56,7 +56,7 @@ public class CreateParticipantScreeningProfile
         }
         catch (Exception ex)
         {
-            _logger.LogError("CreateParticipantScreeningProfile: Failed to save participant profile to the database.\nException: {ex}", ex);
+            _logger.LogError(ex, "CreateParticipantScreeningProfile: Failed to save participant profile to the database.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
