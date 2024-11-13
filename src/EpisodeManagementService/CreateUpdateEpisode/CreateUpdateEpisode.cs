@@ -29,7 +29,7 @@ public class CreateUpdateEpisode
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
-                var postData = reader.ReadToEnd();
+                var postData = await reader.ReadToEndAsync();
                 episode = JsonSerializer.Deserialize<EpisodeDto>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
             }

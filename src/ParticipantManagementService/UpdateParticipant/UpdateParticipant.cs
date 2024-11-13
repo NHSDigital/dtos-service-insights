@@ -28,7 +28,7 @@ public class UpdateParticipant
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
-                var postData = reader.ReadToEnd();
+                var postData = await reader.ReadToEndAsync();
                 participant = JsonSerializer.Deserialize<Participant>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
             }
