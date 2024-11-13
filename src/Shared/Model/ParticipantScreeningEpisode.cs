@@ -33,7 +33,7 @@ public partial class ParticipantScreeningEpisode
 
     public string? EndCodeDescription { get; set; }
 
-    public DateOnly? EndCodeLastUpdated { get; set; }
+    public DateTime? EndCodeLastUpdated { get; set; }
 
     public string? ReasonClosedCode { get; set; }
 

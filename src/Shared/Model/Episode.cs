@@ -29,7 +29,7 @@ public partial class Episode
 
     public long? EndCodeId { get; set; }
 
-    public DateOnly? EndCodeLastUpdated { get; set; }
+    public DateTime? EndCodeLastUpdated { get; set; }
 
     public long? ReasonClosedCodeId { get; set; }
 

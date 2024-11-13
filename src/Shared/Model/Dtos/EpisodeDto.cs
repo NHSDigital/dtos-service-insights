@@ -26,7 +26,7 @@ public class EpisodeDto
 
     public string? EndCode { get; set; }
 
-    public DateOnly? EndCodeLastUpdated { get; set; }
+    public DateTime? EndCodeLastUpdated { get; set; }
 
     public string? OrganisationCode { get; set; }
 
@@ -37,8 +37,4 @@ public class EpisodeDto
     public string? ReasonClosedCode { get; set; }
 
     public string? FinalActionCode { get; set; }
-
-
-
-
 }

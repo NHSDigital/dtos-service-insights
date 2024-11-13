@@ -65,7 +65,7 @@ public class CreateParticipantScreeningProfile
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
-    private async Task<DemographicsData> GetDemographicsDataAsync(long nhsNumber)
+    private async Task<DemographicsData> GetDemographicsDataAsync(string nhsNumber)
     {
         var baseDemographicsServiceUrl = Environment.GetEnvironmentVariable("DemographicsServiceUrl");
         var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={nhsNumber}";
@@ -89,7 +89,7 @@ public class CreateParticipantScreeningProfile
 
         var screeningProfile = new ParticipantScreeningProfile
         {
-            NhsNumber = participant.nhs_number,
+            NhsNumber = long.TryParse(participant.nhs_number, out long num) ? num : 0,
             ScreeningName = String.Empty,
             PrimaryCareProvider = demographicsData.PrimaryCareProvider,
             PreferredLanguage = demographicsData.PreferredLanguage,
@@ -99,8 +99,8 @@ public class CreateParticipantScreeningProfile
             NextTestDueDateCalcMethod = participant.ntdd_calculation_method,
             ParticipantScreeningStatus = participant.subject_status_code,
             ScreeningCeasedReason = String.Empty,
-            IsHigherRisk = participant.is_higher_risk,
-            IsHigherRiskActive = participant.is_higher_risk_active,
+            IsHigherRisk = (participant.is_higher_risk == "True") ? (short)1 : (short)0,
+            IsHigherRiskActive = (participant.is_higher_risk_active == "True") ? (short)1 : (short)0,
             HigherRiskNextTestDueDate = participant.higher_risk_next_test_due_date,
             HigherRiskReferralReasonCode = participant.higher_risk_referral_reason_code,
             HrReasonCodeDescription = String.Empty,

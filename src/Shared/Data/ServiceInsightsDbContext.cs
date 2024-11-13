@@ -72,7 +72,9 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasColumnName("CALL_RECALL_STATUS_AUTHORISED_BY");
             entity.Property(e => e.EarlyRecallDate).HasColumnName("EARLY_RECALL_DATE");
             entity.Property(e => e.EndCodeId).HasColumnName("END_CODE_ID");
-            entity.Property(e => e.EndCodeLastUpdated).HasColumnName("END_CODE_LAST_UPDATED");
+            entity.Property(e => e.EndCodeLastUpdated)
+                .HasColumnType("datetime")
+                .HasColumnName("END_CODE_LAST_UPDATED");
             entity.Property(e => e.EndPoint)
                 .HasMaxLength(200)
                 .IsUnicode(false)
@@ -181,7 +183,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27582CD37B");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC271BF2537C");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
@@ -205,7 +207,9 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(300)
                 .IsUnicode(false)
                 .HasColumnName("END_CODE_DESCRIPTION");
-            entity.Property(e => e.EndCodeLastUpdated).HasColumnName("END_CODE_LAST_UPDATED");
+            entity.Property(e => e.EndCodeLastUpdated)
+                .HasColumnType("datetime")
+                .HasColumnName("END_CODE_LAST_UPDATED");
             entity.Property(e => e.EndPoint)
                 .HasMaxLength(200)
                 .IsUnicode(false)
@@ -257,7 +261,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC2759AF9696");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27E5F1B719");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
