@@ -44,7 +44,7 @@ public class CreateParticipantScreeningProfile
             bool successful = await _participantScreeningProfileRepository.CreateParticipantProfile(profile);
             if (!successful)
             {
-                _logger.LogError($"CreateParticipantScreeningProfile: Could not save participant profile. Data: {profile}");
+                _logger.LogError("CreateParticipantScreeningProfile: Could not save participant profile. Data: {Profile}", profile);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
