@@ -32,6 +32,33 @@ public class CreateParticipantScreeningProfileTests
     }
 
     [TestMethod]
+    public async Task Run_ShouldReturnBadRequest_WhenNhsNumberIsNotProvided()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection
+        {
+            { "nhs_number", null }
+        };
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<It.IsAnyType>((state, type) => state.ToString() == "nhsNumber is null or empty."),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [TestMethod]
     public async Task Run_ShouldReturnInternalServerError_WhenExceptionIsThrownOnCallToGetParticipant()
     {
         // Arrange
