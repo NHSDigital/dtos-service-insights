@@ -21,7 +21,6 @@ public class UpdateParticipant
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
 
     {
-        Participant participant;
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
