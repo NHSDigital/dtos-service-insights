@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
-using System.Text;
 
 namespace NHS.ServiceInsights.ReferenceDataService;
 
@@ -51,7 +50,7 @@ public class GetReferenceData
         }
         catch (Exception ex)
         {
-            _logger.LogError("GetReferenceData: Failed to get organisation from the db.\nException: " + ex.Message);
+            _logger.LogError("GetReferenceData: Failed to get organisation from the db.\nException: {Message}", ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

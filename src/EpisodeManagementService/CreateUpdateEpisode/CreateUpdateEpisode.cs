@@ -36,7 +36,7 @@ public class CreateUpdateEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError("Could not read episode data. Error: {ex}", ex.Message);
+            _logger.LogError(ex, "Could not read episode data.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
@@ -67,7 +67,7 @@ public class CreateUpdateEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error occurred while processing episode. Error: {ex}", ex.Message);
+            _logger.LogError(ex, "Error occurred while processing episode.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
