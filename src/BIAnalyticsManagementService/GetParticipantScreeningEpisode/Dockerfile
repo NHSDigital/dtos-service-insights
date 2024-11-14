@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS installer-env
 
-COPY ./BIAnalyticsService/GetParticipantScreeningEpisode /src/dotnet-function-app
+COPY ./BIAnalyticsManagementService/GetParticipantScreeningEpisode /src/dotnet-function-app
 COPY ./Shared /Shared
 RUN cd /src/dotnet-function-app && \
     mkdir -p /home/site/wwwroot && \
