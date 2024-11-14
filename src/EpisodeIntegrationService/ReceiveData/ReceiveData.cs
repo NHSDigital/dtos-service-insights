@@ -132,7 +132,7 @@ public class ReceiveData
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
+            _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
             await ProcessEpisodeDataAsync(episodes, episodeUrl);
         }
     }
@@ -194,7 +194,7 @@ public class ReceiveData
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error in ProcessParticipantDataAsync: {Message}", ex.Message);
+            _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
             await ProcessParticipantDataAsync(participants, participantUrl);
         }
     }
