@@ -6,6 +6,7 @@ using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using Grpc.Net.Client.Balancer;
+using System.Globalization;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
@@ -95,16 +96,16 @@ public class CreateParticipantScreeningProfile
             PreferredLanguage = demographicsData.PreferredLanguage,
             ReasonForRemoval = participant.removal_reason,
             ReasonForRemovalDt = new DateOnly(),
-            NextTestDueDate = participant.next_test_due_date,
+            NextTestDueDate = DateOnly.ParseExact(participant.next_test_due_date, "yyyy-MM-dd", CultureInfo.InvariantCulture),
             NextTestDueDateCalcMethod = participant.ntdd_calculation_method,
             ParticipantScreeningStatus = participant.subject_status_code,
             ScreeningCeasedReason = String.Empty,
             IsHigherRisk = (participant.is_higher_risk == "True") ? (short)1 : (short)0,
             IsHigherRiskActive = (participant.is_higher_risk_active == "True") ? (short)1 : (short)0,
-            HigherRiskNextTestDueDate = participant.higher_risk_next_test_due_date,
+            HigherRiskNextTestDueDate = DateOnly.ParseExact(participant.higher_risk_next_test_due_date, "yyyy-MM-dd", CultureInfo.InvariantCulture),
             HigherRiskReferralReasonCode = participant.higher_risk_referral_reason_code,
             HrReasonCodeDescription = String.Empty,
-            DateIrradiated = participant.date_irradiated,
+            DateIrradiated = DateOnly.ParseExact(participant.date_irradiated, "yyyy-MM-dd", CultureInfo.InvariantCulture),
             GeneCode = participant.gene_code,
             GeneCodeDescription = String.Empty,
             RecordInsertDatetime = DateTime.Now
