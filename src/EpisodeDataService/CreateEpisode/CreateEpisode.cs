@@ -42,9 +42,9 @@ public class CreateEpisode
                 _logger.LogInformation("PostData: {postData}", postData);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            _logger.LogError("Could not read episode data.");
+            _logger.LogError(ex, "Could not read episode data.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
