@@ -38,7 +38,7 @@ public class BlobStorageHelper : IBlobStorageHelper
         }
         catch (RequestFailedException ex)
         {
-            _logger.LogError($"there has been a problem while copying the file: {ex.Message}");
+            _logger.LogError("there has been a problem while copying the file: {Message}", ex.Message);
             return false;
         }
         finally
@@ -57,11 +57,11 @@ public class BlobStorageHelper : IBlobStorageHelper
 
         try
         {
-            var result = await sourceBlobClient.UploadAsync(blobFile.Data);
+            await sourceBlobClient.UploadAsync(blobFile.Data);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"there has been a problem while uploading the file: {ex.Message}");
+            _logger.LogError(ex, "there has been a problem while uploading the file: {Message}", ex.Message);
             return false;
         }
 

@@ -43,7 +43,7 @@ public class CreateParticipantScreeningEpisode
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve episode with Episode ID {episodeId}. Status Code: {response.StatusCode}");
+                _logger.LogError("Failed to retrieve episode with Episode ID {EpisodeId}. Status Code: {StatusCode}", episodeId, response.StatusCode);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
@@ -54,7 +54,7 @@ public class CreateParticipantScreeningEpisode
 
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failed to deserialise or retrieve episode from {getEpisodeUrl}.");
+            _logger.LogError(ex, "Failed to deserialise or retrieve episode from {Url}.", getEpisodeUrl);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
@@ -100,7 +100,8 @@ public class CreateParticipantScreeningEpisode
 
         string serializedParticipantScreeningEpisode = JsonSerializer.Serialize(screeningEpisode);
 
-        _logger.LogInformation($"Sending ParticipantScreeningEpisode to {screeningEpisodeUrl}: {serializedParticipantScreeningEpisode}");
+        _logger.LogInformation("Sending ParticipantScreeningEpisode to {Url}: {Request}", screeningEpisodeUrl, serializedParticipantScreeningEpisode);
+
 
         await _httpRequestService.SendPost(screeningEpisodeUrl, serializedParticipantScreeningEpisode);
     }
