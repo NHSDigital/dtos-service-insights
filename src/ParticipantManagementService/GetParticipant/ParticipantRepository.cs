@@ -22,6 +22,6 @@ public static class ParticipantRepository
 
     public static Participant GetParticipantByNhsNumber(string NhsNumber)
     {
-        return Participants.FirstOrDefault(p => p.nhs_number == NhsNumber);
+        return Participants.Find(p => p.nhs_number == NhsNumber);
     }
 }
