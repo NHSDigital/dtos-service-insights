@@ -23,7 +23,7 @@ public class CreateParticipantScreeningEpisode
     [Function("CreateParticipantScreeningEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
-        ParticipantScreeningEpisode episode = new ParticipantScreeningEpisode();
+        ParticipantScreeningEpisode episode;
 
         try
         {
@@ -44,7 +44,7 @@ public class CreateParticipantScreeningEpisode
             bool successful = await _participantScreeningEpisodeRepository.CreateParticipantEpisode(episode);
             if (!successful)
             {
-                _logger.LogError("CreateParticipantScreeningEpisode: Could not save participant episode. Data: " + episode);
+                _logger.LogError("CreateParticipantScreeningEpisode: Could not save participant episode. Data: {Episode}", episode);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 

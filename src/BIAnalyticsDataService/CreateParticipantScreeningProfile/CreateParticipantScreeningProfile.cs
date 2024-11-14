@@ -23,7 +23,7 @@ public class CreateParticipantScreeningProfile
     [Function("CreateParticipantScreeningProfile")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
-        ParticipantScreeningProfile profile = new ParticipantScreeningProfile();
+        ParticipantScreeningProfile profile;
 
         try
         {
@@ -44,7 +44,7 @@ public class CreateParticipantScreeningProfile
             bool successful = await _participantScreeningProfileRepository.CreateParticipantProfile(profile);
             if (!successful)
             {
-                _logger.LogError("CreateParticipantScreeningProfile: Could not save participant profile. Data: " + profile);
+                _logger.LogError($"CreateParticipantScreeningProfile: Could not save participant profile. Data: {profile}");
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
