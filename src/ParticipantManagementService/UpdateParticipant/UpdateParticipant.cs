@@ -11,12 +11,10 @@ namespace NHS.ServiceInsights.ParticipantManagementService;
 public class UpdateParticipant
 {
     private readonly ILogger<UpdateParticipant> _logger;
-    private readonly IHttpRequestService _httpRequestService;
 
     public UpdateParticipant(ILogger<UpdateParticipant> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
-        _httpRequestService = httpRequestService;
     }
 
     [Function("updateParticipant")]
@@ -29,16 +27,16 @@ public class UpdateParticipant
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = await reader.ReadToEndAsync();
-                participant = JsonSerializer.Deserialize<Participant>(postData);
+                JsonSerializer.Deserialize<Participant>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
             }
 
             return req.CreateResponse(HttpStatusCode.OK);
 
         }
-        catch
+        catch (Exception ex)
         {
-            _logger.LogError("Could not read participant");
+            _logger.LogError(ex, "Could not read participant");
 
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
