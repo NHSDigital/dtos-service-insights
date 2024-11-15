@@ -1,14 +1,14 @@
 module "storage" {
-  for_each = local.storage_accounts_map
-  source = "../../../dtos-devops-templates/infrastructure/modules/storage"
-  name                = substr("${module.regions_config[each.value.region_key].names.storage-account}${lower(each.value.name_suffix)}", 0, 24)
-  resource_group_name = azurerm_resource_group.audit[each.value.region_key].name
-  location            = each.value.region_key
-  containers = each.value.containers
+  for_each                      = local.storage_accounts_map
+  source                        = "../../../dtos-devops-templates/infrastructure/modules/storage"
+  name                          = substr("${module.regions_config[each.value.region_key].names.storage-account}${lower(each.value.name_suffix)}", 0, 24)
+  resource_group_name           = azurerm_resource_group.audit[each.value.region_key].name
+  location                      = each.value.region_key
+  containers                    = each.value.containers
   account_replication_type      = each.value.replication_type
   account_tier                  = each.value.account_tier
   public_network_access_enabled = each.value.public_network_access_enabled
-  rbac_roles = {}
+  rbac_roles                    = {}
   # Private Endpoint Configuration if enabled
   private_endpoint_properties = var.features.private_endpoints_enabled ? {
     private_dns_zone_ids_blob            = [data.terraform_remote_state.hub.outputs.private_dns_zone_storage_blob[each.value.region_key].private_dns_zone.id]

@@ -353,7 +353,7 @@ storage_accounts = {
     account_tier                  = "Standard"
     replication_type              = "LRS"
     public_network_access_enabled = false
-    containers                    = {
+    containers = {
       config = {
         container_name = "config"
       }
