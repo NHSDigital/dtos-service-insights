@@ -46,14 +46,14 @@ public class GetEpisode
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-            response.WriteString(jsonResponse);
+            await response.WriteStringAsync(jsonResponse);
 
             return response;
 
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to get episode from database.\nException: {ex}", ex);
+            _logger.LogError(ex, "Failed to get episode from database.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

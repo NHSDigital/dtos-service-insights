@@ -84,7 +84,7 @@ public class ReceiveDataTests
             LogLevel.Error,
             0,
             It.Is<object>(state => state.ToString().Contains("Error in ProcessEpisodeDataAsync: ")),
-            null,
+            It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(2));
 
@@ -115,7 +115,7 @@ public class ReceiveDataTests
             LogLevel.Error,
             0,
             It.Is<object>(state => state.ToString().Contains("Error in ProcessParticipantDataAsync: ")),
-            null,
+            It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(2));
 

@@ -41,7 +41,8 @@ public class GetEpisode
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve episode with Episode ID {episodeId}. Status Code: {response.StatusCode}");
+                _logger.LogError("Failed to retrieve episode with Episode ID {EpisodeId}. Status Code: {StatusCode}", episodeId, response.StatusCode);
+
                 var errorResponse = req.CreateResponse(response.StatusCode);
                 return errorResponse;
             }
@@ -58,7 +59,7 @@ public class GetEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to call the GetEpisode Data Service. \nUrl:{url}\nException: {ex}", url, ex);
+            _logger.LogError(ex, "Failed to call the GetEpisode Data Service. Url: {url}", url);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

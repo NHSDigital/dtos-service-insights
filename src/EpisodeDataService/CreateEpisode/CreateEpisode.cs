@@ -42,9 +42,9 @@ public class CreateEpisode
                 _logger.LogInformation("PostData: {postData}", postData);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            _logger.LogError("Could not read episode data.");
+            _logger.LogError(ex, "Could not read episode data.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
@@ -87,7 +87,7 @@ public class CreateEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to create episode in database.\nException: {ex}", ex);
+            _logger.LogError(ex, "Failed to create episode in database.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

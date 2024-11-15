@@ -43,7 +43,7 @@ public class CreateParticipantScreeningProfile
 
             if (!participantResponse.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve participant data with NHS number {nhsNumber}. Status Code: {participantResponse.StatusCode}");
+                _logger.LogError("Failed to retrieve participant data with NHS number {NhsNumber}. Status Code: {StatusCode}", nhsNumber, participantResponse.StatusCode);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
@@ -54,7 +54,7 @@ public class CreateParticipantScreeningProfile
 
         catch (Exception ex)
         {
-            _logger.LogError("Failed to deserialise or retrieve participant from {participantUrl}. \nException: {ex}", participantUrl, ex);
+            _logger.LogError(ex, "Failed to deserialise or retrieve participant from {participantUrl}.", participantUrl);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
@@ -121,7 +121,7 @@ public class CreateParticipantScreeningProfile
 
         string serializedParticipantScreeningProfile = JsonSerializer.Serialize(screeningProfile);
 
-        _logger.LogInformation($"Sending ParticipantScreeningProfile Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
+        _logger.LogInformation("Sending ParticipantScreeningProfile Profile to {Url}: {Request}", screeningProfileUrl, serializedParticipantScreeningProfile);
 
         await _httpRequestService.SendPost(screeningProfileUrl, serializedParticipantScreeningProfile);
     }
