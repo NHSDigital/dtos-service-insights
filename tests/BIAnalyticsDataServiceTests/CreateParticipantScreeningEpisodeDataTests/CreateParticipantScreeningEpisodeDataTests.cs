@@ -34,7 +34,7 @@ public class CreateParticipantScreeningEpisodeDataTests
         CallRecallStatusAuthorisedBy = "TestCallRecallStatusAuthorisedBy",
         EndCode = "0000",
         EndCodeDescription = "TestEndCodeDescription",
-        EndCodeLastUpdated = new DateOnly(2019, 08, 01),
+        EndCodeLastUpdated = DateTime.Parse("2019-08-01"),
         OrganisationCode = "0001",
         OrganisationName = "TestOrganisationName",
         BatchId = "0002",
