@@ -7,7 +7,6 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
-        //services.AddApplicationInsightsTelemetryWorkerService();
         //services.ConfigureFunctionsApplicationInsights();
         services
             .AddMeshClient(_ => _.MeshApiBaseUrl = Environment.GetEnvironmentVariable("MeshApiBaseUrl"))
@@ -24,4 +23,4 @@ var host = new HostBuilder()
     //.AddExceptionHandler()
     .Build();
 
-host.Run();
+await host.RunAsync();

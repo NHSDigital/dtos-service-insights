@@ -126,13 +126,11 @@ public class GetEpisodeTests
 
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
-        _mockLogger.Verify(log => log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to get episode from database.") &&
-                                                    state.ToString().Contains("Exception: System.Exception: Database error")),
-            null,
-            (Func<object, Exception, string>)It.IsAny<object>()),
+        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to get episode from database.")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Once);
     }
 }

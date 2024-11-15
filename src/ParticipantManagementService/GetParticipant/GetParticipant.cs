@@ -31,7 +31,8 @@ public class GetParticipant
 
         if (participant == null)
         {
-            _logger.LogError("Participant with NHS Number {nhsNumber} not found.", nhsNumber);
+            _logger.LogError("Participant with NHS Number {NhsNumber} not found.", NhsNumber);
+
             return req.CreateResponse(HttpStatusCode.NotFound);
         }
 

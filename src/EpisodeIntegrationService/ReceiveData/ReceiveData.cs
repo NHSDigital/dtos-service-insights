@@ -69,7 +69,7 @@ public class ReceiveData
             }
             else
             {
-                _logger.LogError("fileName is invalid. file name: " + name);
+                _logger.LogError("fileName is invalid. file name: {Name}", name);
                 return;
             }
 
@@ -77,12 +77,11 @@ public class ReceiveData
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in ReceiveData: {ex.Message} \n StackTrace: {ex.StackTrace}");
-            return;
+            _logger.LogError("Error in ReceiveData: {Message} \n StackTrace: {StackTrace}", ex.Message, ex.StackTrace);
         }
     }
 
-    private (string episodeUrl, string participantUrl) GetConfigurationUrls()
+    private static (string episodeUrl, string participantUrl) GetConfigurationUrls()
     {
         return (Environment.GetEnvironmentVariable("EpisodeManagementUrl"), Environment.GetEnvironmentVariable("ParticipantManagementUrl"));
     }
@@ -127,13 +126,13 @@ public class ReceiveData
                 var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
-                _logger.LogInformation($"Sending Episode to {episodeUrl}: {serializedEpisode}");
+                _logger.LogInformation("Sending Episode to {Url}: {Request}", episodeUrl, serializedEpisode);
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error in ProcessEpisodeDataAsync: " + ex.Message);
+            _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
             await ProcessEpisodeDataAsync(episodes, episodeUrl);
         }
     }
@@ -188,14 +187,14 @@ public class ReceiveData
             {
                 string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
 
-                _logger.LogInformation($"Sending participant to {participantUrl}: {serializedParticipant}");
+                _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
 
                 await _httpRequestService.SendPost(participantUrl, serializedParticipant);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error in ProcessParticipantDataAsync: " + ex.Message);
+            _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
             await ProcessParticipantDataAsync(participants, participantUrl);
         }
     }

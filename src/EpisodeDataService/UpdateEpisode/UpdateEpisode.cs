@@ -37,14 +37,14 @@ public class UpdateEpisode
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
-                var postData = reader.ReadToEnd();
+                var postData = await reader.ReadToEndAsync();
                 episodeDto = JsonSerializer.Deserialize<EpisodeDto>(postData);
                 _logger.LogInformation("Request to update episode {episodeId} received.", episodeDto.EpisodeId);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            _logger.LogError("Could not read episode data.");
+            _logger.LogError(ex, "Could not read episode data.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
