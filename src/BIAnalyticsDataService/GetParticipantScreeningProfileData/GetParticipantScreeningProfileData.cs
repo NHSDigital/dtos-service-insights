@@ -50,7 +50,7 @@ public class GetParticipantScreeningProfileData
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "GetParticipantScreeningProfileData: Failed to get participant profiles from the database.\nException: " + ex.Message);
+            _logger.LogError(ex, "GetParticipantScreeningProfileData: Failed to get participant profiles from the database.\nException: {Message}", ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

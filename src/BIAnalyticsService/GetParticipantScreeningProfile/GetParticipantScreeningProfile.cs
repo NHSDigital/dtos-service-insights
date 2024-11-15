@@ -61,7 +61,7 @@ public class GetParticipantScreeningProfile
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve profiles. Status Code: {response.StatusCode}");
+                _logger.LogError("Failed to retrieve profiles. Status Code: {StatusCode}", response.StatusCode);
                 var errorResponse = req.CreateResponse(response.StatusCode);
                 return errorResponse;
             }
@@ -78,7 +78,7 @@ public class GetParticipantScreeningProfile
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception when calling the GetParticipantScreeningProfileData function. \nUrl:{url}\nException: " + ex.Message, url);
+            _logger.LogError(ex, "Exception when calling the GetParticipantScreeningProfileData function. \nUrl:{url}\nException: {Message}", url, ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
