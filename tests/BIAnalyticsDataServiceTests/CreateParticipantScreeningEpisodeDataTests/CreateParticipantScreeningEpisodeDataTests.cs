@@ -23,22 +23,22 @@ public class CreateParticipantScreeningEpisodeDataTests
     {
         EpisodeId = 1,
         ScreeningName = "TestScreeningName",
-        NhsNumber = "123456789",
+        NhsNumber = 123456789,
         EpisodeType = "TestEpisodeType",
         EpisodeTypeDescription = "TestEpisodeTypeDescription",
-        EpisodeOpenDate = "2019-08-01",
-        AppointmentMadeFlag = "Y",
-        FirstOfferedAppointmentDate = "2019-08-01",
-        ActualScreeningDate = "2019-08-01",
-        EarlyRecallDate = "2019-08-01",
+        EpisodeOpenDate = new DateOnly(2019, 08, 01),
+        AppointmentMadeFlag = 1,
+        FirstOfferedAppointmentDate = new DateOnly(2019, 08, 01),
+        ActualScreeningDate = new DateOnly(2019, 08, 01),
+        EarlyRecallDate = new DateOnly(2019, 08, 01),
         CallRecallStatusAuthorisedBy = "TestCallRecallStatusAuthorisedBy",
         EndCode = "0000",
         EndCodeDescription = "TestEndCodeDescription",
-        EndCodeLastUpdated = "2019-08-01",
+        EndCodeLastUpdated = DateTime.Parse("2019-08-01"),
         OrganisationCode = "0001",
         OrganisationName = "TestOrganisationName",
         BatchId = "0002",
-        RecordInsertDatetime = "2019-08-01"
+        RecordInsertDatetime = DateTime.Parse("2019-08-01")
     };
 
     public CreateParticipantScreeningEpisodeDataTests()
