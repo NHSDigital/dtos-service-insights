@@ -172,7 +172,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6063
-      - GetProfilesUrl=http://localhost:6062/api/GetParticipantScreeningProfileData
+      - GetProfilesUrl=http://get-participant-screening-profile-data:6062/api/GetParticipantScreeningProfileData
 
   # Demographics Service
   get-demographics-data:
