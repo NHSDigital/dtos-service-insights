@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
+using Grpc.Net.Client.Balancer;
+using System.Globalization;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
@@ -96,25 +98,25 @@ public class CreateParticipantScreeningProfile
 
         var screeningProfile = new ParticipantScreeningProfile
         {
-            NhsNumber = participant.nhs_number,
+            NhsNumber = long.TryParse(participant.nhs_number, out long num) ? num : 0,
             ScreeningName = String.Empty,
             PrimaryCareProvider = demographicsData.PrimaryCareProvider,
             PreferredLanguage = demographicsData.PreferredLanguage,
             ReasonForRemoval = participant.removal_reason,
-            ReasonForRemovalDt = String.Empty,
-            NextTestDueDate = participant.next_test_due_date,
-            NextTestDueDateCalculationMethod = participant.ntdd_calculation_method,
+            ReasonForRemovalDt = new DateOnly(),
+            NextTestDueDate = DateOnly.ParseExact(participant.next_test_due_date, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+            NextTestDueDateCalcMethod = participant.ntdd_calculation_method,
             ParticipantScreeningStatus = participant.subject_status_code,
             ScreeningCeasedReason = String.Empty,
-            IsHigherRisk = participant.is_higher_risk,
-            IsHigherRiskActive = participant.is_higher_risk_active,
-            HigherRiskNextTestDueDate = participant.higher_risk_next_test_due_date,
+            IsHigherRisk = (participant.is_higher_risk == "True") ? (short)1 : (short)0,
+            IsHigherRiskActive = (participant.is_higher_risk_active == "True") ? (short)1 : (short)0,
+            HigherRiskNextTestDueDate = DateOnly.ParseExact(participant.higher_risk_next_test_due_date, "yyyy-MM-dd", CultureInfo.InvariantCulture),
             HigherRiskReferralReasonCode = participant.higher_risk_referral_reason_code,
             HrReasonCodeDescription = String.Empty,
-            DateIrradiated = participant.date_irradiated,
+            DateIrradiated = DateOnly.ParseExact(participant.date_irradiated, "yyyy-MM-dd", CultureInfo.InvariantCulture),
             GeneCode = participant.gene_code,
             GeneCodeDescription = String.Empty,
-            RecordInsertDatetime = DateTime.Now.ToString()
+            RecordInsertDatetime = DateTime.Now
         };
 
         var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");

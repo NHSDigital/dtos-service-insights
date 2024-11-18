@@ -7,7 +7,7 @@ public partial class ParticipantScreeningProfile
 {
     public long Id { get; set; }
 
-    public string NhsNumber { get; set; } = null!;
+    public long NhsNumber { get; set; }
 
     public string? ScreeningName { get; set; }
 
@@ -17,31 +17,31 @@ public partial class ParticipantScreeningProfile
 
     public string? ReasonForRemoval { get; set; }
 
-    public string? ReasonForRemovalDt { get; set; }
+    public DateOnly? ReasonForRemovalDt { get; set; }
 
-    public string? NextTestDueDate { get; set; }
+    public DateOnly? NextTestDueDate { get; set; }
 
-    public string? NextTestDueDateCalculationMethod { get; set; }
+    public string? NextTestDueDateCalcMethod { get; set; }
 
     public string? ParticipantScreeningStatus { get; set; }
 
     public string? ScreeningCeasedReason { get; set; }
 
-    public string? IsHigherRisk { get; set; }
+    public short? IsHigherRisk { get; set; }
 
-    public string? IsHigherRiskActive { get; set; }
+    public short? IsHigherRiskActive { get; set; }
 
-    public string? HigherRiskNextTestDueDate { get; set; }
+    public DateOnly? HigherRiskNextTestDueDate { get; set; }
 
     public string? HigherRiskReferralReasonCode { get; set; }
 
     public string? HrReasonCodeDescription { get; set; }
 
-    public string? DateIrradiated { get; set; }
+    public DateOnly? DateIrradiated { get; set; }
 
     public string? GeneCode { get; set; }
 
     public string? GeneCodeDescription { get; set; }
 
-    public string? RecordInsertDatetime { get; set; }
+    public DateTime? RecordInsertDatetime { get; set; }
 }
