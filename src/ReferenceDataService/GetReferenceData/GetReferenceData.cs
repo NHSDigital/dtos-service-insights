@@ -25,12 +25,12 @@ public class GetReferenceData
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
         _logger.LogInformation("GetReferenceData: start");
+        
+        long organisationId;
 
-        string organisationId = req.Query["organisation_id"];
-
-        if (string.IsNullOrEmpty(organisationId))
+        if (!long.TryParse(req.Query["organisation_id"], out organisationId))
         {
-            _logger.LogError("Missing organisation ID.");
+            _logger.LogError("Missing or invalid organisation ID.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
