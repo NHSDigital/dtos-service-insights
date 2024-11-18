@@ -25,7 +25,7 @@ public class GetReferenceData
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
         _logger.LogInformation("GetReferenceData: start");
-        
+
         long organisationId;
 
         if (!long.TryParse(req.Query["organisation_id"], out organisationId))
