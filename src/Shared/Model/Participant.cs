@@ -2,7 +2,7 @@ namespace NHS.ServiceInsights.Model;
 
 public class Participant
 {
-    public string? nhs_number { get; set; }
+    public string nhs_number { get; set; }
     public string? superseded_nhs_number { get; set; }
     public string? next_test_due_date { get; set; }
     public string? gp_practice_code { get; set; }

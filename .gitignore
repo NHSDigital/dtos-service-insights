@@ -6,6 +6,7 @@
 *vulnerabilities*report*.json
 *report*json.zip
 .version
+.DS_Store
 
 *.code-workspace
 !project.code-workspace
@@ -32,3 +33,6 @@ appsettings.json
 
 # Local Environment
 .env
+
+# ignore pre-commit-config.yaml
+.pre-commit-config.yaml

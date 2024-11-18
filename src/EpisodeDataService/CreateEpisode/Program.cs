@@ -8,8 +8,12 @@ var host = new HostBuilder()
     .ConfigureServices(services =>
     {
         services.AddScoped<IEpisodeRepository, EpisodeRepository>();
+        services.AddScoped<IEndCodeLkpRepository, EndCodeLkpRepository>();
+        services.AddScoped<IEpisodeTypeLkpRepository, EpisodeTypeLkpRepository>();
+        services.AddScoped<IReasonClosedCodeLkpRepository, ReasonClosedCodeLkpRepository>();
+        services.AddScoped<IFinalActionCodeLkpRepository, FinalActionCodeLkpRepository>();
         services.AddDbContext<ServiceInsightsDbContext>(
             options => options.UseSqlServer(Environment.GetEnvironmentVariable("ServiceInsightsDbConnectionString")));
     })
     .Build();
-host.Run();
+await host.RunAsync();

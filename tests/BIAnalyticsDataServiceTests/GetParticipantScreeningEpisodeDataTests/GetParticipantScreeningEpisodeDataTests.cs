@@ -30,14 +30,14 @@ public class GetParticipantScreeningEpisodeTests
             new ParticipantScreeningEpisode
             {
                 Id = 1,
-                EpisodeId = "135890",
+                EpisodeId = 135890,
                 ScreeningName = "John Doe",
                 RecordInsertDatetime = DateTime.Parse("2023-07-05 10:30:00")
             },
             new ParticipantScreeningEpisode
             {
                 Id = 2,
-                EpisodeId = "281479",
+                EpisodeId = 281479,
                 ScreeningName = "Jane Smith",
                 RecordInsertDatetime = DateTime.Parse("2023-07-05 11:30:00")
             }

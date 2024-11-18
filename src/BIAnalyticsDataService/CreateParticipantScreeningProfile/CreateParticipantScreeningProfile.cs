@@ -23,19 +23,19 @@ public class CreateParticipantScreeningProfile
     [Function("CreateParticipantScreeningProfile")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
     {
-        ParticipantScreeningProfile profile = new ParticipantScreeningProfile();
+        ParticipantScreeningProfile profile;
 
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
-                var postData = reader.ReadToEnd();
+                var postData = await reader.ReadToEndAsync();
                 profile = JsonSerializer.Deserialize<ParticipantScreeningProfile>(postData);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("CreateParticipantScreeningProfile: Could not read Json data.\nException: {ex}", ex);
+            _logger.LogError(ex, "CreateParticipantScreeningProfile: Could not read Json data.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
@@ -44,7 +44,7 @@ public class CreateParticipantScreeningProfile
             bool successful = await _participantScreeningProfileRepository.CreateParticipantProfile(profile);
             if (!successful)
             {
-                _logger.LogError("CreateParticipantScreeningProfile: Could not save participant profile. Data: " + profile);
+                _logger.LogError("CreateParticipantScreeningProfile: Could not save participant profile. Data: {Profile}", profile);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
@@ -56,7 +56,7 @@ public class CreateParticipantScreeningProfile
         }
         catch (Exception ex)
         {
-            _logger.LogError("CreateParticipantScreeningProfile: Failed to save participant profile to the database.\nException: {ex}", ex);
+            _logger.LogError(ex, "CreateParticipantScreeningProfile: Failed to save participant profile to the database.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

@@ -6,7 +6,7 @@
     "ServiceInsightsDbConnectionString": "Server=localhost,1433;Database=ServiceInsightsDB;User Id=SA;Password=<password>!;TrustServerCertificate=True"
   },
   "Host": {
-    "LocalHttpPort": 6007
+    "LocalHttpPort": 6002
   }
 }
 

@@ -106,6 +106,22 @@ services:
       - ASPNETCORE_URLS=http://*:6011
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
+  get-participant-screening-profile-data:
+    container_name: get-participant-screening-profile-data
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsDataService/GetParticipantScreeningProfileData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6062:6062"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6062
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
   get-participant-screening-episode-data:
     container_name: get-participant-screening-episode-data
     restart: always
@@ -115,11 +131,11 @@ services:
     networks:
       - app-network
     ports:
-      - "6007:6007"
+      - "6002:6002"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-      - ASPNETCORE_URLS=http://*:6007
+      - ASPNETCORE_URLS=http://*:6002
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # BI Analytics Management Service
@@ -158,6 +174,22 @@ services:
       - CreateParticipantScreeningProfileUrl=http://create-participant-screening-profile-data:6011/api/CreateParticipantScreeningProfile
       - DemographicsServiceUrl=http://get-demographics-data:6080/api/GetDemographicsData
 
+  get-participant-screening-profile:
+    container_name: get-participant-screening-profile
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsManagementService/GetParticipantScreeningProfile/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6063:6063"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6063
+      - GetProfilesUrl=http://get-participant-screening-profile-data:6062/api/GetParticipantScreeningProfileData
+
   get-participant-screening-episode:
     container_name: get-participant-screening-episode
     restart: always
@@ -167,12 +199,12 @@ services:
     networks:
       - app-network
     ports:
-      - "6006:6006"
+      - "6003:6003"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-      - ASPNETCORE_URLS=http://*:6006
-      - GetParticipantScreeningEpisodeDataUrl=http://localhost:6007/api/GetParticipantScreeningEpisodeData
+      - ASPNETCORE_URLS=http://*:6003
+      - GetParticipantScreeningEpisodeDataUrl=http://get-participant-screening-episode-data:6002/api/GetParticipantScreeningEpisodeData
 
 
   # Demographics Service
@@ -350,3 +382,20 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7074
+
+  # Reference Data Service
+  get-organisation-data:
+    container_name: get-organisation-data
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./ReferenceDataService/GetReferenceData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6081:6081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6081
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True

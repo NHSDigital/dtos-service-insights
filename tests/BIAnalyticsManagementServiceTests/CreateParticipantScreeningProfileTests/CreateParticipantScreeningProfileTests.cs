@@ -3,7 +3,7 @@ using System.Net;
 using System.Text;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using NHS.ServiceInsights.BIAnalyticsService;
+using NHS.ServiceInsights.BIAnalyticsManagementService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Common;
 using System.Collections.Specialized;
@@ -19,9 +19,9 @@ public class CreateParticipantScreeningProfileTests
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
-    private string participantJson = "{\"nhs_number\":\"1111111112\",\"next_test_due_date\":\"2000-01-01\",\"gp_practice_id\":\"39\",\"subject_status_code\":\"NORMAL\",\"is_higher_risk\":\"false\",\"higher_risk_next_test_du" +
+    private string participantJson = "{\"nhs_number\": \"1111111112\",\"next_test_due_date\":\"2000-01-01\",\"gp_practice_id\":\"39\",\"subject_status_code\":\"NORMAL\",\"is_higher_risk\": \"True\",\"higher_risk_next_test_du" +
                                 "e_date\":\"2000-01-01\",\"removal_reason\":\"reason\",\"removal_date\":\"2000-01-01\",\"bso_organisation_id\":\"00002\",\"early_recall_date\":\"2000-01-01\",\"latest_invitation_date\":\"2000-01-01\",\"prefer" +
-                                "red_language\":\"english\",\"higher_risk_referral_reason_code\":\"code\",\"date_irradiated\":\"2000-01-01\",\"is_higher_risk_active\":\"false\",\"gene_code\":\"geneCode\",\"ntdd_calculation_method\":\"method\"}";
+                                "red_language\":\"english\",\"higher_risk_referral_reason_code\":\"code\",\"date_irradiated\":\"2000-01-01\",\"is_higher_risk_active\": \"False\",\"gene_code\":\"geneCode\",\"ntdd_calculation_method\":\"method\"}";
     private string demographicsJson = "{\"PrimaryCareProvider\":\"A81002\",\"PreferredLanguage\":\"EN\"}";
     public CreateParticipantScreeningProfileTests()
     {
@@ -29,6 +29,33 @@ public class CreateParticipantScreeningProfileTests
         Environment.SetEnvironmentVariable("CreateParticipantScreeningProfileUrl", "http://localhost:6011/api/CreateParticipantScreeningProfile");
         Environment.SetEnvironmentVariable("DemographicsServiceUrl", "http://localhost:6080/api/GetDemographicsData");
         _function = new CreateParticipantScreeningProfile(_mockLogger.Object, _mockHttpRequestService.Object);
+    }
+
+    [TestMethod]
+    public async Task Run_ShouldReturnBadRequest_WhenNhsNumberIsNotProvided()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection
+        {
+            { "nhs_number", null }
+        };
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<It.IsAnyType>((state, type) => state.ToString() == "nhsNumber is null or empty."),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
@@ -55,13 +82,12 @@ public class CreateParticipantScreeningProfileTests
 
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
-        _mockLogger.Verify(log => log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to deserialise or retrieve participant from http://localhost:6061/api/GetParticipant?nhs_number=1111111112.")),
-            null,
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Once);
+        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
+        It.IsAny<EventId>(),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to deserialise or retrieve participant from http://localhost:6061/api/GetParticipant?nhs_number=1111111112.")),
+        It.IsAny<Exception>(),
+        It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+        Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 

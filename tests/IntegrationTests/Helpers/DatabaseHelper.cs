@@ -24,7 +24,7 @@ namespace IntegrationTests.Helpers
             _logger.LogInformation("Database cleanup completed.");
         }
 
-        public async Task<bool> EpisodeExistsAsync(string episodeId)
+        public async Task<bool> EpisodeExistsAsync(long episodeId)
         {
             // Check if the episode exists in the database
             var exists = await _dbContext.Episodes.AnyAsync(e => e.EpisodeId == episodeId);

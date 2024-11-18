@@ -29,7 +29,7 @@ public class RetrieveMeshFile
     [Function("RetrieveMeshFile")]
     public async Task RunAsync([TimerTrigger("%TimerExpression%")] TimerInfo myTimer)
     {
-        _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+        _logger.LogInformation("C# Timer trigger function executed at: {DateTime}", DateTime.Now);
 
         static bool messageFilter(MessageMetaData i) =>
             (i.FileName.StartsWith("bss_subjects") || i.FileName.StartsWith("bss_episodes")) && i.FileName.EndsWith(".csv");
@@ -50,7 +50,7 @@ public class RetrieveMeshFile
 
         if (myTimer.ScheduleStatus is not null)
         {
-            _logger.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
+            _logger.LogInformation("Next timer schedule at: {NextSchedule}", myTimer.ScheduleStatus.Next);
         }
     }
 }

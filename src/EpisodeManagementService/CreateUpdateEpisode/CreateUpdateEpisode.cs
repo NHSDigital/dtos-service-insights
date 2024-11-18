@@ -21,22 +21,22 @@ public class CreateUpdateEpisode
     }
 
     [Function("CreateUpdateEpisode")]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
-        Episode episode;
+        EpisodeDto episode;
 
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
-                var postData = reader.ReadToEnd();
-                episode = JsonSerializer.Deserialize<Episode>(postData);
+                var postData = await reader.ReadToEndAsync();
+                episode = JsonSerializer.Deserialize<EpisodeDto>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("Could not read episode data. Error: {ex}", ex.Message);
+            _logger.LogError(ex, "Could not read episode data.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
@@ -67,7 +67,7 @@ public class CreateUpdateEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error occurred while processing episode. Error: {ex}", ex.Message);
+            _logger.LogError(ex, "Error occurred while processing episode.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }

@@ -22,12 +22,11 @@ public class GetEpisode
     [Function("GetEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
     {
-        string episodeId;
+        string episodeIdString = req.Query["episodeId"];
 
-        episodeId = req.Query["episodeId"];
-        if (string.IsNullOrEmpty(episodeId))
+        if (!long.TryParse(episodeIdString, out long episodeId))
         {
-            _logger.LogError("Episode ID is not provided.");
+            _logger.LogError("Episode ID missing or not valid.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
@@ -47,14 +46,14 @@ public class GetEpisode
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-            response.WriteString(jsonResponse);
+            await response.WriteStringAsync(jsonResponse);
 
             return response;
 
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to get episode from database.\nException: {ex}", ex);
+            _logger.LogError(ex, "Failed to get episode from database.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
