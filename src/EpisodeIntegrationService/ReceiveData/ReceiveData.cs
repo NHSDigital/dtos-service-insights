@@ -77,7 +77,7 @@ public class ReceiveData
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error in ReceiveData: {Message} \n StackTrace: {StackTrace}", ex.Message, ex.StackTrace);
+            _logger.LogError(ex, "Error in ReceiveData: {Message} \n StackTrace: {StackTrace}", ex.Message, ex.StackTrace);
         }
     }
 

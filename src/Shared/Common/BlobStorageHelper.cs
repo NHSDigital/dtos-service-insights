@@ -38,7 +38,7 @@ public class BlobStorageHelper : IBlobStorageHelper
         }
         catch (RequestFailedException ex)
         {
-            _logger.LogError("there has been a problem while copying the file: {Message}", ex.Message);
+            _logger.LogError(ex, "there has been a problem while copying the file: {Message}", ex.Message);
             return false;
         }
         finally
