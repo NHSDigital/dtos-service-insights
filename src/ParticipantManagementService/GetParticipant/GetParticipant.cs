@@ -28,18 +28,24 @@ public class GetParticipant
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
-        var participant = ParticipantRepository.GetParticipantByNhsNumber(NhsNumber);
-
-        if (participant == null)
+        if (long.TryParse(NhsNumber, out long nhsNumber))
         {
-            _logger.LogError("Participant with NHS Number {NhsNumber} not found.", NhsNumber);
-            return req.CreateResponse(HttpStatusCode.NotFound);
+            var participant = ParticipantRepository.GetParticipantByNhsNumber(nhsNumber);
+            if (participant == null)
+            {
+                _logger.LogError("Participant with NHS Number {NhsNumber} not found.", NhsNumber);
+                return req.CreateResponse(HttpStatusCode.NotFound);
+            }
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            response.Headers.Add("Content-Type", "application/json");
+            var json = JsonSerializer.Serialize(participant);
+            await response.WriteStringAsync(json);
+            return response;
         }
-
-        var response = req.CreateResponse(HttpStatusCode.OK);
-        response.Headers.Add("Content-Type", "application/json");
-        var json = JsonSerializer.Serialize(participant);
-        await response.WriteStringAsync(json);
-        return response;
+        else
+        {
+            _logger.LogError("Invalid NHS Number format.");
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
     }
 }
