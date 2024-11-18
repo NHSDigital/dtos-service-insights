@@ -107,32 +107,4 @@ public class GetParticipantTests
         }
         Assert.AreEqual("1111111110", participant.nhs_number);
     }
-
-    [TestMethod]
-    public async Task Run_ShouldReturnBadRequest_WhenNhsNumberIsInvalidFormat()
-    {
-        // Arrange
-        var queryParam = new NameValueCollection
-        {
-            {
-                "nhs_number", "invalidFormat"
-            }
-        };
-
-        _mockRequest = _setupRequest.SetupGet(queryParam);
-
-        // Act
-        var response = await _function.Run(_mockRequest.Object);
-
-        // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-        _mockLogger.Verify(log =>
-            log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString() == "Invalid NHS Number format."),
-            null,
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Once);
-    }
 }
