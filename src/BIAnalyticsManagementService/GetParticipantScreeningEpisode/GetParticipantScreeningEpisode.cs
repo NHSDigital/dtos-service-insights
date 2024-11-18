@@ -29,14 +29,14 @@ public class GetParticipantScreeningEpisode
 
         if(!int.TryParse(req.Query["page"], out page))
         {
-            _logger.LogError("Invalid page number");
+            _logger.LogError("The page number is invalid invalid.");
             var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
             return badRequestResponse;
         }
 
         if(!DateTime.TryParse(req.Query["startDate"], CultureInfo.InvariantCulture, out startDate) || !DateTime.TryParse(req.Query["endDate"],  CultureInfo.InvariantCulture, out endDate))
         {
-            _logger.LogError("Invalid startDate or endDate");
+            _logger.LogError("The startDate or endDate is invalid.");
             var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
             return badRequestResponse;
         }
