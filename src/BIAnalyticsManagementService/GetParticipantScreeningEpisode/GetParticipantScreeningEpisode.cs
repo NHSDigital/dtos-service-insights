@@ -29,7 +29,7 @@ public class GetParticipantScreeningEpisode
 
         if(!int.TryParse(req.Query["page"], out page))
         {
-            _logger.LogError("The page number is invalid invalid.");
+            _logger.LogError("The page number is invalid.");
             var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
             return badRequestResponse;
         }
