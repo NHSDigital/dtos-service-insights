@@ -23,33 +23,19 @@ public class GetParticipantScreeningProfile
     {
         _logger.LogInformation("GetParticipantScreeningProfile start");
 
+        var paginationHelper = new PaginationHelper(_logger);
+
         int page;
         int pageSize;
         DateTime startDate;
         DateTime endDate;
 
-        if(!int.TryParse(req.Query["page"], out page))
-        {
-            _logger.LogError("Invalid page number");
-            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            return badRequestResponse;
-        }
+        var validationResponse = paginationHelper.QueryValidator(out page, out pageSize, out startDate, out endDate, req);
 
-        if(!DateTime.TryParse(req.Query["startDate"], CultureInfo.InvariantCulture, out startDate) || !DateTime.TryParse(req.Query["endDate"],  CultureInfo.InvariantCulture, out endDate))
+        if (validationResponse != null)
         {
-            _logger.LogError("Invalid startDate or endDate");
-            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            return badRequestResponse;
+            return validationResponse;
         }
-
-        if(!int.TryParse(req.Query["pageSize"], out pageSize))
-        {
-            pageSize = 1000;
-        }
-
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 1;
-        if (pageSize > 5000) pageSize = 5000;
 
         var baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
         var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
