@@ -46,3 +46,31 @@ public class PaginationHelper
         return null;
     }
 }
+
+public class RequestHandlerHelper
+{
+    private readonly ILogger _logger;
+
+    public RequestHandlerHelper(ILogger logger)
+    {
+        _logger = logger;
+    }
+
+    public HttpResponseData ValidateAndPrepareUrlRequest(HttpRequestData req, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, string baseUrl, out string url)
+    {
+        var paginationHelper = new PaginationHelper(_logger);
+
+        var validationResponse = paginationHelper.QueryValidator(out page, out pageSize, out startDate, out endDate, req);
+
+        if (validationResponse != null)
+        {
+            url = null;
+            return validationResponse;
+        }
+
+        url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
+        _logger.LogInformation("Requesting URL: {Url}", url);
+
+        return null;
+    }
+}

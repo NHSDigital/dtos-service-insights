@@ -23,23 +23,17 @@ public class GetParticipantScreeningProfile
     {
         _logger.LogInformation("GetParticipantScreeningProfile start");
 
-        var paginationHelper = new PaginationHelper(_logger);
+        var requestHandler = new RequestHandlerHelper(_logger);
 
-        int page;
-        int pageSize;
-        DateTime startDate;
-        DateTime endDate;
+        string baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
+        string url;
 
-        var validationResponse = paginationHelper.QueryValidator(out page, out pageSize, out startDate, out endDate, req);
+        var validationResponse = requestHandler.ValidateAndPrepareUrlRequest(req, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, baseUrl, out url);
 
         if (validationResponse != null)
         {
             return validationResponse;
         }
-
-        var baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
-        var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
-        _logger.LogInformation("Requesting URL: {Url}", url);
 
         try
         {
