@@ -128,8 +128,6 @@ services:
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsManagementService/CreateParticipantScreeningEpisode/Dockerfile
-    networks:
-      - app-network
     ports:
       - "6008:6008"
     environment:
@@ -140,14 +138,11 @@ services:
       - CreateParticipantScreeningEpisodeUrl=http://127.0.0.1:6010/api/CreateParticipantScreeningEpisode
 
   create-participant-screening-profile:
-  create-participant-screening-profile:
     container_name: create-participant-screening-profile
     network_mode: host
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsManagementService/CreateParticipantScreeningProfile/Dockerfile
-    networks:
-      - app-network
     ports:
       - "6009:6009"
     environment:

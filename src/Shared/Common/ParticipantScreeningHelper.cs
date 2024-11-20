@@ -12,7 +12,7 @@ public class PaginationHelper
         _logger = logger;
     }
 
-    public async Task<(bool IsValid, int page, int pageSize, DateTime startDate, DateTime endDate)> ValidateQuery(HttpRequestData req)
+    public (bool IsValid, int page, int pageSize, DateTime startDate, DateTime endDate) ValidateQuery(HttpRequestData req)
     {
         int page = 0;
         int pageSize = 0;
@@ -39,8 +39,6 @@ public class PaginationHelper
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 1;
         if (pageSize > 5000) pageSize = 5000;
-
-        await Task.CompletedTask;
 
         return (true, page, pageSize, startDate, endDate);
     }

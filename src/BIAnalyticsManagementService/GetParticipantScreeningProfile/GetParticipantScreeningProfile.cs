@@ -23,7 +23,7 @@ public class GetParticipantScreeningProfile
     {
         _logger.LogInformation("GetParticipantScreeningProfile start");
         var paginationHelper = new PaginationHelper(_logger);
-        var (isValid, page, pageSize, startDate, endDate) = await paginationHelper.ValidateQuery(req);
+        var (isValid, page, pageSize, startDate, endDate) = paginationHelper.ValidateQuery(req);
 
         if (!isValid)
         {

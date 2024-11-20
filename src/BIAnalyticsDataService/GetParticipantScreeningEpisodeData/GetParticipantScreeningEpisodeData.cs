@@ -48,7 +48,7 @@ public class GetParticipantScreeningEpisodeData
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "GetParticipantScreeningEpisode: Failed to get participant episodes from the database.\nException: " + ex.Message);
+            _logger.LogError(ex, "GetParticipantScreeningEpisode: Failed to get participant episodes from the database.\nException: {Message}", ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
