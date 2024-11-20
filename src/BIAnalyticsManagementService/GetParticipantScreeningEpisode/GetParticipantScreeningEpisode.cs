@@ -21,18 +21,18 @@ public class GetParticipantScreeningEpisode
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
         _logger.LogInformation("GetParticipantScreeningEpisode start");
+        var paginationHelper = new PaginationHelper(_logger);
+        var (isValid, page, pageSize, startDate, endDate) = await paginationHelper.ValidateQuery(req);
+
+        if (!isValid)
+        {
+            var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            return errorResponse;
+        }
 
         var requestHandler = new RequestHandlerHelper(_logger);
-
         string baseUrl = Environment.GetEnvironmentVariable("GetParticipantScreeningEpisodeDataUrl");
-        string url;
-
-        var validationResponse = requestHandler.ValidateAndPrepareUrlRequest(req, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, baseUrl, out url);
-
-        if (validationResponse != null)
-        {
-            return validationResponse;
-        }
+        string url = requestHandler.BuildUrl(baseUrl, page, pageSize, startDate, endDate);
 
         try
         {

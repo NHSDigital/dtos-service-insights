@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
 
@@ -13,28 +12,26 @@ public class PaginationHelper
         _logger = logger;
     }
 
-    public HttpResponseData QueryValidator (out int page, out int pageSize, out DateTime startDate, out DateTime endDate, HttpRequestData req)
+    public async Task<(bool IsValid, int page, int pageSize, DateTime startDate, DateTime endDate)> ValidateQuery(HttpRequestData req)
     {
-        page = 0;
-        pageSize = 0;
-        startDate = default;
-        endDate = default;
+        int page = 0;
+        int pageSize = 0;
+        DateTime startDate = default;
+        DateTime endDate = default;
 
-        if(!int.TryParse(req.Query["page"], out page))
+        if (!int.TryParse(req.Query["page"], out page))
         {
             _logger.LogError("The page number is invalid.");
-            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            return badRequestResponse;
+            return (false, 0, 0, default, default);
         }
 
-        if(!DateTime.TryParse(req.Query["startDate"], CultureInfo.InvariantCulture, out startDate) || !DateTime.TryParse(req.Query["endDate"],  CultureInfo.InvariantCulture, out endDate))
+        if (!DateTime.TryParse(req.Query["startDate"], CultureInfo.InvariantCulture, out startDate) || !DateTime.TryParse(req.Query["endDate"], CultureInfo.InvariantCulture, out endDate))
         {
             _logger.LogError("The startDate or endDate is invalid.");
-            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            return badRequestResponse;
+            return (false, 0, 0, default, default);
         }
 
-        if(!int.TryParse(req.Query["pageSize"], out pageSize))
+        if (!int.TryParse(req.Query["pageSize"], out pageSize))
         {
             pageSize = 1000;
         }
@@ -43,7 +40,9 @@ public class PaginationHelper
         if (pageSize < 1) pageSize = 1;
         if (pageSize > 5000) pageSize = 5000;
 
-        return null;
+        await Task.CompletedTask;
+
+        return (true, page, pageSize, startDate, endDate);
     }
 }
 
@@ -56,21 +55,10 @@ public class RequestHandlerHelper
         _logger = logger;
     }
 
-    public HttpResponseData ValidateAndPrepareUrlRequest(HttpRequestData req, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, string baseUrl, out string url)
+    public string BuildUrl(string baseUrl, int page, int pageSize, DateTime startDate, DateTime endDate)
     {
-        var paginationHelper = new PaginationHelper(_logger);
-
-        var validationResponse = paginationHelper.QueryValidator(out page, out pageSize, out startDate, out endDate, req);
-
-        if (validationResponse != null)
-        {
-            url = null;
-            return validationResponse;
-        }
-
-        url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
+        var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
         _logger.LogInformation("Requesting URL: {Url}", url);
-
-        return null;
+        return url;
     }
 }
