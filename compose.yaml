@@ -106,13 +106,13 @@ services:
       - ASPNETCORE_URLS=http://*:6011
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  # BI Analytics Service
+  # BI Analytics Management Service
   create-participant-screening-episode:
     container_name: create-participant-screening-episode
     restart: always
     build:
       context: ./src/
-      dockerfile: ./BIAnalyticsService/CreateParticipantScreeningEpisode/Dockerfile
+      dockerfile: ./BIAnalyticsManagementService/CreateParticipantScreeningEpisode/Dockerfile
     networks:
       - app-network
     ports:
@@ -129,7 +129,7 @@ services:
     restart: always
     build:
       context: ./src/
-      dockerfile: ./BIAnalyticsService/CreateParticipantScreeningProfile/Dockerfile
+      dockerfile: ./BIAnalyticsManagementService/CreateParticipantScreeningProfile/Dockerfile
     networks:
       - app-network
     ports:
