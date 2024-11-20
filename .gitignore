@@ -33,6 +33,9 @@ appsettings.json
 # Local Environment
 .env
 
+# ignore pre-commit-config.yaml
+.pre-commit-config.yaml
+
 # SSL certificates etc
 .csr
 .crt
