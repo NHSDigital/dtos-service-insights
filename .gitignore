@@ -32,3 +32,9 @@ appsettings.json
 
 # Local Environment
 .env
+
+# SSL certificates etc
+.csr
+.crt
+.keystore
+.p12
