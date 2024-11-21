@@ -36,3 +36,7 @@ appsettings.json
 
 # ignore pre-commit-config.yaml
 .pre-commit-config.yaml
+
+# GPG keys
+.asc
+
