@@ -1,5 +1,4 @@
 using System.Net;
-using System.Globalization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -22,17 +21,19 @@ public class GetParticipantScreeningProfile
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
         _logger.LogInformation("GetParticipantScreeningProfile start");
-        var paginationHelper = new PaginationHelper(_logger);
+        var paginationHelper = new PaginationHelper();
 
-        if (!paginationHelper.TryValidatePaginationQuery(req, out int page, out int pageSize, out DateTime startDate, out DateTime endDate))
+        if (!paginationHelper.TryValidatePaginationQuery(req.Query, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, out string errorMessage))
         {
             var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            errorResponse.WriteString(errorMessage);
             return errorResponse;
         }
 
-        var requestHandler = new PaginationHelper(_logger);
+        var requestHandler = new PaginationHelper();
         string baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
         string url = requestHandler.BuildUrl(baseUrl, page, pageSize, startDate, endDate);
+        _logger.LogInformation("Requesting URL: {Url}", url);
 
         try
         {
