@@ -23,15 +23,14 @@ public class GetParticipantScreeningProfile
     {
         _logger.LogInformation("GetParticipantScreeningProfile start");
         var paginationHelper = new PaginationHelper(_logger);
-        var (isValid, page, pageSize, startDate, endDate) = paginationHelper.ValidateQuery(req);
 
-        if (!isValid)
+        if (!paginationHelper.TryValidatePaginationQuery(req, out int page, out int pageSize, out DateTime startDate, out DateTime endDate))
         {
             var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
             return errorResponse;
         }
 
-        var requestHandler = new RequestHandlerHelper(_logger);
+        var requestHandler = new PaginationHelper(_logger);
         string baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
         string url = requestHandler.BuildUrl(baseUrl, page, pageSize, startDate, endDate);
 
