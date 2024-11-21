@@ -5,9 +5,9 @@
 
 This repository helps streamline the process of creating SSL certificates for Mesh Mailboxes. SSL certificates are essential for securing communication between clients and servers, ensuring data privacy and integrity.
 
-The SSL certificates and Mesh Mailbox details will be required by the Dev Ops team when they create the Azure Environments to host the Azure functions.
+The SSL certificates and Mesh Mailbox details will be required by the Cloud Engineering Team when they create the Azure Environments to host the Azure functions.
 
-The scripts generate certificate files named according to the unique identifier of the Mesh Mailbox, making it easy to manage multiple certificates. The [Instructions](#instructions) section provides step-by-step guidance on how to use each script.
+The scripts generate certificate files named according to the unique identifier of the Mesh Mailbox, making it easy to manage multiple certificates.
 
 In summary, this repository simplifies the process of obtaining and setting up SSL certificates for Mesh Mailboxes by automating the creation of CSRs and completing the certificate setup after receiving the signed certificate from the NHS Service Desk. This ensures secure communication between clients and servers, protecting sensitive data and maintaining data integrity.
 
