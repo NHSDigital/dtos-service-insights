@@ -35,15 +35,28 @@ public class UpdateEpisodeTests
     public async Task Run_Return_OK_When_Episode_Updated_Successfully()
     {
         // Arrange
-        var episode = new Episode
+        var episodeDto = new EpisodeDto
         {
-            EpisodeId = 123456
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
         };
 
-        var json = JsonSerializer.Serialize(episode);
+        var json = JsonSerializer.Serialize(episodeDto);
         _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
@@ -94,15 +107,27 @@ public class UpdateEpisodeTests
     public async Task Run_Return_InternalServerError_When_DbUpdateException_Occurs()
     {
         // Arrange
-        var episode = new Episode
+        var episodeDto = new EpisodeDto
         {
-            EpisodeId = 123456
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
         };
 
-        var json = JsonSerializer.Serialize(episode);
+        var json = JsonSerializer.Serialize(episodeDto);
         _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
         _mockEpisodeRepository.Setup(x => x.UpdateEpisode(It.IsAny<Episode>())).Throws(new DbUpdateException());
 
         // Act

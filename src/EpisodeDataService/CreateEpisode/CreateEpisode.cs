@@ -52,9 +52,32 @@ public class CreateEpisode
         {
 
             var episodeTypeId = await _episodeTypeLkpRepository.GetEpisodeTypeIdAsync(episodeDto.EpisodeType);
+            if (episodeTypeId == null)
+            {
+                _logger.LogError("Episode type '{episodeType}' not found in lookup table.", episodeDto.EpisodeType);
+                return req.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
             var endCodeId = await _endCodeLkpRepository.GetEndCodeIdAsync(episodeDto.EndCode);
+            if (endCodeId == null)
+            {
+                _logger.LogError("End code '{endCode}' not found in lookup table.", episodeDto.EndCode);
+                return req.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
             var reasonClosedCodeId = await _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync(episodeDto.ReasonClosedCode);
+            if (reasonClosedCodeId == null)
+            {
+                _logger.LogError("Reason closed code '{reasonClosedCode}' not found in lookup table.", episodeDto.ReasonClosedCode);
+                return req.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
             var finalActionCodeId = await _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync(episodeDto.FinalActionCode);
+            if (finalActionCodeId == null)
+            {
+                _logger.LogError("Final action code '{finalActionCode}' not found in lookup table.", episodeDto.FinalActionCode);
+                return req.CreateResponse(HttpStatusCode.BadRequest);
+            }
 
             var episode = new Episode
             {

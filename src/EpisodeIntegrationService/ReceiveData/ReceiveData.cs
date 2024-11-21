@@ -5,6 +5,7 @@ using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
 using CsvHelper;
 using System.Globalization;
+using CsvHelper.Configuration.Attributes;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
@@ -206,6 +207,7 @@ public class BssEpisode
     public long nhs_number { get; set; }
     public string? episode_type { get; set; }
     public DateTime change_db_date_time { get; set; }
+    [Format("dd/MM/yyyy")]
     public DateOnly? episode_date { get; set; }
     public string? appointment_made { get; set; }
     public string? date_of_foa { get; set; }

@@ -46,13 +46,21 @@ public class CreateEpisodeTests
     public async Task Run_Should_Return_OK_When_Repository_Creates_Episode()
     {
         // Arrange
-        var episode = new Episode
+        var episode = new EpisodeDto
         {
-            EpisodeId = 245395
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
         };
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
@@ -65,13 +73,21 @@ public class CreateEpisodeTests
     public async Task Run_Should_Return_InternalServiceError_When_Repository_Throw_Exception()
     {
         // Arrange
-        var episode = new Episode
+        var episode = new EpisodeDto
         {
-            EpisodeId = 245395
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
         };
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
 
         _mockEpisodeRepository.Setup(repo => repo.CreateEpisode(It.IsAny<Episode>())).Throws<Exception>();
 
