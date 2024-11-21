@@ -43,5 +43,3 @@ appsettings.json
 .keystore
 .p12
 
-# ignore pre-commit-config.yaml
-.pre-commit-config.yaml
