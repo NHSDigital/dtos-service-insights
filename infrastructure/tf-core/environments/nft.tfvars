@@ -1,6 +1,6 @@
 application           = "serins"
 application_full_name = "service-insights"
-environment           = "DEV"
+environment           = "NFT"
 
 features = {
   acr_enabled                          = false
@@ -18,7 +18,7 @@ tags = {
 regions = {
   uksouth = {
     is_primary_region = true
-    address_space     = "10.113.0.0/16"
+    address_space     = "10.115.0.0/16"
     connect_peering   = true
     subnets = {
       apps = {
@@ -51,8 +51,8 @@ routes = {
         priority              = 800
         action                = "Allow"
         rule_name             = "SerinsToAudit"
-        source_addresses      = ["10.113.0.0/16"] # will be populated with the serins manager subnet address space
-        destination_addresses = ["10.114.0.0/16"] # will be populated with the audit subnet address space
+        source_addresses      = ["10.115.0.0/16"] # will be populated with the serins manager subnet address space
+        destination_addresses = ["10.116.0.0/16"] # will be populated with the audit subnet address space
         protocols             = ["TCP", "UDP"]
         destination_ports     = ["443"]
       },
@@ -61,8 +61,8 @@ routes = {
         priority              = 810
         action                = "Allow"
         rule_name             = "AuditToSerins"
-        source_addresses      = ["10.114.0.0/16"]
-        destination_addresses = ["10.113.0.0/16"]
+        source_addresses      = ["10.116.0.0/16"]
+        destination_addresses = ["10.115.0.0/16"]
         protocols             = ["TCP", "UDP"]
         destination_ports     = ["443"]
       }
@@ -122,14 +122,14 @@ app_service_plan = {
 
   instances = {
     BIAnalyticsDataService       = {}
-    BIAnalyticsService           = {}
-    DemographicsService          = {}
-    EpisodeDataService           = {}
-    EpisodeIntegrationService    = {}
-    EpisodeManagementService     = {}
-    MeshIntegrationService       = {}
-    ParticipantManagementService = {}
-    ReferenceDataService         = {}
+    # BIAnalyticsService           = {}
+    # DemographicsService          = {}
+    # EpisodeDataService           = {}
+    # EpisodeIntegrationService    = {}
+    # EpisodeManagementService     = {}
+    # MeshIntegrationService       = {}
+    # ParticipantManagementService = {}
+    # ReferenceDataService         = {}
   }
 }
 
@@ -139,15 +139,15 @@ function_apps = {
   acr_name    = "acrukshubdevserins"
   acr_rg_name = "rg-hub-dev-uks-serins"
 
-  app_insights_name    = "appi-dev-uks-serins"
-  app_insights_rg_name = "rg-serins-dev-uks-audit"
+  app_insights_name    = "appi-nft-uks-serins"
+  app_insights_rg_name = "rg-serins-nft-uks-audit"
 
   always_on = true
 
   cont_registry_use_mi = true
 
   docker_CI_enable  = "true"
-  docker_env_tag    = "development"
+  docker_env_tag    = "nft"
   docker_img_prefix = "service-insights"
 
   enable_appsrv_storage         = "false"
@@ -233,34 +233,34 @@ function_apps = {
     GetDemographicsData = {
       name_suffix            = "get-demographics-data"
       function_endpoint_name = "GetDemographicsData"
-      app_service_plan_key   = "DemographicsService"
+      app_service_plan_key   = "BIAnalyticsDataService"
     }
 
     CreateEpisode = {
       name_suffix            = "create-episode"
       function_endpoint_name = "CreateEpisode"
-      app_service_plan_key   = "EpisodeDataService"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetEpisode = {
       name_suffix            = "get-episode"
       function_endpoint_name = "GetEpisode"
-      app_service_plan_key   = "EpisodeDataService"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     UpdateEpisode = {
       name_suffix            = "update-episode"
       function_endpoint_name = "UpdateEpisode"
-      app_service_plan_key   = "EpisodeDataService"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     ReceiveData = {
       name_suffix            = "receive-data"
       function_endpoint_name = "ReceiveData"
-      app_service_plan_key   = "EpisodeIntegrationService"
+      app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
@@ -276,7 +276,7 @@ function_apps = {
     CreateUpdateEpisode = {
       name_suffix            = "create-update-episode"
       function_endpoint_name = "CreateUpdateEpisode"
-      app_service_plan_key   = "EpisodeManagementService"
+      app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
         {
           env_var_name     = "CreateEpisodeUrl"
@@ -296,7 +296,7 @@ function_apps = {
     GetEpisodeMgmt = {
       name_suffix            = "get-episode-mgmt"
       function_endpoint_name = "GetEpisodeMgmt"
-      app_service_plan_key   = "EpisodeManagementService"
+      app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
         {
           env_var_name     = "GetEpisodeUrl"
@@ -308,25 +308,25 @@ function_apps = {
     RetrieveMeshFile = {
       name_suffix            = "retrieve-mesh-file-from-cm"
       function_endpoint_name = "RetrieveMeshFile"
-      app_service_plan_key   = "MeshIntegrationService"
+      app_service_plan_key   = "BIAnalyticsDataService"
     }
 
     GetParticipant = {
       name_suffix            = "get-participant"
       function_endpoint_name = "GetParticipant"
-      app_service_plan_key   = "ParticipantManagementService"
+      app_service_plan_key   = "BIAnalyticsDataService"
     }
 
     UpdateParticipant = {
       name_suffix            = "update-participant"
       function_endpoint_name = "UpdateParticipant"
-      app_service_plan_key   = "ParticipantManagementService"
+      app_service_plan_key   = "BIAnalyticsDataService"
     }
 
     GetOrganisationData = {
       name_suffix            = "get-organisation-data"
       function_endpoint_name = "GetOrganisationData"
-      app_service_plan_key   = "ReferenceDataService"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
   }
@@ -344,10 +344,11 @@ key_vault = {
 
 sqlserver = {
   sql_uai_name                         = "dtos-service-insight-sql-adm"
-  sql_admin_group_name                 = "sqlsvr_serins_dev_uks_admin"
+  sql_admin_group_name                 = "sqlsvr_serins_nft_uks_admin"
   ad_auth_only                         = true
   auditing_policy_retention_in_days    = 30
   security_alert_policy_retention_days = 30
+
 
   server = {
     sqlversion                    = "12.0"
