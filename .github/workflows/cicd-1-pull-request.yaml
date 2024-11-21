@@ -106,8 +106,9 @@ jobs:
     uses: NHSDigital/dtos-devops-templates/.github/workflows/stage-3-build-images.yaml@main
     if: needs.metadata.outputs.does_pull_request_exist == 'true' || github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened'))
     with:
-      docker_compose_file_path: .
-      environment_tag: "${{ needs.metadata.outputs.environment_tag }}"
+      docker_compose_file: ./compose.yaml
+      excluded_containers_csv_list: azurite,azurite-setup,sql-database,database-setup
+      environment_tag: ${{ needs.metadata.outputs.environment_tag }}
       function_app_source_code_path: src
       project_name: service-insights
     secrets: inherit
