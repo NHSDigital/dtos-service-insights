@@ -2,16 +2,11 @@
 
 name: $(Build.SourceBranchName)-$(Date:yyyyMMdd)_$(Rev:r)
 
-trigger:
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - infrastructure/*
+trigger: none
+pr: none
 
 pool:
-  #vmImage: ubuntu-latest
+  # vmImage: ubuntu-latest
   name: private-pool-dev-uks
 
 resources:
@@ -19,7 +14,7 @@ resources:
     - repository: dtos-devops-templates
       type: github
       name: NHSDigital/dtos-devops-templates
-      ref: 6698a57ef95f35661bb668e1b929e6894a554ac6
+      ref: feat/DTOSS-5411-Setup-GitHub-CI-for-Docker-Image-Creation-and-Security-Scans-improvements
       endpoint: NHSDigital
 
 variables:
