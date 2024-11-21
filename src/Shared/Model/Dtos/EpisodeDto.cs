@@ -37,8 +37,4 @@ public class EpisodeDto
     public string? ReasonClosedCode { get; set; }
 
     public string? FinalActionCode { get; set; }
-
-
-
-
 }

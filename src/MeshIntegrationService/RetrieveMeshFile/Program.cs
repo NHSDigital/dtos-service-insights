@@ -7,8 +7,6 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
-        //services.AddApplicationInsightsTelemetryWorkerService();
-        //services.ConfigureFunctionsApplicationInsights();
         services
             .AddMeshClient(_ => _.MeshApiBaseUrl = Environment.GetEnvironmentVariable("MeshApiBaseUrl"))
             .AddMailbox(Environment.GetEnvironmentVariable("BSSMailBox")!, new NHS.MESH.Client.Configuration.MailboxConfiguration
@@ -24,4 +22,4 @@ var host = new HostBuilder()
     //.AddExceptionHandler()
     .Build();
 
-host.Run();
+await host.RunAsync();

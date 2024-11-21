@@ -189,21 +189,18 @@ services:
       - ASPNETCORE_URLS=http://*:6070
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  # update-episode:
-  #   container_name: update-episode
-  #   restart: always
-  #   build:
-  #     context: ./src/
-  #     dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
-  #   networks:
-  #     - app-network
-  #   ports:
-  #     - "7777:7777"
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-  #     - ASPNETCORE_URLS=http://*:7777
-  #     - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+  update-episode:
+    container_name: update-episode
+    network_mode: host
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
+    ports:
+      - "7777:7777"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:7777
+      - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # Episode Integration Service
   receive-data:
@@ -317,3 +314,20 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7074
+
+  # Reference Data Service
+  get-organisation-data:
+    container_name: get-organisation-data
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./ReferenceDataService/GetReferenceData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6081:6081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6081
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True

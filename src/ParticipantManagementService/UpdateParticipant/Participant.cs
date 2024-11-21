@@ -1,4 +1,9 @@
-public class Participant
+namespace NHS.ServiceInsights.ParticipantManagementService
+
 {
-    public string NhsNumber { get; set; }
+    public class Participant
+    {
+        public string NhsNumber { get; set; }
+    }
+
 }

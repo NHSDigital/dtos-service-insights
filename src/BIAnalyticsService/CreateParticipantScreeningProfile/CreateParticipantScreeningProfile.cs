@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
+using Grpc.Net.Client.Balancer;
+using System.Globalization;
 
 namespace NHS.ServiceInsights.BIAnalyticsService;
 
@@ -21,7 +23,15 @@ public class CreateParticipantScreeningProfile
     [Function("CreateParticipantScreeningProfile")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
-        string nhsNumber = "1111111112";
+        _logger.LogInformation("Create Participant Screening Profile function start");
+
+        string nhsNumber = req.Query["nhs_number"];
+
+        if (string.IsNullOrEmpty(nhsNumber))
+        {
+            _logger.LogError("nhsNumber is null or empty.");
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
 
         var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
         var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
@@ -35,7 +45,7 @@ public class CreateParticipantScreeningProfile
 
             if (!participantResponse.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve participant data with NHS number {nhsNumber}. Status Code: {participantResponse.StatusCode}");
+                _logger.LogError("Failed to retrieve participant data with NHS number {NhsNumber}. Status Code: {StatusCode}", nhsNumber, participantResponse.StatusCode);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
@@ -46,7 +56,7 @@ public class CreateParticipantScreeningProfile
 
         catch (Exception ex)
         {
-            _logger.LogError("Failed to deserialise or retrieve participant from {participantUrl}. \nException: {ex}", participantUrl, ex);
+            _logger.LogError(ex, "Failed to deserialise or retrieve participant from {participantUrl}.", participantUrl);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
@@ -88,32 +98,32 @@ public class CreateParticipantScreeningProfile
 
         var screeningProfile = new ParticipantScreeningProfile
         {
-            NhsNumber = participant.nhs_number,
+            NhsNumber = long.TryParse(participant.nhs_number, out long num) ? num : 0,
             ScreeningName = String.Empty,
             PrimaryCareProvider = demographicsData.PrimaryCareProvider,
             PreferredLanguage = demographicsData.PreferredLanguage,
             ReasonForRemoval = participant.removal_reason,
-            ReasonForRemovalDt = String.Empty,
-            NextTestDueDate = participant.next_test_due_date,
-            NextTestDueDateCalculationMethod = participant.ntdd_calculation_method,
+            ReasonForRemovalDt = new DateOnly(),
+            NextTestDueDate = DateOnly.ParseExact(participant.next_test_due_date, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+            NextTestDueDateCalcMethod = participant.ntdd_calculation_method,
             ParticipantScreeningStatus = participant.subject_status_code,
             ScreeningCeasedReason = String.Empty,
-            IsHigherRisk = participant.is_higher_risk,
-            IsHigherRiskActive = participant.is_higher_risk_active,
-            HigherRiskNextTestDueDate = participant.higher_risk_next_test_due_date,
+            IsHigherRisk = (participant.is_higher_risk == "True") ? (short)1 : (short)0,
+            IsHigherRiskActive = (participant.is_higher_risk_active == "True") ? (short)1 : (short)0,
+            HigherRiskNextTestDueDate = DateOnly.ParseExact(participant.higher_risk_next_test_due_date, "yyyy-MM-dd", CultureInfo.InvariantCulture),
             HigherRiskReferralReasonCode = participant.higher_risk_referral_reason_code,
             HrReasonCodeDescription = String.Empty,
-            DateIrradiated = participant.date_irradiated,
+            DateIrradiated = DateOnly.ParseExact(participant.date_irradiated, "yyyy-MM-dd", CultureInfo.InvariantCulture),
             GeneCode = participant.gene_code,
             GeneCodeDescription = String.Empty,
-            RecordInsertDatetime = DateTime.Now.ToString()
+            RecordInsertDatetime = DateTime.Now
         };
 
         var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");
 
         string serializedParticipantScreeningProfile = JsonSerializer.Serialize(screeningProfile);
 
-        _logger.LogInformation($"Sending ParticipantScreeningProfile Profile to {screeningProfileUrl}: {serializedParticipantScreeningProfile}");
+        _logger.LogInformation("Sending ParticipantScreeningProfile Profile to {Url}: {Request}", screeningProfileUrl, serializedParticipantScreeningProfile);
 
         await _httpRequestService.SendPost(screeningProfileUrl, serializedParticipantScreeningProfile);
     }

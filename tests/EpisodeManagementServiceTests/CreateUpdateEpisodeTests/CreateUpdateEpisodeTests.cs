@@ -112,8 +112,8 @@ public class CreateUpdateEpisodeTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().StartsWith("Could not read episode data. Error:")),
-            null,
+            It.Is<It.IsAnyType>((state, type) => state.ToString().StartsWith("Could not read episode data.")),
+            It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);

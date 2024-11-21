@@ -136,9 +136,10 @@ public class UpdateEpisodeTests
                 LogLevel.Error,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Could not read episode data")),
-                null,
+                It.IsAny<Exception>(),
                 (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-            Times.Once);
+                Times.Once);
+
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
 }

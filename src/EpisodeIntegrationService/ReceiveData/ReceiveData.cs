@@ -69,7 +69,7 @@ public class ReceiveData
             }
             else
             {
-                _logger.LogError("fileName is invalid. file name: " + name);
+                _logger.LogError("fileName is invalid. file name: {Name}", name);
                 return;
             }
 
@@ -77,12 +77,11 @@ public class ReceiveData
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in ReceiveData: {ex.Message} \n StackTrace: {ex.StackTrace}");
-            return;
+            _logger.LogError(ex, "Error in ReceiveData: {Message} \n StackTrace: {StackTrace}", ex.Message, ex.StackTrace);
         }
     }
 
-    private (string episodeUrl, string participantUrl) GetConfigurationUrls()
+    private static (string episodeUrl, string participantUrl) GetConfigurationUrls()
     {
         return (Environment.GetEnvironmentVariable("EpisodeManagementUrl"), Environment.GetEnvironmentVariable("ParticipantManagementUrl"));
     }
@@ -127,13 +126,13 @@ public class ReceiveData
                 var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
-                _logger.LogInformation($"Sending Episode to {episodeUrl}: {serializedEpisode}");
+                _logger.LogInformation("Sending Episode to {Url}: {Request}", episodeUrl, serializedEpisode);
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error in ProcessEpisodeDataAsync: " + ex.Message);
+            _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
             await ProcessEpisodeDataAsync(episodes, episodeUrl);
         }
     }
@@ -147,7 +146,7 @@ public class ReceiveData
             EpisodeType = episode.episode_type,
             ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
-            EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.episode_date, DateFormat, CultureInfo.InvariantCulture)),
+            EpisodeOpenDate = episode.episode_date,
             AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),
             FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_foa, DateFormat, CultureInfo.InvariantCulture)),
             ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_as, DateFormat, CultureInfo.InvariantCulture)),
@@ -188,14 +187,14 @@ public class ReceiveData
             {
                 string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
 
-                _logger.LogInformation($"Sending participant to {participantUrl}: {serializedParticipant}");
+                _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
 
                 await _httpRequestService.SendPost(participantUrl, serializedParticipant);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error in ProcessParticipantDataAsync: " + ex.Message);
+            _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
             await ProcessParticipantDataAsync(participants, participantUrl);
         }
     }
@@ -207,7 +206,7 @@ public class BssEpisode
     public long nhs_number { get; set; }
     public string? episode_type { get; set; }
     public DateTime change_db_date_time { get; set; }
-    public string? episode_date { get; set; }
+    public DateOnly? episode_date { get; set; }
     public string? appointment_made { get; set; }
     public string? date_of_foa { get; set; }
     public string? date_of_as { get; set; }

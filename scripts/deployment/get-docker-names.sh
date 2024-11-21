@@ -1,13 +1,14 @@
 #!/bin/bash
 
 declare -A docker_functions_map=(
-    ["BIAnalyticsDataService/CreateParticipantScreeningEpisode"]="create-participant-screening-episode"
-    ["BIAnalyticsDataService/CreateParticipantScreeningProfile"]="create-participant-screening-profile"
-    # ["BIAnalyticsService/CreateParticipantScreeningProfile"]="create-participant-screening-profile"  # does not exist in the compose.yaml file
+    ["BIAnalyticsDataService/CreateParticipantScreeningEpisode"]="create-participant-screening-episode-data"
+    ["BIAnalyticsDataService/CreateParticipantScreeningProfile"]="create-participant-screening-profile-data"
+    ["BIAnalyticsService/CreateParticipantScreeningEpisode"]="create-participant-screening-episode"  # does not exist in the compose.yaml file
+    ["BIAnalyticsService/CreateParticipantScreeningProfile"]="create-participant-screening-profile"  # does not exist in the compose.yaml file
     # ["BIAnalyticsService/CreateDataAssets"]="create-data-assets"
     ["DemographicsService/GetDemographicsData"]="get-demographics-data"  # does not exist in the compose.yaml file
-    ["EpisodeDataService/CreateEpisode"]="create-episode"
     ["EpisodeDataService/GetEpisode"]="get-episode"
+    ["EpisodeDataService/CreateEpisode"]="create-episode"
     ["EpisodeDataService/UpdateEpisode"]="update-episode"
     ["EpisodeIntegrationService/ReceiveData"]="receive-data"
     ["EpisodeManagementService/CreateUpdateEpisode"]="create-update-episode"
