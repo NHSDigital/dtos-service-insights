@@ -43,7 +43,7 @@ public class GetReferenceDataTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Missing organisation ID.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Missing or invalid organisation ID.")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
@@ -59,7 +59,7 @@ public class GetReferenceDataTests
         };
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationAsync("12345")).ReturnsAsync((OrganisationLkp)null);
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationAsync(12345)).ReturnsAsync((OrganisationLkp)null);
 
         // Act
         var response = await _function.Run(_mockRequest.Object);
@@ -95,7 +95,7 @@ public class GetReferenceDataTests
             IsActive = ""
         };
 
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationAsync("245395")).ReturnsAsync(organisationLkp);
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationAsync(245395)).ReturnsAsync(organisationLkp);
 
         // Act
         var response = await _function.Run(_mockRequest.Object);
@@ -125,7 +125,7 @@ public class GetReferenceDataTests
         };
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationAsync("245395"))
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationAsync(245395))
             .Throws(new Exception("Database error"));
 
         // Act

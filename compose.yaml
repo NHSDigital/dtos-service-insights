@@ -106,6 +106,38 @@ services:
       - ASPNETCORE_URLS=http://*:6011
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
+  get-participant-screening-profile-data:
+    container_name: get-participant-screening-profile-data
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsDataService/GetParticipantScreeningProfileData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6062:6062"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6062
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
+  get-participant-screening-episode-data:
+    container_name: get-participant-screening-episode-data
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsDataService/GetParticipantScreeningEpisodeData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6002:6002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6002
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
   # BI Analytics Management Service
   create-participant-screening-episode:
     container_name: create-participant-screening-episode
@@ -141,6 +173,38 @@ services:
       - GetParticipantUrl=http://get-participant:6061/api/GetParticipant
       - CreateParticipantScreeningProfileUrl=http://create-participant-screening-profile-data:6011/api/CreateParticipantScreeningProfile
       - DemographicsServiceUrl=http://get-demographics-data:6080/api/GetDemographicsData
+
+  get-participant-screening-profile:
+    container_name: get-participant-screening-profile
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsManagementService/GetParticipantScreeningProfile/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6063:6063"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6063
+      - GetProfilesUrl=http://get-participant-screening-profile-data:6062/api/GetParticipantScreeningProfileData
+
+  get-participant-screening-episode:
+    container_name: get-participant-screening-episode
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsManagementService/GetParticipantScreeningEpisode/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6003:6003"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6003
+      - GetParticipantScreeningEpisodeDataUrl=http://get-participant-screening-episode-data:6002/api/GetParticipantScreeningEpisodeData
 
   # Demographics Service
   get-demographics-data:
@@ -191,16 +255,19 @@ services:
 
   update-episode:
     container_name: update-episode
-    network_mode: host
+    restart: always
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
+    networks:
+      - app-network
     ports:
       - "7777:7777"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7777
-      - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # Episode Integration Service
   receive-data:

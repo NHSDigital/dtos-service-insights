@@ -7,7 +7,6 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
-        //services.ConfigureFunctionsApplicationInsights();
         services
             .AddMeshClient(_ => _.MeshApiBaseUrl = Environment.GetEnvironmentVariable("MeshApiBaseUrl"))
             .AddMailbox(Environment.GetEnvironmentVariable("BSSMailBox")!, new NHS.MESH.Client.Configuration.MailboxConfiguration
