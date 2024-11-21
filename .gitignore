@@ -39,4 +39,5 @@ appsettings.json
 
 # GPG keys
 .asc
+.key
 
