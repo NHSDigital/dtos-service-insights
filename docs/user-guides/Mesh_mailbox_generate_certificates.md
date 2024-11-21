@@ -1,6 +1,16 @@
 
 # Mesh Mailbox Certificate Generation
 
+## Overview
+
+This repository helps streamline the process of creating SSL certificates for Mesh Mailboxes. SSL certificates are essential for securing communication between clients and servers, ensuring data privacy and integrity.
+
+The SSL certificates and Mesh Mailbox details will be required by the Dev Ops team when they create the Azure Environments to host the Azure functions.
+
+The scripts generate certificate files named according to the unique identifier of the Mesh Mailbox, making it easy to manage multiple certificates. The [Instructions](#instructions) section provides step-by-step guidance on how to use each script.
+
+In summary, this repository simplifies the process of obtaining and setting up SSL certificates for Mesh Mailboxes by automating the creation of CSRs and completing the certificate setup after receiving the signed certificate from the NHS Service Desk. This ensures secure communication between clients and servers, protecting sensitive data and maintaining data integrity.
+
 This project contains two scripts, `mesh_step_1_generate_cert_signing_request.sh` and `mesh_step_2_generate_actual_certificate.sh`, to create certificates for each unique Mesh Mailbox. Each certificate and associated files are named according to the specific identifier of the Mesh Mailbox (e.g., `X26OT023`), making it easy to manage multiple certificates.
 
 ## Prerequisites
