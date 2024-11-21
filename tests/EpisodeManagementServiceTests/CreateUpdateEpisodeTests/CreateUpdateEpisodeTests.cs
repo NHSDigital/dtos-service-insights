@@ -34,7 +34,7 @@ public class CreateUpdateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "123456"
+            EpisodeId = 123456
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -57,7 +57,7 @@ public class CreateUpdateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "234567"
+            EpisodeId = 234567
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -80,7 +80,7 @@ public class CreateUpdateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "1234567890"
+            EpisodeId = 1234567890
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -112,8 +112,8 @@ public class CreateUpdateEpisodeTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().StartsWith("Could not read episode data. Error:")),
-            null,
+            It.Is<It.IsAnyType>((state, type) => state.ToString().StartsWith("Could not read episode data.")),
+            It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);

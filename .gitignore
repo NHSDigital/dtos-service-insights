@@ -6,6 +6,7 @@
 *vulnerabilities*report*.json
 *report*json.zip
 .version
+.DS_Store
 
 *.code-workspace
 !project.code-workspace
@@ -41,3 +42,6 @@ appsettings.json
 .crt
 .keystore
 .p12
+
+# ignore pre-commit-config.yaml
+.pre-commit-config.yaml

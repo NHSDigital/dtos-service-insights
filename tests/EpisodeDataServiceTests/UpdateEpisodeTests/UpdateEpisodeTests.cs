@@ -19,11 +19,16 @@ public class UpdateEpisodeTests
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
     private readonly UpdateEpisode _function;
+    private readonly Mock<IEndCodeLkpRepository> _mockEndCodeLkpRepository = new();
+    private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
+    private readonly Mock<IReasonClosedCodeLkpRepository> _mockReasonClosedCodeLkpRepository = new();
+    private readonly Mock<IFinalActionCodeLkpRepository> _mockFinalActionCodeLkpRepository = new();
+
 
     public UpdateEpisodeTests()
     {
         _mockRequest = _setupRequest.Setup("");
-        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object);
+        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object);
     }
 
     [TestMethod]
@@ -32,13 +37,13 @@ public class UpdateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "123456"
+            EpisodeId = 123456
         };
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<string>())).ReturnsAsync(episode);
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
@@ -62,13 +67,13 @@ public class UpdateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "000000"
+            EpisodeId = 000000
         };
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<string>())).ReturnsAsync((Episode)null);
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync((Episode)null);
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
@@ -91,13 +96,13 @@ public class UpdateEpisodeTests
         // Arrange
         var episode = new Episode
         {
-            EpisodeId = "123456"
+            EpisodeId = 123456
         };
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<string>())).ReturnsAsync(episode);
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
         _mockEpisodeRepository.Setup(x => x.UpdateEpisode(It.IsAny<Episode>())).Throws(new DbUpdateException());
 
         // Act
@@ -131,9 +136,10 @@ public class UpdateEpisodeTests
                 LogLevel.Error,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Could not read episode data")),
-                null,
+                It.IsAny<Exception>(),
                 (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-            Times.Once);
+                Times.Once);
+
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
 }

@@ -43,7 +43,7 @@ public class CreateParticipantScreeningEpisode
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve episode with Episode ID {episodeId}. Status Code: {response.StatusCode}");
+                _logger.LogError("Failed to retrieve episode with Episode ID {EpisodeId}. Status Code: {StatusCode}", episodeId, response.StatusCode);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
@@ -54,7 +54,7 @@ public class CreateParticipantScreeningEpisode
 
         catch (Exception ex)
         {
-            _logger.LogError("Failed to deserialise or retrieve episode from {getEpisodeUrl}. \nException: {ex}", getEpisodeUrl, ex);
+            _logger.LogError(ex, "Failed to deserialise or retrieve episode from {Url}.", getEpisodeUrl);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
@@ -77,9 +77,9 @@ public class CreateParticipantScreeningEpisode
         var screeningEpisode = new ParticipantScreeningEpisode
         {
             EpisodeId = episode.EpisodeId,
-            ScreeningName = episode.ScreeningId,
+            ScreeningName = episode.ScreeningId.ToString(),
             NhsNumber = episode.NhsNumber,
-            EpisodeType = episode.EpisodeTypeId,
+            EpisodeType = episode.EpisodeTypeId.ToString(),
             EpisodeTypeDescription = String.Empty,
             EpisodeOpenDate = episode.EpisodeOpenDate,
             AppointmentMadeFlag = episode.AppointmentMadeFlag,
@@ -87,20 +87,21 @@ public class CreateParticipantScreeningEpisode
             ActualScreeningDate = episode.ActualScreeningDate,
             EarlyRecallDate = episode.EarlyRecallDate,
             CallRecallStatusAuthorisedBy = episode.CallRecallStatusAuthorisedBy,
-            EndCode = episode.EndCodeId,
+            EndCode = episode.EndCodeId.ToString(),
             EndCodeDescription = String.Empty,
             EndCodeLastUpdated = episode.EndCodeLastUpdated,
-            OrganisationCode = episode.OrganisationId,
+            OrganisationCode = episode.OrganisationId.ToString(),
             OrganisationName = String.Empty,
             BatchId = episode.BatchId,
-            RecordInsertDatetime = DateTime.Now.ToString()
+            RecordInsertDatetime = DateTime.Now
         };
 
         var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
 
         string serializedParticipantScreeningEpisode = JsonSerializer.Serialize(screeningEpisode);
 
-        _logger.LogInformation($"Sending ParticipantScreeningEpisode to {screeningEpisodeUrl}: {serializedParticipantScreeningEpisode}");
+        _logger.LogInformation("Sending ParticipantScreeningEpisode to {Url}: {Request}", screeningEpisodeUrl, serializedParticipantScreeningEpisode);
+
 
         await _httpRequestService.SendPost(screeningEpisodeUrl, serializedParticipantScreeningEpisode);
     }

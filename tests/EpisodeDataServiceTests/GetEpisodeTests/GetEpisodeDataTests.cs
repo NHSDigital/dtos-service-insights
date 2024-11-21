@@ -26,13 +26,11 @@ public class GetEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_ShouldReturnBadRequest_WhenEpisodeIdIsNotProvided()
+    public async Task Run_ShouldReturnBadRequest_WhenEpisodeIdIsNotProvidedOrInvalid()
     {
         // Arrange
-        var queryParam = new NameValueCollection()
-        {
-            { "EpisodeId", null }
-        };
+        var queryParam = new NameValueCollection();
+
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
         // Act
@@ -43,7 +41,7 @@ public class GetEpisodeTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Episode ID is not provided.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Episode ID missing or not valid.")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
@@ -59,7 +57,7 @@ public class GetEpisodeTests
         };
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync("12345")).ReturnsAsync((Episode)null);
+        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync(12345)).ReturnsAsync((Episode)null);
 
         // Act
         var response = await _function.Run(_mockRequest.Object);
@@ -87,10 +85,10 @@ public class GetEpisodeTests
 
         var episode = new Episode
         {
-            EpisodeId = "245395"
+            EpisodeId = 245395
         };
 
-        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync("245395")).ReturnsAsync(episode);
+        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync(245395)).ReturnsAsync(episode);
 
         // Act
         var response = await _function.Run(_mockRequest.Object);
@@ -99,7 +97,7 @@ public class GetEpisodeTests
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         response.Body.Seek(0, SeekOrigin.Begin);
         var episodeResponse = await JsonSerializer.DeserializeAsync<Episode>(response.Body);
-        Assert.AreEqual<string>("245395", episodeResponse.EpisodeId);
+        Assert.AreEqual<long>(245395, episodeResponse.EpisodeId);
 
         _mockLogger.Verify(log => log.Log(
             LogLevel.Information,
@@ -120,7 +118,7 @@ public class GetEpisodeTests
         };
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync("12345"))
+        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync(12345))
             .Throws(new Exception("Database error"));
 
         // Act
@@ -128,13 +126,11 @@ public class GetEpisodeTests
 
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
-        _mockLogger.Verify(log => log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Failed to get episode from database.") &&
-                                                    state.ToString().Contains("Exception: System.Exception: Database error")),
-            null,
-            (Func<object, Exception, string>)It.IsAny<object>()),
+        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to get episode from database.")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Once);
     }
 }

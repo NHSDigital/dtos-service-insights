@@ -4,7 +4,7 @@
 
 # Log the variables to verify they are set
 echo "DB_CONNECTION: ${DB_CONNECTION}"
-echo "PASSWORD: ${PASSWORD}"
+# echo "PASSWORD: ${PASSWORD}"
 echo "DB_NAME: ${DB_NAME}"
 
 # Check for empty variables
@@ -33,6 +33,7 @@ fi
 # Set up database
 echo "Setting up the database..."
 /opt/mssql-tools/bin/sqlcmd -S "${DB_CONNECTION}" -U SA -P "${PASSWORD}" -i create_database.sql || { echo "Failed to create database"; exit 1; }
+/opt/mssql-tools/bin/sqlcmd -S "${DB_CONNECTION}" -U SA -P "${PASSWORD}" -d "${DB_NAME}" -i drop_tables.sql || { echo "Failed to drop tables"; exit 1; }
 /opt/mssql-tools/bin/sqlcmd -S "${DB_CONNECTION}" -U SA -P "${PASSWORD}" -d "${DB_NAME}" -i create_tables.sql || { echo "Failed to create tables"; exit 1; }
 /opt/mssql-tools/bin/sqlcmd -S "${DB_CONNECTION}" -U SA -P "${PASSWORD}" -d "${DB_NAME}" -i insert_episode_test_data.sql || { echo "Failed to insert test data"; exit 1; }
 
