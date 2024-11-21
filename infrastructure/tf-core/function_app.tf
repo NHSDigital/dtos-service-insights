@@ -84,6 +84,8 @@ resource "azurerm_key_vault_access_policy" "functionapp" {
   RBAC roles to assign to the Function Apps
 -------------------------------------------------------------------------------------------------- */
 locals {
+  primary_region = [for k, v in var.regions : k if v.is_primary_region][0]
+
   rbac_role_assignments = {
     for region_key in keys(module.regions_config) :
     region_key => concat(

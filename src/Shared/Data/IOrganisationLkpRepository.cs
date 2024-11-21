@@ -4,5 +4,5 @@ namespace NHS.ServiceInsights.Data;
 
 public interface IOrganisationLkpRepository
 {
-    Task<OrganisationLkp?> GetOrganisationAsync(string organisationId);
+    Task<OrganisationLkp?> GetOrganisationAsync(long organisationId);
 }

@@ -25,11 +25,11 @@ public class GetReferenceData
     {
         _logger.LogInformation("GetReferenceData: start");
 
-        string organisationId = req.Query["organisation_id"];
+        long organisationId;
 
-        if (string.IsNullOrEmpty(organisationId))
+        if (!long.TryParse(req.Query["organisation_id"], out organisationId))
         {
-            _logger.LogError("Missing organisation ID.");
+            _logger.LogError("Missing or invalid organisation ID.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
