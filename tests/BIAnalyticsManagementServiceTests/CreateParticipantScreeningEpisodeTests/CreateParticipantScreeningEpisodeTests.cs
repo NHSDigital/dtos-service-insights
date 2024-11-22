@@ -3,7 +3,7 @@ using System.Net;
 using System.Text;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using NHS.ServiceInsights.BIAnalyticsService;
+using NHS.ServiceInsights.BIAnalyticsManagementService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Common;
 using System.Collections.Specialized;

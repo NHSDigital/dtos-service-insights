@@ -183,7 +183,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC271BF2537C");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27E0CFEC71");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
@@ -261,7 +261,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27E5F1B719");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27094E8A0E");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 

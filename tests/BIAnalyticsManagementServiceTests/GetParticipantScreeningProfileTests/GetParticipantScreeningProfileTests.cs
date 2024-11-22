@@ -5,12 +5,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Collections.Specialized;
 using NHS.ServiceInsights.TestUtils;
-using NHS.ServiceInsights.BIAnalyticsService;
+using NHS.ServiceInsights.BIAnalyticsManagementService;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using System.Text;
 
-namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
+namespace NHS.ServiceInsights.BIAnalyticsManagementServiceTests;
 
 [TestClass]
 public class GetParticipantScreeningProfileTests

@@ -107,13 +107,27 @@ services:
       - ASPNETCORE_URLS=http://*:6062
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
+  get-participant-screening-episode-data:
+    container_name: get-participant-screening-episode-data
+    network_mode: host
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsDataService/GetParticipantScreeningEpisodeData/Dockerfile
+    ports:
+      - "6002:6002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6002
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
   # BI Analytics Service
   create-participant-screening-episode:
     container_name: create-participant-screening-episode
     network_mode: host
     build:
       context: ./src/
-      dockerfile: ./BIAnalyticsService/CreateParticipantScreeningEpisode/Dockerfile
+      dockerfile: ./BIAnalyticsManagementService/CreateParticipantScreeningEpisode/Dockerfile
     ports:
       - "6008:6008"
     environment:
@@ -128,7 +142,7 @@ services:
     network_mode: host
     build:
       context: ./src/
-      dockerfile: ./BIAnalyticsService/CreateParticipantScreeningProfile/Dockerfile
+      dockerfile: ./BIAnalyticsManagementService/CreateParticipantScreeningProfile/Dockerfile
     ports:
       - "6009:6009"
     environment:
@@ -144,7 +158,7 @@ services:
     network_mode: host
     build:
       context: ./src/
-      dockerfile: ./BIAnalyticsService/GetParticipantScreeningProfile/Dockerfile
+      dockerfile: ./BIAnalyticsManagementService/GetParticipantScreeningProfile/Dockerfile
     ports:
       - "6063:6063"
     environment:
@@ -152,6 +166,20 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6063
       - GetProfilesUrl=http://127.0.0.1:6062/api/GetParticipantScreeningProfileData
+
+  get-participant-screening-episode:
+    container_name: get-participant-screening-episode
+    network_mode: host
+    build:
+      context: ./src/
+      dockerfile: ./BIAnalyticsManagementService/GetParticipantScreeningEpisode/Dockerfile
+    ports:
+      - "6003:6003"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6003
+      - GetParticipantScreeningEpisodeDataUrl=http://127.0.0.1:6002/api/GetParticipantScreeningEpisodeData
 
   # Demographics Service
   get-demographics-data:

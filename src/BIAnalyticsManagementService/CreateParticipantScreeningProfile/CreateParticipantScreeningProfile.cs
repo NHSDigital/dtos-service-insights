@@ -8,7 +8,7 @@ using NHS.ServiceInsights.Model;
 using Grpc.Net.Client.Balancer;
 using System.Globalization;
 
-namespace NHS.ServiceInsights.BIAnalyticsService;
+namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
 public class CreateParticipantScreeningProfile
 {

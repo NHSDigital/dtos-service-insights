@@ -1,17 +1,15 @@
 using System.Net;
-using System.Globalization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Common;
 
-namespace NHS.ServiceInsights.BIAnalyticsService;
+namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
 public class GetParticipantScreeningProfile
 {
     private readonly ILogger<GetParticipantScreeningProfile> _logger;
     private readonly IHttpRequestService _httpRequestService;
-
     public GetParticipantScreeningProfile(ILogger<GetParticipantScreeningProfile> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
@@ -23,36 +21,15 @@ public class GetParticipantScreeningProfile
     {
         _logger.LogInformation("GetParticipantScreeningProfile start");
 
-        int page;
-        int pageSize;
-        DateTime startDate;
-        DateTime endDate;
-
-        if(!int.TryParse(req.Query["page"], out page))
+        if (!PaginationHelper.TryValidatePaginationQuery(req.Query, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, out string errorMessage))
         {
-            _logger.LogError("Invalid page number");
-            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            return badRequestResponse;
+            var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            errorResponse.WriteString(errorMessage);
+            return errorResponse;
         }
 
-        if(!DateTime.TryParse(req.Query["startDate"], CultureInfo.InvariantCulture, out startDate) || !DateTime.TryParse(req.Query["endDate"],  CultureInfo.InvariantCulture, out endDate))
-        {
-            _logger.LogError("Invalid startDate or endDate");
-            var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            return badRequestResponse;
-        }
-
-        if(!int.TryParse(req.Query["pageSize"], out pageSize))
-        {
-            pageSize = 1000;
-        }
-
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 1;
-        if (pageSize > 5000) pageSize = 5000;
-
-        var baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
-        var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
+        string baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
+        string url = PaginationHelper.BuildUrl(baseUrl, page, pageSize, startDate, endDate);
         _logger.LogInformation("Requesting URL: {Url}", url);
 
         try
