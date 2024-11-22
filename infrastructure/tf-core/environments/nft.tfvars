@@ -121,7 +121,7 @@ app_service_plan = {
   }
 
   instances = {
-    BIAnalyticsDataService       = {}
+    BIAnalyticsDataService = {}
     # BIAnalyticsService           = {}
     # DemographicsService          = {}
     # EpisodeDataService           = {}
