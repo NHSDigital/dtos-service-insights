@@ -3,7 +3,7 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "ServiceInsightsDbConnectionString": "Server=localhost,1433;Database=ServiceInsightsDB;User Id=SA;Password=<password>!;TrustServerCertificate=True"
+    "ServiceInsightsDbConnectionString": "YOUR_CONNECTION_STRING"
   },
   "Host": {
     "LocalHttpPort": 6002

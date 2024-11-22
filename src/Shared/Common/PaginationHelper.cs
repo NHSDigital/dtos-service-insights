@@ -5,7 +5,7 @@ namespace NHS.ServiceInsights.Common;
 
 public class PaginationHelper
 {
-    public bool TryValidatePaginationQuery (NameValueCollection query, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, out string errorMessage)
+    public static bool TryValidatePaginationQuery (NameValueCollection query, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, out string errorMessage)
     {
         page = 0;
         pageSize = 0;
@@ -38,7 +38,7 @@ public class PaginationHelper
         return true;
     }
 
-    public string BuildUrl(string baseUrl, int page, int pageSize, DateTime startDate, DateTime endDate)
+    public static string BuildUrl(string baseUrl, int page, int pageSize, DateTime startDate, DateTime endDate)
     {
         var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
         return url;
