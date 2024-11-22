@@ -38,7 +38,7 @@ public class GetParticipantScreeningEpisode
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve episodes. Status Code: {response.StatusCode}");
+                _logger.LogError("Failed to retrieve episodes. Status Code: {StatusCode}", response.StatusCode);
                 var errorResponse = req.CreateResponse(response.StatusCode);
                 return errorResponse;
             }
@@ -55,7 +55,7 @@ public class GetParticipantScreeningEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception when calling the GetParticipantScreeningData function. \nUrl:{url}\nException: " + ex.Message, url);
+            _logger.LogError(ex, "Exception when calling the GetParticipantScreeningEpisodeData function. \nUrl:{url}\nException: {Message}", url, ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
