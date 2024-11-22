@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace NHS.ServiceInsights.Common;
 
-public class PaginationHelper
+public static class PaginationHelper
 {
     public static bool TryValidatePaginationQuery (NameValueCollection query, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, out string errorMessage)
     {
