@@ -158,7 +158,7 @@ public class GetParticipantScreeningEpisodeTests
         // Assert
         _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
         It.IsAny<EventId>(),
-        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Exception when calling the GetParticipantScreeningData function.")),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Exception when calling the GetParticipantScreeningEpisodeData function.")),
         It.IsAny<Exception>(),
         It.IsAny<Func<It.IsAnyType, Exception, string>>()),
         Times.Once);
