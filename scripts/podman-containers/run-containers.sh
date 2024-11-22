@@ -27,7 +27,7 @@ if [ "$OS" == "Darwin" ]; then
 # Windows (using Windows Subsystem for Linux)
 elif [[ "$OS" == "Linux" && "$(uname -r)" == *"microsoft"* ]]; then
   echo "Running on Windows (WSL)..."
-  start_containers "../../compose-win.yaml"
+  start_containers "../../compose.yaml"
 
 else
   echo "Unsupported operating system: $OS"
