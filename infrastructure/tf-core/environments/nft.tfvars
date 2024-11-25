@@ -48,7 +48,7 @@ routes = {
     network_rules = [
       {
         name                  = "AllowSerinsToAudit"
-        priority              = 800
+        priority              = 801
         action                = "Allow"
         rule_name             = "SerinsToAudit"
         source_addresses      = ["10.115.0.0/16"] # will be populated with the serins manager subnet address space
@@ -58,7 +58,7 @@ routes = {
       },
       {
         name                  = "AllowAuditToSerins"
-        priority              = 810
+        priority              = 811
         action                = "Allow"
         rule_name             = "AuditToSerins"
         source_addresses      = ["10.116.0.0/16"]
@@ -70,7 +70,7 @@ routes = {
     route_table_routes_to_audit = [
       {
         name                   = "SerinsToAudit"
-        address_prefix         = "10.114.0.0/16"
+        address_prefix         = "10.116.0.0/16"
         next_hop_type          = "VirtualAppliance"
         next_hop_in_ip_address = "" # will be populated with the Firewall Private IP address
       }
@@ -78,7 +78,7 @@ routes = {
     route_table_routes_from_audit = [
       {
         name                   = "AuditToSerins"
-        address_prefix         = "10.113.0.0/16"
+        address_prefix         = "10.115.0.0/16"
         next_hop_type          = "VirtualAppliance"
         next_hop_in_ip_address = "" # will be populated with the Firewall Private IP address
       }
