@@ -146,7 +146,7 @@ public class ReceiveData
             EpisodeType = episode.episode_type,
             ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
-            EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.ParseExact(episode.episode_date, DateFormat),
+            EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.ParseExact(episode.episode_date, DateFormat, CultureInfo.InvariantCulture),
             AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),
             FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_foa, DateFormat, CultureInfo.InvariantCulture)),
             ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_as, DateFormat, CultureInfo.InvariantCulture)),
