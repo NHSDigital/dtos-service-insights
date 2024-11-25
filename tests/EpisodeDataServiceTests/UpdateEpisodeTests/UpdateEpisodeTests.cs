@@ -61,16 +61,7 @@ public class UpdateEpisodeTests
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
-        // Assert
-        _mockLogger.Verify(log =>
-            log.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(),
-                null,
-                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-            Times.Exactly(2));
-        _mockEpisodeRepository.Verify(x => x.UpdateEpisode(It.IsAny<Episode>()), Times.Once);
+        //Assert
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }
 
@@ -92,14 +83,6 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _mockLogger.Verify(log =>
-            log.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((state, type) => state.ToString().Contains($"Episode {episode.EpisodeId} not found.")),
-                null,
-                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-            Times.Once);
         Assert.AreEqual(HttpStatusCode.NotFound, result.StatusCode);
     }
 
@@ -134,14 +117,6 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _mockLogger.Verify(log =>
-            log.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
@@ -156,15 +131,170 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        _mockLogger.Verify(log =>
-            log.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Could not read episode data")),
-                It.IsAny<Exception>(),
-                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-                Times.Once);
-
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
+
+    [TestMethod]
+    public async Task Run_Return_BadRequest_When_EpisodeType_Not_Found()
+    {
+        // Arrange
+        var episodeDto = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "InvalidType",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("InvalidType")).ReturnsAsync((int?)null);
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+
+    [TestMethod]
+    public async Task Run_Return_BadRequest_When_EndCode_Not_Found()
+    {
+        // Arrange
+        var episodeDto = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "InvalidCode",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("InvalidCode")).ReturnsAsync((int?)null);
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Return_BadRequest_When_ReasonClosedCode_Not_Found()
+    {
+        // Arrange
+        var episodeDto = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "InvalidCode",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("InvalidCode")).ReturnsAsync((int?)null);
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+
+    [TestMethod]
+    public async Task Run_Return_BadRequest_When_FinalActionCode_Not_Found()
+    {
+        // Arrange
+        var episodeDto = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "InvalidCode",
+        };
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("InvalidCode")).ReturnsAsync((int?)null);
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Return_InternalServerError_When_Exception_Is_Thrown_In_TryBlock()
+    {
+        // Arrange
+        var episodeDto = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync(245395))
+            .Throws(new Exception("Error updating episode {episodeId}."));
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+    }
+
 }

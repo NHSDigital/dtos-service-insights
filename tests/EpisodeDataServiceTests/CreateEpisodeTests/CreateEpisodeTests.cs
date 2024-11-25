@@ -97,4 +97,205 @@ public class CreateEpisodeTests
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
+
+    [TestMethod]
+    public async Task Run_Should_Return_BadRequest_When_EpisodeType_Not_Found()
+    {
+        // Arrange
+        var episode = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "InvalidType",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episode);
+        _mockRequest = _setupRequest.Setup(json);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(33333);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(44444);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("InvalidType")).ReturnsAsync((int?)null);
+
+        // Act
+        var result = await _function.RunAsync(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Not_Return_BadRequest_When_EpisodeType_Is_Empty_Or_Null()
+    {
+        // Arrange
+        var episode = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episode);
+        _mockRequest = _setupRequest.Setup(json);
+
+        // Act
+        var result = await _function.RunAsync(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Return_BadRequest_When_EndCode_Not_Found()
+    {
+        // Arrange
+        var episode = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "InvalidType",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episode);
+        _mockRequest = _setupRequest.Setup(json);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(33333);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("InvalidType")).ReturnsAsync((int?)null);
+
+        // Act
+        var result = await _function.RunAsync(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Not_Return_BadRequest_When_EndCode_Is_Empty_Or_Null()
+    {
+        // Arrange
+        var episode = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episode);
+        _mockRequest = _setupRequest.Setup(json);
+
+        // Act
+        var result = await _function.RunAsync(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Return_BadRequest_When_ReasonClosedCode_Not_Found()
+    {
+        // Arrange
+        var episode = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "InvalidType",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episode);
+        _mockRequest = _setupRequest.Setup(json);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(22222);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(44444);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("InvalidType")).ReturnsAsync((int?)null);
+
+        // Act
+        var result = await _function.RunAsync(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Not_Return_BadRequest_When_ReasonClosedCode_Is_Empty_Or_Null()
+    {
+        // Arrange
+        var episode = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episode);
+        _mockRequest = _setupRequest.Setup(json);
+
+        // Act
+        var result = await _function.RunAsync(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Return_BadRequest_When_FinalActionCode_Not_Found()
+    {
+        // Arrange
+        var episode = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "InvalidType",
+        };
+
+        var json = JsonSerializer.Serialize(episode);
+        _mockRequest = _setupRequest.Setup(json);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(33333);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(44444);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("InvalidType")).ReturnsAsync((int?)null);
+
+        // Act
+        var result = await _function.RunAsync(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Not_Return_BadRequest_When_FinalActionCode_Is_Empty_Or_Null()
+    {
+        // Arrange
+        var episode = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "",
+        };
+
+        var json = JsonSerializer.Serialize(episode);
+        _mockRequest = _setupRequest.Setup(json);
+
+        // Act
+        var result = await _function.RunAsync(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
 }

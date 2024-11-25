@@ -249,4 +249,30 @@ public class ReceiveDataTests
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(4));
     }
+
+    [TestMethod]
+    public async Task ReceiveData_ShouldLogErrorAndReturnIfUrlsAreNotConfigured()
+    {
+        // Arrange
+        string data = "nhs_number,episode_id,episode_type,change_db_date_time,episode_date,appointment_made,date_of_foa,date_of_as,early_recall_date,call_recall_status_authorised_by,end_code,end_code_last_updated,bso_organisation_code,bso_batch_id,reason_closed_code,end_point,final_action_code\n" +
+                    "9000007053,571645,R,2020-03-31 12:11:47.339148+01,11/01/2017,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV121798J,,,\n" +
+                    "9000009808,333330,R,2020-03-31 12:49:47.513821+01,05/09/2016,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV000001A,,,\n";
+
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+        Environment.SetEnvironmentVariable("EpisodeManagementUrl", "");
+        Environment.SetEnvironmentVariable("ParticipantManagementUrl", "");
+
+        // Act
+        await _function.Run(stream, "bss_episodes_test_data_20240930");
+
+        // Assert
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<object>(state => state.ToString().Contains("One or both URLs are not configured")),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
+    }
 }
