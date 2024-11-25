@@ -237,4 +237,3 @@ BEGIN
       IS_ACTIVE                       VARCHAR(50) NULL,
     );
 END
-

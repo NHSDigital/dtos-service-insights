@@ -69,16 +69,16 @@ If you prefer to run the commands manually, follow the instructions for your ope
    The database service is resource-intensive, so it’s recommended to start it first:
 
    ```bash
-   podman compose --file compose-mac.yaml up -d sql-database
-   podman compose --file compose-mac.yaml up -d database-setup
+   podman compose --file compose.yaml up -d sql-database
+   podman compose --file compose.yaml up -d database-setup
    ```
 
 2. **Start Azurite and Azurite Setup**
    After the database is running, start Azurite and its setup service:
 
    ```bash
-   podman compose --file compose-mac.yaml up -d azurite
-   podman compose --file compose-mac.yaml up -d azurite-setup
+   podman compose --file compose.yaml up -d azurite
+   podman compose --file compose.yaml up -d azurite-setup
    ```
 
 3. **Verify Access to Azurite and SQL**
@@ -91,7 +91,7 @@ If you prefer to run the commands manually, follow the instructions for your ope
    Once the database and Azurite are confirmed to be running correctly, start the remaining services:
 
    ```bash
-   podman compose --file compose-mac.yaml up -d
+   podman compose --file compose.yaml up -d
    ```
 
 #### Starting Containers on Windows
@@ -150,11 +150,11 @@ If you have made changes to the code and need to rebuild the container image, us
   For example, to rebuild the `get-episode` or `sql-database` service:
 
   ```bash
-  podman compose --file compose-mac.yaml build get-episode
+  podman compose --file compose.yaml build get-episode
   ```
 
   ```bash
-  podman compose --file compose-mac.yaml build sql-database
+  podman compose --file compose.yaml build sql-database
   ```
 
 Repeat the command for any other service you wish to rebuild.
@@ -165,12 +165,12 @@ Repeat the command for any other service you wish to rebuild.
   To restart all containers using your compose file:
 
   ```bash
-  podman compose --file compose-mac.yaml restart
+  podman compose --file compose.yaml restart
   ```
 
 - **Restart All Containers (With Stop and Start)**
   Alternatively, if you want to fully stop and restart the containers:
 
   ```bash
-  podman compose --file compose-mac.yaml down && podman compose --file compose-mac.yaml up -d
+  podman compose --file compose.yaml down && podman compose --file compose.yaml up -d
   ```

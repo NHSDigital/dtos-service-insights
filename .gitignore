@@ -36,3 +36,10 @@ appsettings.json
 
 # ignore pre-commit-config.yaml
 .pre-commit-config.yaml
+
+# SSL certificates etc
+.csr
+.crt
+.keystore
+.p12
+
