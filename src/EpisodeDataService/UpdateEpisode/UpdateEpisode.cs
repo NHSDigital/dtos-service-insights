@@ -54,26 +54,37 @@ public class UpdateEpisode
 
             if (existingEpisode != null)
             {
-                var episodeTypeId = await _episodeTypeLkpRepository.GetEpisodeTypeIdAsync(episodeDto.EpisodeType);
-                if (episodeTypeId == null)
+                var episodeTypeId = !string.IsNullOrWhiteSpace(episodeDto.EpisodeType) ?
+                    await _episodeTypeLkpRepository.GetEpisodeTypeIdAsync(episodeDto.EpisodeType) : null;
+
+                if (episodeTypeId == null && !string.IsNullOrWhiteSpace(episodeDto.EpisodeType))
                 {
                     _logger.LogError("Episode type '{episodeType}' not found in lookup table.", episodeDto.EpisodeType);
                     return req.CreateResponse(HttpStatusCode.BadRequest);
                 }
-                var endCodeId = await _endCodeLkpRepository.GetEndCodeIdAsync(episodeDto.EndCode);
-                if (endCodeId == null)
+
+                var endCodeId = !string.IsNullOrWhiteSpace(episodeDto.EndCode) ?
+                    await _endCodeLkpRepository.GetEndCodeIdAsync(episodeDto.EndCode) : null;
+
+                if (endCodeId == null && !string.IsNullOrWhiteSpace(episodeDto.EndCode))
                 {
                     _logger.LogError("End code '{endCode}' not found in lookup table.", episodeDto.EndCode);
                     return req.CreateResponse(HttpStatusCode.BadRequest);
                 }
-                var reasonClosedCodeId = await _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync(episodeDto.ReasonClosedCode);
-                if (reasonClosedCodeId == null)
+
+                var reasonClosedCodeId = !string.IsNullOrWhiteSpace(episodeDto.ReasonClosedCode) ?
+                    await _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync(episodeDto.ReasonClosedCode) : null;
+
+                if (reasonClosedCodeId == null && !string.IsNullOrWhiteSpace(episodeDto.ReasonClosedCode))
                 {
                     _logger.LogError("Reason closed code '{reasonClosedCode}' not found in lookup table.", episodeDto.ReasonClosedCode);
                     return req.CreateResponse(HttpStatusCode.BadRequest);
                 }
-                var finalActionCodeId = await _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync(episodeDto.FinalActionCode);
-                if (finalActionCodeId == null)
+
+                var finalActionCodeId = !string.IsNullOrWhiteSpace(episodeDto.FinalActionCode) ?
+                    await _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync(episodeDto.FinalActionCode) : null;
+
+                if (finalActionCodeId == null && !string.IsNullOrWhiteSpace(episodeDto.FinalActionCode))
                 {
                     _logger.LogError("Final action code '{finalActionCode}' not found in lookup table.", episodeDto.FinalActionCode);
                     return req.CreateResponse(HttpStatusCode.BadRequest);
