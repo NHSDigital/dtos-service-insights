@@ -5,6 +5,7 @@ using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
 using CsvHelper;
 using System.Globalization;
+using CsvHelper.Configuration.Attributes;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
