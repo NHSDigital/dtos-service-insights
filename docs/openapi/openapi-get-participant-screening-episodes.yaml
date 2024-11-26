@@ -168,7 +168,7 @@ components:
         finalActionCode:
           type: string
           description: A short code that refers to the action / event that should take place after the closing of an episode
-        finalActionDescription:
+        finalActionCodeDescription:
           type: string
           description: A textual description about the action / event that should take place after the closing of an episode
         endPoint:

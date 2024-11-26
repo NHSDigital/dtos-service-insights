@@ -170,6 +170,10 @@ components:
         geneCodeDescription:
           type: string
           description: A textual description of the participant's cancer gene markers.
+        srcSystemProcessedDateTime:
+          type: string
+          format: date-time
+          description: The date time the episode was processed in the source system.
         recordInsertDateTime:
           type: string
           format: date-time
