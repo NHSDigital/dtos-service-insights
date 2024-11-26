@@ -1,0 +1,180 @@
+openapi: 3.0.3
+info:
+  title: NSP Participant Screening Profile API Endpoint
+  description: |
+    NSP API for getting participant screening profiles with support for pagination based on a date range.
+
+    - Multiple calls with the same query parameters will return the same data.
+    - Data may be removed from the NSP after 90 days (to be confirmed).
+    - The API authentication process will be documented in Confluence.
+    - Data will be retrieved and ordered based on the dates the records were last modified in the NSP (recordUpdateDateTime).
+    - The API does not support caching responses; each response will contain live data.
+  version: 1.0.0
+
+paths:
+  /participants:
+    get:
+      summary: Returns a paginated list of participant screening profiles that were last modified within the specified date range
+      operationId: getParticipants
+      tags: [Participant Screening Profile]
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          description: The start date for the date range filter (YYYY-MM-DDTHH:MM:SS).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: The end date for the date range filter (YYYY-MM-DDTHH:MM:SS).
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          required: false
+          description: The page number for pagination. It not specified, defaults to the first page of data.
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: false
+          description: The number of profiles per page. If not specified, defaults to 1000 rows of data.
+          schema:
+            type: integer
+            default: 1000
+            minimum: 1
+            maximum: 5000
+      responses:
+        '200':
+          description: Successful response containing participant screening profile data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  participants:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Participant"
+                  totalResults:
+                    type: integer
+                    description: Total number of results for the specified date range.
+                  totalPages:
+                    type: integer
+                    description: Total number of pages available for pagination ('pageSize' divided by the 'totalResults').
+                  totalRemaining:
+                    type: integer
+                    description: Number of rows remaining for pagination. If this value is '0', no more data is available for the specified data range and page number.
+        '400':
+          description: Bad request. Please see 'errors' for more details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Error"
+        '401':
+          description: Authentication failed. Please supply valid credentials.
+        '403':
+          description: Forbidden. The user does not have permissions to the underlying data assets.
+        '404':
+          description: No participant screening profiles were found for the specified date range.
+        '429':
+          description: Too many requests. Rate limiting exceeded.
+        '500':
+          description: Internal server error or processing logic error.
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        field:
+          type: string
+          description: The name of the parameter that caused the error.
+          example: startDate
+        errorCode:
+          type: string
+          description: The specific error code for the error.
+          example: INVALID_DATE_FORMAT
+        errorMessage:
+          type: string
+          description: A human-readable error message explaining the issue.
+          example: startDate must be in YYYY-MM-DD format.
+
+    Participant:
+      type: object
+      properties:
+        nhsNumber:
+          type: number
+          description: NHS number of the participant.
+        screeningName:
+          type: string
+          description: Name of the screening program which the profile is a participant of.
+        primaryCareProvider:
+          type: string
+          description: Short code of the primary care provider.
+        preferredLanguage:
+          type: string
+          description: A participant's preferred language code (if known).
+        reasonForRemoval:
+          type: string
+          description:
+        reasonForRemovalDt:
+          type: string
+          format: date
+          description:
+        nextTestDueDate:
+          type: string
+          format: date
+          description: The next due date for the participant's screening test.
+        nextTestDueDateCalcMethod:
+          type: string
+          description:
+        participantScreeningStatus:
+          type: string
+          description: Status of the participant's screening.
+        screeningCeasedReason:
+          type: string
+          description: A textual description for why the participant was remove from the screening program.
+        isHigherRisk:
+          type: number
+          description:
+        isHigherRiskActive:
+          type: number
+          description:
+        higherRiskNextTestDueDate:
+          type: string
+          format: date
+          description:
+        higherRiskReferralReasonCode:
+          type: string
+          description:
+        hrReasonCodeDescription:
+          type: string
+          description:
+        dateIrradiated:
+          type: string
+          format: date
+          description: The date on which irradiation was performed (if applicable).
+        geneCode:
+          type: string
+          description: A short  code related to the participant's cancer gene markers.
+        geneCodeDescription:
+          type: string
+          description: A textual description of the participant's cancer gene markers.
+        recordInsertDateTime:
+          type: string
+          format: date-time
+          description: The date the participant information was created.
+        recordUpdateDateTime:
+          type: string
+          format: date-time
+          description: The most recent date this participant was updated.

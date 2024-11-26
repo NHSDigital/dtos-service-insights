@@ -1,0 +1,197 @@
+openapi: 3.0.3
+info:
+  title: NSP Participant Screening Episode API Endpoint
+  description: |
+    NSP API for getting participant screening episodes with support for pagination based on a date range.
+
+    - Multiple calls with the same query parameters will return the same data.
+    - Data may be removed from the NSP after 90 days (to be confirmed).
+    - The API authentication process will be documented in Confluence.
+    - Data will be retrieved and ordered based on the dates the records were last modified in the NSP (recordUpdateDateTime).
+    - The API does not support caching responses; each response will contain live data.
+  version: 1.0.0
+
+paths:
+  /episodes:
+    get:
+      summary: Returns a paginated list of participant screening episodes that were last modified within the specified date range
+      operationId: getEpisodes
+      tags: [Participant Screening Episode]
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          description: The start date for the date range filter (YYYY-MM-DDTHH:MM:SS).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: The end date for the date range filter (YYYY-MM-DDTHH:MM:SS).
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          required: false
+          description: The page number for pagination. If not specified, defaults to the first page of data.
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: false
+          description: The number of episodes per page. If not specified, defaults to 1000 rows of data.
+          schema:
+            type: integer
+            default: 1000
+            minimum: 1
+            maximum: 5000
+      responses:
+        '200':
+          description: Successful response with participant screening episode data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  episodes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Episode"
+                  totalResults:
+                    type: integer
+                    description: Total number of results for the specified date range.
+                  totalPages:
+                    type: integer
+                    description: Total number of pages available for pagination ('totalResults' divided by 'pageSize')
+                  totalRemaining:
+                    type: integer
+                    description: Number of rows remaining for pagination. If this value is '0', no more data is available for the specified data range and page number.
+        '400':
+          description: Bad request. Please see 'errors' for more details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Error"
+        '401':
+          description: Authentication failed. Please supply valid credentials.
+        '403':
+          description: Forbidden. The user does not have permissions to the underlying data assets.
+        '404':
+          description: No participant screening episodes were found for the specified date range.
+        '429':
+          description: Too many requests. Rate limiting exceeded.
+        '500':
+          description: Internal server error or processing logic error.
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        field:
+          type: string
+          description: The name of the parameter that caused the error.
+          example: startDate
+        errorCode:
+          type: string
+          description: The specific error code for the error.
+          example: INVALID_DATE_FORMAT
+        errorMessage:
+          type: string
+          description: A human-readable error message explaining the issue.
+          example: startDate must be in YYYY-MM-DD format.
+
+    Episode:
+      type: object
+      properties:
+        episodeId:
+          type: number
+          description: Unique identifier for the screening episode.
+        nhsNumber:
+          type: number
+          description: The participant's NHS number.
+        screeningName:
+          type: string
+          description: Name of the screening program which the participant was part of and for which this episode was created.
+        episodeType:
+          type: string
+          description: Short code representing the type of episode.
+        episodeTypeDescription:
+          type: string
+          description: Textual description of the type of episode.
+        episodeOpenDate:
+          type: string
+          format: date
+          description: Date when the episode was first created/opened.
+        appointmentMadeFlag:
+          type: number
+          description:
+        firstOfferedAppointmentDate:
+          type: string
+          format: date
+          description: Date when a first offered appointment for screening was scheduled for the participant.
+        actualScreeningDate:
+          type: string
+          format: date
+          description: The date when the actual screening took place for this clinical episode.
+        earlyRecallDate:
+          type: string
+          format: date
+          description: The early recall date related to the subject’s most recent episode.
+        callRecallStatusAuthorisedBy:
+          type: string
+          description: The person or source that authorised the call/recall status in this episode.
+        endCode:
+          type: string
+          description:
+        endCodeDescription:
+          type: string
+          description:
+        endCodeLastUpdated:
+          type: string
+          format: date-time
+          description:
+        reasonClosedCode:
+          type: string
+          description:
+        reasonClosedCodeDescription:
+          type: string
+          description:
+        finalActionCode:
+          type: string
+          description: A short code that refers to the action / event that should take place after the closing of an episode
+        finalActionDescription:
+          type: string
+          description: A textual description about the action / event that should take place after the closing of an episode
+        endPoint:
+          type: string
+          description:
+        organisationCode:
+          type: string
+          description: Short code of the organisation responsible for the screening.
+        organisationName:
+          type: string
+          description: Name of the organisation responsible for the screening.
+        batchId:
+          type: string
+          description: Identifier of the NHAIS batch which this episode belongs to.
+        srcSystemProcessedDateTime:
+          type: string
+          format: date-time
+          description: The date time the episode was processed in the source system.
+        recordInsertDateTime:
+          type: string
+          format: date-time
+          description: The date time the data asset was created.
+        recordUpdateDateTime:
+          type: string
+          format: date-time
+          description: The date time the data asset was last updated.
