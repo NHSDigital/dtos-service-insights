@@ -137,7 +137,9 @@ public class ReceiveData
         }
     }
 
-    private const string DateFormat = "dd/MM/yyyy";
+
+    private static readonly string[] AllowedDateFormats = { "dd-MM-yyyy", "dd/MM/yyyy" };
+
     private EpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
         return new EpisodeDto
@@ -146,14 +148,14 @@ public class ReceiveData
             EpisodeType = episode.episode_type,
             ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
-            EpisodeOpenDate = string.IsNullOrEmpty(episode.episode_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.episode_date, new[] { "dd-MM-yyyy", "dd/MM/yyyy" }, CultureInfo.InvariantCulture, DateTimeStyles.None)),
+            EpisodeOpenDate = ParseNullableDate(episode.episode_date),
             AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),
-            FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_foa, DateFormat, CultureInfo.InvariantCulture)),
-            ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_as, DateFormat, CultureInfo.InvariantCulture)),
-            EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.early_recall_date, DateFormat, CultureInfo.InvariantCulture)),
+            FirstOfferedAppointmentDate = ParseNullableDate(episode.date_of_foa),
+            ActualScreeningDate = ParseNullableDate(episode.date_of_as),
+            EarlyRecallDate = ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = episode.end_code,
-            EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTime.ParseExact(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz", CultureInfo.InvariantCulture),
+            EndCodeLastUpdated = ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
             OrganisationCode = episode.bso_organisation_code,
             BatchId = episode.bso_batch_id,
             EndPoint = episode.end_point,
@@ -161,6 +163,35 @@ public class ReceiveData
             FinalActionCode = episode.final_action_code
         };
     }
+
+    private DateOnly? ParseNullableDate(string? date)
+    {
+        if (string.IsNullOrEmpty(date)) return null;
+
+        if (DateTime.TryParseExact(date, AllowedDateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
+        {
+            return DateOnly.FromDateTime(dateTime);
+        }
+
+        _logger.LogError("Invalid date format: {Date}. Expected formats: {AllowedDateFormats}", date, string.Join(", ", AllowedDateFormats));
+        return null;
+    }
+
+    private DateTime? ParseNullableDateTime(string? dateTime, string format)
+    {
+        if (string.IsNullOrEmpty(dateTime)) return null;
+
+        try
+        {
+            return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture);
+        }
+        catch (FormatException ex)
+        {
+            _logger.LogError(ex, "Invalid date-time format: {DateTime}. Expected format: {Format}", dateTime, format);
+            return null;
+        }
+    }
+
 
     private static short? GetAppointmentMadeFlag(string appointmentMade)
     {
