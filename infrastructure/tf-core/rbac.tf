@@ -15,9 +15,4 @@ locals {
     sql_contributor = "Contributor"
   }
 
-  rbac_roles_key_vault_officers = [
-    "Key Vault Certificate Officer",
-    "Key Vault Crypto Officer",
-    "Key Vault Secrets Officer"
-  ]
 }
