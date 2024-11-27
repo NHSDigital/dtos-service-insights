@@ -8,67 +8,67 @@ INSERT INTO END_CODE_LKP (
 )
 VALUES
     (
-        1000,
+        1,
         null,
         'SC',
         'Screening complete'
     ),
     (
-        1001,
+        2,
         null,
         'DNR',
         'Did not respond'
     ),
     (
-        1002,
+        3,
         null,
         'DNA',
         'Did not attend'
     ),
     (
-        1003,
+        4,
         null,
         'PC',
         'Premature closure of episode'
     ),
     (
-        1004,
+        5,
         null,
         'WB',
         'Withdrawn (already being screened)'
     ),
     (
-        1005,
+        6,
         null,
         'WC',
         'Withdrawn (ceased from call/recall system)'
     ),
     (
-        1006,
+        7,
         null,
         'WD',
         'Withdrawn (died since included in batch)'
     ),
     (
-        1007,
+        8,
         null,
         'WF',
         'Withdrawn (FP69 status)'
     ),
     (
-        1008,
+        9,
         null,
         'WM',
         'Withdrawn (moved)'
     ),
     (
-        1009,
+        10,
         null,
         'WO',
         'Withdrawn (other reason)'
     ),
     (
-        1010,
+        11,
         null,
         'WS',
         'Withdrawn (randomised out/prev. suspended)'
@@ -86,37 +86,37 @@ INSERT INTO EPISODE_TYPE_LKP (
 )
 VALUES
     (
-        11111,
+        1,
         'C',
         'Call'
     ),
     (
-        11112,
+        2,
         'R',
         'Recall'
     ),
     (
-        11113,
+        3,
         'E',
         'Early recall'
     ),
     (
-        11114,
+        4,
         'H',
         'Higher Risk'
     ),
     (
-        11115,
+        5,
         'T',
         'HR ST recall'
     ),
     (
-        11116,
+        6,
         'G',
         'GP referral'
     ),
     (
-        11117,
+        7,
         'S',
         'Self referral'
     );
@@ -133,137 +133,137 @@ INSERT INTO REASON_CLOSED_CODE_LKP (
 )
 VALUES
     (
-        111222,
+        1,
         'BS',
         'Being screened'
     ),
     (
-        111223,
+        2,
         'CP',
         'Under care permanently'
     ),
     (
-        111224,
+        3,
         'CT',
         'Under care temporarily'
     ),
     (
-        111225,
+        4,
         'DD',
         'Deceased'
     ),
     (
-        111226,
+        5,
         'NS',
         'Attended, not screened'
     ),
     (
-        111227,
+        6,
         'NT',
         'No transport'
     ),
     (
-        111228,
+        7,
         'OP',
         'Opted out permanently'
     ),
     (
-        111229,
+        8,
         'OT',
         'Opted out temporarily'
     ),
     (
-        111230,
+        9,
         'RS',
         'Recently screened'
     ),
     (
-        111231,
+        10,
         'X',
         'Episode closed, other reason'
     ),
     (
-        111232,
+        11,
         'R',
         'Routine closure'
     ),
     (
-        111233,
+        12,
         'DE',
         'Defaulted'
     ),
     (
-        111234,
+        13,
         'DU',
         'Details unknown'
     ),
     (
-        111235,
+        14,
         'MV',
         'Moved'
     ),
     (
-        111236,
+        15,
         'NK',
         'Not known at this address'
     ),
     (
-        111237,
+        16,
         'NA',
         'Non attender'
     ),
     (
-        111238,
+        17,
         'HR',
         'On higher risk'
     ),
     (
-        111239,
+        18,
         'NR',
         'Non responder'
     ),
     (
-        111240,
+        19,
         'AR',
         'Randomised out'
     ),
     (
-        111241,
+        20,
         'FB',
         'Closed being screened'
     ),
     (
-        111242,
+        21,
         'FC',
         'Ceased'
     ),
     (
-        111243,
+        22,
         'FD',
         'Deceased'
     ),
     (
-        111244,
+        23,
         'FF',
         'FP69 status'
     ),
     (
-        111245,
+        24,
         'FM',
         'Moved away'
     ),
     (
-        111246,
+        25,
         'FP',
         'FPC closed prematurely'
     ),
     (
-        111247,
+        26,
         'FS',
         'Suspended'
     ),
     (
-        111248,
+        27,
         'FX',
         'WO withdrawn'
     );
@@ -280,22 +280,22 @@ INSERT INTO FINAL_ACTION_CODE_LKP (
 )
 VALUES
     (
-        112233,
+        1,
         'EC',
         'Short term recall (early clinic)'
     ),
     (
-        112234,
+        2,
         'MT',
         'Medical treatment'
     ),
     (
-        112235,
+        3,
         'FP',
         'Follow-up'
     ),
     (
-        112236,
+        4,
         'RR',
         'Routine recall'
     );
@@ -312,82 +312,82 @@ INSERT INTO ORGANISATION_LKP (
     IS_ACTIVE
 )
 VALUES
-    (100001, 'Breast Screening', 'AGA', 'Gateshead', null, null),
-    (100002, 'Breast Screening', 'ANE', 'Newcastle', null, null),
-    (100003, 'Breast Screening', 'ANT', 'North Tees', null, null),
-    (100004, 'Breast Screening', 'AWC', 'North Cumbria', null, null),
-    (100005, 'Breast Screening', 'BHL', 'Humberside', null, null),
-    (100006, 'Breast Screening', 'BHU', 'Pennine', null, null),
-    (100007, 'Breast Screening', 'BLE', 'Leeds Wakefield', null, null),
-    (100008, 'Breast Screening', 'BYO', 'North Yorkshire', null, null),
-    (100009, 'Breast Screening', 'CBA', 'Barnsley', null, null),
-    (100010, 'Breast Screening', 'CDN', 'Chesterfield (N. Derbys)', null, null),
-    (100011, 'Breast Screening', 'CDO', 'Doncaster & Bassetlaw', null, null),
-    (100012, 'Breast Screening', 'CDS', 'Derby (S. Derbys)', null, null),
-    (100013, 'Breast Screening', 'CLE', 'Leicester & Rutland', null, null),
-    (100014, 'Breast Screening', 'CLI', 'Lincolnshire', null, null),
-    (100015, 'Breast Screening', 'CNN', 'Mansfield (N. Notts)', null, null),
-    (100016, 'Breast Screening', 'CNO', 'Nottingham', null, null),
-    (100017, 'Breast Screening', 'CRO', 'Rotherham', null, null),
-    (100018, 'Breast Screening', 'CSH', 'Sheffield', null, null),
-    (100019, 'Breast Screening', 'DCB', 'Cambridge', null, null),
-    (100020, 'Breast Screening', 'DGY', 'Great Yarmouth and Waveney', null, null),
-    (100021, 'Breast Screening', 'DKL', 'Kings Lynn', null, null),
-    (100022, 'Breast Screening', 'DNF', 'Norwich', null, null),
-    (100023, 'Breast Screening', 'DPT', 'Peterborough', null, null),
-    (100024, 'Breast Screening', 'DSU', 'East Suffolk', null, null),
-    (100025, 'Breast Screening', 'DSW', 'West Suffolk', null, null),
-    (100026, 'Breast Screening', 'EBA', 'North London', null, null),
-    (100027, 'Breast Screening', 'ECX', 'West of London', null, null),
-    (100028, 'Breast Screening', 'ELD', 'Beds & Herts', null, null),
-    (100029, 'Breast Screening', 'FBH', 'Outer North East London', null, null),
-    (100030, 'Breast Screening', 'FCO', 'Chelmsford & Colchester', null, null),
-    (100031, 'Breast Screening', 'FEP', 'Epping (W. Essex)', null, null),
-    (100032, 'Breast Screening', 'FLO', 'Central & East London', null, null),
-    (100033, 'Breast Screening', 'FSO', 'Southend (S. Essex)', null, null),
-    (100034, 'Breast Screening', 'GBR', 'East Sussex, Brighton & Hove', null, null),
-    (100035, 'Breast Screening', 'GCA', 'South East London (Kings)', null, null),
-    (100036, 'Breast Screening', 'GCT', 'Kent', null, null),
-    (100037, 'Breast Screening', 'HGU', 'Guildford (Jarvis)', null, null),
-    (100038, 'Breast Screening', 'HWA', 'South West London', null, null),
-    (100039, 'Breast Screening', 'HWO', 'West Sussex', null, null),
-    (100040, 'Breast Screening', 'IOM', 'Isle of Man', null, null),
-    (100041, 'Breast Screening', 'JBA', 'North and Mid Hants', null, null),
-    (100042, 'Breast Screening', 'JDO', 'Dorset', null, null),
-    (100043, 'Breast Screening', 'JIW', 'Isle of Wight', null, null),
-    (100044, 'Breast Screening', 'JPO', 'Portsmouth', null, null),
-    (100045, 'Breast Screening', 'JSO', 'Southampton & Salisbury', null, null),
-    (100046, 'Breast Screening', 'JSW', 'Wiltshire', null, null),
-    (100047, 'Breast Screening', 'KHW', 'Aylesbury & Wycombe', null, null),
-    (100048, 'Breast Screening', 'KKE', 'Kettering', null, null),
-    (100049, 'Breast Screening', 'KMK', 'Milton Keynes', null, null),
-    (100050, 'Breast Screening', 'KNN', 'Northampton', null, null),
-    (100051, 'Breast Screening', 'KOX', 'Oxford', null, null),
-    (100052, 'Breast Screening', 'KRG', 'Reading (W. Berkshire)', null, null),
-    (100053, 'Breast Screening', 'KWI', 'Windsor (E. Berkshire)', null, null),
-    (100054, 'Breast Screening', 'LAV', 'Avon', null, null),
-    (100055, 'Breast Screening', 'LCO', 'Cornwall', null, null),
-    (100056, 'Breast Screening', 'LED', 'North & East Devon', null, null),
-    (100057, 'Breast Screening', 'LGL', 'Gloucestershire', null, null),
-    (100058, 'Breast Screening', 'LPL', 'West Devon (Plymouth)', null, null),
-    (100059, 'Breast Screening', 'LSO', 'Somerset', null, null),
-    (100060, 'Breast Screening', 'LTB', 'South Devon', null, null),
-    (100061, 'Breast Screening', 'MAS', 'South Staffordshire', null, null),
-    (100062, 'Breast Screening', 'MBD', 'City, Sandwell & Walsall', null, null),
-    (100063, 'Breast Screening', 'MBS', 'South Birmingham', null, null),
-    (100064, 'Breast Screening', 'MCO', 'Warwickshire, Solihull & Coventry', null, null),
-    (100065, 'Breast Screening', 'MDU', 'Dudley & Wolverhampton', null, null),
-    (100066, 'Breast Screening', 'MHW', 'Hereford & Worcester', null, null),
-    (100067, 'Breast Screening', 'MSH', 'Shropshire', null, null),
-    (100068, 'Breast Screening', 'MST', 'North Midlands', null, null),
-    (100069, 'Breast Screening', 'NCH', 'Chester', null, null),
-    (100070, 'Breast Screening', 'NCR', 'Crewe', null, null),
-    (100071, 'Breast Screening', 'NLI', 'Liverpool', null, null),
-    (100072, 'Breast Screening', 'NMA', 'East Cheshire and Stockport', null, null),
-    (100073, 'Breast Screening', 'NWA', 'Warrington, Halton, St Helens & Knowsley', null, null),
-    (100074, 'Breast Screening', 'NWI', 'Wirral', null, null),
-    (100075, 'Breast Screening', 'PBO', 'Bolton', null, null),
-    (100076, 'Breast Screening', 'PLE', 'East Lancashire', null, null),
-    (100077, 'Breast Screening', 'PLN', 'North Lancashire & South Cumbria', null, null),
-    (100078, 'Breast Screening', 'PMA', 'Manchester', null, null),
-    (100079, 'Breast Screening', 'PWI', 'South Lancs', null, null);
+    (1, 'Breast Screening', 'AGA', 'Gateshead', null, null),
+    (2, 'Breast Screening', 'ANE', 'Newcastle', null, null),
+    (3, 'Breast Screening', 'ANT', 'North Tees', null, null),
+    (4, 'Breast Screening', 'AWC', 'North Cumbria', null, null),
+    (5, 'Breast Screening', 'BHL', 'Humberside', null, null),
+    (6, 'Breast Screening', 'BHU', 'Pennine', null, null),
+    (7, 'Breast Screening', 'BLE', 'Leeds Wakefield', null, null),
+    (8, 'Breast Screening', 'BYO', 'North Yorkshire', null, null),
+    (9, 'Breast Screening', 'CBA', 'Barnsley', null, null),
+    (10, 'Breast Screening', 'CDN', 'Chesterfield (N. Derbys)', null, null),
+    (11, 'Breast Screening', 'CDO', 'Doncaster & Bassetlaw', null, null),
+    (12, 'Breast Screening', 'CDS', 'Derby (S. Derbys)', null, null),
+    (13, 'Breast Screening', 'CLE', 'Leicester & Rutland', null, null),
+    (14, 'Breast Screening', 'CLI', 'Lincolnshire', null, null),
+    (15, 'Breast Screening', 'CNN', 'Mansfield (N. Notts)', null, null),
+    (16, 'Breast Screening', 'CNO', 'Nottingham', null, null),
+    (17, 'Breast Screening', 'CRO', 'Rotherham', null, null),
+    (18, 'Breast Screening', 'CSH', 'Sheffield', null, null),
+    (19, 'Breast Screening', 'DCB', 'Cambridge', null, null),
+    (20, 'Breast Screening', 'DGY', 'Great Yarmouth and Waveney', null, null),
+    (21, 'Breast Screening', 'DKL', 'Kings Lynn', null, null),
+    (22, 'Breast Screening', 'DNF', 'Norwich', null, null),
+    (23, 'Breast Screening', 'DPT', 'Peterborough', null, null),
+    (24, 'Breast Screening', 'DSU', 'East Suffolk', null, null),
+    (25, 'Breast Screening', 'DSW', 'West Suffolk', null, null),
+    (26, 'Breast Screening', 'EBA', 'North London', null, null),
+    (27, 'Breast Screening', 'ECX', 'West of London', null, null),
+    (28, 'Breast Screening', 'ELD', 'Beds & Herts', null, null),
+    (29, 'Breast Screening', 'FBH', 'Outer North East London', null, null),
+    (30, 'Breast Screening', 'FCO', 'Chelmsford & Colchester', null, null),
+    (31, 'Breast Screening', 'FEP', 'Epping (W. Essex)', null, null),
+    (32, 'Breast Screening', 'FLO', 'Central & East London', null, null),
+    (33, 'Breast Screening', 'FSO', 'Southend (S. Essex)', null, null),
+    (34, 'Breast Screening', 'GBR', 'East Sussex, Brighton & Hove', null, null),
+    (35, 'Breast Screening', 'GCA', 'South East London (Kings)', null, null),
+    (36, 'Breast Screening', 'GCT', 'Kent', null, null),
+    (37, 'Breast Screening', 'HGU', 'Guildford (Jarvis)', null, null),
+    (38, 'Breast Screening', 'HWA', 'South West London', null, null),
+    (39, 'Breast Screening', 'HWO', 'West Sussex', null, null),
+    (40, 'Breast Screening', 'IOM', 'Isle of Man', null, null),
+    (41, 'Breast Screening', 'JBA', 'North and Mid Hants', null, null),
+    (42, 'Breast Screening', 'JDO', 'Dorset', null, null),
+    (43, 'Breast Screening', 'JIW', 'Isle of Wight', null, null),
+    (44, 'Breast Screening', 'JPO', 'Portsmouth', null, null),
+    (45, 'Breast Screening', 'JSO', 'Southampton & Salisbury', null, null),
+    (46, 'Breast Screening', 'JSW', 'Wiltshire', null, null),
+    (47, 'Breast Screening', 'KHW', 'Aylesbury & Wycombe', null, null),
+    (48, 'Breast Screening', 'KKE', 'Kettering', null, null),
+    (49, 'Breast Screening', 'KMK', 'Milton Keynes', null, null),
+    (50, 'Breast Screening', 'KNN', 'Northampton', null, null),
+    (51, 'Breast Screening', 'KOX', 'Oxford', null, null),
+    (52, 'Breast Screening', 'KRG', 'Reading (W. Berkshire)', null, null),
+    (53, 'Breast Screening', 'KWI', 'Windsor (E. Berkshire)', null, null),
+    (54, 'Breast Screening', 'LAV', 'Avon', null, null),
+    (55, 'Breast Screening', 'LCO', 'Cornwall', null, null),
+    (56, 'Breast Screening', 'LED', 'North & East Devon', null, null),
+    (57, 'Breast Screening', 'LGL', 'Gloucestershire', null, null),
+    (58, 'Breast Screening', 'LPL', 'West Devon (Plymouth)', null, null),
+    (59, 'Breast Screening', 'LSO', 'Somerset', null, null),
+    (60, 'Breast Screening', 'LTB', 'South Devon', null, null),
+    (61, 'Breast Screening', 'MAS', 'South Staffordshire', null, null),
+    (62, 'Breast Screening', 'MBD', 'City, Sandwell & Walsall', null, null),
+    (63, 'Breast Screening', 'MBS', 'South Birmingham', null, null),
+    (64, 'Breast Screening', 'MCO', 'Warwickshire, Solihull & Coventry', null, null),
+    (65, 'Breast Screening', 'MDU', 'Dudley & Wolverhampton', null, null),
+    (66, 'Breast Screening', 'MHW', 'Hereford & Worcester', null, null),
+    (67, 'Breast Screening', 'MSH', 'Shropshire', null, null),
+    (68, 'Breast Screening', 'MST', 'North Midlands', null, null),
+    (69, 'Breast Screening', 'NCH', 'Chester', null, null),
+    (70, 'Breast Screening', 'NCR', 'Crewe', null, null),
+    (71, 'Breast Screening', 'NLI', 'Liverpool', null, null),
+    (72, 'Breast Screening', 'NMA', 'East Cheshire and Stockport', null, null),
+    (73, 'Breast Screening', 'NWA', 'Warrington, Halton, St Helens & Knowsley', null, null),
+    (74, 'Breast Screening', 'NWI', 'Wirral', null, null),
+    (75, 'Breast Screening', 'PBO', 'Bolton', null, null),
+    (76, 'Breast Screening', 'PLE', 'East Lancashire', null, null),
+    (77, 'Breast Screening', 'PLN', 'North Lancashire & South Cumbria', null, null),
+    (78, 'Breast Screening', 'PMA', 'Manchester', null, null),
+    (79, 'Breast Screening', 'PWI', 'South Lancs', null, null);
