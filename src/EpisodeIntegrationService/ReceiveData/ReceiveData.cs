@@ -138,7 +138,7 @@ public class ReceiveData
     }
 
 
-    private static readonly string[] AllowedDateFormats = { "dd-MM-yyyy", "dd/MM/yyyy" };
+    private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
 
     private EpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
