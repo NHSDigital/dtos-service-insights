@@ -1,3 +1,7 @@
+locals {
+  primary_region = [for k, v in var.regions : k if v.is_primary_region][0]
+}
+
 resource "azurerm_resource_group" "rg_vnet" {
   for_each = var.regions
 
