@@ -1,10 +1,15 @@
 module "storage" {
-  for_each                      = local.storage_accounts_map
-  source                        = "../../../dtos-devops-templates/infrastructure/modules/storage"
-  name                          = substr("${module.regions_config[each.value.region_key].names.storage-account}${lower(each.value.name_suffix)}", 0, 24)
-  resource_group_name           = azurerm_resource_group.audit[each.value.region_key].name
-  location                      = each.value.region_key
-  containers                    = each.value.containers
+  for_each = local.storage_accounts_map
+  source   = "../../../dtos-devops-templates/infrastructure/modules/storage"
+
+  name                = substr("${module.regions_config[each.value.region_key].names.storage-account}${lower(each.value.name_suffix)}", 0, 24)
+  resource_group_name = azurerm_resource_group.audit[each.value.region_key].name
+  location            = each.value.region_key
+  containers          = each.value.containers
+
+  log_analytics_workspace_id                              = module.log_analytics_workspace_audit[local.primary_region].id
+  monitor_diagnostic_setting_storage_account_enabled_logs = local.monitor_diagnostic_setting_storage_account_enabled_logs
+
   account_replication_type      = each.value.replication_type
   account_tier                  = each.value.account_tier
   public_network_access_enabled = each.value.public_network_access_enabled
