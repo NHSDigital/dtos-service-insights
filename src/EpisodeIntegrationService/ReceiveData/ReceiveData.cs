@@ -147,7 +147,7 @@ public class ReceiveData
             ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
             EpisodeOpenDate = episode.episode_date,
-            AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),
+            AppointmentMadeFlag = ParseBooleanStringToShort(episode.appointment_made),
             FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_foa, DateFormat, CultureInfo.InvariantCulture)),
             ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_as, DateFormat, CultureInfo.InvariantCulture)),
             EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.early_recall_date, DateFormat, CultureInfo.InvariantCulture)),
@@ -160,22 +160,6 @@ public class ReceiveData
             ReasonClosedCode = episode.reason_closed_code,
             FinalActionCode = episode.final_action_code
         };
-    }
-
-    private static short? GetAppointmentMadeFlag(string appointmentMade)
-    {
-        if (appointmentMade.ToUpper() == "TRUE")
-        {
-            return (short)1;
-        }
-        else if (appointmentMade.ToUpper() == "FALSE")
-        {
-            return (short)0;
-        }
-        else
-        {
-            return null;
-        }
     }
 
     private async Task ProcessParticipantDataAsync(IEnumerable<BssSubject> subjects, string participantUrl)
@@ -209,8 +193,8 @@ public class ReceiveData
                 NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
                 ParticipantScreeningStatus = subject.subject_status_code,
                 ScreeningCeasedReason = subject.reason_for_ceasing_code,
-                IsHigherRisk = GetIsHigherRisk(subject.is_higher_risk),
-                IsHigherRiskActive = GetIsHigherRiskActive(subject.is_higher_risk_active),
+                IsHigherRisk = ParseBooleanStringToShort(subject.is_higher_risk),
+                IsHigherRiskActive = ParseBooleanStringToShort(subject.is_higher_risk_active),
                 HigherRiskNextTestDueDate = subject.higher_risk_next_test_due_date,
                 HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
                 DateIrradiated = subject.date_irradiated,
@@ -218,13 +202,13 @@ public class ReceiveData
             };
         }
 
-        private static short? GetIsHigherRisk(string isHigherRisk)
+        private static short? ParseBooleanStringToShort(string booleanString)
         {
-            if (isHigherRisk.ToUpper() == "TRUE")
+            if (booleanString.ToUpper() == "TRUE")
             {
                 return (short)1;
             }
-            else if (isHigherRisk.ToUpper() == "FALSE")
+            else if (booleanString.ToUpper() == "FALSE")
             {
                 return (short)0;
             }
@@ -233,74 +217,4 @@ public class ReceiveData
                 return null;
             }
         }
-
-        private static short? GetIsHigherRiskActive(string isHigherRiskActive)
-        {
-            if (isHigherRiskActive.ToUpper() == "TRUE")
-            {
-                return (short)1;
-            }
-            else if (isHigherRiskActive.ToUpper() == "FALSE")
-            {
-                return (short)0;
-            }
-            else
-            {
-                return null;
-            }
-        }
-}
-
-
-public class BssEpisode
-{
-    public long episode_id { get; set; }
-    public long nhs_number { get; set; }
-    public string? episode_type { get; set; }
-    public DateTime change_db_date_time { get; set; }
-    public DateOnly? episode_date { get; set; }
-    public string? appointment_made { get; set; }
-    public string? date_of_foa { get; set; }
-    public string? date_of_as { get; set; }
-    public string? early_recall_date { get; set; }
-    public string? call_recall_status_authorised_by { get; set; }
-    public string? end_code { get; set; }
-    public string? end_code_last_updated { get; set; }
-    public string? bso_organisation_code { get; set; }
-    public string? bso_batch_id { get; set; }
-    public string? reason_closed_code { get; set; }
-    public string? end_point { get; set; }
-    public string? final_action_code { get; set; }
-}
-
-public class BssSubject
-{
-    public long nhs_number { get; set; }
-    public DateTime change_db_date_time { get; set; }
-    public long? superseded_nhs_number { get; set; }
-    public string? gp_practice_code { get; set; }
-    public string? bso_organisation_code { get; set; }
-    public DateOnly? next_test_due_date { get; set; }
-    public string? subject_status_code { get; set; }
-    public DateOnly? early_recall_date { get; set; }
-    public DateOnly? latest_invitation_date { get; set; }
-    public string? removal_reason { get; set; }
-    public DateOnly? removal_date { get; set; }
-    public string? reason_for_ceasing_code { get; set; }
-    public string? is_higher_risk { get; set; }
-    public DateOnly? higher_risk_next_test_due_date { get; set; }
-    public DateOnly? hr_recall_due_date { get; set; }
-    public string? higher_risk_referral_reason_code { get; set; }
-    public DateOnly? date_irradiated { get; set; }
-    public string? is_higher_risk_active { get; set; }
-    public string? gene_code { get; set; }
-    public string? ntdd_calculation_method { get; set; }
-    public string? preferred_language { get; set; }
-
-}
-
-enum FileType
-{
-    Episodes = 0,
-    Subjects = 1,
 }
