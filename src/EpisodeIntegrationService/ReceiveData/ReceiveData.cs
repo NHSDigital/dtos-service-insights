@@ -116,26 +116,55 @@ public class ReceiveData
         }
     }
 
+
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
+        var validCount = 0;
+        var invalidCount = 0;
+        var totalCount = 0;
+        var startTime = DateTime.UtcNow;
+
         try
         {
             _logger.LogInformation("Processing episode data.");
+
             foreach (var episode in episodes)
             {
-                var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
-                string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
+                totalCount++;
 
-                _logger.LogInformation("Sending Episode to {Url}: {Request}", episodeUrl, serializedEpisode);
-                await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
+                try
+                {
+                    var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
+                    string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
+
+                    _logger.LogInformation("Sending Episode {episode.episode_id} to {Url}: {Request}", episode.episode_id, episodeUrl, serializedEpisode);
+                    await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
+                    validCount++;
+                }
+                catch (FormatException ex)
+                {
+                    _logger.LogWarning($"Episode {episode.episode_id} contained an invalid episode_date of {episode.episode_date}, the whole row will be skipped.");
+                    invalidCount++;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unexpected error when processing episode: {Episode}. Skipping processing for this episode.", episode);
+                    invalidCount++;
+                }
             }
+
+            var elapsedTime = DateTime.UtcNow - startTime;
+
+            _logger.LogWarning("Processed {Total} episodes in {ElapsedTime} seconds. {ValidCount} valid, {InvalidCount} invalid.",
+                totalCount, elapsedTime.TotalSeconds, validCount, invalidCount);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
-            await ProcessEpisodeDataAsync(episodes, episodeUrl);
+            throw;
         }
     }
+
 
 
     private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
@@ -173,24 +202,24 @@ public class ReceiveData
             return DateOnly.FromDateTime(dateTime);
         }
 
-        _logger.LogError("Invalid date format: {Date}. Expected formats: {AllowedDateFormats}", date, string.Join(", ", AllowedDateFormats));
-        return null;
+        throw new FormatException($"Invalid date format: {date}. Expected formats: {string.Join(", ", AllowedDateFormats)}");
     }
+
 
     private DateTime? ParseNullableDateTime(string? dateTime, string format)
     {
-        if (string.IsNullOrEmpty(dateTime)) return null;
-
-        try
-        {
-            return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture);
-        }
-        catch (FormatException ex)
-        {
-            _logger.LogError(ex, "Invalid date-time format: {DateTime}. Expected format: {Format}", dateTime, format);
+        if (string.IsNullOrEmpty(dateTime))
             return null;
+
+        if (DateTime.TryParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var result))
+        {
+            return result;
         }
+
+        throw new FormatException($"Invalid date-time format: {dateTime}. Expected format: {format}");
     }
+
+
 
 
     private static short? GetAppointmentMadeFlag(string appointmentMade)
