@@ -40,9 +40,9 @@ public class UpdateParticipantTests
     public async Task Run_ShouldReturnOK_WhenValidParticipantReceived()
     {
         // Arrange
-        var participant = new Participant
+        var participant = new ParticipantDto
         {
-            NhsNumber = "123"
+            NhsNumber = 999999999
         };
         var json = JsonSerializer.Serialize(participant);
         _mockHttpRequestData = _setupRequest.Setup(json);

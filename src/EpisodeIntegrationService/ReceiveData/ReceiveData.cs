@@ -5,7 +5,6 @@ using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
 using CsvHelper;
 using System.Globalization;
-using CsvHelper.Configuration.Attributes;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
@@ -63,7 +62,7 @@ public class ReceiveData
                 using (var reader = new StreamReader(myBlob))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
-                    var participantsEnumerator = csv.GetRecords<Participant>();
+                    var participantsEnumerator = csv.GetRecords<BssSubject>();
 
                     await ProcessParticipantDataAsync(participantsEnumerator, participantUrl);
                 }
@@ -179,14 +178,15 @@ public class ReceiveData
         }
     }
 
-    private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
+    private async Task ProcessParticipantDataAsync(IEnumerable<BssSubject> subjects, string participantUrl)
     {
         try
         {
             _logger.LogInformation("Processing participant data.");
-            foreach (var participant in participants)
+            foreach (var subject in subjects)
             {
-                string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
+                var modifiedParticipant = MapParticipantToParticipantDto(subject);
+                string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant, new JsonSerializerOptions { WriteIndented = true });
 
                 _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
 
@@ -196,10 +196,61 @@ public class ReceiveData
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
-            await ProcessParticipantDataAsync(participants, participantUrl);
+            await ProcessParticipantDataAsync(subjects, participantUrl);
         }
     }
+        private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
+        {
+            return new ParticipantDto
+            {
+                NhsNumber = subject.nhs_number,
+                ScreeningName = "Breast Screening",
+                NextTestDueDate = subject.next_test_due_date,
+                NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
+                ParticipantScreeningStatus = subject.subject_status_code,
+                ScreeningCeasedReason = subject.reason_for_ceasing_code,
+                IsHigherRisk = GetIsHigherRisk(subject.is_higher_risk),
+                IsHigherRiskActive = GetIsHigherRiskActive(subject.is_higher_risk_active),
+                HigherRiskNextTestDueDate = subject.higher_risk_next_test_due_date,
+                HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
+                DateIrradiated = subject.date_irradiated,
+                GeneCode = subject.gene_code
+            };
+        }
+
+        private static short? GetIsHigherRisk(string isHigherRisk)
+        {
+            if (isHigherRisk.ToUpper() == "TRUE")
+            {
+                return (short)1;
+            }
+            else if (isHigherRisk.ToUpper() == "FALSE")
+            {
+                return (short)0;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static short? GetIsHigherRiskActive(string isHigherRiskActive)
+        {
+            if (isHigherRiskActive.ToUpper() == "TRUE")
+            {
+                return (short)1;
+            }
+            else if (isHigherRiskActive.ToUpper() == "FALSE")
+            {
+                return (short)0;
+            }
+            else
+            {
+                return null;
+            }
+        }
 }
+
 
 public class BssEpisode
 {
@@ -220,6 +271,32 @@ public class BssEpisode
     public string? reason_closed_code { get; set; }
     public string? end_point { get; set; }
     public string? final_action_code { get; set; }
+}
+
+public class BssSubject
+{
+    public long nhs_number { get; set; }
+    public DateTime change_db_date_time { get; set; }
+    public long? superseded_nhs_number { get; set; }
+    public string? gp_practice_code { get; set; }
+    public string? bso_organisation_code { get; set; }
+    public DateOnly? next_test_due_date { get; set; }
+    public string? subject_status_code { get; set; }
+    public DateOnly? early_recall_date { get; set; }
+    public DateOnly? latest_invitation_date { get; set; }
+    public string? removal_reason { get; set; }
+    public DateOnly? removal_date { get; set; }
+    public string? reason_for_ceasing_code { get; set; }
+    public string? is_higher_risk { get; set; }
+    public DateOnly? higher_risk_next_test_due_date { get; set; }
+    public DateOnly? hr_recall_due_date { get; set; }
+    public string? higher_risk_referral_reason_code { get; set; }
+    public DateOnly? date_irradiated { get; set; }
+    public string? is_higher_risk_active { get; set; }
+    public string? gene_code { get; set; }
+    public string? ntdd_calculation_method { get; set; }
+    public string? preferred_language { get; set; }
+
 }
 
 enum FileType
