@@ -40,7 +40,7 @@ public static class PaginationHelper
 
     public static string BuildUrl(string baseUrl, int page, int pageSize, DateTime startDate, DateTime endDate)
     {
-        var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}&endDate={endDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)}";
+        var url = $"{baseUrl}?page={page}&pageSize={pageSize}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
         return url;
     }
 }
