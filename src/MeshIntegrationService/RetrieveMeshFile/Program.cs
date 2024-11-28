@@ -2,6 +2,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using NHS.MESH.Client;
 using NHS.ServiceInsights.Common;
+using Microsoft.Azure.Functions.Worker;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -18,6 +19,8 @@ var host = new HostBuilder()
             .Build();
         services.AddSingleton<IBlobStorageHelper, BlobStorageHelper>();
         services.AddTransient<IMeshToBlobTransferHandler, MeshToBlobTransferHandler>();
+        services.AddApplicationInsightsTelemetryWorkerService();
+        services.ConfigureFunctionsApplicationInsights();
     })
     //.AddExceptionHandler()
     .Build();
