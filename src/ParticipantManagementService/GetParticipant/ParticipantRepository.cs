@@ -4,24 +4,20 @@ namespace NHS.ServiceInsights.ParticipantManagementService;
 
 public static class ParticipantRepository
 {
-    private static readonly List<Participant> Participants = new List<Participant>
+    private static readonly List<ParticipantDto> Participants = new List<ParticipantDto>
     {
 
-        new Participant { nhs_number = "1111111112", next_test_due_date = "2019-08-01", gp_practice_code = "39", subject_status_code = "NORMAL",
-                        is_higher_risk = "True", higher_risk_next_test_due_date = "2020-08-01", removal_reason = "null", removal_date = "null",
-                        bso_organisation_code = "null", early_recall_date = "null", latest_invitation_date = "null", preferred_language = "null",
-                        higher_risk_referral_reason_code = "null", date_irradiated = "2019-07-29", is_higher_risk_active = "False", gene_code = "null",
-                        ntdd_calculation_method = "null" },
+        new ParticipantDto { NhsNumber = 1111111112, ScreeningName = "Breast Screening", NextTestDueDate = new DateOnly(2019, 08, 01), NextTestDueDateCalculationMethod = "ROUTINE", ParticipantScreeningStatus = "NORMAL",
+                        ScreeningCeasedReason = "PERSONAL_WELFARE",  IsHigherRisk = 1, IsHigherRiskActive = 1, HigherRiskNextTestDueDate = new DateOnly(2020, 02, 01), HigherRiskReferralReasonCode = "", DateIrradiated = new DateOnly(2019, 12, 01),
+                        GeneCode = "BRCA1"},
 
-        new Participant { nhs_number = "1111111110", next_test_due_date = "2019-04-01", gp_practice_code = "null", subject_status_code = "NORMAL",
-                        is_higher_risk = "False", higher_risk_next_test_due_date = "2020-04-01", removal_reason = "MENTAL_HOSPITAL", removal_date = "2017-07-28",
-                        bso_organisation_code = "null", early_recall_date = "null", latest_invitation_date = "null", preferred_language = "null",
-                        higher_risk_referral_reason_code = "null", date_irradiated = "2019-08-02", is_higher_risk_active = "False", gene_code = "null",
-                        ntdd_calculation_method = "null" },
+        new ParticipantDto { NhsNumber = 1111111110, ScreeningName = "Breast Screening", NextTestDueDate = new DateOnly(2019, 08, 01), NextTestDueDateCalculationMethod = "ROUTINE", ParticipantScreeningStatus = "NORMAL",
+                        ScreeningCeasedReason = "PERSONAL_WELFARE",  IsHigherRisk = 1, IsHigherRiskActive = 0, HigherRiskNextTestDueDate = null, HigherRiskReferralReasonCode = "OTHER_GENE_MUTATIONS", DateIrradiated = new DateOnly(2019, 08, 01),
+                        GeneCode = "STK11"},
     };
 
-    public static Participant GetParticipantByNhsNumber(long NhsNumber)
+    public static ParticipantDto GetParticipantByNhsNumber(long NhsNumber)
     {
-        return Participants.Find(p => p.nhs_number == NhsNumber.ToString());
+        return Participants.Find(p => p.NhsNumber == NhsNumber);
     }
 }
