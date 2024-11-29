@@ -1,3 +1,4 @@
+namespace NHS.ServiceInsights.Model;
 public class ParticipantDto
 {
     public long NhsNumber { get; set; }
