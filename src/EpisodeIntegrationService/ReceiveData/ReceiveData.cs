@@ -119,19 +119,12 @@ public class ReceiveData
 
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
-        var validCount = 0;
-        var invalidCount = 0;
-        var totalCount = 0;
-        var startTime = DateTime.UtcNow;
-
         try
         {
             _logger.LogInformation("Processing episode data.");
 
             foreach (var episode in episodes)
             {
-                totalCount++;
-
                 try
                 {
                     var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
@@ -139,24 +132,16 @@ public class ReceiveData
 
                     _logger.LogInformation("Sending Episode {episode.episode_id} to {Url}:\n{Request}", episode.episode_id, episodeUrl, serializedEpisode);
                     await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
-                    validCount++;
                 }
                 catch (FormatException ex)
                 {
                     _logger.LogWarning("Episode {EpisodeId} contained an invalid date. The whole row will be skipped.", episode.episode_id);
-                    invalidCount++;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Unexpected error when processing episode: {Episode}. Skipping processing for this episode.", episode);
-                    invalidCount++;
                 }
             }
-
-            var elapsedTime = DateTime.UtcNow - startTime;
-
-            _logger.LogWarning("Processed {Total} episodes in {ElapsedTime} seconds. {ValidCount} valid, {InvalidCount} invalid.",
-                totalCount, elapsedTime.TotalSeconds, validCount, invalidCount);
         }
         catch (Exception ex)
         {
