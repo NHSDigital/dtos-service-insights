@@ -156,7 +156,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<object>(state => state.ToString().Contains("Error in ProcessEpisodeDataAsync: ")),
+            It.Is<object>(state => state.ToString().Contains("Error in ReceiveData: ")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once());
