@@ -6,6 +6,8 @@ using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
+using Azure.Messaging.EventGrid;
+using Azure;
 
 namespace NHS.ServiceInsights.EpisodeManagementService;
 
@@ -42,7 +44,6 @@ public class CreateUpdateEpisode
 
         try
         {
-            // Check if episode exists
             var getEpisodeUrl = $"{Environment.GetEnvironmentVariable("GetEpisodeUrl")}?EpisodeId={episode.EpisodeId}";
             var getEpisodeResponse = await _httpRequestService.SendGet(getEpisodeUrl);
             if (getEpisodeResponse.StatusCode == HttpStatusCode.OK)
@@ -50,6 +51,22 @@ public class CreateUpdateEpisode
                 _logger.LogInformation("Episode {episodeId} already exists and will be updated.", episode.EpisodeId);
                 await _httpRequestService.SendPut(Environment.GetEnvironmentVariable("UpdateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("UpdateEpisode function called successfully.");
+
+                string topicEndpoint = Environment.GetEnvironmentVariable("topicEndpoint");
+                string topicKey = Environment.GetEnvironmentVariable("topicKey");
+
+                AzureKeyCredential credential = new AzureKeyCredential(topicKey);
+                EventGridPublisherClient client = new EventGridPublisherClient(new Uri(topicEndpoint), credential);
+
+                EventGridEvent eventGridEvent = new EventGridEvent(
+                    subject: "Episode Updated",
+                    eventType: "CreateParticipantScreeningEpisode",
+                    dataVersion: "1.0",
+                    data: episode.EpisodeId
+                );
+
+                await client.SendEventAsync(eventGridEvent);
+
                 return req.CreateResponse(HttpStatusCode.OK);
             }
             else if (getEpisodeResponse.StatusCode == HttpStatusCode.NotFound)
@@ -57,6 +74,22 @@ public class CreateUpdateEpisode
                 _logger.LogInformation("Episode {episodeId} does not exist and will be created.", episode.EpisodeId);
                 await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("CreateEpisode function called successfully.");
+
+                string topicEndpoint = Environment.GetEnvironmentVariable("topicEndpoint");
+                string topicKey = Environment.GetEnvironmentVariable("topicKey");
+
+                AzureKeyCredential credential = new AzureKeyCredential(topicKey);
+                EventGridPublisherClient client = new EventGridPublisherClient(new Uri(topicEndpoint), credential);
+
+                EventGridEvent eventGridEvent = new EventGridEvent(
+                    subject: "Episode Created",
+                    eventType: "CreateParticipantScreeningEpisode",
+                    dataVersion: "1.0",
+                    data: episode.EpisodeId
+                );
+
+                await client.SendEventAsync(eventGridEvent);
+
                 return req.CreateResponse(HttpStatusCode.OK);
             }
             else

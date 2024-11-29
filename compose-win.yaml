@@ -266,6 +266,8 @@ services:
       - CreateEpisodeUrl=http://127.0.0.1:6007/api/CreateEpisode
       - GetEpisodeUrl=http://127.0.0.1:6060/api/GetEpisode
       - UpdateEpisodeUrl=http://127.0.0.1:7777/api/UpdateEpisode
+      - topicEndpoint=${EVENTGRID_URL}
+      - topicKey=${EVENTGRID_KEY}
 
   get-episode-mgmt:
     container_name: get-episode-mgmt

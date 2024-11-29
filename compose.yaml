@@ -308,6 +308,8 @@ services:
       - CreateEpisodeUrl=http://create-episode:6007/api/CreateEpisode
       - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
       - UpdateEpisodeUrl=http://update-episode:7777/api/UpdateEpisode
+      - topicEndpoint=${EVENTGRID_URL}
+      - topicKey=${EVENTGRID_KEY}
 
   get-episode-mgmt:
     container_name: get-episode-mgmt

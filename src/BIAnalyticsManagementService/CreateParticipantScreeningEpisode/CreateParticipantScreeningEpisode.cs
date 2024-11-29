@@ -1,8 +1,7 @@
-using System.Net;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 
@@ -18,17 +17,20 @@ public class CreateParticipantScreeningEpisode
         _httpRequestService = httpRequestService;
     }
 
-    [Function("CreateParticipantScreeningEpisode")]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+    [Function(nameof(CreateParticipantScreeningEpisode))]
+    public async Task Run([EventGridTrigger] EventGridEvent eventGridEvent)
     {
-        _logger.LogInformation("Create Participant Screening Episode function start,");
+        _logger.LogInformation("Create Participant Screening Profile function start");
 
-        string episodeId = req.Query["EpisodeId"];
+        string serializedEvent = JsonSerializer.Serialize(eventGridEvent);
+        _logger.LogInformation(serializedEvent);
 
-        if (string.IsNullOrEmpty(episodeId))
+        long episodeId;
+
+        if (!long.TryParse(eventGridEvent.Data.ToString(), out episodeId))
         {
-            _logger.LogError("episodeId is null or empty.");
-            return req.CreateResponse(HttpStatusCode.BadRequest);
+            _logger.LogError("episodeId is invalid");
+            return;
         }
 
         var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
@@ -44,7 +46,7 @@ public class CreateParticipantScreeningEpisode
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to retrieve episode with Episode ID {EpisodeId}. Status Code: {StatusCode}", episodeId, response.StatusCode);
-                return req.CreateResponse(HttpStatusCode.InternalServerError);
+                return;
             }
 
             string episodeJson = await response.Content.ReadAsStringAsync();
@@ -55,7 +57,7 @@ public class CreateParticipantScreeningEpisode
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to deserialise or retrieve episode from {Url}.", getEpisodeUrl);
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
+            return;
         }
 
         try
@@ -66,10 +68,8 @@ public class CreateParticipantScreeningEpisode
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create participant screening episode.");
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
+            return;
         }
-
-        return req.CreateResponse(HttpStatusCode.OK);
     }
 
     private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode)
