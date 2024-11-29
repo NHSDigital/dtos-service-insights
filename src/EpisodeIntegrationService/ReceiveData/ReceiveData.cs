@@ -137,13 +137,13 @@ public class ReceiveData
                     var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                     string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
-                    _logger.LogInformation("Sending Episode {episode.episode_id} to {Url}: {Request}", episode.episode_id, episodeUrl, serializedEpisode);
+                    _logger.LogInformation("Sending Episode {episode.episode_id} to {Url}:\n{Request}", episode.episode_id, episodeUrl, serializedEpisode);
                     await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
                     validCount++;
                 }
                 catch (FormatException ex)
                 {
-                    _logger.LogWarning($"Episode {episode.episode_id} contained an invalid episode_date of {episode.episode_date}, the whole row will be skipped.");
+                    _logger.LogWarning("Episode {EpisodeId} contained an invalid date. The whole row will be skipped.", episode.episode_id);
                     invalidCount++;
                 }
                 catch (Exception ex)
