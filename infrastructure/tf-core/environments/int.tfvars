@@ -58,7 +58,7 @@ routes = {
       },
       {
         name                  = "AllowAuditToSerins"
-        priority              = 831
+        priority              = 832
         action                = "Allow"
         rule_name             = "AuditToSerins"
         source_addresses      = ["10.118.0.0/16"]
