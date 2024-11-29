@@ -1,6 +1,6 @@
 application           = "serins"
 application_full_name = "service-insights"
-environment           = "NFT"
+environment           = "INT"
 
 features = {
   acr_enabled                          = false
