@@ -108,9 +108,9 @@ public class ReceiveDataTests
         // Assert
         _mockLogger.Verify(log =>
             log.Log(
-            LogLevel.Error,
+            LogLevel.Warning,
             0,
-            It.Is<object>(state => state.ToString().Contains("Invalid date format:")),
+            It.Is<object>(state => state.ToString().Contains("contained an invalid date")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(3)); // Expecting three invalid dates to be logged
@@ -159,7 +159,7 @@ public class ReceiveDataTests
             It.Is<object>(state => state.ToString().Contains("Error in ProcessEpisodeDataAsync: ")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Exactly(2));
+            Times.Once());
 
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(2));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
