@@ -72,8 +72,6 @@ public class ReceiveData
                 _logger.LogError("fileName is invalid. file name: {Name}", name);
                 return;
             }
-
-            _logger.LogInformation("Data processed successfully.");
         }
         catch (Exception ex)
         {
@@ -119,37 +117,28 @@ public class ReceiveData
 
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
-        try
+        _logger.LogInformation("Processing episode data.");
+
+        foreach (var episode in episodes)
         {
-            _logger.LogInformation("Processing episode data.");
-
-            foreach (var episode in episodes)
+            try
             {
-                try
-                {
-                    var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
-                    string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
+                var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
+                string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
-                    _logger.LogInformation("Sending Episode {episode.episode_id} to {Url}:\n{Request}", episode.episode_id, episodeUrl, serializedEpisode);
-                    await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
-                }
-                catch (FormatException ex)
-                {
-                    _logger.LogWarning("Episode {EpisodeId} contained an invalid date. The whole row will be skipped.", episode.episode_id);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Unexpected error when processing episode: {Episode}. Skipping processing for this episode.", episode);
-                }
+                _logger.LogInformation("Sending Episode {episode.episode_id} to {Url}:\n{Request}", episode.episode_id, episodeUrl, serializedEpisode);
+                await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
+            }
+            catch (FormatException)
+            {
+                _logger.LogError("Episode {EpisodeId} contained an invalid date. The whole row will be skipped.", episode.episode_id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error when processing episode: {Episode}. Skipping processing for this episode.", episode);
             }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
-            throw;
-        }
     }
-
 
 
     private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
@@ -178,30 +167,20 @@ public class ReceiveData
         };
     }
 
-    private DateOnly? ParseNullableDate(string? date)
+    private static DateOnly? ParseNullableDate(string? date)
     {
         if (string.IsNullOrEmpty(date)) return null;
 
-        if (DateTime.TryParseExact(date, AllowedDateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
-        {
-            return DateOnly.FromDateTime(dateTime);
-        }
-
-        throw new FormatException($"Invalid date format: {date}. Expected formats: {string.Join(", ", AllowedDateFormats)}");
+        var dateTime = DateTime.ParseExact(date, AllowedDateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None);
+        return DateOnly.FromDateTime(dateTime);
     }
 
 
-    private DateTime? ParseNullableDateTime(string? dateTime, string format)
+    private static DateTime? ParseNullableDateTime(string? dateTime, string format)
     {
-        if (string.IsNullOrEmpty(dateTime))
-            return null;
+        if (string.IsNullOrEmpty(dateTime)) return null;
 
-        if (DateTime.TryParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var result))
-        {
-            return result;
-        }
-
-        throw new FormatException($"Invalid date-time format: {dateTime}. Expected format: {format}");
+        return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
     }
 
 

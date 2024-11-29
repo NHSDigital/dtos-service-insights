@@ -108,7 +108,7 @@ public class ReceiveDataTests
         // Assert
         _mockLogger.Verify(log =>
             log.Log(
-            LogLevel.Warning,
+            LogLevel.Error,
             0,
             It.Is<object>(state => state.ToString().Contains("contained an invalid date")),
             It.IsAny<Exception>(),
