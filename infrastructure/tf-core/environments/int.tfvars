@@ -48,7 +48,7 @@ routes = {
     network_rules = [
       {
         name                  = "AllowSerinsToAudit"
-        priority              = 821
+        priority              = 831
         action                = "Allow"
         rule_name             = "SerinsToAudit"
         source_addresses      = ["10.117.0.0/16"] # will be populated with the serins manager subnet address space
@@ -58,7 +58,7 @@ routes = {
       },
       {
         name                  = "AllowAuditToSerins"
-        priority              = 821
+        priority              = 831
         action                = "Allow"
         rule_name             = "AuditToSerins"
         source_addresses      = ["10.118.0.0/16"]
