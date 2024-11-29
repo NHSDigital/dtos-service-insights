@@ -1,0 +1,5 @@
+"change_db_date_time","nhs_number","superseded_nhs_number","gp_practice_code","bso_organisation_code","next_test_due_date","subject_status_code","early_recall_date","latest_invitation_date","removal_reason","removal_date","reason_for_ceasing_code","is_higher_risk","higher_risk_next_test_due_date","hr_recall_due_date","higher_risk_referral_reason_code","date_irradiated","is_higher_risk_active","gene_code","ntdd_calculation_method","preferred_language"
+"2022-08-16 14:21:48.330694+01","9999999998",,"A81001","ANE",,"NORMAL",,,,,,False,,,,,False,,"ROUTINE",
+"2022-08-16 14:21:48.651537+01","9999999999",,"A81002","AGA",,"NORMAL",,,,,,False,,,,,False,,"ROUTINE",
+"2022-09-15 22:50:02.516313+01","9999999999",,"A81002","AGA","2025-99-16","NORMAL",,"2023-07-22",,,,False,,,,,False,,"ROUTINE",EN
+"2022-10-13 22:52:34.825602+01","9999999998",,"A81001","ANE","2025-09-29","NORMAL",,"2023-02-07",,,,False,,,,,False,,"ROUTINE",
