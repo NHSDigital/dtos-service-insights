@@ -120,50 +120,50 @@ components:
           description: Name of the screening program which the participant was part of.
         primaryCareProvider:
           type: string
-          description:
+          description: The participant's primary care provider.
         preferredLanguage:
           type: string
           description: The participant's preferred language (if known).
         reasonForRemoval:
           type: string
-          description:
+          description: Reason the participant was removed from their GP practice.
         reasonForRemovalDt:
           type: string
           format: date
-          description:
+          description: Date when the participant was removed from their GP practice.
         nextTestDueDate:
           type: string
           format: date
           description: The date when the participant is due for next routine screening test.
         nextTestDueDateCalcMethod:
           type: string
-          description:
+          description: Whether a woman's NTDD should be calculated in the normal, routine way, or if she's in a trial and it needs calculating differently.
         participantScreeningStatus:
           type: string
-          description: Status of the participant's screening.
+          description: Status of the participant's screening, 'Normal' or 'ceased'.
         screeningCeasedReason:
           type: string
-          description:
+          description: This is a standardised reason why a participant has been ceased from screening.
         isHigherRisk:
           type: number
-          description:
+          description: Indicates whether a screening participant is a higher risk or not (1 is true, 0 is false).
         isHigherRiskActive:
           type: number
-          description: Whether the participant was higher risk or not (1 is true, 0 is false).
+          description: Where 'isHigherRisk' = 1, this field is set to 0 to identify a participant who are below the high risk screening age for their protocol and are therefore in a 'pending' state, rather than being actively screened under the higher risk.
         higherRiskNextTestDueDate:
           type: string
           format: date
-          description:
+          description: The HR NTDD of a participant who is in the HR program.
         higherRiskReferralReasonCode:
           type: string
-          description:
+          description: The reason code assigned to a higher risk participant.
         hrReasonCodeDescription:
           type: string
-          description:
+          description: Textual description of the higher risk referral reason code.
         dateIrradiated:
           type: string
           format: date
-          description: The date on which irradiation was performed (if applicable).
+          description: Date a participant first had radiotherapy to breast tissue. Recorded where the higher risk referral reason code relates to radiotherapy to breast tissue.
         geneCode:
           type: string
           description: A short  code related to the participant's cancer gene markers.

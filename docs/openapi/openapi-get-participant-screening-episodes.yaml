@@ -161,10 +161,10 @@ components:
           description: The date time when the screening episode end code was last updated.
         reasonClosedCode:
           type: string
-          description:
+          description: Short code that indicates the reason that lead to the closing of the episode.
         reasonClosedCodeDescription:
           type: string
-          description:
+          description: Textual description of the reason closed code.
         finalActionCode:
           type: string
           description: A short code that refers to the action / event that should take place after the closing of an episode
@@ -173,7 +173,7 @@ components:
           description: A textual description about the action / event that should take place after the closing of an episode
         endPoint:
           type: string
-          description:
+          description: An endpoint is the summary of Procedure Outcomes, obtained when the episode is closed.
         organisationCode:
           type: string
           description: Short code of the organisation responsible for the screening.
