@@ -53,63 +53,6 @@ public class ReceiveData
                 }
             }
 
-           else if (name.StartsWith("bss_subjects"))
-            {
-                DateTime processingStart = DateTime.UtcNow;
-                _logger.LogInformation($"Processing started for file: {name} at {processingStart}");
-
-                if (!CheckCsvFileHeaders(myBlob, FileType.Subjects))
-                {
-                    _logger.LogError($"Subjects CSV file headers are invalid for file: {name}");
-                    return;
-                }
-
-                int successCount = 0;
-                int failureCount = 0;
-                int lastProcessedRow = 0;
-
-
-                    using (var reader = new StreamReader(myBlob))
-                    using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-                    {
-                        var participantsEnumerator = csv.GetRecords<Participant>();
-                        int rowIndex = 0;
-
-
-                        foreach (var participant in participantsEnumerator)
-                        {
-                            rowIndex++;
-                            try
-                            {
-                                // Process each participant data by rows
-                                await ProcessParticipantDataAsync(participant, participantUrl);
-                                successCount++;
-                                lastProcessedRow = rowIndex;
-                            }
-                            catch (Exception ex)
-                            {
-                                failureCount++;
-                                _logger.LogError($"Error processing row {rowIndex} in file {name}: {ex.Message}");
-                            }
-                        }
-                    }
-
-                    DateTime processingEnd = DateTime.UtcNow;
-                    if (failureCount == 0)
-                    {
-                        _logger.LogInformation($"File {name} processed successfully. " +
-                                                $"Start Time: {processingStart}, End Time: {processingEnd}, " +
-                                                $"Rows Processed: {successCount}, Failures: {failureCount}");
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"File {name} partially processed. " +
-                                        $"Start Time: {processingStart}, End Time: {processingEnd}, " +
-                                        $"Last Successful Row: {lastProcessedRow}, " +
-                                        $"Rows Processed: {successCount}, Failures: {failureCount}");
-                    }
-
-            /*
             else if (name.StartsWith("bss_subjects"))
             {
                 if (!CheckCsvFileHeaders(myBlob, FileType.Subjects))
@@ -134,9 +77,8 @@ public class ReceiveData
 
             _logger.LogInformation("Data processed successfully.");
         }
-        */
-            }
-        }
+
+
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ReceiveData: {Message} \n StackTrace: {StackTrace}", ex.Message, ex.StackTrace);
@@ -180,6 +122,7 @@ public class ReceiveData
 
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
+
         try
         {
             _logger.LogInformation("Processing episode data.");
@@ -242,9 +185,17 @@ public class ReceiveData
 
     private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
     {
+
+        DateTime processingStart = DateTime.UtcNow;
+
+        int successCount = 0;
+        int failureCount = 0;
+        int lastProcessedRow = 0;
+        int rowIndex = 0;
+
         try
         {
-            _logger.LogInformation("Processing participant data.");
+            _logger.LogInformation("Processing started for file at {processingStart}", processingStart);
             foreach (var participant in participants)
             {
                 string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
@@ -252,12 +203,29 @@ public class ReceiveData
                 _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
 
                 await _httpRequestService.SendPost(participantUrl, serializedParticipant);
+
+                successCount++;
+                rowIndex++;
+                lastProcessedRow = rowIndex;
             }
+
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
+            failureCount++;
             await ProcessParticipantDataAsync(participants, participantUrl);
+        }
+
+        DateTime processingEnd = DateTime.UtcNow;
+        if (failureCount == 0)
+        {
+            _logger.LogInformation( "Rows Processed: {successCount}:",successCount);
+        }
+        else
+        {
+            _logger.LogWarning("Last Successful Row: {lastProcessedRow}, Rows Processed: {successCount}, Failures: {failureCount}", lastProcessedRow,successCount, failureCount);
         }
     }
 }
@@ -282,6 +250,7 @@ public class BssEpisode
     public string? end_point { get; set; }
     public string? final_action_code { get; set; }
 }
+
 
 enum FileType
 {
