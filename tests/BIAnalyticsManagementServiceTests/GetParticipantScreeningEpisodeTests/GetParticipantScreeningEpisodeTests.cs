@@ -59,13 +59,13 @@ public class GetParticipantScreeningEpisodeTests
         {
             { "page", "1" },
             { "pageSize", "2" },
-            { "startDate", "2023-07-05 08:30:00" },
-            { "endDate", "2023-07-05 08:30:00" }
+            { "startDate", "2023-05-05 08:30:00" },
+            { "endDate", "2023-05-05 08:30:00" }
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+        var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
 
         var jsonResponse = JsonSerializer.Serialize(episodesDataPage);
 
@@ -103,13 +103,13 @@ public class GetParticipantScreeningEpisodeTests
         {
             { "page", "1" },
             { "pageSize", "2" },
-            { "startDate", "2023-07-05 08:30:00" },
-            { "endDate", "2023-07-05 08:30:00" }
+            { "startDate", "2023-05-05 08:30:00" },
+            { "endDate", "2023-05-05 08:30:00" }
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+        var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
 
         var jsonResponse = JsonSerializer.Serialize(episodesDataPage);
 
@@ -138,13 +138,13 @@ public class GetParticipantScreeningEpisodeTests
         {
             { "page", "1" },
             { "pageSize", "2" },
-            { "startDate", "2023-07-05 08:30:00" },
-            { "endDate", "2023-07-05 08:30:00" }
+            { "startDate", "2023-05-05 08:30:00" },
+            { "endDate", "2023-05-05 08:30:00" }
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+        var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
 
         var jsonResponse = JsonSerializer.Serialize(episodesDataPage);
 
