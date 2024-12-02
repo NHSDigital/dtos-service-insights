@@ -114,16 +114,16 @@ components:
       properties:
         nhsNumber:
           type: number
-          description: NHS number of the participant.
+          description: The participant's NHS number.
         screeningName:
           type: string
-          description: Name of the screening program which the profile is a participant of.
+          description: Name of the screening program which the participant was part of.
         primaryCareProvider:
           type: string
-          description: Short code of the primary care provider.
+          description:
         preferredLanguage:
           type: string
-          description: A participant's preferred language code (if known).
+          description: The participant's preferred language (if known).
         reasonForRemoval:
           type: string
           description:
@@ -134,7 +134,7 @@ components:
         nextTestDueDate:
           type: string
           format: date
-          description: The next due date for the participant's screening test.
+          description: The date when the participant is due for next routine screening test.
         nextTestDueDateCalcMethod:
           type: string
           description:
@@ -143,13 +143,13 @@ components:
           description: Status of the participant's screening.
         screeningCeasedReason:
           type: string
-          description: A textual description for why the participant was remove from the screening program.
+          description:
         isHigherRisk:
           type: number
           description:
         isHigherRiskActive:
           type: number
-          description:
+          description: Whether the participant was higher risk or not (1 is true, 0 is false).
         higherRiskNextTestDueDate:
           type: string
           format: date

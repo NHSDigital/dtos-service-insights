@@ -133,7 +133,7 @@ components:
           description: Date when the episode was first created/opened.
         appointmentMadeFlag:
           type: number
-          description:
+          description: Whether an appointment was made (1 is true, 0 is false).
         firstOfferedAppointmentDate:
           type: string
           format: date
@@ -145,20 +145,20 @@ components:
         earlyRecallDate:
           type: string
           format: date
-          description: The early recall date related to the subject’s most recent episode.
+          description: The date on which the participant is recalled early for screening.
         callRecallStatusAuthorisedBy:
           type: string
-          description: The person or source that authorised the call/recall status in this episode.
+          description: The entity which authorized the recall.
         endCode:
           type: string
-          description:
+          description: Short code representing the reason why an episode was closed.
         endCodeDescription:
           type: string
-          description:
+          description: Textual description of the end code.
         endCodeLastUpdated:
           type: string
           format: date-time
-          description:
+          description: The date time when the screening episode end code was last updated.
         reasonClosedCode:
           type: string
           description:
