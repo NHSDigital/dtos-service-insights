@@ -7,6 +7,8 @@ using NHS.ServiceInsights.EpisodeManagementService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Common;
+using Azure.Messaging.EventGrid;
+using Azure;
 
 namespace NHS.ServiceInsights.EpisodeManagementServiceTests;
 
@@ -15,6 +17,8 @@ public class CreateUpdateEpisodeTests
 {
     private readonly Mock<ILogger<CreateUpdateEpisode>> _mockLogger = new();
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
+
+    private readonly Mock<EventGridPublisherClient> _mockEventGridPublisherClient  = new();
     private Mock<HttpRequestData> _mockRequest;
     private readonly SetupRequest _setupRequest = new();
     private readonly CreateUpdateEpisode _function;
@@ -24,8 +28,10 @@ public class CreateUpdateEpisodeTests
         Environment.SetEnvironmentVariable("CreateEpisodeUrl", "CreateEpisodeUrl");
         Environment.SetEnvironmentVariable("UpdateEpisodeUrl", "UpdateEpisodeUrl");
         Environment.SetEnvironmentVariable("GetEpisodeUrl", "GetEpisodeUrl");
+        Environment.SetEnvironmentVariable( "topicEndpoint", "topicEndpoint");
+        Environment.SetEnvironmentVariable("topicKey", "topicKey");
 
-        _function = new CreateUpdateEpisode(_mockLogger.Object, _mockHttpRequestService.Object);
+        _function = new CreateUpdateEpisode(_mockLogger.Object, _mockHttpRequestService.Object, _mockEventGridPublisherClient.Object);
     }
 
     [TestMethod]
@@ -39,9 +45,13 @@ public class CreateUpdateEpisodeTests
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
-
         _mockHttpRequestService.Setup(x => x.SendGet(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
+        Mock<Response> responseMock = new Mock<Response>();
+        responseMock.SetupGet(r => r.Status).Returns(200);
+        Response response = responseMock.Object;
+
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(response));
         // Act
         var result = await _function.Run(_mockRequest.Object);
 

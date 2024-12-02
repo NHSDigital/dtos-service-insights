@@ -15,11 +15,13 @@ public class CreateUpdateEpisode
 {
     private readonly ILogger<CreateUpdateEpisode> _logger;
     private readonly IHttpRequestService _httpRequestService;
+    private readonly EventGridPublisherClient _eventGridPublisherClient;
 
-    public CreateUpdateEpisode(ILogger<CreateUpdateEpisode> logger, IHttpRequestService httpRequestService)
+    public CreateUpdateEpisode(ILogger<CreateUpdateEpisode> logger, IHttpRequestService httpRequestService, EventGridPublisherClient eventGridPublisherClient)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
+        _eventGridPublisherClient = eventGridPublisherClient;
     }
 
     [Function("CreateUpdateEpisode")]
@@ -52,12 +54,6 @@ public class CreateUpdateEpisode
                 await _httpRequestService.SendPut(Environment.GetEnvironmentVariable("UpdateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("UpdateEpisode function called successfully.");
 
-                string topicEndpoint = Environment.GetEnvironmentVariable("topicEndpoint");
-                string topicKey = Environment.GetEnvironmentVariable("topicKey");
-
-                AzureKeyCredential credential = new AzureKeyCredential(topicKey);
-                EventGridPublisherClient client = new EventGridPublisherClient(new Uri(topicEndpoint), credential);
-
                 EventGridEvent eventGridEvent = new EventGridEvent(
                     subject: "Episode Updated",
                     eventType: "CreateParticipantScreeningEpisode",
@@ -65,7 +61,7 @@ public class CreateUpdateEpisode
                     data: episode.EpisodeId
                 );
 
-                await client.SendEventAsync(eventGridEvent);
+                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
 
                 return req.CreateResponse(HttpStatusCode.OK);
             }
@@ -75,12 +71,6 @@ public class CreateUpdateEpisode
                 await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("CreateEpisode function called successfully.");
 
-                string topicEndpoint = Environment.GetEnvironmentVariable("topicEndpoint");
-                string topicKey = Environment.GetEnvironmentVariable("topicKey");
-
-                AzureKeyCredential credential = new AzureKeyCredential(topicKey);
-                EventGridPublisherClient client = new EventGridPublisherClient(new Uri(topicEndpoint), credential);
-
                 EventGridEvent eventGridEvent = new EventGridEvent(
                     subject: "Episode Created",
                     eventType: "CreateParticipantScreeningEpisode",
@@ -88,7 +78,7 @@ public class CreateUpdateEpisode
                     data: episode.EpisodeId
                 );
 
-                await client.SendEventAsync(eventGridEvent);
+                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
 
                 return req.CreateResponse(HttpStatusCode.OK);
             }
