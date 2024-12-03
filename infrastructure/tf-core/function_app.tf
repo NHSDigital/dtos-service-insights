@@ -7,7 +7,6 @@ module "functionapp" {
   resource_group_name = azurerm_resource_group.core[each.value.region_key].name
   location            = each.value.region_key
 
-
   app_settings = local.app_settings[each.value.region_key][each.value.function_key]
 
   log_analytics_workspace_id                           = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]

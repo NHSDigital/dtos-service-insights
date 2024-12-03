@@ -134,6 +134,29 @@ app_service_plan = {
 }
 
 
+event_grid_defaults = {
+  identity_ids                 = []
+  identity_type                = "SystemAssigned"
+  inbound_ip_rule              = []
+  input_schema                 = {}
+  local_auth_enabled           = true
+  public_network_access_enabled = false
+}
+
+event_grid_configs = {
+  event-grid-1 = {
+    identity_type         = "SystemAssigned"
+    subscription_name     = "sub1"
+    function_app_endpoint = "https://dev-uks-si-create-participant-screening-episode.azurewebsites.net/api/CreateParticipantScreeningEpisode"
+  }
+  event-grid-2 = {
+    identity_type         = "SystemAssigned"
+    subscription_name     = "sub2"
+    function_app_endpoint = "https://dev-uks-si-create-participant-screening-episode.azurewebsites.net/api/CreateParticipantScreeningEpisode"
+  }
+}
+
+
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"
   acr_name    = "acrukshubdevserins"
@@ -405,6 +428,18 @@ storage_accounts = {
       }
       inbound-poison = {
         container_name = "inbound-poison"
+      }
+    }
+  }
+
+  eventgrid = {
+    name_suffix                   = "eventgrid"
+    account_tier                  = "Standard"
+    replication_type              = "LRS"
+    public_network_access_enabled = false
+    containers = {
+      config = {
+        container_name = "deadletterqueue"
       }
     }
   }
