@@ -129,9 +129,9 @@ public class ReceiveData
                 _logger.LogInformation("Sending Episode {EpisodeId} to {Url}:\n{Request}", episode.episode_id, episodeUrl, serializedEpisode);
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
-            catch (FormatException)
+            catch (FormatException ex)
             {
-                _logger.LogError("Episode {EpisodeId} contained an invalid date. The whole row will be skipped.", episode.episode_id);
+                _logger.LogError("Episode {EpisodeId} failed validation. Error: {ErrorMessage}", episode.episode_id, ex.Message);
             }
             catch (Exception ex)
             {
