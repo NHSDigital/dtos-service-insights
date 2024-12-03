@@ -66,7 +66,6 @@ public class GetParticipantScreeningProfileTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        // var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
         var startDate = DateTime.Parse(queryParam["startDate"]);
         var endDate = DateTime.Parse(queryParam["endDate"]);
         var expectedUri = $"http://localhost:6062/api/GetParticipantScreeningProfileData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
@@ -113,7 +112,6 @@ public class GetParticipantScreeningProfileTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        // var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
         var startDate = DateTime.Parse(queryParam["startDate"]);
         var endDate = DateTime.Parse(queryParam["endDate"]);
         var expectedUri = $"http://localhost:6062/api/GetParticipantScreeningProfileData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
@@ -151,7 +149,6 @@ public class GetParticipantScreeningProfileTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        // var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
         var startDate = DateTime.Parse(queryParam["startDate"]);
         var endDate = DateTime.Parse(queryParam["endDate"]);
         var expectedUri = $"http://localhost:6062/api/GetParticipantScreeningProfileData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";

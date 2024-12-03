@@ -126,7 +126,7 @@ public class ReceiveData
                 var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
-                _logger.LogInformation("Sending Episode {episode.episode_id} to {Url}:\n{Request}", episode.episode_id, episodeUrl, serializedEpisode);
+                _logger.LogInformation("Sending Episode {EpisodeId} to {Url}:\n{Request}", episode.episode_id, episodeUrl, serializedEpisode);
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
             catch (FormatException)
