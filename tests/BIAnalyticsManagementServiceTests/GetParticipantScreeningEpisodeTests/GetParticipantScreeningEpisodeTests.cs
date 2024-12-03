@@ -9,6 +9,7 @@ using NHS.ServiceInsights.BIAnalyticsManagementService;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using System.Text;
+using System.Globalization;
 
 namespace NHS.ServiceInsights.BIAnalyticsManagementServiceTests;
 
@@ -59,13 +60,15 @@ public class GetParticipantScreeningEpisodeTests
         {
             { "page", "1" },
             { "pageSize", "2" },
-            { "startDate", "2023-05-05 08:30:00" },
-            { "endDate", "2023-05-05 08:30:00" }
+            { "startDate", "2023-07-05 08:30:00" },
+            { "endDate", "2023-07-05 08:30:00" }
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
+        var startDate = DateTime.Parse(queryParam["startDate"]);
+        var endDate = DateTime.Parse(queryParam["endDate"]);
+        var expectedUri = $"http://localhost:6007/api/GetParticipantScreeningEpisodeData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
 
         var jsonResponse = JsonSerializer.Serialize(episodesDataPage);
 
@@ -75,6 +78,7 @@ public class GetParticipantScreeningEpisodeTests
             {
                 Content = new StringContent(jsonResponse, Encoding.UTF8, "application/json")
             });
+
         // Act
         var response = await _function.Run(_mockRequest.Object);
 
@@ -103,13 +107,16 @@ public class GetParticipantScreeningEpisodeTests
         {
             { "page", "1" },
             { "pageSize", "2" },
-            { "startDate", "2023-05-05 08:30:00" },
-            { "endDate", "2023-05-05 08:30:00" }
+            { "startDate", "2023-07-05 08:30:00" },
+            { "endDate", "2023-07-05 08:30:00" }
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
+        // var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=2023-07-05 08:30:00&endDate=2023-07-05 08:30:00";
+        var startDate = DateTime.Parse(queryParam["startDate"]);
+        var endDate = DateTime.Parse(queryParam["endDate"]);
+        var expectedUri = $"http://localhost:6007/api/GetParticipantScreeningEpisodeData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
 
         var jsonResponse = JsonSerializer.Serialize(episodesDataPage);
 
@@ -138,13 +145,16 @@ public class GetParticipantScreeningEpisodeTests
         {
             { "page", "1" },
             { "pageSize", "2" },
-            { "startDate", "2023-05-05 08:30:00" },
-            { "endDate", "2023-05-05 08:30:00" }
+            { "startDate", "2023-07-05 08:30:00" },
+            { "endDate", "2023-07-05 08:30:00" }
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
+        // var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=2023-07-05 08:30:00&endDate=2023-07-05 08:30:00";
+        var startDate = DateTime.Parse(queryParam["startDate"]);
+        var endDate = DateTime.Parse(queryParam["endDate"]);
+        var expectedUri = $"http://localhost:6007/api/GetParticipantScreeningEpisodeData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
 
         var jsonResponse = JsonSerializer.Serialize(episodesDataPage);
 
