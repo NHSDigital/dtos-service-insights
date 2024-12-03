@@ -157,7 +157,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<object>(state => state.ToString().Contains("contained an invalid date")),
+            It.Is<object>(state => state.ToString().Contains("failed validation")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(3)); // Expecting three invalid dates to be logged
