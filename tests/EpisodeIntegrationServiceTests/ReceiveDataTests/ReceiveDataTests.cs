@@ -45,6 +45,29 @@ public class ReceiveDataTests
     }
 
     [TestMethod]
+    public async Task ReceiveData_ShouldValidateEpisodeDate_YYYY_MM_DD_Format()
+    {
+        // Arrange
+        string data = "nhs_number,episode_id,episode_type,change_db_date_time,episode_date,appointment_made,date_of_foa,date_of_as,early_recall_date,call_recall_status_authorised_by,end_code,end_code_last_updated,bso_organisation_code,bso_batch_id,reason_closed_code,end_point,final_action_code\n" +
+                    "9000007053,571645,R,2020-03-31 12:11:47.339148+01,2017-01-11,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV121798J,,,\n" +
+                    "9000009808,333330,R,2020-03-31 12:49:47.513821+01,2016-09-05,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV000001A,,,\n" +
+                    "9000006316,570294,R,2020-03-31 12:52:13.463901+01,2017-01-11,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV121798J,,,\n" +
+                    "9000007997,569965,R,2020-03-31 13:06:30.814448+01,2017-01-11,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV121798J,,,\n" +
+                    "9000007702,574222,R,2020-03-31 13:10:21.420187+01,2017-01-11,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV121798J,,,\n" +
+                    "9000014174,568703,C,2020-03-31 13:21:37.94545+01,2016-12-30,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV172471J,,,";
+
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+
+        // Act
+        await _function.Run(stream, "bss_episodes_test_data_20240930");
+
+        // Assert
+        _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(6));
+        _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
+
+    }
+
+    [TestMethod]
     public async Task ReceiveData_ShouldValidateEpisodeDateWhenDelimitedByDash()
     {
         // Arrange
