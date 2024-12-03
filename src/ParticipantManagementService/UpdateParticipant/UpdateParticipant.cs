@@ -22,14 +22,12 @@ public class UpdateParticipant
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
 
     {
-        ParticipantDto participantDto;
-
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = await reader.ReadToEndAsync();
-                participantDto = JsonSerializer.Deserialize<ParticipantDto>(postData);
+                JsonSerializer.Deserialize<ParticipantDto>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
             }
 
