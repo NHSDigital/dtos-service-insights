@@ -33,14 +33,14 @@ public class GetParticipantScreeningProfileTests
                 Id = 1,
                 NhsNumber = 1234567890,
                 ScreeningName = "John Doe",
-                RecordInsertDatetime = DateTime.Parse("2023-07-05 10:30:00")
+                RecordInsertDatetime = DateTime.Parse("2023-05-05 10:30:00")
             },
             new ParticipantScreeningProfile
             {
                 Id = 2,
                 NhsNumber = 9876543210,
                 ScreeningName = "Jane Smith",
-                RecordInsertDatetime = DateTime.Parse("2023-07-05 11:30:00")
+                RecordInsertDatetime = DateTime.Parse("2023-05-05 11:30:00")
             }
         }
     };
@@ -59,13 +59,13 @@ public class GetParticipantScreeningProfileTests
         {
             { "page", "1" },
             { "pageSize", "2" },
-            { "startDate", "2023-07-05 08:30:00" },
-            { "endDate", "2023-07-05 08:30:00" }
+            { "startDate", "2023-05-05 08:30:00" },
+            { "endDate", "2023-05-05 08:30:00" }
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
 
         var jsonResponse = JsonSerializer.Serialize(profilesDataPage);
 
@@ -103,13 +103,13 @@ public class GetParticipantScreeningProfileTests
         {
             { "page", "1" },
             { "pageSize", "2" },
-            { "startDate", "2023-07-05 08:30:00" },
-            { "endDate", "2023-07-05 08:30:00" }
+            { "startDate", "2023-05-05 08:30:00" },
+            { "endDate", "2023-05-05 08:30:00" }
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
 
         var jsonResponse = JsonSerializer.Serialize(profilesDataPage);
 
@@ -138,13 +138,13 @@ public class GetParticipantScreeningProfileTests
         {
             { "page", "1" },
             { "pageSize", "2" },
-            { "startDate", "2023-07-05 08:30:00" },
-            { "endDate", "2023-07-05 08:30:00" }
+            { "startDate", "2023-05-05 08:30:00" },
+            { "endDate", "2023-05-05 08:30:00" }
         };
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/05/2023 08:30:00&endDate=05/05/2023 08:30:00";
 
         var jsonResponse = JsonSerializer.Serialize(profilesDataPage);
 
