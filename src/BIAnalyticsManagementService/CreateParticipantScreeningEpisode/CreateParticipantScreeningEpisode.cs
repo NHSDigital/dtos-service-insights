@@ -20,7 +20,7 @@ public class CreateParticipantScreeningEpisode
     [Function(nameof(CreateParticipantScreeningEpisode))]
     public async Task Run([EventGridTrigger] EventGridEvent eventGridEvent)
     {
-        _logger.LogInformation("Create Participant Screening Profile function start");
+        _logger.LogInformation("Create Participant Screening Episode function start");
 
         string serializedEvent = JsonSerializer.Serialize(eventGridEvent);
         _logger.LogInformation(serializedEvent);

@@ -204,6 +204,7 @@ services:
     ports:
       - "6007:6007"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://*:6007
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
@@ -216,6 +217,7 @@ services:
     ports:
       - "6070:6070"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6070
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
@@ -229,6 +231,7 @@ services:
     ports:
       - "7777:7777"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7777
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
@@ -245,6 +248,7 @@ services:
     ports:
       - "7072:7072"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - AzureWebJobsStorage=UseDevelopmentStorage=true
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7072
@@ -261,6 +265,7 @@ services:
     ports:
       - "6006:6006"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6006
       - CreateEpisodeUrl=http://127.0.0.1:6007/api/CreateEpisode
@@ -278,6 +283,7 @@ services:
     ports:
       - "6060:6060"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6060
       - GetEpisodeUrl=http://127.0.0.1:6070/api/GetEpisode
@@ -316,6 +322,7 @@ services:
     ports:
       - "6061:6061"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6061
 
@@ -328,6 +335,7 @@ services:
     ports:
       - "7074:7074"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7074
 
@@ -341,6 +349,7 @@ services:
     ports:
       - "6081:6081"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6081
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
