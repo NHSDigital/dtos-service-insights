@@ -157,7 +157,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<object>(state => state.ToString().Contains("failed validation")),
+            It.Is<object>(state => state.ToString().Contains("was not recognized as a valid DateTime.")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(3)); // Expecting three invalid dates to be logged
@@ -203,10 +203,10 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<object>(state => state.ToString().Contains("Error in ReceiveData: ")),
+            It.Is<object>(state => state.ToString().Contains("The conversion cannot be performed.")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Once());
+            Times.Exactly(2));
 
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(2));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));

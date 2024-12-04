@@ -119,26 +119,23 @@ public class ReceiveData
 
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
-        _logger.LogInformation("Processing episode data.");
-
-        foreach (var episode in episodes)
+        try
         {
-            try
+            _logger.LogInformation("Processing episode data.");
+            foreach (var episode in episodes)
             {
                 var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
-                _logger.LogInformation("Sending Episode {EpisodeId} to {Url}:\n{Request}", episode.episode_id, episodeUrl, serializedEpisode);
+                _logger.LogInformation("Sending episode to {Url}: {Request}", episodeUrl, serializedEpisode);
+
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
-            catch (FormatException ex)
-            {
-                _logger.LogError("Episode {Episode} failed validation. Error: {ErrorMessage}", episode.episode_id, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error when processing episode: {Episode}. Skipping processing for this episode.", episode);
-            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
+            await ProcessEpisodeDataAsync(episodes, episodeUrl);
         }
     }
 
