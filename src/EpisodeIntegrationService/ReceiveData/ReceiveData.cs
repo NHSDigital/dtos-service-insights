@@ -187,8 +187,7 @@ public class ReceiveData
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
-            // Remove the recursive call
-            // await ProcessParticipantDataAsync(subjects, participantUrl);
+            await ProcessParticipantDataAsync(subjects, participantUrl);
         }
     }
     private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
