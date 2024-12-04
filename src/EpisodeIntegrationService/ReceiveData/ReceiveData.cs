@@ -190,7 +190,6 @@ public class ReceiveData
 
         int successCount = 0;
         int failureCount = 0;
-        int lastProcessedRow = 0;
         int rowIndex = 0;
 
         try
@@ -207,12 +206,8 @@ public class ReceiveData
 
                 successCount++;
                 rowIndex++;
-                lastProcessedRow = rowIndex;
-
-                _logger.LogInformation("Row of No.{lastProcessedRow} processed successfully",lastProcessedRow);
+                _logger.LogInformation("Row of No.{rowIndex} processed successfully",rowIndex);
             }
-
-
         }
         catch (Exception ex)
         {
@@ -220,29 +215,17 @@ public class ReceiveData
 
             failureCount++;
             rowIndex++;
-            lastProcessedRow = rowIndex;
-
-            _logger.LogInformation("Row of No.{lastProcessedRow} processed unsuccessfully",lastProcessedRow);
+            _logger.LogInformation("Row of No.{rowIndex} processed unsuccessfully",rowIndex);
             await ProcessParticipantDataAsync(name,participants, participantUrl);
         }
 
         DateTime processingEnd = DateTime.UtcNow;
-        if (failureCount == 0)
-        {
-            _logger.LogInformation("\n==================================================================\n"
-                                    +"File {name} processed successfully.\n"
-                                    +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
-                                    +"Rows Processed: {successCount}, Failures: {failureCount}"
-                                    ,name,processingStart,processingEnd,successCount, failureCount );
-        }
-        else
-        {
-            _logger.LogInformation("\n==================================================================\n"
-                                    +"File {name} has not been processed successfully\n"
-                                    +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
-                                    +"Last Successful Row: {lastProcessedRow}, Rows Processed: {successCount}, Failures: {failureCount}"
-                                    ,name,processingStart,processingEnd,lastProcessedRow,successCount, failureCount );
-        }
+
+        _logger.LogInformation("\n==================================================================\n"
+                                +"File {name} processed successfully.\n"
+                                +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
+                                +"Rows Processed: {successCount}, Failures: {failureCount}"
+                                ,name,processingStart,processingEnd,successCount, failureCount );
     }
 }
 
