@@ -208,7 +208,8 @@ public class ReceiveData
                 successCount++;
                 rowIndex++;
                 lastProcessedRow = rowIndex;
-                 _logger.LogInformation("Row of No.{lastProcessedRow} processed successfully",lastProcessedRow);
+
+                _logger.LogInformation("Row of No.{lastProcessedRow} processed successfully",lastProcessedRow);
             }
 
 
@@ -220,6 +221,7 @@ public class ReceiveData
             failureCount++;
             rowIndex++;
             lastProcessedRow = rowIndex;
+
             _logger.LogInformation("Row of No.{lastProcessedRow} processed unsuccessfully",lastProcessedRow);
             await ProcessParticipantDataAsync(name,participants, participantUrl);
         }
