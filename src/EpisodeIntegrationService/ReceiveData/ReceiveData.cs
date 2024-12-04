@@ -62,7 +62,7 @@ public class ReceiveData
                 using (var reader = new StreamReader(myBlob))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
-                    var participantsEnumerator = csv.GetRecords<Participant>();
+                    var participantsEnumerator = csv.GetRecords<BssSubject>();
 
                     await ProcessParticipantDataAsync(participantsEnumerator, participantUrl);
                 }
@@ -72,6 +72,8 @@ public class ReceiveData
                 _logger.LogError("fileName is invalid. file name: {Name}", name);
                 return;
             }
+
+            _logger.LogInformation("Data processed successfully.");
         }
         catch (Exception ex)
         {
@@ -152,7 +154,7 @@ public class ReceiveData
             ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
             EpisodeOpenDate = ParseNullableDate(episode.episode_date),
-            AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),
+            AppointmentMadeFlag = ParseBooleanStringToShort(episode.appointment_made),
             FirstOfferedAppointmentDate = ParseNullableDate(episode.date_of_foa),
             ActualScreeningDate = ParseNullableDate(episode.date_of_as),
             EarlyRecallDate = ParseNullableDate(episode.early_recall_date),
@@ -165,6 +167,63 @@ public class ReceiveData
             ReasonClosedCode = episode.reason_closed_code,
             FinalActionCode = episode.final_action_code
         };
+    }
+
+    private async Task ProcessParticipantDataAsync(IEnumerable<BssSubject> subjects, string participantUrl)
+    {
+        try
+        {
+            _logger.LogInformation("Processing participant data.");
+            foreach (var subject in subjects)
+            {
+                var modifiedParticipant = MapParticipantToParticipantDto(subject);
+                string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant, new JsonSerializerOptions { WriteIndented = true });
+
+                _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
+
+                await _httpRequestService.SendPost(participantUrl, serializedParticipant);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
+            // Remove the recursive call
+            // await ProcessParticipantDataAsync(subjects, participantUrl);
+        }
+    }
+    private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
+    {
+        return new ParticipantDto
+        {
+            NhsNumber = subject.nhs_number,
+            ScreeningName = "Breast Screening",
+            NextTestDueDate = ParseNullableDate(subject.next_test_due_date),
+            NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
+            ParticipantScreeningStatus = subject.subject_status_code,
+            ScreeningCeasedReason = subject.reason_for_ceasing_code,
+            IsHigherRisk = ParseBooleanStringToShort(subject.is_higher_risk),
+            IsHigherRiskActive = ParseBooleanStringToShort(subject.is_higher_risk_active),
+            HigherRiskNextTestDueDate = ParseNullableDate(subject.higher_risk_next_test_due_date),
+            HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
+            DateIrradiated = ParseNullableDate(subject.date_irradiated),
+            GeneCode = subject.gene_code
+        };
+    }
+
+    private static short? ParseBooleanStringToShort(string booleanString)
+    {
+        if (booleanString.ToUpper() == "TRUE")
+        {
+            return (short)1;
+        }
+        else if (booleanString.ToUpper() == "FALSE")
+        {
+            return (short)0;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private static DateOnly? ParseNullableDate(string? date)
@@ -182,71 +241,4 @@ public class ReceiveData
 
         return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
     }
-
-
-
-
-    private static short? GetAppointmentMadeFlag(string appointmentMade)
-    {
-        if (appointmentMade.ToUpper() == "TRUE")
-        {
-            return (short)1;
-        }
-        else if (appointmentMade.ToUpper() == "FALSE")
-        {
-            return (short)0;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
-    {
-        try
-        {
-            _logger.LogInformation("Processing participant data.");
-            foreach (var participant in participants)
-            {
-                string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
-
-                _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
-
-                await _httpRequestService.SendPost(participantUrl, serializedParticipant);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
-            await ProcessParticipantDataAsync(participants, participantUrl);
-        }
-    }
-}
-
-public class BssEpisode
-{
-    public long episode_id { get; set; }
-    public long nhs_number { get; set; }
-    public string? episode_type { get; set; }
-    public DateTime change_db_date_time { get; set; }
-    public string? episode_date { get; set; }
-    public string? appointment_made { get; set; }
-    public string? date_of_foa { get; set; }
-    public string? date_of_as { get; set; }
-    public string? early_recall_date { get; set; }
-    public string? call_recall_status_authorised_by { get; set; }
-    public string? end_code { get; set; }
-    public string? end_code_last_updated { get; set; }
-    public string? bso_organisation_code { get; set; }
-    public string? bso_batch_id { get; set; }
-    public string? reason_closed_code { get; set; }
-    public string? end_point { get; set; }
-    public string? final_action_code { get; set; }
-}
-
-enum FileType
-{
-    Episodes = 0,
-    Subjects = 1,
 }
