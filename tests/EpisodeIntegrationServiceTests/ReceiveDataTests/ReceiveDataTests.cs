@@ -155,7 +155,7 @@ public class ReceiveDataTests
         // Assert
         _mockLogger.Verify(log =>
             log.Log(
-            LogLevel.Error,
+            LogLevel.Warning,
             0,
             It.Is<object>(state => state.ToString().Contains("failed validation")),
             It.IsAny<Exception>(),
