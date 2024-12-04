@@ -66,7 +66,7 @@ public class ReceiveData
                 {
                     var participantsEnumerator = csv.GetRecords<Participant>();
 
-                    await ProcessParticipantDataAsync(participantsEnumerator, participantUrl);
+                    await ProcessParticipantDataAsync(name,participantsEnumerator, participantUrl);
                 }
             }
             else
@@ -183,7 +183,7 @@ public class ReceiveData
         }
     }
 
-    private async Task ProcessParticipantDataAsync(IEnumerable<Participant> participants, string participantUrl)
+    private async Task ProcessParticipantDataAsync(string name,IEnumerable<Participant> participants, string participantUrl)
     {
 
         DateTime processingStart = DateTime.UtcNow;
@@ -195,7 +195,8 @@ public class ReceiveData
 
         try
         {
-            _logger.LogInformation("Processing started for file at {processingStart}", processingStart);
+            _logger.LogInformation("Processing started for file: {name} at {processingStart}",name, processingStart);
+
             foreach (var participant in participants)
             {
                 string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
@@ -207,6 +208,7 @@ public class ReceiveData
                 successCount++;
                 rowIndex++;
                 lastProcessedRow = rowIndex;
+                 _logger.LogInformation("Row of No.{lastProcessedRow} processed successfully",lastProcessedRow);
             }
 
 
@@ -214,18 +216,30 @@ public class ReceiveData
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
+
             failureCount++;
-            await ProcessParticipantDataAsync(participants, participantUrl);
+            rowIndex++;
+            lastProcessedRow = rowIndex;
+            _logger.LogInformation("Row of No.{lastProcessedRow} processed unsuccessfully",lastProcessedRow);
+            await ProcessParticipantDataAsync(name,participants, participantUrl);
         }
 
         DateTime processingEnd = DateTime.UtcNow;
         if (failureCount == 0)
         {
-            _logger.LogInformation( "Rows Processed: {successCount}:",successCount);
+            _logger.LogInformation("\n==================================================================\n"
+                                    +"File {name} processed successfully.\n"
+                                    +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
+                                    +"Rows Processed: {successCount}, Failures: {failureCount}"
+                                    ,name,processingStart,processingEnd,successCount, failureCount );
         }
         else
         {
-            _logger.LogWarning("Last Successful Row: {lastProcessedRow}, Rows Processed: {successCount}, Failures: {failureCount}", lastProcessedRow,successCount, failureCount);
+            _logger.LogInformation("\n==================================================================\n"
+                                    +"File {name} has not been processed successfully\n"
+                                    +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
+                                    +"Last Successful Row: {lastProcessedRow}, Rows Processed: {successCount}, Failures: {failureCount}"
+                                    ,name,processingStart,processingEnd,lastProcessedRow,successCount, failureCount );
         }
     }
 }
