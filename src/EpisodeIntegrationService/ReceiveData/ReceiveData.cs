@@ -131,11 +131,11 @@ public class ReceiveData
             }
             catch (FormatException ex)
             {
-                _logger.LogWarning("Episode {Episode} failed validation. Error: {ErrorMessage}", episode.episode_id, ex.Message);
+                _logger.LogError("Episode {Episode} failed validation. Error: {ErrorMessage}", episode.episode_id, ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unexpected error when processing episode: {Episode}. Skipping processing for this episode. Error: {ErrorMessage}", episode, ex);
+                _logger.LogError(ex, "Unexpected error when processing episode: {Episode}. Skipping processing for this episode.", episode);
             }
         }
     }
