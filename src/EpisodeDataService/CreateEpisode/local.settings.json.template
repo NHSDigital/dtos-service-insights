@@ -4,7 +4,9 @@
     "ASPNETCORE_ENVIRONMENT": "Development",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "ServiceInsightsDbConnectionString": "YOUR_CONNECTION_STRING"
+    "ServiceInsightsDbConnectionString": "YOUR_CONNECTION_STRING",
+    "topicEndpoint": "https://sams-test-topic.uksouth-1.eventgrid.azure.net/api/events",
+    "topicKey": "TOPIC_KEY"
   },
   "Host": {
     "LocalHttpPort": 6007

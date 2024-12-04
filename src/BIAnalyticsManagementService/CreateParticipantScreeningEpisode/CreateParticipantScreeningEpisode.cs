@@ -25,38 +25,15 @@ public class CreateParticipantScreeningEpisode
         string serializedEvent = JsonSerializer.Serialize(eventGridEvent);
         _logger.LogInformation(serializedEvent);
 
-        long episodeId;
-
-        if (!long.TryParse(eventGridEvent.Data.ToString(), out episodeId))
-        {
-            _logger.LogError("episodeId is invalid");
-            return;
-        }
-
-        var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-        var getEpisodeUrl = $"{baseUrl}?EpisodeId={episodeId}";
-        _logger.LogInformation("Requesting episode URL: {Url}", getEpisodeUrl);
-
-        Episode episode;
+        Episode episode = new();
 
         try
         {
-            var response = await _httpRequestService.SendGet(getEpisodeUrl);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogError("Failed to retrieve episode with Episode ID {EpisodeId}. Status Code: {StatusCode}", episodeId, response.StatusCode);
-                return;
-            }
-
-            string episodeJson = await response.Content.ReadAsStringAsync();
-            episode = JsonSerializer.Deserialize<Episode>(episodeJson);
-            _logger.LogInformation("Episode data retrieved and deserialised");
+            episode = JsonSerializer.Deserialize<Episode>(eventGridEvent.Data.ToString());
         }
-
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to deserialise or retrieve episode from {Url}.", getEpisodeUrl);
+            _logger.LogError(ex, "Unable to deserialize event data to Episode object.");
             return;
         }
 
@@ -64,7 +41,6 @@ public class CreateParticipantScreeningEpisode
         {
             await SendToCreateParticipantScreeningEpisodeAsync(episode);
         }
-
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create participant screening episode.");

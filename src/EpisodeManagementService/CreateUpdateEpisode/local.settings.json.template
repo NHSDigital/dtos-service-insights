@@ -6,9 +6,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "CreateEpisodeUrl": "http://localhost:6007/api/CreateEpisode",
     "GetEpisodeUrl": "http://localhost:6060/api/GetEpisode",
-    "UpdateEpisodeUrl": "http://localhost:7777/api/UpdateEpisode",
-    "topicEndpoint": "https://sams-test-topic.uksouth-1.eventgrid.azure.net/api/events",
-    "topicKey": "TOPIC_KEY"
+    "UpdateEpisodeUrl": "http://localhost:7777/api/UpdateEpisode"
   },
   "Host": {
     "LocalHttpPort": 6006

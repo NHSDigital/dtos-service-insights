@@ -6,8 +6,6 @@ using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
-using Azure.Messaging.EventGrid;
-using Azure;
 
 namespace NHS.ServiceInsights.EpisodeManagementService;
 
@@ -15,13 +13,11 @@ public class CreateUpdateEpisode
 {
     private readonly ILogger<CreateUpdateEpisode> _logger;
     private readonly IHttpRequestService _httpRequestService;
-    private readonly EventGridPublisherClient _eventGridPublisherClient;
 
-    public CreateUpdateEpisode(ILogger<CreateUpdateEpisode> logger, IHttpRequestService httpRequestService, EventGridPublisherClient eventGridPublisherClient)
+    public CreateUpdateEpisode(ILogger<CreateUpdateEpisode> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
-        _eventGridPublisherClient = eventGridPublisherClient;
     }
 
     [Function("CreateUpdateEpisode")]
@@ -54,15 +50,6 @@ public class CreateUpdateEpisode
                 await _httpRequestService.SendPut(Environment.GetEnvironmentVariable("UpdateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("UpdateEpisode function called successfully.");
 
-                EventGridEvent eventGridEvent = new EventGridEvent(
-                    subject: "Episode Updated",
-                    eventType: "CreateParticipantScreeningEpisode",
-                    dataVersion: "1.0",
-                    data: episode.EpisodeId
-                );
-
-                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
-
                 return req.CreateResponse(HttpStatusCode.OK);
             }
             else if (getEpisodeResponse.StatusCode == HttpStatusCode.NotFound)
@@ -70,15 +57,6 @@ public class CreateUpdateEpisode
                 _logger.LogInformation("Episode {episodeId} does not exist and will be created.", episode.EpisodeId);
                 await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("CreateEpisode function called successfully.");
-
-                EventGridEvent eventGridEvent = new EventGridEvent(
-                    subject: "Episode Created",
-                    eventType: "CreateParticipantScreeningEpisode",
-                    dataVersion: "1.0",
-                    data: episode.EpisodeId
-                );
-
-                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
 
                 return req.CreateResponse(HttpStatusCode.OK);
             }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
+using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
@@ -17,8 +18,9 @@ public class CreateEpisode
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
     private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
+    private readonly EventGridPublisherClient _eventGridPublisherClient;
 
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, EventGridPublisherClient eventGridPublisherClient)
     {
         _logger = logger;
         _episodesRepository = episodeRepository;
@@ -26,6 +28,7 @@ public class CreateEpisode
         _episodeTypeLkpRepository = episodeTypeLkpRepository;
         _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
         _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
+        _eventGridPublisherClient = eventGridPublisherClient;
     }
 
     [Function("CreateEpisode")]
@@ -82,7 +85,17 @@ public class CreateEpisode
 
             _logger.LogInformation("Calling CreateEpisode method...");
             _episodesRepository.CreateEpisode(episode);
-            _logger.LogInformation("Episode created successfully.");
+            _logger.LogInformation("Episode created successfully.");;
+
+            EventGridEvent eventGridEvent = new EventGridEvent(
+                subject: "Episode Created",
+                eventType: "CreateParticipantScreeningEpisode",
+                dataVersion: "1.0",
+                data: episode
+            );
+
+            await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+
             return req.CreateResponse(HttpStatusCode.OK);
         }
         catch (Exception ex)
