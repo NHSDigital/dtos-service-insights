@@ -19,9 +19,7 @@ public class CreateParticipantScreeningProfileTests
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
-    private string participantJson = "{\"nhs_number\": \"1111111112\",\"next_test_due_date\":\"2000-01-01\",\"gp_practice_id\":\"39\",\"subject_status_code\":\"NORMAL\",\"is_higher_risk\": \"True\",\"higher_risk_next_test_du" +
-                                "e_date\":\"2000-01-01\",\"removal_reason\":\"reason\",\"removal_date\":\"2000-01-01\",\"bso_organisation_id\":\"00002\",\"early_recall_date\":\"2000-01-01\",\"latest_invitation_date\":\"2000-01-01\",\"prefer" +
-                                "red_language\":\"english\",\"higher_risk_referral_reason_code\":\"code\",\"date_irradiated\":\"2000-01-01\",\"is_higher_risk_active\": \"False\",\"gene_code\":\"geneCode\",\"ntdd_calculation_method\":\"method\"}";
+    private string participantJson = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\"}";
     private string demographicsJson = "{\"PrimaryCareProvider\":\"A81002\",\"PreferredLanguage\":\"EN\"}";
     public CreateParticipantScreeningProfileTests()
     {
