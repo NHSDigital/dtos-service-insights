@@ -155,6 +155,8 @@ services:
       - ASPNETCORE_URLS=http://*:6008
       - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
       - CreateParticipantScreeningEpisodeUrl=http://create-participant-screening-episode-data:6010/api/CreateParticipantScreeningEpisode
+      - GetScreeningDataUrl=http://get-screening-data:6082/api/GetScreeningData
+      - GetReferenceDataUrl=http://get-reference-data:6081/api/GetReferenceData
 
   create-participant-screening-profile:
     container_name: create-participant-screening-profile
@@ -397,4 +399,20 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6081
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
+  get-screening-data:
+    container_name: get-screening-data
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./ReferenceDataService/GetScreeningData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6082:6082"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6082
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True

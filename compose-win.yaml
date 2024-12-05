@@ -136,6 +136,8 @@ services:
       - ASPNETCORE_URLS=http://*:6008
       - GetEpisodeUrl=http://127.0.0.1:6060/api/GetEpisode
       - CreateParticipantScreeningEpisodeUrl=http://127.0.0.1:6010/api/CreateParticipantScreeningEpisode
+      - GetScreeningDataUrl=http://127.0.0.1:6082/api/GetScreeningData
+      - GetReferenceDataUrl=http://127.0.0.1:6081/api/GetReferenceData
 
   create-participant-screening-profile:
     container_name: create-participant-screening-profile
@@ -341,4 +343,17 @@ services:
     environment:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6081
+      - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
+  get-screening-data:
+    container_name: get-screening-data
+    network_mode: host
+    build:
+      context: ./src/
+      dockerfile: ./ReferenceDataService/GetScreeningData/Dockerfile
+    ports:
+      - "6082:6082"
+    environment:
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6082
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
