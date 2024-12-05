@@ -33,7 +33,7 @@ variable "inbound_ip_rules" {
 
 variable "input_mapping_fields" {
   description = "Input mapping fields for the Event Grid subscription."
-  type = map(string)
+  type        = map(string)
   default = {
     subject    = "data.subject"
     id         = "data.id"
@@ -72,8 +72,8 @@ variable "subscription_name" {
   type        = string
 }
 
-variable "function_app_endpoint" {
-  description = "The function app endpoint that the event subscription will send events to."
+variable "function_app_id" {
+  description = "The function app id that the event subscription will send events to."
   type        = string
 }
 

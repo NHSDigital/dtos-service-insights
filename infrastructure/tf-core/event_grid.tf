@@ -4,11 +4,12 @@ module "event_grid" {
   source = "./modules/event-grid"
 
   # topic_name          = "${module.regions_config[each.value.region].names.topic_name}-${lower(each.value.name_suffix)}"
-  topic_name            = each.value.event_topic_name
-  subscription_name     = each.value.subscription_name
-  resource_group_name   = azurerm_resource_group.core[each.value.region].name
-  location              = each.value.region
-  function_app_endpoint = each.value.function_app_endpoint
+  topic_name          = each.value.event_topic_name
+  subscription_name   = each.value.subscription_name
+  resource_group_name = azurerm_resource_group.core[each.value.region].name
+  location            = each.value.region
+
+  function_app_id = format("%s/functions/%s", module.functionapp["CreateParticipantScreeningEpisode-uksouth"].id, module.functionapp["CreateParticipantScreeningEpisode-uksouth"].name)
 
   log_analytics_workspace_id = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
   # monitor_diagnostic_setting_keyvault_enabled_logs = local.monitor_diagnostic_setting_keyvault_enabled_logs
@@ -35,8 +36,8 @@ locals {
   event_grids = {
     for event_grid_key, event_grid_details in var.event_grid_configs :
     event_grid_key => merge(var.event_grid_defaults,
-    {
-      event_topic_name   = "event-grid-${event_grid_key}"
+      {
+        event_topic_name = "event-grid-${event_grid_key}"
 
     }, event_grid_details) # event_grid_details will win merge conflicts
   }
@@ -45,7 +46,7 @@ locals {
     for region in keys(var.regions) : [
       for event_grid_key, event_grid_details in local.event_grids : merge(
         {
-          region         = region   # 1st iterator
+          region         = region         # 1st iterator
           event_grid_key = event_grid_key # 2nd iterator
         },
         event_grid_details # the rest of the key/value pairs for a specific event_grids
