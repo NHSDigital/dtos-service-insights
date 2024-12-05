@@ -1,14 +1,14 @@
-CREATE USER [nft-uks-si-create-participant-screening-episode-data] FROM EXTERNAL PROVIDER;
-ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-create-participant-screening-episode-data];
-ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-create-participant-screening-episode-data];
+CREATE USER [nft-uks-si-create-ps-episode-data] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-create-ps-episode-data];
+ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-create-ps-episode-data];
 
 CREATE USER [nft-uks-si-create-participant-screening-profile-data] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-create-participant-screening-profile-data];
 ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-create-participant-screening-profile-data];
 
-CREATE USER [nft-uks-si-create-participant-screening-episode] FROM EXTERNAL PROVIDER;
-ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-create-participant-screening-episode];
-ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-create-participant-screening-episode];
+CREATE USER [nft-uks-si-create-ps-episode] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-create-ps-episode];
+ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-create-ps-episode];
 
 CREATE USER [nft-uks-si-create-participant-screening-profile] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-create-participant-screening-profile];

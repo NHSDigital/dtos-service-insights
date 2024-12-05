@@ -65,8 +65,8 @@ services:
       - DB_CONNECTION=${DB_CONNECTION}
 
   # BI Analytics Data Service
-  create-participant-screening-episode-data:
-    container_name: create-participant-screening-episode-data
+  create-ps-episode-data:
+    container_name: create-ps-episode-data
     network_mode: host
     build:
       context: ./src/
@@ -107,8 +107,8 @@ services:
       - ASPNETCORE_URLS=http://*:6062
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  get-participant-screening-episode-data:
-    container_name: get-participant-screening-episode-data
+  get-ps-episode-data:
+    container_name: get-ps-episode-data
     network_mode: host
     build:
       context: ./src/
@@ -122,8 +122,8 @@ services:
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # BI Analytics Service
-  create-participant-screening-episode:
-    container_name: create-participant-screening-episode
+  create-ps-episode:
+    container_name: create-ps-episode
     network_mode: host
     build:
       context: ./src/
@@ -167,8 +167,8 @@ services:
       - ASPNETCORE_URLS=http://*:6063
       - GetProfilesUrl=http://127.0.0.1:6062/api/GetParticipantScreeningProfileData
 
-  get-participant-screening-episode:
-    container_name: get-participant-screening-episode
+  get-ps-episode:
+    container_name: get-ps-episode
     network_mode: host
     build:
       context: ./src/
