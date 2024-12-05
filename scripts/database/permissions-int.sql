@@ -1,10 +1,13 @@
 CREATE USER [int-uks-si-create-part-screen-episode-data] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-create-part-screen-episode-data];
 ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-create-part-screen-episode-data];
+<<<<<<< HEAD
 
 CREATE USER [int-uks-si-create-participant-screening-episode-data] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-create-participant-screening-episode-data];
 ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-create-participant-screening-episode-data];
+=======
+>>>>>>> 8d8a680 (rename create-participant-screening-episode due to length limit)
 
 CREATE USER [int-uks-si-create-participant-screening-profile-data] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-create-participant-screening-profile-data];
@@ -13,10 +16,13 @@ ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-create-participant-screening-p
 CREATE USER [int-uks-si-create-part-screen-episode] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-create-part-screen-episode];
 ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-create-part-screen-episode];
+<<<<<<< HEAD
 
 CREATE USER [int-uks-si-create-participant-screening-episode] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-create-participant-screening-episode];
 ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-create-participant-screening-episode];
+=======
+>>>>>>> 8d8a680 (rename create-participant-screening-episode due to length limit)
 
 CREATE USER [int-uks-si-create-participant-screening-profile] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-create-participant-screening-profile];

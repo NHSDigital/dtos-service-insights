@@ -383,9 +383,9 @@ variable "event_grid_configs" {
 variable "event_grid_defaults" {
   description = "Default configuration for the Event Grid resource"
   type = object({
-    identity_ids                  = list(string)
-    identity_type                 = string
-    inbound_ip_rule               = list(object({
+    identity_ids  = list(string)
+    identity_type = string
+    inbound_ip_rule = list(object({
       ip_mask = string
       action  = string
     }))

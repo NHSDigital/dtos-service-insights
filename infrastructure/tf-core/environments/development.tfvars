@@ -139,25 +139,27 @@ diagnostic_settings = {
 }
 
 event_grid_defaults = {
-  identity_ids                 = []
-  identity_type                = "SystemAssigned"
-  inbound_ip_rule              = []
-  input_schema                 = {}
-  local_auth_enabled           = true
+  identity_ids                  = []
+  identity_type                 = "SystemAssigned"
+  inbound_ip_rule               = []
+  input_schema                  = {}
+  local_auth_enabled            = true
   public_network_access_enabled = false
 }
 
 event_grid_configs = {
   event-grid-1 = {
     identity_type         = "SystemAssigned"
-    subscription_name     = "sub1"
-    function_app_endpoint = "https://dev-uks-si-create-participant-screening-episode.azurewebsites.net/api/CreateParticipantScreeningEpisode"
+    subscription_name     = "dev1234"
   }
-  event-grid-2 = {
-    identity_type         = "SystemAssigned"
-    subscription_name     = "sub2"
-    function_app_endpoint = "https://dev-uks-si-create-participant-screening-episode.azurewebsites.net/api/CreateParticipantScreeningEpisode"
-  }
+  # event-grid-2 = {
+  #   identity_type         = "SystemAssigned"
+  #   subscription_name     = "sub2"
+  # }
+}
+
+diagnostic_settings = {
+  metric_enabled = true
 }
 
 
