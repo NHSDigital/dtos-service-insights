@@ -116,6 +116,7 @@ public class ReceiveData
         }
     }
 
+
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
         try
@@ -127,6 +128,7 @@ public class ReceiveData
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
                 _logger.LogInformation("Sending Episode to {Url}: {Request}", episodeUrl, serializedEpisode);
+
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
         }
@@ -137,7 +139,9 @@ public class ReceiveData
         }
     }
 
+
     private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
+
     private EpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
         return new EpisodeDto
@@ -148,7 +152,7 @@ public class ReceiveData
             NhsNumber = episode.nhs_number,
             EpisodeOpenDate = ParseNullableDate(episode.episode_date),
             AppointmentMadeFlag = ParseBooleanStringToShort(episode.appointment_made),
-            FirstOfferedAppointmentDate =ParseNullableDate(episode.date_of_foa),
+            FirstOfferedAppointmentDate = ParseNullableDate(episode.date_of_foa),
             ActualScreeningDate = ParseNullableDate(episode.date_of_as),
             EarlyRecallDate = ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
@@ -183,40 +187,40 @@ public class ReceiveData
             await ProcessParticipantDataAsync(subjects, participantUrl);
         }
     }
-        private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
+    private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
+    {
+        return new ParticipantDto
         {
-            return new ParticipantDto
-            {
-                NhsNumber = subject.nhs_number,
-                ScreeningName = "Breast Screening",
-                NextTestDueDate = ParseNullableDate(subject.next_test_due_date),
-                NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
-                ParticipantScreeningStatus = subject.subject_status_code,
-                ScreeningCeasedReason = subject.reason_for_ceasing_code,
-                IsHigherRisk = ParseBooleanStringToShort(subject.is_higher_risk),
-                IsHigherRiskActive = ParseBooleanStringToShort(subject.is_higher_risk_active),
-                HigherRiskNextTestDueDate = ParseNullableDate(subject.higher_risk_next_test_due_date),
-                HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
-                DateIrradiated = ParseNullableDate(subject.date_irradiated),
-                GeneCode = subject.gene_code
-            };
-        }
+            NhsNumber = subject.nhs_number,
+            ScreeningName = "Breast Screening",
+            NextTestDueDate = ParseNullableDate(subject.next_test_due_date),
+            NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
+            ParticipantScreeningStatus = subject.subject_status_code,
+            ScreeningCeasedReason = subject.reason_for_ceasing_code,
+            IsHigherRisk = ParseBooleanStringToShort(subject.is_higher_risk),
+            IsHigherRiskActive = ParseBooleanStringToShort(subject.is_higher_risk_active),
+            HigherRiskNextTestDueDate = ParseNullableDate(subject.higher_risk_next_test_due_date),
+            HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
+            DateIrradiated = ParseNullableDate(subject.date_irradiated),
+            GeneCode = subject.gene_code
+        };
+    }
 
-        private static short? ParseBooleanStringToShort(string booleanString)
+    private static short? ParseBooleanStringToShort(string booleanString)
+    {
+        if (booleanString.ToUpper() == "TRUE")
         {
-            if (booleanString.ToUpper() == "TRUE")
-            {
-                return (short)1;
-            }
-            else if (booleanString.ToUpper() == "FALSE")
-            {
-                return (short)0;
-            }
-            else
-            {
-                return null;
-            }
+            return (short)1;
         }
+        else if (booleanString.ToUpper() == "FALSE")
+        {
+            return (short)0;
+        }
+        else
+        {
+            return null;
+        }
+    }
 
     private static DateOnly? ParseNullableDate(string? date)
     {
