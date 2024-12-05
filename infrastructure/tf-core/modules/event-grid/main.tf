@@ -39,9 +39,9 @@ resource "azurerm_eventgrid_event_subscription" "eventgrid_event_subscription" {
   # }
 
   # HTTP endpoint for the second function app (create participant screening episode)
-  webhook_endpoint {
-    url = var.function_app_endpoint  # URL of the second function app that will process the event
-  }
+  # webhook_endpoint {
+  #   url = var.function_app_endpoint  # URL of the second function app that will process the event
+  # }
 
   storage_blob_dead_letter_destination {
     storage_account_id          = var.dead_letter_storage_account_id
