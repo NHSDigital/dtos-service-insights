@@ -5,7 +5,6 @@ using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
 using CsvHelper;
 using System.Globalization;
-using CsvHelper.Configuration.Attributes;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
@@ -64,7 +63,7 @@ public class ReceiveData
                 using (var reader = new StreamReader(myBlob))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
-                    var participantsEnumerator = csv.GetRecords<Participant>();
+                    var participantsEnumerator = csv.GetRecords<BssSubject>();
 
                     await ProcessParticipantDataAsync(name,participantsEnumerator, participantUrl);
                 }
@@ -120,6 +119,7 @@ public class ReceiveData
         }
     }
 
+
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
 
@@ -132,6 +132,7 @@ public class ReceiveData
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
 
                 _logger.LogInformation("Sending Episode to {Url}: {Request}", episodeUrl, serializedEpisode);
+
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
         }
@@ -142,7 +143,9 @@ public class ReceiveData
         }
     }
 
-    private const string DateFormat = "dd/MM/yyyy";
+
+    private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
+
     private EpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
         return new EpisodeDto
@@ -151,14 +154,14 @@ public class ReceiveData
             EpisodeType = episode.episode_type,
             ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
-            EpisodeOpenDate = episode.episode_date,
-            AppointmentMadeFlag = GetAppointmentMadeFlag(episode.appointment_made),
-            FirstOfferedAppointmentDate = string.IsNullOrEmpty(episode.date_of_foa) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_foa, DateFormat, CultureInfo.InvariantCulture)),
-            ActualScreeningDate = string.IsNullOrEmpty(episode.date_of_as) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.date_of_as, DateFormat, CultureInfo.InvariantCulture)),
-            EarlyRecallDate = string.IsNullOrEmpty(episode.early_recall_date) ? null : DateOnly.FromDateTime(DateTime.ParseExact(episode.early_recall_date, DateFormat, CultureInfo.InvariantCulture)),
+            EpisodeOpenDate = ParseNullableDate(episode.episode_date),
+            AppointmentMadeFlag = ParseBooleanStringToShort(episode.appointment_made),
+            FirstOfferedAppointmentDate = ParseNullableDate(episode.date_of_foa),
+            ActualScreeningDate = ParseNullableDate(episode.date_of_as),
+            EarlyRecallDate = ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = episode.end_code,
-            EndCodeLastUpdated = string.IsNullOrEmpty(episode.end_code_last_updated) ? null : DateTime.ParseExact(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz", CultureInfo.InvariantCulture),
+            EndCodeLastUpdated = ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
             OrganisationCode = episode.bso_organisation_code,
             BatchId = episode.bso_batch_id,
             EndPoint = episode.end_point,
@@ -167,23 +170,7 @@ public class ReceiveData
         };
     }
 
-    private static short? GetAppointmentMadeFlag(string appointmentMade)
-    {
-        if (appointmentMade.ToUpper() == "TRUE")
-        {
-            return (short)1;
-        }
-        else if (appointmentMade.ToUpper() == "FALSE")
-        {
-            return (short)0;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    private async Task ProcessParticipantDataAsync(string name,IEnumerable<Participant> participants, string participantUrl)
+    private async Task ProcessParticipantDataAsync(string name,IEnumerable<BssSubject> subjects, string participantUrl)
     {
 
         DateTime processingStart = DateTime.UtcNow;
@@ -194,11 +181,12 @@ public class ReceiveData
 
         try
         {
-            _logger.LogInformation("Processing started for file: {name} at {processingStart}",name, processingStart);
+             _logger.LogInformation("Processing started for file: {name} at {processingStart}",name, processingStart);
 
-            foreach (var participant in participants)
+            foreach (var subject in subjects)
             {
-                string serializedParticipant = JsonSerializer.Serialize(participant, new JsonSerializerOptions { WriteIndented = true });
+                var modifiedParticipant = MapParticipantToParticipantDto(subject);
+                string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant, new JsonSerializerOptions { WriteIndented = true });
 
                 _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
 
@@ -209,6 +197,7 @@ public class ReceiveData
                 _logger.LogInformation("Row of No.{rowIndex} processed successfully",rowIndex);
             }
         }
+
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
@@ -216,7 +205,7 @@ public class ReceiveData
             failureCount++;
             rowIndex++;
             _logger.LogInformation("Row of No.{rowIndex} processed unsuccessfully",rowIndex);
-            await ProcessParticipantDataAsync(name,participants, participantUrl);
+            await ProcessParticipantDataAsync(name,subjects, participantUrl);
         }
 
         DateTime processingEnd = DateTime.UtcNow;
@@ -227,32 +216,55 @@ public class ReceiveData
                                 +"Rows Processed: {successCount}, Failures: {failureCount}"
                                 ,name,processingStart,processingEnd,successCount, failureCount );
     }
+    private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
+    {
+        return new ParticipantDto
+        {
+            NhsNumber = subject.nhs_number,
+            ScreeningName = "Breast Screening",
+            NextTestDueDate = ParseNullableDate(subject.next_test_due_date),
+            NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
+            ParticipantScreeningStatus = subject.subject_status_code,
+            ScreeningCeasedReason = subject.reason_for_ceasing_code,
+            IsHigherRisk = ParseBooleanStringToShort(subject.is_higher_risk),
+            IsHigherRiskActive = ParseBooleanStringToShort(subject.is_higher_risk_active),
+            HigherRiskNextTestDueDate = ParseNullableDate(subject.higher_risk_next_test_due_date),
+            HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
+            DateIrradiated = ParseNullableDate(subject.date_irradiated),
+            GeneCode = subject.gene_code
+        };
+    }
+
+    private static short? ParseBooleanStringToShort(string booleanString)
+    {
+        if (booleanString.ToUpper() == "TRUE")
+        {
+            return (short)1;
+        }
+        else if (booleanString.ToUpper() == "FALSE")
+        {
+            return (short)0;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private static DateOnly? ParseNullableDate(string? date)
+    {
+        if (string.IsNullOrEmpty(date)) return null;
+
+        var dateTime = DateTime.ParseExact(date, AllowedDateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None);
+        return DateOnly.FromDateTime(dateTime);
+    }
+
+
+    private static DateTime? ParseNullableDateTime(string? dateTime, string format)
+    {
+        if (string.IsNullOrEmpty(dateTime)) return null;
+
+        return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
+    }
 }
 
-public class BssEpisode
-{
-    public long episode_id { get; set; }
-    public long nhs_number { get; set; }
-    public string? episode_type { get; set; }
-    public DateTime change_db_date_time { get; set; }
-    public DateOnly? episode_date { get; set; }
-    public string? appointment_made { get; set; }
-    public string? date_of_foa { get; set; }
-    public string? date_of_as { get; set; }
-    public string? early_recall_date { get; set; }
-    public string? call_recall_status_authorised_by { get; set; }
-    public string? end_code { get; set; }
-    public string? end_code_last_updated { get; set; }
-    public string? bso_organisation_code { get; set; }
-    public string? bso_batch_id { get; set; }
-    public string? reason_closed_code { get; set; }
-    public string? end_point { get; set; }
-    public string? final_action_code { get; set; }
-}
-
-
-enum FileType
-{
-    Episodes = 0,
-    Subjects = 1,
-}
