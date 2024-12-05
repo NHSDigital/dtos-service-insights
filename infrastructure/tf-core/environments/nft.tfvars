@@ -48,7 +48,7 @@ routes = {
     network_rules = [
       {
         name                  = "AllowSerinsToAudit"
-        priority              = 800
+        priority              = 801
         action                = "Allow"
         rule_name             = "SerinsToAudit"
         source_addresses      = ["10.115.0.0/16"] # will be populated with the serins manager subnet address space
@@ -58,7 +58,7 @@ routes = {
       },
       {
         name                  = "AllowAuditToSerins"
-        priority              = 810
+        priority              = 811
         action                = "Allow"
         rule_name             = "AuditToSerins"
         source_addresses      = ["10.116.0.0/16"]
@@ -70,7 +70,7 @@ routes = {
     route_table_routes_to_audit = [
       {
         name                   = "SerinsToAudit"
-        address_prefix         = "10.114.0.0/16"
+        address_prefix         = "10.116.0.0/16"
         next_hop_type          = "VirtualAppliance"
         next_hop_in_ip_address = "" # will be populated with the Firewall Private IP address
       }
@@ -78,7 +78,7 @@ routes = {
     route_table_routes_from_audit = [
       {
         name                   = "AuditToSerins"
-        address_prefix         = "10.113.0.0/16"
+        address_prefix         = "10.115.0.0/16"
         next_hop_type          = "VirtualAppliance"
         next_hop_in_ip_address = "" # will be populated with the Firewall Private IP address
       }
@@ -191,7 +191,20 @@ function_apps = {
       function_endpoint_name = "GetParticipantScreeningProfileData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
 
+    GetParticipantScreeningEpisode = {
+      name_suffix            = "get-participant-screening-episode"
+      function_endpoint_name = "GetParticipantScreeningEpisode"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
+
+    GetParticipantScreeningEpisodeData = {
+      name_suffix            = "get-participant-screening-episode-data"
+      function_endpoint_name = "GetParticipantScreeningEpisodeData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningEpisode = {
@@ -228,6 +241,13 @@ function_apps = {
           function_app_key = "GetDemographicsData"
         }
       ]
+    }
+
+    GetParticipantScreeningEpisodeData = {
+      name_suffix            = "get-participant-screening-episode-data"
+      function_endpoint_name = "GetParticipantScreeningEpisodeData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetDemographicsData = {
@@ -348,7 +368,6 @@ sqlserver = {
   ad_auth_only                         = true
   auditing_policy_retention_in_days    = 30
   security_alert_policy_retention_days = 30
-
 
   server = {
     sqlversion                    = "12.0"

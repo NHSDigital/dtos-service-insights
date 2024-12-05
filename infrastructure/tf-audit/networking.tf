@@ -1,3 +1,7 @@
+locals {
+  primary_region = [for k, v in var.regions : k if v.is_primary_region][0]
+}
+
 resource "azurerm_resource_group" "rg_vnet" {
   for_each = var.regions
 
@@ -21,6 +25,10 @@ module "vnet" {
   resource_group_name = azurerm_resource_group.rg_vnet[each.key].name
   location            = each.key
   vnet_address_space  = each.value.address_space
+
+  log_analytics_workspace_id                   = module.log_analytics_workspace_audit[local.primary_region].id
+  monitor_diagnostic_setting_vnet_enabled_logs = local.monitor_diagnostic_setting_vnet_enabled_logs
+  monitor_diagnostic_setting_vnet_metrics      = local.monitor_diagnostic_setting_vnet_metrics
 
   dns_servers = [data.terraform_remote_state.hub.outputs.private_dns_resolver_inbound_ips[each.key].private_dns_resolver_ip]
 
@@ -46,6 +54,9 @@ module "subnets" {
   address_prefixes                  = [each.value.address_prefixes]
   default_outbound_access_enabled   = true
   private_endpoint_network_policies = "Disabled" # Default as per compliance requirements
+
+  log_analytics_workspace_id                                     = module.log_analytics_workspace_audit[local.primary_region].id
+  monitor_diagnostic_setting_network_security_group_enabled_logs = local.monitor_diagnostic_setting_network_security_group_enabled_logs
 
   delegation_name            = each.value.delegation_name != null ? each.value.delegation_name : ""
   service_delegation_name    = each.value.service_delegation_name != null ? each.value.service_delegation_name : ""

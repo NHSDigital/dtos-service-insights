@@ -17,10 +17,16 @@ module "vnet" {
 
   source = "../../../dtos-devops-templates/infrastructure/modules/vnet"
 
+
+
   name                = module.regions_config[each.key].names.virtual-network
   resource_group_name = azurerm_resource_group.rg_vnet[each.key].name
   location            = each.key
   vnet_address_space  = each.value.address_space
+
+  log_analytics_workspace_id                   = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
+  monitor_diagnostic_setting_vnet_enabled_logs = local.monitor_diagnostic_setting_vnet_enabled_logs
+  monitor_diagnostic_setting_vnet_metrics      = local.monitor_diagnostic_setting_vnet_metrics
 
   dns_servers = [data.terraform_remote_state.hub.outputs.private_dns_resolver_inbound_ips[each.key].private_dns_resolver_ip]
 
@@ -64,6 +70,9 @@ module "subnets" {
   address_prefixes                  = [each.value.address_prefixes]
   default_outbound_access_enabled   = true
   private_endpoint_network_policies = "Disabled" # Default as per compliance requirements
+
+  log_analytics_workspace_id                                     = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
+  monitor_diagnostic_setting_network_security_group_enabled_logs = local.monitor_diagnostic_setting_network_security_group_enabled_logs
 
   delegation_name            = each.value.delegation_name != null ? each.value.delegation_name : ""
   service_delegation_name    = each.value.service_delegation_name != null ? each.value.service_delegation_name : ""

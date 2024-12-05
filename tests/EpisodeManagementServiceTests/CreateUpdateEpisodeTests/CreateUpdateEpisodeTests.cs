@@ -85,7 +85,7 @@ public class CreateUpdateEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_Return_InternalServerError_When_Checking_Episode_Existence_Fails()
+    public async Task Run_Return_InternalServerError_When_Processing_Episode_Fails()
     {
         // Arrange
         var episode = new Episode
@@ -129,4 +129,36 @@ public class CreateUpdateEpisodeTests
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
+
+    [TestMethod]
+    public async Task Run_Return_InternalServerError_When_GetEpisodeResponse_Is_Not_OK_Nor_NotFound()
+    {
+        // Arrange
+        var episode = new Episode
+        {
+            EpisodeId = 123456
+        };
+
+        var json = JsonSerializer.Serialize(episode);
+        _mockRequest = _setupRequest.Setup(json);
+
+        _mockHttpRequestService.Setup(x => x.SendGet(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Conflict));
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        _mockHttpRequestService.Verify(x => x.SendGet(It.IsAny<string>()), Times.Once);
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<It.IsAnyType>((state, type) => state.ToString().StartsWith("Error occurred while checking episode existence.")),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+    }
+
+
 }
