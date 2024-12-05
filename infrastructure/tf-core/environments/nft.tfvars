@@ -160,21 +160,21 @@ function_apps = {
   fa_config = {
 
     CreateParticipantScreeningEpisodeData = {
-      name_suffix            = "create-participant-screening-episode-data"
+      name_suffix            = "create-ps-episode-data"
       function_endpoint_name = "CreateParticipantScreeningEpisodeData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningProfileData = {
-      name_suffix            = "create-participant-screening-profile-data"
+      name_suffix            = "create-ps-profile-data"
       function_endpoint_name = "CreateParticipantScreeningProfileData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningProfile = {
-      name_suffix            = "get-participant-screening-profile"
+      name_suffix            = "get-ps-profile"
       function_endpoint_name = "GetParticipantScreeningProfile"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
@@ -187,28 +187,28 @@ function_apps = {
     }
 
     GetParticipantScreeningProfileData = {
-      name_suffix            = "get-participant-screening-profile-data"
+      name_suffix            = "get-ps-profile-data"
       function_endpoint_name = "GetParticipantScreeningProfileData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisode = {
-      name_suffix            = "get-participant-screening-episode"
+      name_suffix            = "get-ps-episode"
       function_endpoint_name = "GetParticipantScreeningEpisode"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisodeData = {
-      name_suffix            = "get-participant-screening-episode-data"
+      name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningEpisode = {
-      name_suffix            = "create-participant-screening-episode"
+      name_suffix            = "create-ps-episode"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
       app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
@@ -224,7 +224,7 @@ function_apps = {
     }
 
     CreateParticipantScreeningProfile = {
-      name_suffix            = "create-participant-screening-profile"
+      name_suffix            = "create-ps-profile"
       function_endpoint_name = "CreateParticipantScreeningProfile"
       app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
@@ -244,7 +244,7 @@ function_apps = {
     }
 
     GetParticipantScreeningEpisodeData = {
-      name_suffix            = "get-participant-screening-episode-data"
+      name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"

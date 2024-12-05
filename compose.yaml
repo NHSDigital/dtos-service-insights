@@ -74,8 +74,8 @@ services:
       - DB_CONNECTION=${DB_CONNECTION}
 
   # BI Analytics Data Service
-  create-participant-screening-episode-data:
-    container_name: create-participant-screening-episode-data
+  create-ps-episode-data:
+    container_name: create-ps-episode-data
     restart: always
     build:
       context: ./src/
@@ -90,8 +90,8 @@ services:
       - ASPNETCORE_URLS=http://*:6010
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  create-participant-screening-profile-data:
-    container_name: create-participant-screening-profile-data
+  create-ps-profile-data:
+    container_name: create-ps-profile-data
     restart: always
     build:
       context: ./src/
@@ -106,8 +106,8 @@ services:
       - ASPNETCORE_URLS=http://*:6011
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  get-participant-screening-profile-data:
-    container_name: get-participant-screening-profile-data
+  get-ps-profile-data:
+    container_name: get-ps-profile-data
     restart: always
     build:
       context: ./src/
@@ -122,8 +122,8 @@ services:
       - ASPNETCORE_URLS=http://*:6062
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  get-participant-screening-episode-data:
-    container_name: get-participant-screening-episode-data
+  get-ps-episode-data:
+    container_name: get-ps-episode-data
     restart: always
     build:
       context: ./src/
@@ -139,8 +139,8 @@ services:
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # BI Analytics Management Service
-  create-participant-screening-episode:
-    container_name: create-participant-screening-episode
+  create-ps-episode:
+    container_name: create-ps-episode
     restart: always
     build:
       context: ./src/
@@ -154,10 +154,10 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6008
       - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
-      - CreateParticipantScreeningEpisodeUrl=http://create-participant-screening-episode-data:6010/api/CreateParticipantScreeningEpisode
+      - CreateParticipantScreeningEpisodeUrl=http://create-ps-episode-data:6010/api/CreateParticipantScreeningEpisode
 
-  create-participant-screening-profile:
-    container_name: create-participant-screening-profile
+  create-ps-profile:
+    container_name: create-ps-profile
     restart: always
     build:
       context: ./src/
@@ -171,11 +171,11 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6009
       - GetParticipantUrl=http://get-participant:6061/api/GetParticipant
-      - CreateParticipantScreeningProfileUrl=http://create-participant-screening-profile-data:6011/api/CreateParticipantScreeningProfile
+      - CreateParticipantScreeningProfileUrl=http://create-ps-profile-data:6011/api/CreateParticipantScreeningProfile
       - DemographicsServiceUrl=http://get-demographics-data:6080/api/GetDemographicsData
 
-  get-participant-screening-profile:
-    container_name: get-participant-screening-profile
+  get-ps-profile:
+    container_name: get-ps-profile
     restart: always
     build:
       context: ./src/
@@ -188,10 +188,10 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6063
-      - GetProfilesUrl=http://get-participant-screening-profile-data:6062/api/GetParticipantScreeningProfileData
+      - GetProfilesUrl=http://get-ps-profile-data:6062/api/GetParticipantScreeningProfileData
 
-  get-participant-screening-episode:
-    container_name: get-participant-screening-episode
+  get-ps-episode:
+    container_name: get-ps-episode
     restart: always
     build:
       context: ./src/
@@ -204,7 +204,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6003
-      - GetParticipantScreeningEpisodeDataUrl=http://get-participant-screening-episode-data:6002/api/GetParticipantScreeningEpisodeData
+      - GetParticipantScreeningEpisodeDataUrl=http://get-ps-episode-data:6002/api/GetParticipantScreeningEpisodeData
 
   # Demographics Service
   get-demographics-data:
