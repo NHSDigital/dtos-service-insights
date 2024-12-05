@@ -183,11 +183,7 @@ function_apps = {
   fa_config = {
 
     CreateParticipantScreeningEpisodeData = {
-<<<<<<< HEAD
       name_suffix            = "create-ps-episode-data"
-=======
-      name_suffix            = "create-part-screen-episode-data"
->>>>>>> 777cca2 (rename create-participant-screening-episode due to length limit)
       function_endpoint_name = "CreateParticipantScreeningEpisodeData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
@@ -235,11 +231,7 @@ function_apps = {
     }
 
     CreateParticipantScreeningEpisode = {
-<<<<<<< HEAD
       name_suffix            = "create-ps-episode"
-=======
-      name_suffix            = "create-part-screen-episode"
->>>>>>> 777cca2 (rename create-participant-screening-episode due to length limit)
       function_endpoint_name = "CreateParticipantScreeningEpisode"
       app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
