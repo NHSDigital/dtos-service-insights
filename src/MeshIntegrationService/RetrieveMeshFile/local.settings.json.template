@@ -1,6 +1,7 @@
 {
     "IsEncrypted": false,
     "Values": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
         "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
         "MeshApiBaseUrl" : "http://localhost:8700/messageexchange",

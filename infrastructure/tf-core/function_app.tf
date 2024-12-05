@@ -7,9 +7,12 @@ module "functionapp" {
   resource_group_name = azurerm_resource_group.core[each.value.region_key].name
   location            = each.value.region_key
 
-  log_analytics_workspace_id = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
 
   app_settings = local.app_settings[each.value.region_key][each.value.function_key]
+
+  log_analytics_workspace_id                           = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
+  monitor_diagnostic_setting_function_app_enabled_logs = local.monitor_diagnostic_setting_function_app_enabled_logs
+  monitor_diagnostic_setting_function_app_metrics      = local.monitor_diagnostic_setting_function_app_metrics
 
   public_network_access_enabled = var.features.public_network_access_enabled
   vnet_integration_subnet_id    = module.subnets["${module.regions_config[each.value.region_key].names.subnet}-apps"].id
@@ -44,7 +47,7 @@ module "functionapp" {
 
   # Private Endpoint Configuration if enabled
   private_endpoint_properties = var.features.private_endpoints_enabled ? {
-    private_dns_zone_ids                 = [data.terraform_remote_state.hub.outputs.private_dns_zone_app_services[each.value.region_key].private_dns_zone.id]
+    private_dns_zone_ids                 = [data.terraform_remote_state.hub.outputs.private_dns_zones["${each.value.region_key}-app_services"].id]
     private_endpoint_enabled             = var.features.private_endpoints_enabled
     private_endpoint_subnet_id           = module.subnets["${module.regions_config[each.value.region_key].names.subnet}-pep"].id
     private_endpoint_resource_group_name = azurerm_resource_group.rg_private_endpoints[each.value.region_key].name

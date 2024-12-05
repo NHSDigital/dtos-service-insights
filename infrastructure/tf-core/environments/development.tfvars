@@ -191,7 +191,20 @@ function_apps = {
       function_endpoint_name = "GetParticipantScreeningProfileData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
 
+    GetParticipantScreeningEpisode = {
+      name_suffix            = "get-participant-screening-episode"
+      function_endpoint_name = "GetParticipantScreeningEpisode"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
+
+    GetParticipantScreeningEpisodeData = {
+      name_suffix            = "get-participant-screening-episode-data"
+      function_endpoint_name = "GetParticipantScreeningEpisodeData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningEpisode = {
@@ -228,6 +241,13 @@ function_apps = {
           function_app_key = "GetDemographicsData"
         }
       ]
+    }
+
+    GetParticipantScreeningEpisodeData = {
+      name_suffix            = "get-participant-screening-episode-data"
+      function_endpoint_name = "GetParticipantScreeningEpisodeData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetDemographicsData = {

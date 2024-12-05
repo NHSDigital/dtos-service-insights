@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
+using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.ParticipantManagementService;
 
@@ -26,7 +27,7 @@ public class UpdateParticipant
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = await reader.ReadToEndAsync();
-                JsonSerializer.Deserialize<Participant>(postData);
+                JsonSerializer.Deserialize<ParticipantDto>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
             }
 
