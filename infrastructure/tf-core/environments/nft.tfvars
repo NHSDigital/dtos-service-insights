@@ -400,9 +400,7 @@ storage_accounts = {
       config = {
         container_name = "config"
       }
-      sample-container = {
-        container_name = "sample-container"
-      }
+
       inbound = {
         container_name = "inbound"
       }
