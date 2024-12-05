@@ -72,12 +72,64 @@ public class CreateParticipantScreeningEpisode
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
+    private async Task<ScreeningLkp> GetScreeningDataAsync(long screeningId)
+    {
+        var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
+        var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screeningId}";
+        _logger.LogInformation("Requesting screening data from {Url}", getScreeningDataUrl);
+
+        ScreeningLkp screeningLkp;
+
+        var response = await _httpRequestService.SendGet(getScreeningDataUrl);
+        response.EnsureSuccessStatusCode();
+
+        var screeningDataJson = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation("Screening data retrieved successfully.");
+
+        screeningLkp = JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
+        if (screeningLkp == null)
+        {
+            _logger.LogError("Failed to deserialize screening data or screening data is null.");
+            throw new Exception("Screening data retrieval failed.");
+        }
+
+        return screeningLkp;
+    }
+
+    private async Task<OrganisationLkp> GetOrganisationDataAsync(long? organisationId)
+    {
+        var baseReferenceServiceUrl = Environment.GetEnvironmentVariable("GetReferenceDataUrl");
+        var getReferenceDataUrl = $"{baseReferenceServiceUrl}?organisation_id={organisationId}";
+        _logger.LogInformation("Requesting organisation data from {Url}", getReferenceDataUrl);
+
+        OrganisationLkp organisationLkp;
+
+        var response = await _httpRequestService.SendGet(getReferenceDataUrl);
+        response.EnsureSuccessStatusCode();
+
+        var organisationDataJson = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation("Organisation data retrieved successfully.");
+
+        organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(organisationDataJson);
+        if (organisationLkp == null)
+        {
+            _logger.LogError("Failed to deserialize organisation data or organisation data is null.");
+            throw new Exception("Organisation data retrieval failed.");
+        }
+
+        return organisationLkp;
+    }
+
     private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode)
     {
+        ScreeningLkp screeningLkp = await GetScreeningDataAsync(episode.ScreeningId);
+
+        OrganisationLkp organisationLkp = await GetOrganisationDataAsync(episode.OrganisationId);
+
         var screeningEpisode = new ParticipantScreeningEpisode
         {
             EpisodeId = episode.EpisodeId,
-            ScreeningName = episode.ScreeningId.ToString(),
+            ScreeningName = screeningLkp.ScreeningName,
             NhsNumber = episode.NhsNumber,
             EpisodeType = episode.EpisodeTypeId.ToString(),
             EpisodeTypeDescription = String.Empty,
@@ -90,8 +142,8 @@ public class CreateParticipantScreeningEpisode
             EndCode = episode.EndCodeId.ToString(),
             EndCodeDescription = String.Empty,
             EndCodeLastUpdated = episode.EndCodeLastUpdated,
-            OrganisationCode = episode.OrganisationId.ToString(),
-            OrganisationName = String.Empty,
+            OrganisationCode = organisationLkp.OrganisationCode,
+            OrganisationName = organisationLkp.OrganisationName,
             BatchId = episode.BatchId,
             RecordInsertDatetime = DateTime.Now
         };
