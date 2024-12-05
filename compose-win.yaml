@@ -79,8 +79,8 @@ services:
       - ASPNETCORE_URLS=http://*:6010
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  create-participant-screening-profile-data:
-    container_name: create-participant-screening-profile-data
+  create-ps-profile-data:
+    container_name: create-ps-profile-data
     network_mode: host
     build:
       context: ./src/
@@ -137,8 +137,8 @@ services:
       - GetEpisodeUrl=http://127.0.0.1:6060/api/GetEpisode
       - CreateParticipantScreeningEpisodeUrl=http://127.0.0.1:6010/api/CreateParticipantScreeningEpisode
 
-  create-participant-screening-profile:
-    container_name: create-participant-screening-profile
+  create-ps-profile:
+    container_name: create-ps-profile
     network_mode: host
     build:
       context: ./src/

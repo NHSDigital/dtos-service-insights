@@ -167,7 +167,7 @@ function_apps = {
     }
 
     CreateParticipantScreeningProfileData = {
-      name_suffix            = "create-participant-screening-profile-data"
+      name_suffix            = "create-ps-profile-data"
       function_endpoint_name = "CreateParticipantScreeningProfileData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
@@ -224,7 +224,7 @@ function_apps = {
     }
 
     CreateParticipantScreeningProfile = {
-      name_suffix            = "create-participant-screening-profile"
+      name_suffix            = "create-ps-profile"
       function_endpoint_name = "CreateParticipantScreeningProfile"
       app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
