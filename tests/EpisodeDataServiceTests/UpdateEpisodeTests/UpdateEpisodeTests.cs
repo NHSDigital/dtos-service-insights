@@ -8,6 +8,7 @@ using NHS.ServiceInsights.EpisodeDataService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Data;
 using Microsoft.EntityFrameworkCore;
+using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.EpisodeDataServiceTests;
 
@@ -23,12 +24,12 @@ public class UpdateEpisodeTests
     private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
     private readonly Mock<IReasonClosedCodeLkpRepository> _mockReasonClosedCodeLkpRepository = new();
     private readonly Mock<IFinalActionCodeLkpRepository> _mockFinalActionCodeLkpRepository = new();
-
+    private readonly Mock<EventGridPublisherClient> _mockEventGridPublisherClient  = new();
 
     public UpdateEpisodeTests()
     {
         _mockRequest = _setupRequest.Setup("");
-        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object);
+        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object, _mockEventGridPublisherClient.Object);
     }
 
     [TestMethod]
