@@ -236,6 +236,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://*:6007
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - topicEndpoint=${EVENTGRID_URL}
+      - topicKey=${EVENTGRID_KEY}
 
   get-episode:
     container_name: get-episode
@@ -268,6 +270,8 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7777
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - topicEndpoint=${EVENTGRID_URL}
+      - topicKey=${EVENTGRID_KEY}
 
   # Episode Integration Service
   receive-data:
@@ -308,8 +312,6 @@ services:
       - CreateEpisodeUrl=http://create-episode:6007/api/CreateEpisode
       - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
       - UpdateEpisodeUrl=http://update-episode:7777/api/UpdateEpisode
-      - topicEndpoint=${EVENTGRID_URL}
-      - topicKey=${EVENTGRID_KEY}
 
   get-episode-mgmt:
     container_name: get-episode-mgmt
