@@ -181,7 +181,7 @@ public class ReceiveData
 
         try
         {
-             _logger.LogInformation("Processing started for file: {name} at {processingStart}",name, processingStart);
+            _logger.LogInformation("Processing started for file: {name} at {processingStart}",name, processingStart);
 
             foreach (var subject in subjects)
             {
