@@ -93,8 +93,8 @@ services:
       - ASPNETCORE_URLS=http://*:6011
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  get-participant-screening-profile-data:
-    container_name: get-participant-screening-profile-data
+  get-ps-profile-data:
+    container_name: get-ps-profile-data
     network_mode: host
     build:
       context: ./src/
@@ -153,8 +153,8 @@ services:
       - CreateParticipantScreeningProfileUrl=http://127.0.0.1:6011/api/CreateParticipantScreeningProfile
       - DemographicsServiceUrl=http://127.0.0.1:6080/api/GetDemographicsData
 
-  get-participant-screening-profile:
-    container_name: get-participant-screening-profile
+  get-ps-profile:
+    container_name: get-ps-profile
     network_mode: host
     build:
       context: ./src/
