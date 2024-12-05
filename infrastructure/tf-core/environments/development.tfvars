@@ -151,12 +151,12 @@ event_grid_configs = {
   event-grid-1 = {
     identity_type         = "SystemAssigned"
     subscription_name     = "sub1"
-    function_app_endpoint = "https://dev-uks-si-create-participant-screening-episode.azurewebsites.net/api/CreateParticipantScreeningEpisode"
+    function_app_endpoint = "https://dev-uks-si-create-part-screen-episode.azurewebsites.net/api/CreateParticipantScreeningEpisode"
   }
   event-grid-2 = {
     identity_type         = "SystemAssigned"
     subscription_name     = "sub2"
-    function_app_endpoint = "https://dev-uks-si-create-participant-screening-episode.azurewebsites.net/api/CreateParticipantScreeningEpisode"
+    function_app_endpoint = "https://dev-uks-si-create-part-screen-episode.azurewebsites.net/api/CreateParticipantScreeningEpisode"
   }
 }
 
@@ -187,7 +187,11 @@ function_apps = {
   fa_config = {
 
     CreateParticipantScreeningEpisodeData = {
+<<<<<<< HEAD
       name_suffix            = "create-ps-episode-data"
+=======
+      name_suffix            = "create-part-screen-episode-data"
+>>>>>>> 777cca2 (rename create-participant-screening-episode due to length limit)
       function_endpoint_name = "CreateParticipantScreeningEpisodeData"
       app_service_plan_key   = "Default"
       db_connection_string   = "ServiceInsightsDbConnectionString"
@@ -235,7 +239,11 @@ function_apps = {
     }
 
     CreateParticipantScreeningEpisode = {
+<<<<<<< HEAD
       name_suffix            = "create-ps-episode"
+=======
+      name_suffix            = "create-part-screen-episode"
+>>>>>>> 777cca2 (rename create-participant-screening-episode due to length limit)
       function_endpoint_name = "CreateParticipantScreeningEpisode"
       app_service_plan_key   = "Default"
       app_urls = [

@@ -74,8 +74,8 @@ services:
       - DB_CONNECTION=${DB_CONNECTION}
 
   # BI Analytics Data Service
-  create-ps-episode-data:
-    container_name: create-ps-episode-data
+  create-participant-screening-episode-data:
+    container_name: create-participant-screening-episode-data
     restart: always
     build:
       context: ./src/
@@ -139,8 +139,8 @@ services:
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # BI Analytics Management Service
-  create-ps-episode:
-    container_name: create-ps-episode
+  create-participant-screening-episode:
+    container_name: create-participant-screening-episode
     restart: always
     build:
       context: ./src/
