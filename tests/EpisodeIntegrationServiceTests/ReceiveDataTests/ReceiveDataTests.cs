@@ -221,7 +221,6 @@ public class ReceiveDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(1));
 
-
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(3));
