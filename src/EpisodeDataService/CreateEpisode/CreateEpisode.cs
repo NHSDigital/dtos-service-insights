@@ -68,7 +68,7 @@ namespace NHS.ServiceInsights.EpisodeDataService
             {
                 var errorMessage = $"Could not read episode data.: {ex.Message}";
                 _logger.LogError(ex, errorMessage);
-                throw new Exception(errorMessage, ex);
+                throw new InvalidOperationException(errorMessage, ex);
             }
         }
 
