@@ -140,7 +140,7 @@ services:
 
   # BI Analytics Management Service
   create-ps-episode:
-    container_name: create-participant-screening-episode
+    container_name: create-ps-episode
     restart: always
     build:
       context: ./src/
