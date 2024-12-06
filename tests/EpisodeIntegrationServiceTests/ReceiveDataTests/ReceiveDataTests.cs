@@ -183,7 +183,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Information,
             0,
-            It.Is<object>(state => state.ToString().Contains("Rows Processed: ")),
+            It.Is<object>(state => state.ToString().Contains("Rows Processed: 4, Success: 4, Failures: 0")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(1));
