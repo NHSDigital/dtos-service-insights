@@ -22,5 +22,6 @@ public class Participant
     public string? gene_code { get; set; }
     public string? ntdd_calculation_method { get; set; }
     public string? reason_for_ceasing_code { get; set; }
+    public string? screening_id { get; set; }
 }
 

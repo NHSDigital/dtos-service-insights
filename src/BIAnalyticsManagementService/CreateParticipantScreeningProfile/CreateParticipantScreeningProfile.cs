@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
-using Grpc.Net.Client.Balancer;
 using System.Globalization;
 
 namespace NHS.ServiceInsights.BIAnalyticsManagementService;
@@ -92,14 +91,39 @@ public class CreateParticipantScreeningProfile
         return demographicsData;
     }
 
+    private async Task<ScreeningLkp> GetScreeningDataAsync(string screening_id)
+    {
+        var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
+        var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screening_id}";
+        _logger.LogInformation("Requesting screening data from {Url}", getScreeningDataUrl);
+
+        ScreeningLkp screeningLkp;
+
+        var response = await _httpRequestService.SendGet(getScreeningDataUrl);
+        response.EnsureSuccessStatusCode();
+
+        var screeningDataJson = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation("Screening data retrieved successfully.");
+
+        screeningLkp = JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
+        if (screeningLkp == null)
+        {
+            _logger.LogError("Failed to deserialize screening data or screening data is null.");
+            throw new Exception("Screening data retrieval failed.");
+        }
+
+        return screeningLkp;
+    }
+
     private async Task SendToCreateParticipantScreeningProfileAsync(Participant participant)
     {
         DemographicsData demographicsData = await GetDemographicsDataAsync(participant.nhs_number);
+        ScreeningLkp screeningLkp = await GetScreeningDataAsync(participant.screening_id);
 
         var screeningProfile = new ParticipantScreeningProfile
         {
             NhsNumber = long.TryParse(participant.nhs_number, out long num) ? num : 0,
-            ScreeningName = String.Empty,
+            ScreeningName = screeningLkp.ScreeningName,
             PrimaryCareProvider = demographicsData.PrimaryCareProvider,
             PreferredLanguage = demographicsData.PreferredLanguage,
             ReasonForRemoval = participant.removal_reason,
