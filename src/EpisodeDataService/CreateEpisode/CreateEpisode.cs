@@ -34,12 +34,11 @@ namespace NHS.ServiceInsights.EpisodeDataService
             try
             {
                 var episodeDto = await DeserializeEpisodeDto(req);
-                _logger.LogInformation("PostData: {postData}", episodeDto);
 
-                var episodeTypeId = await GetCodeId(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeIdAsync, req);
-                var endCodeId = await GetCodeId(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeIdAsync, req);
-                var reasonClosedCodeId = await GetCodeId(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync, req);
-                var finalActionCodeId = await GetCodeId(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync, req);
+                var episodeTypeId = await GetCodeId(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeIdAsync);
+                var endCodeId = await GetCodeId(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeIdAsync);
+                var reasonClosedCodeId = await GetCodeId(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync);
+                var finalActionCodeId = await GetCodeId(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync);
 
                 var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeId, endCodeId, reasonClosedCodeId, finalActionCodeId);
                 _logger.LogInformation("Calling CreateEpisode method...");
@@ -67,8 +66,9 @@ namespace NHS.ServiceInsights.EpisodeDataService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Could not read episode data.");
-                throw;
+                var errorMessage = $"Could not read episode data.: {ex.Message}";
+                _logger.LogError(ex, errorMessage);
+                throw new Exception(errorMessage, ex);
             }
         }
 
@@ -99,7 +99,7 @@ namespace NHS.ServiceInsights.EpisodeDataService
             };
         }
 
-        private async Task<long?> GetCodeId(string code, string codeName, Func<string, Task<long?>> getCodeIdMethod, HttpRequestData req)
+        private async Task<long?> GetCodeId(string code, string codeName, Func<string, Task<long?>> getCodeIdMethod)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -110,7 +110,7 @@ namespace NHS.ServiceInsights.EpisodeDataService
             if (codeId == null)
             {
                 _logger.LogError("{codeName} '{code}' not found in lookup table.", codeName, code);
-                throw new Exception($"{codeName} '{code}' not found in lookup table.");
+                throw new InvalidOperationException($"{codeName} '{code}' not found in lookup table.");
             }
             return codeId;
         }

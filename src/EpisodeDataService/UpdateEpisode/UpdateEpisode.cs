@@ -43,10 +43,10 @@ public class UpdateEpisode
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 
-            var episodeTypeId = await GetCodeId(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeIdAsync, req);
-            var endCodeId = await GetCodeId(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeIdAsync, req);
-            var reasonClosedCodeId = await GetCodeId(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync, req);
-            var finalActionCodeId = await GetCodeId(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync, req);
+            var episodeTypeId = await GetCodeId(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeIdAsync);
+            var endCodeId = await GetCodeId(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeIdAsync);
+            var reasonClosedCodeId = await GetCodeId(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync);
+            var finalActionCodeId = await GetCodeId(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync);
 
             existingEpisode = await MapEpisodeDtoToEpisode(existingEpisode, episodeDto, episodeTypeId, endCodeId, reasonClosedCodeId, finalActionCodeId);
 
@@ -73,12 +73,13 @@ public class UpdateEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not read episode data.");
-            throw;
+            var errorMessage = $"Could not read episode data.: {ex.Message}";
+            _logger.LogError(ex, errorMessage);
+            throw new Exception(errorMessage, ex);
         }
     }
 
-    private async Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, EpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId)
+    private async static Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, EpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId)
     {
         existingEpisode.EpisodeIdSystem = null;
         existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
@@ -101,7 +102,7 @@ public class UpdateEpisode
         return existingEpisode;
     }
 
-    private async Task<long?> GetCodeId(string code, string codeName, Func<string, Task<long?>> getCodeIdMethod, HttpRequestData req)
+    private async Task<long?> GetCodeId(string code, string codeName, Func<string, Task<long?>> getCodeIdMethod)
     {
         if (string.IsNullOrWhiteSpace(code))
         {
@@ -112,7 +113,7 @@ public class UpdateEpisode
         if (codeId == null)
         {
             _logger.LogError("{codeName} '{code}' not found in lookup table.", codeName, code);
-            throw new Exception($"{codeName} '{code}' not found in lookup table.");
+            throw new InvalidOperationException($"{codeName} '{code}' not found in lookup table.");
         }
         return codeId;
     }
