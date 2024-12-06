@@ -179,15 +179,26 @@ public class ReceiveDataTests
         await _function.Run(stream, "bss_subjects_test_data_20240930");
 
         // Assert -- verify the counters of Rows
-        _mockLogger.Verify(log =>
-            log.Log(
-            LogLevel.Information,
-            0,
-            It.Is<object>(state => state.ToString().Contains("Rows Processed: 4, Success: 4, Failures: 0")),
-            It.IsAny<Exception>(),
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Exactly(1));
+        var expectedLogMessages = new List<string>
+        {
+            "Row of No.1 processed successfully",
+            "Row of No.2 processed successfully",
+            "Row of No.3 processed successfully",
+            "Row of No.4 processed successfully",
+            "Rows Processed: 4, Success: 4, Failures: 0"
+        };
 
+        foreach (var expectedMessage in expectedLogMessages)
+        {
+            _mockLogger.Verify(log =>
+                log.Log(
+                    LogLevel.Information,
+                    0,
+                    It.Is<object>(state => state.ToString().Contains(expectedMessage)),
+                    It.IsAny<Exception>(),
+                    (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Exactly(1)); // Verifies each log message exactly once
+        }
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -212,14 +223,26 @@ public class ReceiveDataTests
         await _function.Run(stream, "bss_subjects_test_data_20240930");
 
         // Assert -- verify the counters of Rows
-        _mockLogger.Verify(log =>
-            log.Log(
-            LogLevel.Information,
-            0,
-            It.Is<object>(state => state.ToString().Contains("Rows Processed: 4, Success: 3, Failures: 1")),
-            It.IsAny<Exception>(),
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Exactly(1));
+        var expectedLogMessages = new List<string>
+        {
+            "Row of No.1 processed unsuccessfully",
+            "Row of No.2 processed successfully",
+            "Row of No.3 processed successfully",
+            "Row of No.4 processed successfully",
+            "Rows Processed: 4, Success: 3, Failures: 1"
+        };
+
+        foreach (var expectedMessage in expectedLogMessages)
+        {
+            _mockLogger.Verify(log =>
+                log.Log(
+                    LogLevel.Information,
+                    0,
+                    It.Is<object>(state => state.ToString().Contains(expectedMessage)),
+                    It.IsAny<Exception>(),
+                    (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Exactly(1)); // Verifies each log message exactly once
+        }
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
