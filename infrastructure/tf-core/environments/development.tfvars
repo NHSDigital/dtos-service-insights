@@ -156,6 +156,10 @@ event_grid_configs = {
   }
 }
 
+diagnostic_settings = {
+  metric_enabled = true
+}
+
 
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"

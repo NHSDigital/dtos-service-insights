@@ -198,6 +198,13 @@ variable "function_apps" {
   })
 }
 
+variable "diagnostic_settings" {
+  description = "Configuration for the diagnostic settings"
+  type = object({
+    metric_enabled = optional(bool, false)
+  })
+}
+
 variable "key_vault" {
   description = "Configuration for the key vault"
   type = object({
