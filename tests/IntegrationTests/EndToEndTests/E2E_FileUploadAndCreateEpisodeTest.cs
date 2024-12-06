@@ -1,13 +1,7 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using System.IO;
 using IntegrationTests.Helpers;
-using System.Net.Http;
 using System.Net;
-using System.Text.Json;
-using System.Collections.Generic;
 
 namespace Tests.Integration.EndToEndTests
 {
@@ -37,7 +31,7 @@ namespace Tests.Integration.EndToEndTests
 
             // Extract all Episode IDs from the JSON file
             var localFilePath = Path.Combine(AppContext.BaseDirectory, AppSettings.FilePaths.LocalEpisodesCSVFile);
-            _episodeIds = JsonHelper.ExtractEpisodeIds(localFilePath);
+            _episodeIds = EpisodeCsvHelper.ExtractEpisodeIds(localFilePath);
             Assert.IsTrue(_episodeIds.Count > 0, "No Episode IDs found in the JSON file.");
         }
 
