@@ -3,8 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NHS.ServiceInsights.Data;
 using Microsoft.Azure.Functions.Worker;
-using Azure.Messaging.EventGrid;
-using Azure.Identity;
+using NHS.ServiceInsights.Common;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -19,17 +18,6 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
         services.AddDbContext<ServiceInsightsDbContext>(
             options => options.UseSqlServer(Environment.GetEnvironmentVariable("ServiceInsightsDbConnectionString")));
-
-        services.AddSingleton(sp =>
-        {
-            if(HostEnvironmentEnvExtensions.IsDevelopment(context.HostingEnvironment))
-            {
-                var credentials = new Azure.AzureKeyCredential(Environment.GetEnvironmentVariable("topicKey"));
-                return new EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint")), credentials);
-            }
-
-            return new EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint")), new DefaultAzureCredential());
-        });
-    })
+    }).AddEventGridClient()
     .Build();
 await host.RunAsync();
