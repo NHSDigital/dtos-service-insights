@@ -15,6 +15,14 @@ public class ReceiveData
     private readonly string[] episodesExpectedHeaders = new[] { "nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code" };
     private readonly string[] subjectsExpectedHeaders = new[] { "change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language" };
 
+
+
+        DateTime processingStart = DateTime.UtcNow;
+
+        int participantSuccessCount = 0;
+        int participantFailureCount = 0;
+        int participantRowIndex = 0;
+
     public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
@@ -50,6 +58,8 @@ public class ReceiveData
 
                     await ProcessEpisodeDataAsync(episodesEnumerator, episodeUrl);
                 }
+
+
             }
 
             else if (name.StartsWith("bss_subjects"))
@@ -67,6 +77,14 @@ public class ReceiveData
 
                     await ProcessParticipantDataAsync(name,participantsEnumerator, participantUrl);
                 }
+
+                DateTime processingEnd = DateTime.UtcNow;
+
+                _logger.LogInformation("==================================================================\n"
+                                +"Participant Data: File {name} processed successfully.\n"
+                                +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
+                                +"Rows Processed: {participantRowIndex}, Success: {successCount}, Failures: {failureCount}"
+                                ,name,processingStart,processingEnd,participantRowIndex,participantSuccessCount, participantFailureCount );
             }
             else
             {
@@ -74,9 +92,8 @@ public class ReceiveData
                 return;
             }
 
-            _logger.LogInformation("Data processed successfully.");
+            //_logger.LogInformation("Data processed successfully.");
         }
-
 
         catch (Exception ex)
         {
@@ -173,15 +190,9 @@ public class ReceiveData
     private async Task ProcessParticipantDataAsync(string name,IEnumerable<BssSubject> subjects, string participantUrl)
     {
 
-        DateTime processingStart = DateTime.UtcNow;
-
-        int successCount = 0;
-        int failureCount = 0;
-        int rowIndex = 0;
-
         try
         {
-            _logger.LogInformation("Processing started for file: {name} at {processingStart}",name, processingStart);
+            _logger.LogInformation("Processing participant data.");
 
             foreach (var subject in subjects)
             {
@@ -192,9 +203,9 @@ public class ReceiveData
 
                 await _httpRequestService.SendPost(participantUrl, serializedParticipant);
 
-                successCount++;
-                rowIndex++;
-                _logger.LogInformation("Row of No.{rowIndex} processed successfully",rowIndex);
+                participantSuccessCount++;
+                participantRowIndex++;
+                _logger.LogInformation("Row of No.{rowIndex} processed successfully",participantRowIndex);
             }
         }
 
@@ -202,19 +213,11 @@ public class ReceiveData
         {
             _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
 
-            failureCount++;
-            rowIndex++;
-            _logger.LogInformation("Row of No.{rowIndex} processed unsuccessfully",rowIndex);
+            participantFailureCount++;
+            participantRowIndex++;
+            _logger.LogInformation("Row of No.{rowIndex} processed unsuccessfully",participantRowIndex);
             await ProcessParticipantDataAsync(name,subjects, participantUrl);
         }
-
-        DateTime processingEnd = DateTime.UtcNow;
-
-        _logger.LogInformation("\n==================================================================\n"
-                                +"File {name} processed successfully.\n"
-                                +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
-                                +"Rows Processed: {successCount}, Failures: {failureCount}"
-                                ,name,processingStart,processingEnd,successCount, failureCount );
     }
     private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
     {
