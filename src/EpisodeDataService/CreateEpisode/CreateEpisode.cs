@@ -1,94 +1,80 @@
 using System.Net;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using System.Text;
-using System.Text.Json;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 
-namespace NHS.ServiceInsights.EpisodeDataService;
-
-public class CreateEpisode
+namespace NHS.ServiceInsights.EpisodeDataService
 {
-    private readonly ILogger<CreateEpisode> _logger;
-    private readonly IEpisodeRepository _episodesRepository;
-    private readonly IEndCodeLkpRepository _endCodeLkpRepository;
-    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
-    private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
-    private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
-
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository)
+    public class CreateEpisode
     {
-        _logger = logger;
-        _episodesRepository = episodeRepository;
-        _endCodeLkpRepository = endCodeLkpRepository;
-        _episodeTypeLkpRepository = episodeTypeLkpRepository;
-        _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
-        _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
-    }
+        private readonly ILogger<CreateEpisode> _logger;
+        private readonly IEpisodeRepository _episodesRepository;
+        private readonly IEndCodeLkpRepository _endCodeLkpRepository;
+        private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
+        private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
+        private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
 
-    [Function("CreateEpisode")]
-    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
-    {
-        EpisodeDto episodeDto;
-
-        try
+        public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository)
         {
-            using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
-            {
-                var postData = await reader.ReadToEndAsync();
-                episodeDto = JsonSerializer.Deserialize<EpisodeDto>(postData);
-                _logger.LogInformation("PostData: {postData}", postData);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Could not read episode data.");
-            return req.CreateResponse(HttpStatusCode.BadRequest);
+            _logger = logger;
+            _episodesRepository = episodeRepository;
+            _endCodeLkpRepository = endCodeLkpRepository;
+            _episodeTypeLkpRepository = episodeTypeLkpRepository;
+            _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
+            _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
         }
 
-        try
+        [Function("CreateEpisode")]
+        public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+        {
+            try
+            {
+                var episodeDto = await DeserializeEpisodeDto(req);
+                _logger.LogInformation("PostData: {postData}", episodeDto);
+
+                var episodeTypeId = await GetCodeId(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeIdAsync, req);
+                var endCodeId = await GetCodeId(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeIdAsync, req);
+                var reasonClosedCodeId = await GetCodeId(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync, req);
+                var finalActionCodeId = await GetCodeId(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync, req);
+
+                var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeId, endCodeId, reasonClosedCodeId, finalActionCodeId);
+                _logger.LogInformation("Calling CreateEpisode method...");
+                _episodesRepository.CreateEpisode(episode);
+                _logger.LogInformation("Episode created successfully.");
+                return req.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to create episode in database.");
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        private async Task<EpisodeDto> DeserializeEpisodeDto(HttpRequestData req)
         {
 
-            var episodeTypeId = !string.IsNullOrWhiteSpace(episodeDto.EpisodeType) ?
-                await _episodeTypeLkpRepository.GetEpisodeTypeIdAsync(episodeDto.EpisodeType) : null;
-
-            if (episodeTypeId == null && !string.IsNullOrWhiteSpace(episodeDto.EpisodeType))
+            try
             {
-                _logger.LogError("Episode type '{episodeType}' not found in lookup table.", episodeDto.EpisodeType);
-                return req.CreateResponse(HttpStatusCode.BadRequest);
+                using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
+                {
+                    var postData = await reader.ReadToEndAsync();
+                    return JsonSerializer.Deserialize<EpisodeDto>(postData);
+                }
             }
-
-            var endCodeId = !string.IsNullOrWhiteSpace(episodeDto.EndCode) ?
-                await _endCodeLkpRepository.GetEndCodeIdAsync(episodeDto.EndCode) : null;
-
-            if (endCodeId == null && !string.IsNullOrWhiteSpace(episodeDto.EndCode))
+            catch (Exception ex)
             {
-                _logger.LogError("End code '{endCode}' not found in lookup table.", episodeDto.EndCode);
-                return req.CreateResponse(HttpStatusCode.BadRequest);
+                _logger.LogError(ex, "Could not read episode data.");
+                throw;
             }
+        }
 
-            var reasonClosedCodeId = !string.IsNullOrWhiteSpace(episodeDto.ReasonClosedCode) ?
-                await _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync(episodeDto.ReasonClosedCode) : null;
-
-            if (reasonClosedCodeId == null && !string.IsNullOrWhiteSpace(episodeDto.ReasonClosedCode))
-            {
-                _logger.LogError("Reason closed code '{reasonClosedCode}' not found in lookup table.", episodeDto.ReasonClosedCode);
-                return req.CreateResponse(HttpStatusCode.BadRequest);
-            }
-
-            var finalActionCodeId = !string.IsNullOrWhiteSpace(episodeDto.FinalActionCode) ?
-                await _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync(episodeDto.FinalActionCode) : null;
-
-            if (finalActionCodeId == null && !string.IsNullOrWhiteSpace(episodeDto.FinalActionCode))
-            {
-                _logger.LogError("Final action code '{finalActionCode}' not found in lookup table.", episodeDto.FinalActionCode);
-                return req.CreateResponse(HttpStatusCode.BadRequest);
-            }
-
-
-            var episode = new Episode
+        private async Task<Episode> MapEpisodeDtoToEpisode(EpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId)
+        {
+            return new Episode
             {
                 EpisodeId = episodeDto.EpisodeId,
                 EpisodeIdSystem = null,
@@ -111,16 +97,22 @@ public class CreateEpisode
                 RecordInsertDatetime = DateTime.UtcNow,
                 RecordUpdateDatetime = DateTime.UtcNow
             };
-
-            _logger.LogInformation("Calling CreateEpisode method...");
-            _episodesRepository.CreateEpisode(episode);
-            _logger.LogInformation("Episode created successfully.");
-            return req.CreateResponse(HttpStatusCode.OK);
         }
-        catch (Exception ex)
+
+        private async Task<long?> GetCodeId(string code, string codeName, Func<string, Task<long?>> getCodeIdMethod, HttpRequestData req)
         {
-            _logger.LogError(ex, "Failed to create episode in database.");
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return null;
+            }
+
+            var codeId = await getCodeIdMethod(code);
+            if (codeId == null)
+            {
+                _logger.LogError("{codeName} '{code}' not found in lookup table.", codeName, code);
+                throw new Exception($"{codeName} '{code}' not found in lookup table.");
+            }
+            return codeId;
         }
     }
 }
