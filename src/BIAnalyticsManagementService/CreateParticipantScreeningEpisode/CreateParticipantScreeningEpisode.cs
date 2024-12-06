@@ -25,7 +25,7 @@ public class CreateParticipantScreeningEpisode
         string serializedEvent = JsonSerializer.Serialize(eventGridEvent);
         _logger.LogInformation(serializedEvent);
 
-        Episode episode = new();
+        Episode episode;
 
         try
         {
