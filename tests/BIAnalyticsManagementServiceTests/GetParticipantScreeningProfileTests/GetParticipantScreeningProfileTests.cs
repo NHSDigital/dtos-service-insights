@@ -9,6 +9,7 @@ using NHS.ServiceInsights.BIAnalyticsManagementService;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using System.Text;
+using System.Globalization;
 
 namespace NHS.ServiceInsights.BIAnalyticsManagementServiceTests;
 
@@ -65,7 +66,9 @@ public class GetParticipantScreeningProfileTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+        var startDate = DateTime.Parse(queryParam["startDate"]);
+        var endDate = DateTime.Parse(queryParam["endDate"]);
+        var expectedUri = $"http://localhost:6062/api/GetParticipantScreeningProfileData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
 
         var jsonResponse = JsonSerializer.Serialize(profilesDataPage);
 
@@ -109,7 +112,9 @@ public class GetParticipantScreeningProfileTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+        var startDate = DateTime.Parse(queryParam["startDate"]);
+        var endDate = DateTime.Parse(queryParam["endDate"]);
+        var expectedUri = $"http://localhost:6062/api/GetParticipantScreeningProfileData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
 
         var jsonResponse = JsonSerializer.Serialize(profilesDataPage);
 
@@ -144,7 +149,9 @@ public class GetParticipantScreeningProfileTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        var expectedUri = "http://localhost:6062/api/GetParticipantScreeningProfileData?page=1&pageSize=2&startDate=05/07/2023 08:30:00&endDate=05/07/2023 08:30:00";
+        var startDate = DateTime.Parse(queryParam["startDate"]);
+        var endDate = DateTime.Parse(queryParam["endDate"]);
+        var expectedUri = $"http://localhost:6062/api/GetParticipantScreeningProfileData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
 
         var jsonResponse = JsonSerializer.Serialize(profilesDataPage);
 
