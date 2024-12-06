@@ -5,7 +5,7 @@ using Microsoft.Azure.Functions.Worker;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices(services =>
+    .ConfigureServices((context, services) =>
     {
         services.AddSingleton<IHttpRequestService, HttpRequestService>();
         services.AddApplicationInsightsTelemetryWorkerService();
