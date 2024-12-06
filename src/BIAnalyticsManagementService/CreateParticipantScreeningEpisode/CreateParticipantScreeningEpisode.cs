@@ -44,7 +44,6 @@ public class CreateParticipantScreeningEpisode
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create participant screening episode.");
-            return;
         }
     }
 
