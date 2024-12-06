@@ -7,6 +7,9 @@ OS=$(uname)
 start_containers() {
   local compose_file=$1
 
+  # echo "Building container images..."
+  # podman compose --file "$compose_file" build
+
   echo "Starting SQL Database..."
   podman compose --file "$compose_file" up -d sql-database
   podman compose --file "$compose_file" up -d database-setup
