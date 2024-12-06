@@ -156,7 +156,7 @@ services:
       - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
       - CreateParticipantScreeningEpisodeUrl=http://create-participant-screening-episode-data:6010/api/CreateParticipantScreeningEpisode
       - GetScreeningDataUrl=http://get-screening-data:6082/api/GetScreeningData
-      - GetReferenceDataUrl=http://get-reference-data:6081/api/GetReferenceData
+      - GetReferenceDataUrl=http://get-organisation-data:6081/api/GetReferenceData
 
   create-participant-screening-profile:
     container_name: create-participant-screening-profile
@@ -175,6 +175,7 @@ services:
       - GetParticipantUrl=http://get-participant:6061/api/GetParticipant
       - CreateParticipantScreeningProfileUrl=http://create-participant-screening-profile-data:6011/api/CreateParticipantScreeningProfile
       - DemographicsServiceUrl=http://get-demographics-data:6080/api/GetDemographicsData
+      - GetScreeningDataUrl=http://get-screening-data:6082/api/GetScreeningData
 
   get-participant-screening-profile:
     container_name: get-participant-screening-profile
