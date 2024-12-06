@@ -117,7 +117,7 @@ public class CreateEpisode
 
             _logger.LogInformation("Calling CreateEpisode method...");
             _episodesRepository.CreateEpisode(episode);
-            _logger.LogInformation("Episode created successfully.");;
+            _logger.LogInformation("Episode created successfully.");
 
             EventGridEvent eventGridEvent = new EventGridEvent(
                 subject: "Episode Created",
