@@ -15,13 +15,9 @@ public class ReceiveData
     private readonly string[] episodesExpectedHeaders = new[] { "nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code" };
     private readonly string[] subjectsExpectedHeaders = new[] { "change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language" };
 
-
-
-        DateTime processingStart = DateTime.UtcNow;
-
-        int participantSuccessCount = 0;
-        int participantFailureCount = 0;
-        int participantRowIndex = 0;
+    private int participantSuccessCount = 0;
+    private int participantFailureCount = 0;
+    private int participantRowIndex = 0;
 
     public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService)
     {
@@ -34,6 +30,7 @@ public class ReceiveData
     {
         try
         {
+            DateTime processingStart = DateTime.UtcNow;
             _logger.LogInformation("C# HTTP trigger function ReceiveData received a request.");
 
             var (episodeUrl, participantUrl) = GetConfigurationUrls();
@@ -77,6 +74,7 @@ public class ReceiveData
 
                     await ProcessParticipantDataAsync(name,participantsEnumerator, participantUrl);
                 }
+
 
                 DateTime processingEnd = DateTime.UtcNow;
 
