@@ -216,7 +216,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Information,
             0,
-            It.Is<object>(state => state.ToString().Contains("processed unsuccessfully")),
+            It.Is<object>(state => state.ToString().Contains("Rows Processed: 4, Success: 3, Failures: 1")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(1));
