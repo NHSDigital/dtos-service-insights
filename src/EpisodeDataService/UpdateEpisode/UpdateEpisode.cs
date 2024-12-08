@@ -56,6 +56,15 @@ public class UpdateEpisode
 
             await _episodeRepository.UpdateEpisode(existingEpisode);
             _logger.LogInformation("Episode {episodeId} updated successfully.", episodeDto.EpisodeId);
+
+            EventGridEvent eventGridEvent = new EventGridEvent(
+                subject: "Episode Updated",
+                eventType: "CreateParticipantScreeningEpisode",
+                dataVersion: "1.0",
+                data: existingEpisode
+            );
+
+            await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
             return req.CreateResponse(HttpStatusCode.OK);
         }
         catch (Exception ex)

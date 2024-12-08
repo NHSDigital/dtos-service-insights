@@ -47,6 +47,16 @@ public class CreateEpisode
                 _logger.LogInformation("Calling CreateEpisode method...");
                 _episodesRepository.CreateEpisode(episode);
                 _logger.LogInformation("Episode created successfully.");
+
+                EventGridEvent eventGridEvent = new EventGridEvent(
+                    subject: "Episode Created",
+                    eventType: "CreateParticipantScreeningEpisode",
+                    dataVersion: "1.0",
+                    data: episode
+                );
+
+                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+
                 return req.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -100,6 +110,8 @@ public class CreateEpisode
                 RecordInsertDatetime = DateTime.UtcNow,
                 RecordUpdateDatetime = DateTime.UtcNow
             };
+
+
         }
 
         private async Task<long?> GetCodeId(string code, string codeName, Func<string, Task<long?>> getCodeIdMethod)
@@ -117,5 +129,5 @@ public class CreateEpisode
             }
             return codeId;
         }
-    }
 }
+
