@@ -6,27 +6,30 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
+using Azure.Messaging.EventGrid;
 
-namespace NHS.ServiceInsights.EpisodeDataService
+namespace NHS.ServiceInsights.EpisodeDataService;
+
+public class CreateEpisode
 {
-    public class CreateEpisode
-    {
-        private readonly ILogger<CreateEpisode> _logger;
-        private readonly IEpisodeRepository _episodesRepository;
-        private readonly IEndCodeLkpRepository _endCodeLkpRepository;
-        private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
-        private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
-        private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
+    private readonly ILogger<CreateEpisode> _logger;
+    private readonly IEpisodeRepository _episodesRepository;
+    private readonly IEndCodeLkpRepository _endCodeLkpRepository;
+    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
+    private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
+    private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
+    private readonly EventGridPublisherClient _eventGridPublisherClient;
 
-        public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository)
-        {
-            _logger = logger;
-            _episodesRepository = episodeRepository;
-            _endCodeLkpRepository = endCodeLkpRepository;
-            _episodeTypeLkpRepository = episodeTypeLkpRepository;
-            _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
-            _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
-        }
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, EventGridPublisherClient eventGridPublisherClient)
+    {
+        _logger = logger;
+        _episodesRepository = episodeRepository;
+        _endCodeLkpRepository = endCodeLkpRepository;
+        _episodeTypeLkpRepository = episodeTypeLkpRepository;
+        _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
+        _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
+        _eventGridPublisherClient = eventGridPublisherClient;
+    }
 
         [Function("CreateEpisode")]
         public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)

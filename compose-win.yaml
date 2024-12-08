@@ -65,8 +65,8 @@ services:
       - DB_CONNECTION=${DB_CONNECTION}
 
   # BI Analytics Data Service
-  create-participant-screening-episode-data:
-    container_name: create-participant-screening-episode-data
+  create-ps-episode-data:
+    container_name: create-ps-episode-data
     network_mode: host
     build:
       context: ./src/
@@ -79,8 +79,8 @@ services:
       - ASPNETCORE_URLS=http://*:6010
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  create-participant-screening-profile-data:
-    container_name: create-participant-screening-profile-data
+  create-ps-profile-data:
+    container_name: create-ps-profile-data
     network_mode: host
     build:
       context: ./src/
@@ -93,8 +93,8 @@ services:
       - ASPNETCORE_URLS=http://*:6011
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  get-participant-screening-profile-data:
-    container_name: get-participant-screening-profile-data
+  get-ps-profile-data:
+    container_name: get-ps-profile-data
     network_mode: host
     build:
       context: ./src/
@@ -107,8 +107,8 @@ services:
       - ASPNETCORE_URLS=http://*:6062
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
-  get-participant-screening-episode-data:
-    container_name: get-participant-screening-episode-data
+  get-ps-episode-data:
+    container_name: get-ps-episode-data
     network_mode: host
     build:
       context: ./src/
@@ -122,8 +122,8 @@ services:
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
   # BI Analytics Service
-  create-participant-screening-episode:
-    container_name: create-participant-screening-episode
+  create-ps-episode:
+    container_name: create-ps-episode
     network_mode: host
     build:
       context: ./src/
@@ -137,8 +137,8 @@ services:
       - GetEpisodeUrl=http://127.0.0.1:6060/api/GetEpisode
       - CreateParticipantScreeningEpisodeUrl=http://127.0.0.1:6010/api/CreateParticipantScreeningEpisode
 
-  create-participant-screening-profile:
-    container_name: create-participant-screening-profile
+  create-ps-profile:
+    container_name: create-ps-profile
     network_mode: host
     build:
       context: ./src/
@@ -153,8 +153,8 @@ services:
       - CreateParticipantScreeningProfileUrl=http://127.0.0.1:6011/api/CreateParticipantScreeningProfile
       - DemographicsServiceUrl=http://127.0.0.1:6080/api/GetDemographicsData
 
-  get-participant-screening-profile:
-    container_name: get-participant-screening-profile
+  get-ps-profile:
+    container_name: get-ps-profile
     network_mode: host
     build:
       context: ./src/
@@ -167,8 +167,8 @@ services:
       - ASPNETCORE_URLS=http://*:6063
       - GetProfilesUrl=http://127.0.0.1:6062/api/GetParticipantScreeningProfileData
 
-  get-participant-screening-episode:
-    container_name: get-participant-screening-episode
+  get-ps-episode:
+    container_name: get-ps-episode
     network_mode: host
     build:
       context: ./src/
@@ -207,6 +207,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://*:6007
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - topicEndpoint=${EVENTGRID_URL}
+      - topicKey=${EVENTGRID_KEY}
 
   get-episode:
     container_name: get-episode
@@ -235,6 +237,8 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7777
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+      - topicEndpoint=${EVENTGRID_URL}
+      - topicKey=${EVENTGRID_KEY}
 
   # Episode Integration Service
   receive-data:

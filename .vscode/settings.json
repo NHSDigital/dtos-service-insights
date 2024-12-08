@@ -4,8 +4,8 @@
     "MD024": { "siblings_only": true },
     "MD033": false
   },
-  "azureFunctions.projectSubpath": "src/EpisodeIntegrationService/ReceiveData",
-  "azureFunctions.deploySubpath": "src/EpisodeIntegrationService/ReceiveData/bin/Release/net8.0/publish",
+  "azureFunctions.projectSubpath": "src/BIAnalyticsManagementService/CreateParticipantScreeningEpisode",
+  "azureFunctions.deploySubpath": "src/BIAnalyticsManagementService/CreateParticipantScreeningEpisode/bin/Release/net8.0/publish",
   "azureFunctions.projectLanguage": "C#",
   "azureFunctions.projectRuntime": "~4",
   "debug.internalConsoleOptions": "neverOpen",

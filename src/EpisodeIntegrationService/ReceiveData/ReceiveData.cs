@@ -22,7 +22,7 @@ public class ReceiveData
     }
 
     [Function("ReceiveData")]
-    public async Task Run([BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
+    public async Task Run([BlobTrigger("inbound/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
     {
         try
         {

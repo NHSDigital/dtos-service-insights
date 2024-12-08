@@ -42,7 +42,6 @@ public class CreateUpdateEpisode
 
         try
         {
-            // Check if episode exists
             var getEpisodeUrl = $"{Environment.GetEnvironmentVariable("GetEpisodeUrl")}?EpisodeId={episode.EpisodeId}";
             var getEpisodeResponse = await _httpRequestService.SendGet(getEpisodeUrl);
             if (getEpisodeResponse.StatusCode == HttpStatusCode.OK)
@@ -50,6 +49,7 @@ public class CreateUpdateEpisode
                 _logger.LogInformation("Episode {episodeId} already exists and will be updated.", episode.EpisodeId);
                 await _httpRequestService.SendPut(Environment.GetEnvironmentVariable("UpdateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("UpdateEpisode function called successfully.");
+
                 return req.CreateResponse(HttpStatusCode.OK);
             }
             else if (getEpisodeResponse.StatusCode == HttpStatusCode.NotFound)
@@ -57,6 +57,7 @@ public class CreateUpdateEpisode
                 _logger.LogInformation("Episode {episodeId} does not exist and will be created.", episode.EpisodeId);
                 await _httpRequestService.SendPost(Environment.GetEnvironmentVariable("CreateEpisodeUrl"), JsonSerializer.Serialize(episode));
                 _logger.LogInformation("CreateEpisode function called successfully.");
+
                 return req.CreateResponse(HttpStatusCode.OK);
             }
             else
