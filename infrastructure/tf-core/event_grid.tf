@@ -8,7 +8,8 @@ module "event_grid" {
   subscription_name     = each.value.subscription_name
   resource_group_name   = azurerm_resource_group.core[each.value.region].name
   location              = each.value.region
-  function_app_endpoint = each.value.function_app_endpoint
+  # function_app_endpoint = each.value.function_app_endpoint
+  function_app_id       = module.functionapp["CreateParticipantScreeningEpisode-uksouth"].id
 
   log_analytics_workspace_id = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
   # monitor_diagnostic_setting_keyvault_enabled_logs = local.monitor_diagnostic_setting_keyvault_enabled_logs

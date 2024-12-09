@@ -72,8 +72,8 @@ variable "subscription_name" {
   type        = string
 }
 
-variable "function_app_endpoint" {
-  description = "The function app endpoint that the event subscription will send events to."
+variable "function_app_id" {
+  description = "The function app id that the event subscription will send events to."
   type        = string
 }
 
