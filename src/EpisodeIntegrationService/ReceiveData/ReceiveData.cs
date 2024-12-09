@@ -31,7 +31,7 @@ public class ReceiveData
 
         try
         {
-             DateTime processingStart = DateTime.UtcNow;
+            DateTime processingStart = DateTime.UtcNow;
 
             _logger.LogInformation("C# HTTP trigger function ReceiveData received a request.");
 
