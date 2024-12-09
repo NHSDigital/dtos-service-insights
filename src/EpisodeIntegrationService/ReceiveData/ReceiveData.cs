@@ -28,9 +28,11 @@ public class ReceiveData
     [Function("ReceiveData")]
     public async Task Run([BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
     {
+
         try
         {
-            DateTime processingStart = DateTime.UtcNow;
+             DateTime processingStart = DateTime.UtcNow;
+
             _logger.LogInformation("C# HTTP trigger function ReceiveData received a request.");
 
             var (episodeUrl, participantUrl) = GetConfigurationUrls();
@@ -89,7 +91,6 @@ public class ReceiveData
                 return;
             }
 
-            //_logger.LogInformation("Data processed successfully.");
         }
 
         catch (Exception ex)
@@ -202,7 +203,7 @@ public class ReceiveData
 
                 participantSuccessCount++;
                 participantRowIndex++;
-                _logger.LogInformation("Row of No.{rowIndex} processed successfully",participantRowIndex);
+                _logger.LogInformation("Row No.{rowIndex} processed successfully",participantRowIndex);
             }
         }
 
@@ -212,7 +213,7 @@ public class ReceiveData
 
             participantFailureCount++;
             participantRowIndex++;
-            _logger.LogInformation("Row of No.{rowIndex} processed unsuccessfully",participantRowIndex);
+            _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",participantRowIndex);
             await ProcessParticipantDataAsync(name,subjects, participantUrl);
         }
     }

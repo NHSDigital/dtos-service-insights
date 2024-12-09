@@ -181,10 +181,10 @@ public class ReceiveDataTests
         // Assert -- verify the counters of Rows
         var expectedLogMessages = new List<string>
         {
-            "Row of No.1 processed successfully",
-            "Row of No.2 processed successfully",
-            "Row of No.3 processed successfully",
-            "Row of No.4 processed successfully",
+            "Row No.1 processed successfully",
+            "Row No.2 processed successfully",
+            "Row No.3 processed successfully",
+            "Row No.4 processed successfully",
             "Rows Processed: 4, Success: 4, Failures: 0"
         };
 
@@ -224,10 +224,10 @@ public class ReceiveDataTests
         // Assert -- verify the counters of Rows
         var expectedLogMessages = new List<string>
         {
-            "Row of No.1 processed unsuccessfully",
-            "Row of No.2 processed successfully",
-            "Row of No.3 processed successfully",
-            "Row of No.4 processed successfully",
+            "Row No.1 processed unsuccessfully",
+            "Row No.2 processed successfully",
+            "Row No.3 processed successfully",
+            "Row No.4 processed successfully",
             "Rows Processed: 4, Success: 3, Failures: 1"
         };
 
