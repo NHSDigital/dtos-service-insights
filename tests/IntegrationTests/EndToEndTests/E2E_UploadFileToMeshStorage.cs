@@ -47,7 +47,7 @@ namespace Tests.Integration.EndToEndTests
             var localFilePath = Path.Combine(AppContext.BaseDirectory, _episodeFilePath);
             await UploadFileToMeshMailboxAsync(_episodeFileName, localFilePath);
             //In an integrated environment, the default mesh interval value is 5m, which is why this wait period is so long
-            Thread.Sleep(AppSettings.MeshSettings.intervalInMs);
+            await Task.Delay(AppSettings.MeshSettings.intervalInMs);
             Assert.IsTrue(await GetFileFromBlobAsync(_episodeFilePath));
         }
 
@@ -57,7 +57,7 @@ namespace Tests.Integration.EndToEndTests
             var localFilePath = Path.Combine(AppContext.BaseDirectory, _participantFilePath);
             await UploadFileToMeshMailboxAsync(_participantFileName, localFilePath);
             //In an integrated environment, the default mesh interval value is 5m, which is why this wait period is so long
-            Thread.Sleep(AppSettings.MeshSettings.intervalInMs);
+            await Task.Delay(AppSettings.MeshSettings.intervalInMs);
             Assert.IsTrue(await GetFileFromBlobAsync(_participantFilePath));
         }
 
