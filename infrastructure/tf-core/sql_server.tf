@@ -1,5 +1,6 @@
 module "azure_sql_server" {
-  for_each = var.sqlserver != {} ? var.regions : {}
+  # for_each = var.sqlserver != {} ? var.regions : {}
+  for_each = var.sqlserver
 
   source = "../../../dtos-devops-templates/infrastructure/modules/sql-server"
 
