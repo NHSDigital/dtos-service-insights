@@ -74,7 +74,7 @@ namespace IntegrationTests.Helpers
         {
             int idx = filePath.LastIndexOf('/');
             var blobContainerClient = _blobServiceClient.GetBlobContainerClient(blobContainerName);
-            var blobClient = blobContainerClient.GetBlobClient(filePath.Substring(idx+1));
+            var blobClient = blobContainerClient.GetBlobClient(Path.GetFileName(filePath));
             var azureResponse = await blobClient.DeleteAsync(Azure.Storage.Blobs.Models.DeleteSnapshotsOption.IncludeSnapshots);
             if (azureResponse.IsError) {
                 _logger.LogInformation("Failed to clean blob storage");
