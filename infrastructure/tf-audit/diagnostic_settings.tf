@@ -15,10 +15,12 @@ locals {
   monitor_diagnostic_setting_log_analytics_workspace_metrics      = ["AllMetrics"]
 
   #SQL SERVER AND DATABASE
-  monitor_diagnostic_setting_database_enabled_logs   = ["SQLSecurityAuditEvents", "SQLInsights", "QueryStoreWaitStatistics", "Errors", "DatabaseWaitStatistics", "Timeouts"]
+  #monitor_diagnostic_setting_database_enabled_logs   = ["SQLSecurityAuditEvents", "SQLInsights", "QueryStoreWaitStatistics", "Errors", "DatabaseWaitStatistics", "Timeouts"]
+  monitor_diagnostic_setting_database_enabled_logs   = []
   monitor_diagnostic_setting_database_metrics        = ["Basic", "InstanceAndAppAdvanced", "WorkloadManagement"]
-  monitor_diagnostic_setting_sql_server_enabled_logs = ["SQLSecurityAuditEvents"]
+  #monitor_diagnostic_setting_sql_server_enabled_logs = ["SQLSecurityAuditEvents"]
   monitor_diagnostic_setting_sql_server_metrics      = ["Basic", "InstanceAndAppAdvanced", "WorkloadManagement"]
+  monitor_diagnostic_setting_sql_server_metrics      = []
 
   #STORAGE ACCOUNT
   monitor_diagnostic_setting_storage_account_enabled_logs = ["StorageWrite", "StorageRead", "StorageDelete"]
