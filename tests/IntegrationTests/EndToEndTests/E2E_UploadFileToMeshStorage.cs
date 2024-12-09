@@ -38,7 +38,7 @@ namespace Tests.Integration.EndToEndTests
 
             // Get the direct filepath to the csv test file and ensure it exists
             var localFilePath = Path.Combine(AppContext.BaseDirectory, AppSettings.FilePaths.LocalEpisodesCSVFile);
-            Assert.IsTrue(localFilePath.Length > 0);
+            Assert.IsTrue(File.Exists(localFilePath), $"File does not exist at path: {localFilePath}");
         }
 
         [TestMethod]
