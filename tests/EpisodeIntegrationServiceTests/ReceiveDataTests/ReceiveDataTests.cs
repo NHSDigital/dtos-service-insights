@@ -205,7 +205,6 @@ public class ReceiveDataTests
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(4));
     }
 
-
     [TestMethod]
     public async Task ReceiveData_LogWarningSendbeforeSendingParticipantDataToDownstreamFunctions()
     {
