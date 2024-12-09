@@ -75,7 +75,6 @@ public class ReceiveData
                     await ProcessParticipantDataAsync(name,participantsEnumerator, participantUrl);
                 }
 
-
                 DateTime processingEnd = DateTime.UtcNow;
 
                 _logger.LogInformation("==================================================================\n"
