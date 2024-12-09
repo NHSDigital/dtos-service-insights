@@ -26,8 +26,8 @@ resource "azurerm_storage_queue" "storage_queue" {
 
 
 resource "azurerm_eventgrid_event_subscription" "eventgrid_event_subscription" {
-  name                      = var.subscription_name
-  scope                     = azurerm_eventgrid_topic.azurerm_eventgrid.id
+  name  = var.subscription_name
+  scope = azurerm_eventgrid_topic.azurerm_eventgrid.id
   # storage_blob_dead_letter_destination {
   #   storage_account_id  = dead_letter_storage_account_container_id
   #   blob_container_name = dead_letter_storage_account_container_name

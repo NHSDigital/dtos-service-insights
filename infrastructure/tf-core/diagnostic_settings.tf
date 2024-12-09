@@ -16,8 +16,8 @@ locals {
 
   #SQL SERVER AND DATABASE
   #monitor_diagnostic_setting_database_enabled_logs   = ["SQLSecurityAuditEvents", "SQLInsights", "QueryStoreWaitStatistics", "Errors", "DatabaseWaitStatistics", "Timeouts"]
-  monitor_diagnostic_setting_database_enabled_logs   = []
-  monitor_diagnostic_setting_database_metrics        = ["Basic", "InstanceAndAppAdvanced", "WorkloadManagement"]
+  monitor_diagnostic_setting_database_enabled_logs = []
+  monitor_diagnostic_setting_database_metrics      = ["Basic", "InstanceAndAppAdvanced", "WorkloadManagement"]
   #monitor_diagnostic_setting_database_metrics        = []
   #monitor_diagnostic_setting_sql_server_enabled_logs = ["SQLSecurityAuditEvents"]
   monitor_diagnostic_setting_sql_server_enabled_logs = []

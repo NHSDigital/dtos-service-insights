@@ -121,7 +121,7 @@ app_service_plan = {
   }
 
   instances = {
-    Default       = {}
+    Default = {}
     # BIAnalyticsDataService       = {}
     # BIAnalyticsService           = {}
     # DemographicsService          = {}
@@ -136,11 +136,11 @@ app_service_plan = {
 
 
 event_grid_defaults = {
-  identity_ids                 = []
-  identity_type                = "SystemAssigned"
-  inbound_ip_rule              = []
-  input_schema                 = {}
-  local_auth_enabled           = true
+  identity_ids                  = []
+  identity_type                 = "SystemAssigned"
+  inbound_ip_rule               = []
+  input_schema                  = {}
+  local_auth_enabled            = true
   public_network_access_enabled = false
 }
 

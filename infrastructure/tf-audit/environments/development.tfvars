@@ -38,8 +38,8 @@ app_insights = {
 }
 
 law = {
-  law_sku            = "PerGB2018"
-  retention_days     = 30
+  law_sku        = "PerGB2018"
+  retention_days = 30
 }
 
 storage_accounts = {

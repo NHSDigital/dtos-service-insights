@@ -6,7 +6,7 @@ module "storage" {
   resource_group_name = azurerm_resource_group.audit[each.value.region_key].name
   location            = each.value.region_key
 
-  containers          = each.value.containers
+  containers = each.value.containers
 
   log_analytics_workspace_id                              = module.log_analytics_workspace_audit[local.primary_region].id
   monitor_diagnostic_setting_storage_account_enabled_logs = local.monitor_diagnostic_setting_storage_account_enabled_logs
@@ -16,7 +16,7 @@ module "storage" {
   account_tier                  = each.value.account_tier
   public_network_access_enabled = each.value.public_network_access_enabled
 
-  rbac_roles                    = local.rbac_roles_storage
+  rbac_roles = local.rbac_roles_storage
 
   # Private Endpoint Configuration if enabled
   private_endpoint_properties = var.features.private_endpoints_enabled ? {
