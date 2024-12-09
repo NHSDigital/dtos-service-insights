@@ -30,11 +30,8 @@ namespace Tests.Integration.EndToEndTests
             _episodeFilePath = AppSettings.FilePaths.LocalEpisodesCSVFile;
             _participantFilePath = AppSettings.FilePaths.LocalSubjectsCSVFile;
 
-            var episodeFileNameIndex = _episodeFilePath.LastIndexOf('/');
-            _episodeFileName = _episodeFilePath.Substring(episodeFileNameIndex+1);
-
-            var participantFileNameIndex = _participantFilePath.LastIndexOf('/');
-            _participantFileName = _participantFilePath.Substring(participantFileNameIndex+1);
+            _episodeFileName = Path.GetFileName(_episodeFilePath);
+            _participantFileName = Path.GetFileName(_participantFilePath);
 
             // Ensure all config is set
             AssertAllConfigurations();
