@@ -35,9 +35,25 @@ public class UpdateEpisode
     [Function("UpdateEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put")] HttpRequestData req)
     {
+
+        EpisodeDto episodeDto;
+
         try
         {
-            var episodeDto = await DeserializeEpisodeDto(req);
+            using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
+            {
+                var postData = await reader.ReadToEndAsync();
+                episodeDto = JsonSerializer.Deserialize<EpisodeDto>(postData);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Could not read episode data");
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+
+        try
+        {
             _logger.LogInformation("Request to update episode {episodeId} received.", episodeDto.EpisodeId);
 
             var existingEpisode = await _episodeRepository.GetEpisodeAsync(episodeDto.EpisodeId);
@@ -71,24 +87,6 @@ public class UpdateEpisode
         {
             _logger.LogError(ex, "Error updating episode.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
-        }
-    }
-
-    private async Task<EpisodeDto> DeserializeEpisodeDto(HttpRequestData req)
-    {
-        try
-        {
-            using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
-            {
-                var postData = await reader.ReadToEndAsync();
-                return JsonSerializer.Deserialize<EpisodeDto>(postData);
-            }
-        }
-        catch (Exception ex)
-        {
-            var errorMessage = $"Could not read episode data.: {ex.Message}";
-            _logger.LogError(ex, errorMessage);
-            throw new InvalidOperationException(errorMessage, ex);
         }
     }
 

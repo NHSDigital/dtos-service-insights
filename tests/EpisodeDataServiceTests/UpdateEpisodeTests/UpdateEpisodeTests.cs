@@ -122,7 +122,7 @@ public class UpdateEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_Return_InternalServerError_When_Episode_Data_Is_Invalid()
+    public async Task Run_Return_BadRequest_When_Episode_Data_Is_Invalid()
     {
         // Arrange
         var json = JsonSerializer.Serialize("Invalid");
@@ -132,7 +132,7 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
     }
 
     [TestMethod]
