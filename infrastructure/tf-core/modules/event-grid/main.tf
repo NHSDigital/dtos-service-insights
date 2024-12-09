@@ -19,10 +19,10 @@ resource "azurerm_eventgrid_topic" "azurerm_eventgrid" {
 
 }
 
-resource "azurerm_storage_queue" "storage_queue" {
-  name                 = "${var.subscription_name}-storage-queue"
-  storage_account_name = var.dead_letter_storage_account_name
-}
+# resource "azurerm_storage_queue" "storage_queue" {
+#   name                 = "${var.subscription_name}-storage-queue"
+#   storage_account_name = var.dead_letter_storage_account_name
+# }
 
 
 resource "azurerm_eventgrid_event_subscription" "eventgrid_event_subscription" {

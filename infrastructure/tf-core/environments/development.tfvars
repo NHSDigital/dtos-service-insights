@@ -147,14 +147,12 @@ event_grid_defaults = {
 event_grid_configs = {
   event-grid-1 = {
     identity_type         = "SystemAssigned"
-    subscription_name     = "sub1"
-    function_app_endpoint = "https://dev-uks-si-create-ps-episode.azurewebsites.net/runtime/webhooks/EventGrid?functionName=CreateParticipantScreeningEpisode"
+    subscription_name     = "dev1234"
   }
-  event-grid-2 = {
-    identity_type         = "SystemAssigned"
-    subscription_name     = "sub2"
-    function_app_endpoint = "https://dev-uks-si-create-ps-episode.azurewebsites.net/runtime/webhooks/EventGrid?functionName=CreateParticipantScreeningEpisode"
-  }
+  # event-grid-2 = {
+  #   identity_type         = "SystemAssigned"
+  #   subscription_name     = "sub2"
+  # }
 }
 
 diagnostic_settings = {
