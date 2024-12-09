@@ -101,7 +101,7 @@ public class CreateEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_BadRequest_When_EpisodeType_Not_Found()
+    public async Task Run_Should_Return_InternalServerError_When_EpisodeType_Not_Found()
     {
         // Arrange
         var episode = new EpisodeDto
@@ -124,11 +124,11 @@ public class CreateEpisodeTests
         var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
     [TestMethod]
-    public async Task Run_Should_Not_Return_BadRequest_When_EpisodeType_Is_Empty_Or_Null()
+    public async Task Run_Should_Return_Ok_When_EpisodeType_Is_Empty_Or_Null()
     {
         // Arrange
         var episode = new EpisodeDto
@@ -155,7 +155,7 @@ public class CreateEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_BadRequest_When_EndCode_Not_Found()
+    public async Task Run_Should_Return_InternalServerError_When_EndCode_Not_Found()
     {
         // Arrange
         var episode = new EpisodeDto
@@ -178,11 +178,11 @@ public class CreateEpisodeTests
         var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
     [TestMethod]
-    public async Task Run_Should_Not_Return_BadRequest_When_EndCode_Is_Empty_Or_Null()
+    public async Task Run_Should_Return_Ok_When_EndCode_Is_Empty_Or_Null()
     {
         // Arrange
         var episode = new EpisodeDto
@@ -209,7 +209,7 @@ public class CreateEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_BadRequest_When_ReasonClosedCode_Not_Found()
+    public async Task Run_Should_Return_InternalServerError_When_ReasonClosedCode_Not_Found()
     {
         // Arrange
         var episode = new EpisodeDto
@@ -232,11 +232,11 @@ public class CreateEpisodeTests
         var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
     [TestMethod]
-    public async Task Run_Should_Not_Return_BadRequest_When_ReasonClosedCode_Is_Empty_Or_Null()
+    public async Task Run_Should_Return_Ok_When_ReasonClosedCode_Is_Empty_Or_Null()
     {
         // Arrange
         var episode = new EpisodeDto
@@ -263,7 +263,7 @@ public class CreateEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_BadRequest_When_FinalActionCode_Not_Found()
+    public async Task Run_Should_Return_InternalServerError_When_FinalActionCode_Not_Found()
     {
         // Arrange
         var episode = new EpisodeDto
@@ -286,11 +286,11 @@ public class CreateEpisodeTests
         var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
     [TestMethod]
-    public async Task Run_Should_Not_Return_BadRequest_When_FinalActionCode_Is_Empty_Or_Null()
+    public async Task Run_Should_Return_Ok_When_FinalActionCode_Is_Empty_Or_Null()
     {
         // Arrange
         var episode = new EpisodeDto

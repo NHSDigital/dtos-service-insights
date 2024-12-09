@@ -24,7 +24,7 @@ public class GetParticipantScreeningProfile
         if (!PaginationHelper.TryValidatePaginationQuery(req.Query, out int page, out int pageSize, out DateTime startDate, out DateTime endDate, out string errorMessage))
         {
             var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            errorResponse.WriteString(errorMessage);
+            await errorResponse.WriteStringAsync(errorMessage);
             return errorResponse;
         }
 

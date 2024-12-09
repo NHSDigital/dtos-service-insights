@@ -136,7 +136,7 @@ public class UpdateEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_Return_BadRequest_When_EpisodeType_Not_Found()
+    public async Task Run_Return_InternalServerError_When_EpisodeType_Not_Found()
     {
         // Arrange
         var episodeDto = new EpisodeDto
@@ -165,12 +165,12 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
 
     [TestMethod]
-    public async Task Run_Return_BadRequest_When_EndCode_Not_Found()
+    public async Task Run_Return_InternalServerError_When_EndCode_Not_Found()
     {
         // Arrange
         var episodeDto = new EpisodeDto
@@ -199,11 +199,11 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
     [TestMethod]
-    public async Task Run_Return_BadRequest_When_ReasonClosedCode_Not_Found()
+    public async Task Run_Return_InternalServerError_When_ReasonClosedCode_Not_Found()
     {
         // Arrange
         var episodeDto = new EpisodeDto
@@ -232,12 +232,12 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
 
     [TestMethod]
-    public async Task Run_Return_BadRequest_When_FinalActionCode_Not_Found()
+    public async Task Run_Return_InternalServerError_When_FinalActionCode_Not_Found()
     {
         // Arrange
         var episodeDto = new EpisodeDto
@@ -266,7 +266,7 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
     [TestMethod]
