@@ -15,6 +15,10 @@ public class ReceiveData
     private readonly string[] episodesExpectedHeaders = new[] { "nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code" };
     private readonly string[] subjectsExpectedHeaders = new[] { "change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language" };
 
+    private int participantSuccessCount = 0;
+    private int participantFailureCount = 0;
+    private int participantRowIndex = 0;
+
     public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
@@ -24,8 +28,11 @@ public class ReceiveData
     [Function("ReceiveData")]
     public async Task Run([BlobTrigger("inbound/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
     {
+
         try
         {
+            DateTime processingStart = DateTime.UtcNow;
+
             _logger.LogInformation("C# HTTP trigger function ReceiveData received a request.");
 
             var (episodeUrl, participantUrl) = GetConfigurationUrls();
@@ -50,7 +57,10 @@ public class ReceiveData
 
                     await ProcessEpisodeDataAsync(episodesEnumerator, episodeUrl);
                 }
+
+
             }
+
             else if (name.StartsWith("bss_subjects"))
             {
                 if (!CheckCsvFileHeaders(myBlob, FileType.Subjects))
@@ -64,8 +74,16 @@ public class ReceiveData
                 {
                     var participantsEnumerator = csv.GetRecords<BssSubject>();
 
-                    await ProcessParticipantDataAsync(participantsEnumerator, participantUrl);
+                    await ProcessParticipantDataAsync(name,participantsEnumerator, participantUrl);
                 }
+
+                DateTime processingEnd = DateTime.UtcNow;
+
+                _logger.LogInformation("==================================================================\n"
+                                +"Participant Data: File {name} processed successfully.\n"
+                                +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
+                                +"Rows Processed: {participantRowIndex}, Success: {successCount}, Failures: {failureCount}"
+                                ,name,processingStart,processingEnd,participantRowIndex,participantSuccessCount, participantFailureCount );
             }
             else
             {
@@ -73,8 +91,8 @@ public class ReceiveData
                 return;
             }
 
-            _logger.LogInformation("Data processed successfully.");
         }
+
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ReceiveData: {Message} \n StackTrace: {StackTrace}", ex.Message, ex.StackTrace);
@@ -119,6 +137,7 @@ public class ReceiveData
 
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
+
         try
         {
             _logger.LogInformation("Processing episode data.");
@@ -166,11 +185,13 @@ public class ReceiveData
         };
     }
 
-    private async Task ProcessParticipantDataAsync(IEnumerable<BssSubject> subjects, string participantUrl)
+    private async Task ProcessParticipantDataAsync(string name,IEnumerable<BssSubject> subjects, string participantUrl)
     {
+
         try
         {
             _logger.LogInformation("Processing participant data.");
+
             foreach (var subject in subjects)
             {
                 var modifiedParticipant = MapParticipantToParticipantDto(subject);
@@ -179,12 +200,21 @@ public class ReceiveData
                 _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
 
                 await _httpRequestService.SendPost(participantUrl, serializedParticipant);
+
+                participantSuccessCount++;
+                participantRowIndex++;
+                _logger.LogInformation("Row No.{rowIndex} processed successfully",participantRowIndex);
             }
         }
+
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
-            await ProcessParticipantDataAsync(subjects, participantUrl);
+
+            participantFailureCount++;
+            participantRowIndex++;
+            _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",participantRowIndex);
+            await ProcessParticipantDataAsync(name,subjects, participantUrl);
         }
     }
     private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
@@ -238,3 +268,4 @@ public class ReceiveData
         return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
     }
 }
+
