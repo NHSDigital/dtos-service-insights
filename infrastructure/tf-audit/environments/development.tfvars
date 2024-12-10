@@ -3,9 +3,10 @@ application_full_name = "service-insights"
 environment           = "DEV"
 
 features = {
-  private_endpoints_enabled            = true
-  private_service_connection_is_manual = false
-  public_network_access_enabled        = false
+  private_endpoints_enabled              = true
+  private_service_connection_is_manual   = false
+  log_analytics_data_export_rule_enabled = true
+  public_network_access_enabled          = false
 }
 
 tags = {
