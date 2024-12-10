@@ -86,7 +86,7 @@ public class CreateParticipantScreeningEpisodeTests
 
         _mockHttpRequestService
             .Setup(service => service.SendGet(getReferenceDataUrl))
-             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
             });
