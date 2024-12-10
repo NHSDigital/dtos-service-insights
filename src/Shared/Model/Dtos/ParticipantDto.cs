@@ -3,6 +3,7 @@ public class ParticipantDto
 {
     public long NhsNumber { get; set; }
     public string ScreeningName { get; set; }
+    public long ScreeningId { get; set; }
     public DateOnly? NextTestDueDate { get; set; }
     public string? NextTestDueDateCalculationMethod { get; set; }
     public string? ParticipantScreeningStatus { get; set; }

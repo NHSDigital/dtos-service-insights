@@ -28,6 +28,8 @@ public partial class ServiceInsightsDbContext : DbContext
 
     public virtual DbSet<ReasonClosedCodeLkp> ReasonClosedCodeLkps { get; set; }
 
+    public virtual DbSet<ScreeningLkp> ScreeningLkps { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<EndCodeLkp>(entity =>
@@ -183,7 +185,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27E0CFEC71");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27D6C9BABA");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
@@ -261,7 +263,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27094E8A0E");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27CFBB1614");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
@@ -339,6 +341,33 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(300)
                 .IsUnicode(false)
                 .HasColumnName("REASON_CLOSED_CODE_DESCRIPTION");
+        });
+
+        modelBuilder.Entity<ScreeningLkp>(entity =>
+        {
+            entity.HasKey(e => e.ScreeningId).HasName("PK_SCREENING_ID");
+
+            entity.ToTable("SCREENING_LKP");
+
+            entity.Property(e => e.ScreeningId)
+                .ValueGeneratedNever()
+                .HasColumnName("SCREENING_ID");
+            entity.Property(e => e.ScreeningAcronym)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("SCREENING_ACRONYM");
+            entity.Property(e => e.ScreeningName)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("SCREENING_NAME");
+            entity.Property(e => e.ScreeningType)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("SCREENING_TYPE");
+            entity.Property(e => e.ScreeningWorkflowId)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("SCREENING_WORKFLOW_ID");
         });
 
         OnModelCreatingPartial(modelBuilder);

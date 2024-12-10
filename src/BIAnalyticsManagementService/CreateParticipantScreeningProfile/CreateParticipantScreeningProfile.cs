@@ -90,14 +90,39 @@ public class CreateParticipantScreeningProfile
         return demographicsData;
     }
 
+    private async Task<ScreeningLkp> GetScreeningDataAsync(long screening_id)
+    {
+        var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
+        var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screening_id}";
+        _logger.LogInformation("Requesting screening data from {Url}", getScreeningDataUrl);
+
+        ScreeningLkp screeningLkp;
+
+        var response = await _httpRequestService.SendGet(getScreeningDataUrl);
+        response.EnsureSuccessStatusCode();
+
+        var screeningDataJson = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation("Screening data retrieved successfully.");
+
+        screeningLkp = JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
+        if (screeningLkp == null)
+        {
+            _logger.LogError("Failed to deserialize screening data or screening data is null.");
+            throw new Exception("Screening data retrieval failed.");
+        }
+
+        return screeningLkp;
+    }
+
     private async Task SendToCreateParticipantScreeningProfileAsync(ParticipantDto participant)
     {
         DemographicsData demographicsData = await GetDemographicsDataAsync(participant.NhsNumber);
+        ScreeningLkp screeningLkp = await GetScreeningDataAsync(participant.ScreeningId);
 
         var screeningProfile = new ParticipantScreeningProfile
         {
             NhsNumber = participant.NhsNumber,
-            ScreeningName = String.Empty,
+            ScreeningName = screeningLkp.ScreeningName,
             PrimaryCareProvider = demographicsData.PrimaryCareProvider,
             PreferredLanguage = demographicsData.PreferredLanguage,
             ReasonForRemoval = String.Empty,
