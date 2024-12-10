@@ -30,18 +30,15 @@ namespace Tests.Integration.EndToEndTests
             _episodeFilePath = AppSettings.FilePaths.LocalEpisodesCSVFile;
             _participantFilePath = AppSettings.FilePaths.LocalSubjectsCSVFile;
 
-            var episodeFileNameIndex = _episodeFilePath.LastIndexOf('/');
-            _episodeFileName = _episodeFilePath.Substring(episodeFileNameIndex+1);
-
-            var participantFileNameIndex = _participantFilePath.LastIndexOf('/');
-            _participantFileName = _participantFilePath.Substring(participantFileNameIndex+1);
+            _episodeFileName = Path.GetFileName(_episodeFilePath);
+            _participantFileName = Path.GetFileName(_participantFilePath);
 
             // Ensure all config is set
             AssertAllConfigurations();
 
             // Get the direct filepath to the csv test file and ensure it exists
             var localFilePath = Path.Combine(AppContext.BaseDirectory, AppSettings.FilePaths.LocalEpisodesCSVFile);
-            Assert.IsTrue(localFilePath.Length > 0);
+            Assert.IsTrue(File.Exists(localFilePath), $"File does not exist at path: {localFilePath}");
         }
 
         [TestMethod]
@@ -50,7 +47,7 @@ namespace Tests.Integration.EndToEndTests
             var localFilePath = Path.Combine(AppContext.BaseDirectory, _episodeFilePath);
             await UploadFileToMeshMailboxAsync(_episodeFileName, localFilePath);
             //In an integrated environment, the default mesh interval value is 5m, which is why this wait period is so long
-            Thread.Sleep(AppSettings.MeshSettings.intervalInMs);
+            await Task.Delay(AppSettings.MeshSettings.intervalInMs);
             Assert.IsTrue(await GetFileFromBlobAsync(_episodeFilePath));
         }
 
@@ -60,7 +57,7 @@ namespace Tests.Integration.EndToEndTests
             var localFilePath = Path.Combine(AppContext.BaseDirectory, _participantFilePath);
             await UploadFileToMeshMailboxAsync(_participantFileName, localFilePath);
             //In an integrated environment, the default mesh interval value is 5m, which is why this wait period is so long
-            Thread.Sleep(AppSettings.MeshSettings.intervalInMs);
+            await Task.Delay(AppSettings.MeshSettings.intervalInMs);
             Assert.IsTrue(await GetFileFromBlobAsync(_participantFilePath));
         }
 
