@@ -141,27 +141,25 @@ diagnostic_settings = {
 event_grid_defaults = {
   identity_ids                  = []
   identity_type                 = "SystemAssigned"
-  inbound_ip_rule               = []
+  inbound_ip_rules              = []
   input_schema                  = {}
   local_auth_enabled            = true
   public_network_access_enabled = false
 }
 
 event_grid_configs = {
-  event-grid-1 = {
-    identity_type         = "SystemAssigned"
-    subscription_name     = "dev1234"
+  event-grid-topic-1 = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "dev1234"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
   }
-  # event-grid-2 = {
-  #   identity_type         = "SystemAssigned"
-  #   subscription_name     = "sub2"
+  # event-grid-topic-2 = {
+  #   identity_type                = "SystemAssigned"
+  #   subscription_name            = "sub2"
+  #   subscriber_list_functionName = []
+  #   publisher_list               = []
   # }
 }
-
-diagnostic_settings = {
-  metric_enabled = true
-}
-
 
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"
@@ -286,10 +284,11 @@ function_apps = {
     }
 
     CreateEpisode = {
-      name_suffix            = "create-episode"
-      function_endpoint_name = "CreateEpisode"
-      app_service_plan_key   = "Default"
-      db_connection_string   = "ServiceInsightsDbConnectionString"
+      name_suffix               = "create-episode"
+      function_endpoint_name    = "CreateEpisode"
+      app_service_plan_key      = "Default"
+      db_connection_string      = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producer = "event-grid-topic-1"
     }
 
     GetEpisode = {
@@ -300,10 +299,11 @@ function_apps = {
     }
 
     UpdateEpisode = {
-      name_suffix            = "update-episode"
-      function_endpoint_name = "UpdateEpisode"
-      app_service_plan_key   = "Default"
-      db_connection_string   = "ServiceInsightsDbConnectionString"
+      name_suffix               = "update-episode"
+      function_endpoint_name    = "UpdateEpisode"
+      app_service_plan_key      = "Default"
+      db_connection_string      = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producer = "event-grid-topic-1"
     }
 
     ReceiveData = {
@@ -358,6 +358,7 @@ function_apps = {
       name_suffix            = "retrieve-mesh-file-from-cm"
       function_endpoint_name = "RetrieveMeshFile"
       app_service_plan_key   = "Default"
+      key_vault_url          = "KeyVaultConnectionString"
     }
 
     GetParticipant = {
