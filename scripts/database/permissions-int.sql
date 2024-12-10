@@ -13,6 +13,22 @@ CREATE USER [int-uks-si-create-participant-screening-profile-data] FROM EXTERNAL
 ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-create-participant-screening-profile-data];
 ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-create-participant-screening-profile-data];
 
+CREATE USER [int-uks-si-get-ps-profile-data] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-get-ps-profile-data];
+ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-get-ps-profile-data];
+
+CREATE USER [int-uks-si-get-ps-profile] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-get-ps-profile];
+ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-get-ps-profile];
+
+CREATE USER [int-uks-si-get-ps-episode-data] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-get-ps-episode-data];
+ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-get-ps-episode-data];
+
+CREATE USER [int-uks-si-get-ps-episode] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-get-ps-episode];
+ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-get-ps-episode];
+
 CREATE USER [int-uks-si-create-part-screen-episode] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-create-part-screen-episode];
 ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-create-part-screen-episode];
