@@ -9,7 +9,7 @@ module "event_grid" {
   resource_group_name = azurerm_resource_group.core[each.value.region].name
   location            = each.value.region
 
-  function_app_id = format("%s/functions/%s", module.functionapp["CreateParticipantScreeningEpisode-uksouth"].id, module.functionapp["CreateParticipantScreeningEpisode-uksouth"].function_app_endpoint_name)
+  function_app_id = format("%s/functions/CreateParticipantScreeningEpisode", module.functionapp["CreateParticipantScreeningEpisode-uksouth"].id)
   #function_app_id = module.functionapp["CreateParticipantScreeningEpisode-uksouth"].id
   #function_app_id = "/subscriptions/67aab2fa-fcc7-49da-9dc6-cb90f0fa0628/resourceGroups/rg-serins-dev-uks/providers/Microsoft.Web/sites/dev-uks-si-create-ps-episode/functions/CreateParticipantScreeningEpisode"
 
