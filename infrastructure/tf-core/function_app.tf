@@ -211,6 +211,17 @@ locals {
     }
   }
 
+  # Create a map of the key vault urls for each function app that requires one
+  env_vars_event_grid_topic_endpoint = {
+    for region_key, region_value in module.regions_config :
+    region_key => {
+       for key, value in var.function_apps.fa_config:
+       key => length(value.event_grid_topic_producer) > 0 ? {
+      "topicEndpoint" = module.event_grid_topic["${value.event_grid_topic_producer}-${region_key}"].topic_endpoint }
+      : null
+    }
+  }
+
   # Merge the local maps into a single map taking care to remove any null values and to loop round each region and each function app where necessary:
   app_settings = {
     for region_key, region_value in module.regions_config :
@@ -224,7 +235,8 @@ locals {
         try(local.env_vars_storage_accounts_private_queue[region_key][app_key], {}),
         try(local.env_vars_storage_containers[app_key], {}),
         try(local.env_vars_database_connection_strings[region_key][app_key], {}),
-        try(local.env_vars_key_vault_urls[region_key][app_key], {})
+        try(local.env_vars_key_vault_urls[region_key][app_key], {}),
+        try(local.env_vars_event_grid_topic_endpoint[region_key][app_key], {})
       )
     }
   }

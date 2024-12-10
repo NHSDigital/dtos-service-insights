@@ -1,15 +1,36 @@
-module "event_grid" {
+module "event_grid_topic" {
   for_each = local.event_grid_map
 
-  source = "./modules/event-grid"
+  source = "./modules/event-grid-topic"
 
-  # topic_name          = "${module.regions_config[each.value.region].names.topic_name}-${lower(each.value.name_suffix)}"
   topic_name          = each.value.event_topic_name
+  resource_group_name = azurerm_resource_group.core[each.value.region].name
+  location            = each.value.region
+  identity_type       = each.value.identity_type
+  # inbound_ip_rules    = each.value.inbound_ip_rules
+
+  log_analytics_workspace_id = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
+  # monitor_diagnostic_setting_keyvault_enabled_logs = local.monitor_diagnostic_setting_keyvault_enabled_logs
+  # monitor_diagnostic_setting_keyvault_metrics      = local.monitor_diagnostic_setting_keyvault_metrics
+
+  tags = var.tags
+}
+
+module "event_grid_subscription" {
+  for_each = local.event_grid_map
+
+  source = "./modules/event-grid-subscription"
+
   subscription_name   = each.value.subscription_name
   resource_group_name = azurerm_resource_group.core[each.value.region].name
   location            = each.value.region
+  azurerm_eventgrid_id = module.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].topic_id
 
-  function_app_id = format("%s/functions/%s", module.functionapp["CreateParticipantScreeningEpisode-uksouth"].id, module.functionapp["CreateParticipantScreeningEpisode-uksouth"].name)
+  subscriber_function_endpoints = flatten([
+    for functionName in each.value.subscriber_functionName_list : {
+      function_endpoint = format("%s/functions/%s", module.functionapp["${functionName}-${each.value.region}"].id, functionName)
+    }
+  ])
 
   log_analytics_workspace_id = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
   # monitor_diagnostic_setting_keyvault_enabled_logs = local.monitor_diagnostic_setting_keyvault_enabled_logs
@@ -35,10 +56,8 @@ locals {
 
   event_grids = {
     for event_grid_key, event_grid_details in var.event_grid_configs :
-    event_grid_key => merge(var.event_grid_defaults,
-      {
-        event_topic_name = "event-grid-${event_grid_key}"
-
+    event_grid_key => merge(var.event_grid_defaults, {
+      event_topic_name = "event-grid-${event_grid_key}"
     }, event_grid_details) # event_grid_details will win merge conflicts
   }
 
