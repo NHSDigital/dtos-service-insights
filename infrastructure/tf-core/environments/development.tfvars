@@ -134,31 +134,9 @@ app_service_plan = {
   }
 }
 
-
-event_grid_defaults = {
-  identity_ids                  = []
-  identity_type                 = "SystemAssigned"
-  inbound_ip_rule               = []
-  input_schema                  = {}
-  local_auth_enabled            = true
-  public_network_access_enabled = false
-}
-
-event_grid_configs = {
-  event-grid-1 = {
-    identity_type     = "SystemAssigned"
-    subscription_name = "dev1234"
-  }
-  # event-grid-2 = {
-  #   identity_type         = "SystemAssigned"
-  #   subscription_name     = "sub2"
-  # }
-}
-
 diagnostic_settings = {
   metric_enabled = true
 }
-
 
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"
@@ -435,15 +413,4 @@ storage_accounts = {
     }
   }
 
-  eventgrid = {
-    name_suffix                   = "eventgrid"
-    account_tier                  = "Standard"
-    replication_type              = "LRS"
-    public_network_access_enabled = false
-    containers = {
-      config = {
-        container_name = "deadletterqueue"
-      }
-    }
-  }
 }
