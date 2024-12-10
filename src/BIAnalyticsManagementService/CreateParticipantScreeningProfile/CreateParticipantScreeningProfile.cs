@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
-using System.Globalization;
 
 namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
@@ -36,7 +35,7 @@ public class CreateParticipantScreeningProfile
         var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
         _logger.LogInformation("Requesting participant URL: {Url}", participantUrl);
 
-        Participant participant;
+        ParticipantDto participant;
 
         try
         {
@@ -49,7 +48,7 @@ public class CreateParticipantScreeningProfile
             }
 
             var participantJson = await participantResponse.Content.ReadAsStringAsync();
-            participant = JsonSerializer.Deserialize<Participant>(participantJson);
+            participant = JsonSerializer.Deserialize<ParticipantDto>(participantJson);
             _logger.LogInformation("Participant data retrieved and deserialised");
         }
 
@@ -73,7 +72,7 @@ public class CreateParticipantScreeningProfile
         return req.CreateResponse(HttpStatusCode.OK);
     }
 
-    private async Task<DemographicsData> GetDemographicsDataAsync(string nhsNumber)
+    private async Task<DemographicsData> GetDemographicsDataAsync(long nhsNumber)
     {
         var baseDemographicsServiceUrl = Environment.GetEnvironmentVariable("DemographicsServiceUrl");
         var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={nhsNumber}";
@@ -91,7 +90,7 @@ public class CreateParticipantScreeningProfile
         return demographicsData;
     }
 
-    private async Task<ScreeningLkp> GetScreeningDataAsync(string screening_id)
+    private async Task<ScreeningLkp> GetScreeningDataAsync(long screening_id)
     {
         var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
         var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screening_id}";
@@ -115,30 +114,30 @@ public class CreateParticipantScreeningProfile
         return screeningLkp;
     }
 
-    private async Task SendToCreateParticipantScreeningProfileAsync(Participant participant)
+    private async Task SendToCreateParticipantScreeningProfileAsync(ParticipantDto participant)
     {
-        DemographicsData demographicsData = await GetDemographicsDataAsync(participant.nhs_number);
-        ScreeningLkp screeningLkp = await GetScreeningDataAsync(participant.screening_id);
+        DemographicsData demographicsData = await GetDemographicsDataAsync(participant.NhsNumber);
+        ScreeningLkp screeningLkp = await GetScreeningDataAsync(participant.ScreeningId);
 
         var screeningProfile = new ParticipantScreeningProfile
         {
-            NhsNumber = long.TryParse(participant.nhs_number, out long num) ? num : 0,
+            NhsNumber = participant.NhsNumber,
             ScreeningName = screeningLkp.ScreeningName,
             PrimaryCareProvider = demographicsData.PrimaryCareProvider,
             PreferredLanguage = demographicsData.PreferredLanguage,
-            ReasonForRemoval = participant.removal_reason,
+            ReasonForRemoval = String.Empty,
             ReasonForRemovalDt = new DateOnly(),
-            NextTestDueDate = DateOnly.ParseExact(participant.next_test_due_date, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-            NextTestDueDateCalcMethod = participant.ntdd_calculation_method,
-            ParticipantScreeningStatus = participant.subject_status_code,
-            ScreeningCeasedReason = String.Empty,
-            IsHigherRisk = (participant.is_higher_risk == "True") ? (short)1 : (short)0,
-            IsHigherRiskActive = (participant.is_higher_risk_active == "True") ? (short)1 : (short)0,
-            HigherRiskNextTestDueDate = DateOnly.ParseExact(participant.higher_risk_next_test_due_date, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-            HigherRiskReferralReasonCode = participant.higher_risk_referral_reason_code,
+            NextTestDueDate = participant.NextTestDueDate,
+            NextTestDueDateCalcMethod = participant.NextTestDueDateCalculationMethod,
+            ParticipantScreeningStatus = participant.ParticipantScreeningStatus,
+            ScreeningCeasedReason = participant.ScreeningCeasedReason,
+            IsHigherRisk = participant.IsHigherRisk,
+            IsHigherRiskActive = participant.IsHigherRiskActive,
+            HigherRiskNextTestDueDate = participant.HigherRiskNextTestDueDate,
+            HigherRiskReferralReasonCode = participant.HigherRiskReferralReasonCode,
             HrReasonCodeDescription = String.Empty,
-            DateIrradiated = DateOnly.ParseExact(participant.date_irradiated, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-            GeneCode = participant.gene_code,
+            DateIrradiated = participant.DateIrradiated,
+            GeneCode = participant.GeneCode,
             GeneCodeDescription = String.Empty,
             RecordInsertDatetime = DateTime.Now
         };

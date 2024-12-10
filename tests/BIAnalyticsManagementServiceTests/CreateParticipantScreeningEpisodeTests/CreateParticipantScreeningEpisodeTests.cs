@@ -7,6 +7,8 @@ using NHS.ServiceInsights.BIAnalyticsManagementService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Common;
 using System.Collections.Specialized;
+using Azure.Messaging.EventGrid;
+using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
 
@@ -18,74 +20,42 @@ public class CreateParticipantScreeningEpisodeTests
     private CreateParticipantScreeningEpisode _function;
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
-
     private string episodeJson = "{\"EpisodeId\":245395,\"ParticipantId\":123,\"ScreeningId\":123,\"NhsNumber\":1111111112,\"EpisodeTypeId\":11111,\"EpisodeOpenDate\":\"2000-01-01\"," +
                         "\"AppointmentMadeFlag\":1,\"FirstOfferedAppointmentDate\":\"2000-01-01\",\"ActualScreeningDate\":\"2000-01-01\",\"EarlyRecallDate\":\"2000-01-01\",\"CallRecallStatusAuthorisedBy\":\"" +
                         "SCREENING_OFFICE\",\"EndCodeId\":1000,\"EndCodeLastUpdated\":\"2000-01-01\",\"OrganisationId\":428765,\"BatchId\":\"ECHO\",\"RecordInsertDatetime\":\"2000-01-01\",\"RecordUpdateDatetime\":\"2000-01-01\"}";
+    private string screeningDataJson = "{\"ScreeningId\":1,\"ScreeningName\":\"Breast Screening\",\"ScreeningType\":\"BS\",\"ScreeningAcronym\":\"BSCA\",\"ScreeningWorkflowId\":null}";
+    private string organisationDataJson = "{\"OrganisationId\":11,\"ScreeningName\":\"Breast Screening\",\"OrganisationCode\":\"AGA\",\"OrganisationName\":\"Gateshead\",\"OrganisationType\":null,\"IsActive\":null}";
 
     public CreateParticipantScreeningEpisodeTests()
     {
 
         Environment.SetEnvironmentVariable("GetEpisodeUrl", "http://localhost:6060/api/GetEpisode");
         Environment.SetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl", "http://localhost:6010/api/CreateParticipantScreeningEpisode");
+        Environment.SetEnvironmentVariable("GetScreeningDataUrl", "http://localhost:6082/api/GetScreeningData");
+        Environment.SetEnvironmentVariable("GetReferenceDataUrl", "http://localhost:6081/api/GetReferenceData");
         _function = new CreateParticipantScreeningEpisode(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
     [TestMethod]
-    public async Task Run_ShouldReturnBadRequest_WhenEpisodeIdIsNotProvided()
+    public async Task Run_ShouldLogError_WhenEpisodeIsNotValid()
     {
         // Arrange
-        var queryParam = new NameValueCollection
-        {
-            { "EpisodeId", null }
-        };
-
-        _mockRequest = _setupRequest.SetupGet(queryParam);
+        string data = "{\"EpisodeId\":\"INVALID\",\"EpisodeIdSystem\":null,\"ScreeningId\":1,\"NhsNumber\":9876543210,\"EpisodeTypeId\":null,\"EpisodeOpenDate\":\"2024-11-21\",\"AppointmentMadeFlag\":1,\"FirstOfferedAppointmentDate\":\"2024-12-01\",\"ActualScreeningDate\":\"2024-12-05\",\"EarlyRecallDate\":\"2025-06-01\",\"CallRecallStatusAuthorisedBy\":\"Dr. Smith\",\"EndCodeId\":null,\"EndCodeLastUpdated\":\"2024-11-21T14:35:00\",\"ReasonClosedCodeId\":null,\"FinalActionCodeId\":null,\"EndPoint\":\"https://api.example.com/endpoint\",\"OrganisationId\":111111,\"BatchId\":\"BATCH789\",\"RecordInsertDatetime\":\"2024-12-04T14:23:04.587\",\"RecordUpdateDatetime\":\"2024-12-04T14:39:06.4500865Z\",\"EndCode\":null,\"EpisodeType\":null,\"FinalActionCode\":null,\"ReasonClosedCode\":null}";
+        var binaryData = new BinaryData(data);
+        EventGridEvent eventGridEvent = new EventGridEvent("Episode Created", "CreateParticipantScreeningEpisode", "1.0", binaryData);
 
         // Act
-        var response = await _function.Run(_mockRequest.Object);
+        await _function.Run(eventGridEvent);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
         _mockLogger.Verify(log =>
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString() == "episodeId is null or empty."),
-            null,
+            It.Is<It.IsAnyType>((state, type) => state.ToString() == "Unable to deserialize event data to Episode object."),
+            It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
-        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-    }
-
-    [TestMethod]
-    public async Task Run_ShouldReturnInternalServerError_WhenExceptionIsThrownOnCallToGetEpisode()
-    {
-        // Arrange
-        var queryParam = new NameValueCollection
-        {
-            { "episodeId", "245395" }
-        };
-        _mockRequest = _setupRequest.SetupGet(queryParam);
-
-        var getEpisodeUrl = "http://localhost:6060/api/GetEpisode?EpisodeId=245395";
-
-        _mockHttpRequestService
-            .Setup(service => service.SendGet(getEpisodeUrl))
-            .ThrowsAsync(new HttpRequestException("System.Net.Http.HttpRequestException"));
-
-        // Act
-        var response = await _function.Run(_mockRequest.Object);
-
-        // Assert
-        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to deserialise or retrieve episode from http://localhost:6060/api/GetEpisode?EpisodeId=245395.")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
-        Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
-
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
@@ -93,31 +63,67 @@ public class CreateParticipantScreeningEpisodeTests
     public async Task CreateParticipantScreeningEpisode_ShouldSendEpisodeToDownstreamFunctions()
     {
         // Arrange
-        string episodeId = "245395";
+        string data = "{\"EpisodeId\":12345,\"EpisodeIdSystem\":null,\"ScreeningId\":1,\"NhsNumber\":9876543210,\"EpisodeTypeId\":null,\"EpisodeOpenDate\":\"2024-11-21\",\"AppointmentMadeFlag\":1,\"FirstOfferedAppointmentDate\":\"2024-12-01\",\"ActualScreeningDate\":\"2024-12-05\",\"EarlyRecallDate\":\"2025-06-01\",\"CallRecallStatusAuthorisedBy\":\"Dr. Smith\",\"EndCodeId\":null,\"EndCodeLastUpdated\":\"2024-11-21T14:35:00\",\"ReasonClosedCodeId\":null,\"FinalActionCodeId\":null,\"EndPoint\":\"https://api.example.com/endpoint\",\"OrganisationId\":11,\"BatchId\":\"BATCH789\",\"RecordInsertDatetime\":\"2024-12-04T14:23:04.587\",\"RecordUpdateDatetime\":\"2024-12-04T14:39:06.4500865Z\",\"EndCode\":null,\"EpisodeType\":null,\"FinalActionCode\":null,\"ReasonClosedCode\":null}";
+        var binaryData = new BinaryData(data);
+        EventGridEvent eventGridEvent = new EventGridEvent("Episode Created", "CreateParticipantScreeningEpisode", "1.0", binaryData);
 
-        var queryParam = new NameValueCollection
-        {
-            { "EpisodeId", episodeId }
-        };
+        long screening_id = 1;
 
-        _mockRequest = _setupRequest.SetupGet(queryParam);
-
-        var baseGetEpisodeUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-        var getEpisodeUrl = $"{baseGetEpisodeUrl}?EpisodeId={episodeId}";
+        var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
+        var screeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screening_id}";
 
         _mockHttpRequestService
-            .Setup(service => service.SendGet(getEpisodeUrl))
+            .Setup(service => service.SendGet(screeningDataUrl))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(episodeJson, Encoding.UTF8, "application/json")
+                Content = new StringContent(screeningDataJson, Encoding.UTF8, "application/json")
             });
 
+        long organisationId = 11;
+
+        var baseReferenceServiceUrl = Environment.GetEnvironmentVariable("GetReferenceDataUrl");
+        var getReferenceDataUrl = $"{baseReferenceServiceUrl}?organisation_id={organisationId}";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(getReferenceDataUrl))
+             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
+
+
         // Act
-        var result = await _function.Run(_mockRequest.Object);
+        await _function.Run(eventGridEvent);
 
         // Assert
-        _mockHttpRequestService.Verify(x => x.SendGet(getEpisodeUrl), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(screeningDataUrl), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(getReferenceDataUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl"), It.IsAny<string>()), Times.Once);
-        Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_ShouldLogError_WhenExceptionIsThrownOnCallCreateParticipantScreeningEpisodeUrl()
+    {
+        // Arrange
+        string data = "{\"EpisodeId\":12345,\"EpisodeIdSystem\":null,\"ScreeningId\":1,\"NhsNumber\":9876543210,\"EpisodeTypeId\":null,\"EpisodeOpenDate\":\"2024-11-21\",\"AppointmentMadeFlag\":1,\"FirstOfferedAppointmentDate\":\"2024-12-01\",\"ActualScreeningDate\":\"2024-12-05\",\"EarlyRecallDate\":\"2025-06-01\",\"CallRecallStatusAuthorisedBy\":\"Dr. Smith\",\"EndCodeId\":null,\"EndCodeLastUpdated\":\"2024-11-21T14:35:00\",\"ReasonClosedCodeId\":null,\"FinalActionCodeId\":null,\"EndPoint\":\"https://api.example.com/endpoint\",\"OrganisationId\":111111,\"BatchId\":\"BATCH789\",\"RecordInsertDatetime\":\"2024-12-04T14:23:04.587\",\"RecordUpdateDatetime\":\"2024-12-04T14:39:06.4500865Z\",\"EndCode\":null,\"EpisodeType\":null,\"FinalActionCode\":null,\"ReasonClosedCode\":null}";
+        var binaryData = new BinaryData(data);
+        EventGridEvent eventGridEvent = new EventGridEvent("Episode Created", "CreateParticipantScreeningEpisode", "1.0", binaryData);
+
+        var CreateParticipantScreeningEpisodeUrl = "http://localhost:6010/api/CreateParticipantScreeningEpisode";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendPost(CreateParticipantScreeningEpisodeUrl, It.IsAny<string>()))
+            .ThrowsAsync(new HttpRequestException("System.Net.Http.HttpRequestException"));
+
+        // Act
+        await _function.Run(eventGridEvent);
+
+        // Assert
+        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to create participant screening episode.")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
     }
 }

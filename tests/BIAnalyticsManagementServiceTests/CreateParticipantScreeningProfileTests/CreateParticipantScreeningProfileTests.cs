@@ -19,15 +19,15 @@ public class CreateParticipantScreeningProfileTests
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
-    private string participantJson = "{\"nhs_number\": \"1111111112\",\"next_test_due_date\":\"2000-01-01\",\"gp_practice_id\":\"39\",\"subject_status_code\":\"NORMAL\",\"is_higher_risk\": \"True\",\"higher_risk_next_test_du" +
-                                "e_date\":\"2000-01-01\",\"removal_reason\":\"reason\",\"removal_date\":\"2000-01-01\",\"bso_organisation_id\":\"00002\",\"early_recall_date\":\"2000-01-01\",\"latest_invitation_date\":\"2000-01-01\",\"prefer" +
-                                "red_language\":\"english\",\"higher_risk_referral_reason_code\":\"code\",\"date_irradiated\":\"2000-01-01\",\"is_higher_risk_active\": \"False\",\"gene_code\":\"geneCode\",\"ntdd_calculation_method\":\"method\"}";
+    private string participantJson = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\"}";
     private string demographicsJson = "{\"PrimaryCareProvider\":\"A81002\",\"PreferredLanguage\":\"EN\"}";
+    private string screeningDataJson = "{\"ScreeningId\":1,\"ScreeningName\":\"Breast Screening\",\"ScreeningType\":\"BS\",\"ScreeningAcronym\":\"BSCA\",\"ScreeningWorkflowId\":null}";
     public CreateParticipantScreeningProfileTests()
     {
         Environment.SetEnvironmentVariable("GetParticipantUrl", "http://localhost:6061/api/GetParticipant");
         Environment.SetEnvironmentVariable("CreateParticipantScreeningProfileUrl", "http://localhost:6011/api/CreateParticipantScreeningProfile");
         Environment.SetEnvironmentVariable("DemographicsServiceUrl", "http://localhost:6080/api/GetDemographicsData");
+        Environment.SetEnvironmentVariable("GetScreeningDataUrl", "http://localhost:6082/api/GetScreeningData");
         _function = new CreateParticipantScreeningProfile(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
@@ -123,12 +123,26 @@ public class CreateParticipantScreeningProfileTests
                 Content = new StringContent(demographicsJson, Encoding.UTF8, "application/json")
             });
 
+
+        long screening_id = 1;
+
+        var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
+        var screeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screening_id}";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(screeningDataUrl))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(screeningDataJson, Encoding.UTF8, "application/json")
+            });
+
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendGet(demographicsServiceUrl), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(screeningDataUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl"), It.IsAny<string>()), Times.Once);
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }

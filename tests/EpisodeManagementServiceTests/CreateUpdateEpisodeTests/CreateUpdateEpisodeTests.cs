@@ -7,6 +7,7 @@ using NHS.ServiceInsights.EpisodeManagementService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Common;
+using Azure;
 
 namespace NHS.ServiceInsights.EpisodeManagementServiceTests;
 
@@ -24,6 +25,8 @@ public class CreateUpdateEpisodeTests
         Environment.SetEnvironmentVariable("CreateEpisodeUrl", "CreateEpisodeUrl");
         Environment.SetEnvironmentVariable("UpdateEpisodeUrl", "UpdateEpisodeUrl");
         Environment.SetEnvironmentVariable("GetEpisodeUrl", "GetEpisodeUrl");
+        Environment.SetEnvironmentVariable( "topicEndpoint", "topicEndpoint");
+        Environment.SetEnvironmentVariable("topicKey", "topicKey");
 
         _function = new CreateUpdateEpisode(_mockLogger.Object, _mockHttpRequestService.Object);
     }
@@ -39,9 +42,7 @@ public class CreateUpdateEpisodeTests
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
-
         _mockHttpRequestService.Setup(x => x.SendGet(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
-
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
