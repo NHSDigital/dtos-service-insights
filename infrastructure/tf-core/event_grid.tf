@@ -10,7 +10,8 @@ module "event_grid" {
   location            = each.value.region
 
   #function_app_id = format("%s/functions/%s", module.functionapp["CreateParticipantScreeningEpisode-uksouth"].id, module.functionapp["CreateParticipantScreeningEpisode-uksouth"].name)
-  function_app_id = module.functionapp["CreateParticipantScreeningEpisode-uksouth"].id
+  #function_app_id = module.functionapp["CreateParticipantScreeningEpisode-uksouth"].id
+  function_app_id = "/subscriptions/67aab2fa-fcc7-49da-9dc6-cb90f0fa0628/resourceGroups/rg-serins-dev-uks/providers/Microsoft.Web/sites/dev-uks-si-create-ps-episode/functions/CreateParticipantScreeningEpisode"
 
   log_analytics_workspace_id = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
   # monitor_diagnostic_setting_keyvault_enabled_logs = local.monitor_diagnostic_setting_keyvault_enabled_logs
