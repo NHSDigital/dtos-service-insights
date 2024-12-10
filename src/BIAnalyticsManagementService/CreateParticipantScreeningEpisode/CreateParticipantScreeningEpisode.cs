@@ -103,7 +103,6 @@ public class CreateParticipantScreeningEpisode
     private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode)
     {
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(episode.ScreeningId);
-
         OrganisationLkp organisationLkp = await GetOrganisationDataAsync(episode.OrganisationId);
 
         var screeningEpisode = new ParticipantScreeningEpisode
