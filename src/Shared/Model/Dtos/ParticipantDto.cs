@@ -9,6 +9,7 @@ public class ParticipantDto
     public string? ScreeningCeasedReason { get; set; }
     public short? IsHigherRisk { get; set; }
     public short? IsHigherRiskActive { get; set; }
+    public DateTime SrcSysProcessedDateTime { get; set; }
     public DateOnly? HigherRiskNextTestDueDate { get; set; }
     public string? HigherRiskReferralReasonCode { get; set; }
     public DateOnly? DateIrradiated { get; set; }
