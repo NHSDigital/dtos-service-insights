@@ -91,11 +91,6 @@ public class CreateParticipantScreeningEpisode
         _logger.LogInformation("Organisation data retrieved successfully.");
 
         organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(organisationDataJson);
-        if (organisationLkp == null)
-        {
-            _logger.LogError("Failed to deserialize organisation data or organisation data is null.");
-            throw new Exception("Organisation data retrieval failed.");
-        }
 
         return organisationLkp;
     }
