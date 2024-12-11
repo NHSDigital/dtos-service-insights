@@ -105,11 +105,6 @@ public class CreateParticipantScreeningProfile
         _logger.LogInformation("Screening data retrieved successfully.");
 
         screeningLkp = JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
-        if (screeningLkp == null)
-        {
-            _logger.LogError("Failed to deserialize screening data or screening data is null.");
-            throw new Exception("Screening data retrieval failed.");
-        }
 
         return screeningLkp;
     }

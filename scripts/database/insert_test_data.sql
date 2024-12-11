@@ -408,25 +408,4 @@ VALUES
         'Breast Screening Program',
         'BSS',
         'CAAS_BREAST_SCREENING_COHORT'
-    ),
-    (
-        2,
-        'Breast Screening',
-        'Breast Screening Program',
-        'BSS',
-        'CAAS_BREAST_SCREENING_COHORT'
-    ),
-    (
-        3,
-        'Breast Screening',
-        'Breast Screening Program',
-        'BSS',
-        'CAAS_BREAST_SCREENING_COHORT'
-    ),
-    (
-        4,
-        'Breast Screening',
-        'Breast Screening Program',
-        'BSS',
-        'CAAS_BREAST_SCREENING_COHORT'
     );
