@@ -2,11 +2,16 @@
 
 name: $(Build.SourceBranchName)-$(Date:yyyyMMdd)_$(Rev:r)
 
-trigger: none
-pr: none
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - infrastructure/*
 
 pool:
-  # vmImage: ubuntu-latest
+  #vmImage: ubuntu-latest
   name: private-pool-dev-uks
 
 resources:
@@ -14,20 +19,21 @@ resources:
     - repository: dtos-devops-templates
       type: github
       name: NHSDigital/dtos-devops-templates
-      ref: main
+      ref: 6698a57ef95f35661bb668e1b929e6894a554ac6
       endpoint: NHSDigital
 
 variables:
-  - group: DEV_audit_backend
-  - group: DEV_hub_backend_remote_state
+  - group: INT_core_backend
+  - group: INT_audit_backend_remote_state
+  - group: INT_hub_backend_remote_state
   - name: TF_DIRECTORY
-    value: $(System.DefaultWorkingDirectory)/$(System.TeamProject)/infrastructure/tf-audit
+    value: $(System.DefaultWorkingDirectory)/$(System.TeamProject)/infrastructure/tf-core
   - name: TF_VERSION
     value: 1.9.2
   - name: TF_PLAN_ARTIFACT
-    value: tf_plan_audit_DEV
+    value: tf_plan_core_INT
   - name: ENVIRONMENT
-    value: development
+    value: int
 
 stages:
   - stage: terraform_plan

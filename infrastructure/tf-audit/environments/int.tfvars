@@ -1,11 +1,11 @@
 application           = "serins"
 application_full_name = "service-insights"
-environment           = "DEV"
+environment           = "INT"
 
 features = {
   private_endpoints_enabled              = true
   private_service_connection_is_manual   = false
-  log_analytics_data_export_rule_enabled = true
+  log_analytics_data_export_rule_enabled = false
   public_network_access_enabled          = false
 }
 
@@ -16,7 +16,7 @@ tags = {
 regions = {
   uksouth = {
     is_primary_region = true
-    address_space     = "10.114.0.0/16"
+    address_space     = "10.118.0.0/16"
     connect_peering   = true
     subnets = {
       # apps = {

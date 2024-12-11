@@ -1,6 +1,6 @@
 application           = "serins"
 application_full_name = "service-insights"
-environment           = "DEV"
+environment           = "INT"
 
 features = {
   acr_enabled                          = false
@@ -18,7 +18,7 @@ tags = {
 regions = {
   uksouth = {
     is_primary_region = true
-    address_space     = "10.113.0.0/16"
+    address_space     = "10.117.0.0/16"
     connect_peering   = true
     subnets = {
       apps = {
@@ -48,21 +48,21 @@ routes = {
     network_rules = [
       {
         name                  = "AllowSerinsToAudit"
-        priority              = 800
+        priority              = 831
         action                = "Allow"
         rule_name             = "SerinsToAudit"
-        source_addresses      = ["10.113.0.0/16"] # will be populated with the serins manager subnet address space
-        destination_addresses = ["10.114.0.0/16"] # will be populated with the audit subnet address space
+        source_addresses      = ["10.117.0.0/16"] # will be populated with the serins manager subnet address space
+        destination_addresses = ["10.118.0.0/16"] # will be populated with the audit subnet address space
         protocols             = ["TCP", "UDP"]
         destination_ports     = ["443"]
       },
       {
         name                  = "AllowAuditToSerins"
-        priority              = 810
+        priority              = 832
         action                = "Allow"
         rule_name             = "AuditToSerins"
-        source_addresses      = ["10.114.0.0/16"]
-        destination_addresses = ["10.113.0.0/16"]
+        source_addresses      = ["10.118.0.0/16"]
+        destination_addresses = ["10.117.0.0/16"]
         protocols             = ["TCP", "UDP"]
         destination_ports     = ["443"]
       }
@@ -70,7 +70,7 @@ routes = {
     route_table_routes_to_audit = [
       {
         name                   = "SerinsToAudit"
-        address_prefix         = "10.114.0.0/16"
+        address_prefix         = "10.118.0.0/16"
         next_hop_type          = "VirtualAppliance"
         next_hop_in_ip_address = "" # will be populated with the Firewall Private IP address
       }
@@ -78,7 +78,7 @@ routes = {
     route_table_routes_from_audit = [
       {
         name                   = "AuditToSerins"
-        address_prefix         = "10.113.0.0/16"
+        address_prefix         = "10.117.0.0/16"
         next_hop_type          = "VirtualAppliance"
         next_hop_in_ip_address = "" # will be populated with the Firewall Private IP address
       }
@@ -121,8 +121,7 @@ app_service_plan = {
   }
 
   instances = {
-    Default = {}
-    # BIAnalyticsDataService       = {}
+    BIAnalyticsDataService = {}
     # BIAnalyticsService           = {}
     # DemographicsService          = {}
     # EpisodeDataService           = {}
@@ -143,15 +142,15 @@ function_apps = {
   acr_name    = "acrukshubdevserins"
   acr_rg_name = "rg-hub-dev-uks-serins"
 
-  app_insights_name    = "appi-dev-uks-serins"
-  app_insights_rg_name = "rg-serins-dev-uks-audit"
+  app_insights_name    = "appi-int-uks-serins"
+  app_insights_rg_name = "rg-serins-int-uks-audit"
 
   always_on = true
 
   cont_registry_use_mi = true
 
   docker_CI_enable  = "true"
-  docker_env_tag    = "development"
+  docker_env_tag    = "int"
   docker_img_prefix = "service-insights"
 
   enable_appsrv_storage         = "false"
@@ -164,23 +163,23 @@ function_apps = {
   fa_config = {
 
     CreateParticipantScreeningEpisodeData = {
-      name_suffix            = "create-ps-episode-data"
+      name_suffix            = "create-participant-screening-episode-data"
       function_endpoint_name = "CreateParticipantScreeningEpisodeData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningProfileData = {
-      name_suffix            = "create-ps-profile-data"
+      name_suffix            = "create-participant-screening-profile-data"
       function_endpoint_name = "CreateParticipantScreeningProfileData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningProfile = {
-      name_suffix            = "get-ps-profile"
+      name_suffix            = "get-participant-screening-profile"
       function_endpoint_name = "GetParticipantScreeningProfile"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
       app_urls = [
         {
@@ -191,30 +190,30 @@ function_apps = {
     }
 
     GetParticipantScreeningProfileData = {
-      name_suffix            = "get-ps-profile-data"
+      name_suffix            = "get-participant-screening-profile-data"
       function_endpoint_name = "GetParticipantScreeningProfileData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisode = {
-      name_suffix            = "get-ps-episode"
+      name_suffix            = "get-participant-screening-episode"
       function_endpoint_name = "GetParticipantScreeningEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisodeData = {
-      name_suffix            = "get-ps-episode-data"
+      name_suffix            = "get-participant-screening-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningEpisode = {
-      name_suffix            = "create-ps-episode"
+      name_suffix            = "create-participant-screening-episode"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
         {
           env_var_name     = "GetEpisodeUrl"
@@ -228,9 +227,9 @@ function_apps = {
     }
 
     CreateParticipantScreeningProfile = {
-      name_suffix            = "create-ps-profile"
+      name_suffix            = "create-participant-screening-profile"
       function_endpoint_name = "CreateParticipantScreeningProfile"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
         {
           env_var_name     = "GetParticipantUrl"
@@ -248,43 +247,43 @@ function_apps = {
     }
 
     GetParticipantScreeningEpisodeData = {
-      name_suffix            = "get-ps-episode-data"
+      name_suffix            = "get-participant-screening-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetDemographicsData = {
       name_suffix            = "get-demographics-data"
       function_endpoint_name = "GetDemographicsData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
     }
 
     CreateEpisode = {
       name_suffix            = "create-episode"
       function_endpoint_name = "CreateEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetEpisode = {
       name_suffix            = "get-episode"
       function_endpoint_name = "GetEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     UpdateEpisode = {
       name_suffix            = "update-episode"
       function_endpoint_name = "UpdateEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     ReceiveData = {
       name_suffix            = "receive-data"
       function_endpoint_name = "ReceiveData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
@@ -300,7 +299,7 @@ function_apps = {
     CreateUpdateEpisode = {
       name_suffix            = "create-update-episode"
       function_endpoint_name = "CreateUpdateEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
         {
           env_var_name     = "CreateEpisodeUrl"
@@ -320,7 +319,7 @@ function_apps = {
     GetEpisodeMgmt = {
       name_suffix            = "get-episode-mgmt"
       function_endpoint_name = "GetEpisodeMgmt"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
         {
           env_var_name     = "GetEpisodeUrl"
@@ -332,25 +331,25 @@ function_apps = {
     RetrieveMeshFile = {
       name_suffix            = "retrieve-mesh-file-from-cm"
       function_endpoint_name = "RetrieveMeshFile"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
     }
 
     GetParticipant = {
       name_suffix            = "get-participant"
       function_endpoint_name = "GetParticipant"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
     }
 
     UpdateParticipant = {
       name_suffix            = "update-participant"
       function_endpoint_name = "UpdateParticipant"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
     }
 
     GetOrganisationData = {
       name_suffix            = "get-organisation-data"
       function_endpoint_name = "GetOrganisationData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
   }
@@ -368,7 +367,7 @@ key_vault = {
 
 sqlserver = {
   sql_uai_name                         = "dtos-service-insight-sql-adm"
-  sql_admin_group_name                 = "sqlsvr_serins_dev_uks_admin"
+  sql_admin_group_name                 = "sqlsvr_service_insights_int_uks_admin"
   ad_auth_only                         = true
   auditing_policy_retention_in_days    = 30
   security_alert_policy_retention_days = 30
@@ -404,6 +403,9 @@ storage_accounts = {
       config = {
         container_name = "config"
       }
+      sample-container = {
+        container_name = "sample-container"
+      }
       inbound = {
         container_name = "inbound"
       }
@@ -412,5 +414,4 @@ storage_accounts = {
       }
     }
   }
-
 }

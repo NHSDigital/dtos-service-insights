@@ -5,6 +5,7 @@ using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
@@ -34,6 +35,7 @@ public class CreateParticipantScreeningEpisode
             {
                 ReferenceHandler = ReferenceHandler.Preserve
             };
+
             episode = JsonSerializer.Deserialize<Episode>(eventGridEvent.Data.ToString(), options);
         }
         catch (Exception ex)
