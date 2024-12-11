@@ -9,6 +9,7 @@ using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Data;
 using Microsoft.EntityFrameworkCore;
 using Azure.Messaging.EventGrid;
+using Azure;
 
 namespace NHS.ServiceInsights.EpisodeDataServiceTests;
 
@@ -57,6 +58,10 @@ public class UpdateEpisodeTests
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+
+        var mockEventGridResponce = new Mock<Response>();
+        mockEventGridResponce.Setup(m => m.Status).Returns(200);
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(mockEventGridResponce.Object));
 
 
         // Act
@@ -298,4 +303,71 @@ public class UpdateEpisodeTests
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
+    [TestMethod]
+    public async Task Run_Return_InternalServerError_When_Exception_Is_Thrown_By_Call_To_Event_Grid()
+    {
+        // Arrange
+        var episodeDto = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Throws(new Exception("Error sending event"));
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Return_InternalServerError_When_Call_To_Event_Grid_Is_Not_200_OK()
+    {
+        // Arrange
+        var episodeDto = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+
+        var mockEventGridResponce = new Mock<Response>();
+        mockEventGridResponce.Setup(m => m.Status).Returns(404);
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(mockEventGridResponce.Object));
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+    }
 }

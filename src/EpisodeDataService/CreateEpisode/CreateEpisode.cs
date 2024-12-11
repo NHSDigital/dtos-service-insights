@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 using Azure.Messaging.EventGrid;
+using System.Text.Json.Serialization;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
@@ -63,14 +64,28 @@ public class CreateEpisode
             _episodesRepository.CreateEpisode(episode);
             _logger.LogInformation("Episode created successfully.");
 
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.Preserve
+            };
+
+            string json = JsonSerializer.Serialize(episode, options);
+            BinaryData binaryData = new BinaryData(json);
+
             EventGridEvent eventGridEvent = new EventGridEvent(
                 subject: "Episode Created",
                 eventType: "CreateParticipantScreeningEpisode",
                 dataVersion: "1.0",
-                data: episode
+                data: binaryData
             );
 
-            await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+            var result = await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+
+            if (result.Status != (int)HttpStatusCode.OK)
+            {
+                _logger.LogError("Failed to send event to event grid");
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
+            }
 
             return req.CreateResponse(HttpStatusCode.OK);
         }
