@@ -391,3 +391,42 @@ VALUES
     (77, 'Breast Screening', 'PLN', 'North Lancashire & South Cumbria', null, null),
     (78, 'Breast Screening', 'PMA', 'Manchester', null, null),
     (79, 'Breast Screening', 'PWI', 'South Lancs', null, null);
+
+-- Table: SCREENING_LKP
+
+INSERT INTO SCREENING_LKP (
+    SCREENING_ID,
+    SCREENING_NAME,
+    SCREENING_TYPE,
+    SCREENING_ACRONYM,
+    SCREENING_WORKFLOW_ID
+)
+VALUES
+    (
+        1,
+        'Breast Screening',
+        'Breast Screening Program',
+        'BSS',
+        'CAAS_BREAST_SCREENING_COHORT'
+    ),
+    (
+        2,
+        'Breast Screening',
+        'Breast Screening Program',
+        'BSS',
+        'CAAS_BREAST_SCREENING_COHORT'
+    ),
+    (
+        3,
+        'Breast Screening',
+        'Breast Screening Program',
+        'BSS',
+        'CAAS_BREAST_SCREENING_COHORT'
+    ),
+    (
+        4,
+        'Breast Screening',
+        'Breast Screening Program',
+        'BSS',
+        'CAAS_BREAST_SCREENING_COHORT'
+    );
