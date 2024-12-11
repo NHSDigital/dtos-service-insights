@@ -5,7 +5,6 @@ using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization;
 
 namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
@@ -69,11 +68,6 @@ public class CreateParticipantScreeningEpisode
         _logger.LogInformation("Screening data retrieved successfully.");
 
         screeningLkp = JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
-        if (screeningLkp == null)
-        {
-            _logger.LogError("Failed to deserialize screening data or screening data is null.");
-            throw new Exception("Screening data retrieval failed.");
-        }
 
         return screeningLkp;
     }
