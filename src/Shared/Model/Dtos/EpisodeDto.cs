@@ -12,6 +12,8 @@ public class EpisodeDto
 
     public string? EpisodeType { get; set; }
 
+    public DateTime SrcSysProcessedDateTime { get; set; }
+
     public DateOnly? EpisodeOpenDate { get; set; }
 
     public short? AppointmentMadeFlag { get; set; }
