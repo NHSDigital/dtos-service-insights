@@ -119,10 +119,11 @@ public class ReceiveData
 
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
-        try
+        _logger.LogInformation("Processing episode data.");
+
+        foreach (var episode in episodes)
         {
-            _logger.LogInformation("Processing episode data.");
-            foreach (var episode in episodes)
+            try
             {
                 var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
@@ -131,11 +132,18 @@ public class ReceiveData
 
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
             }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
-            await ProcessEpisodeDataAsync(episodes, episodeUrl);
+            catch (CsvHelper.TypeConversion.TypeConverterException ex)
+            {
+                _logger.LogError(ex, "CSV helper error in ProcessEpisodeDataAsync for Episode {EpisodeId}: {Message}", episode.episode_id, ex.Message);
+            }
+            catch (FormatException ex)
+            {
+                _logger.LogError("Episode {EpisodeId} failed validation. Error: {ErrorMessage}", episode.episode_id, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in ProcessEpisodeDataAsync for Episode {EpisodeId}: {Message}", episode.episode_id, ex.Message);
+            }
         }
     }
 
@@ -166,12 +174,14 @@ public class ReceiveData
         };
     }
 
+
     private async Task ProcessParticipantDataAsync(IEnumerable<BssSubject> subjects, string participantUrl)
     {
-        try
+        _logger.LogInformation("Processing participant data.");
+
+        foreach (var subject in subjects)
         {
-            _logger.LogInformation("Processing participant data.");
-            foreach (var subject in subjects)
+            try
             {
                 var modifiedParticipant = MapParticipantToParticipantDto(subject);
                 string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant, new JsonSerializerOptions { WriteIndented = true });
@@ -180,13 +190,21 @@ public class ReceiveData
 
                 await _httpRequestService.SendPost(participantUrl, serializedParticipant);
             }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
-            await ProcessParticipantDataAsync(subjects, participantUrl);
+            catch (CsvHelperException ex)
+            {
+                _logger.LogError(ex, "CSV helper error in ProcessParticipantDataAsync for Subject {NhsNumber}: {Message}", subject.nhs_number, ex.Message);
+            }
+            catch (FormatException ex)
+            {
+                _logger.LogError("Subject {NhsNumber} failed validation. Error: {ErrorMessage}", subject.nhs_number, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in ProcessParticipantDataAsync for Subject {NhsNumber}: {Message}", subject.nhs_number, ex.Message);
+            }
         }
     }
+
     private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
     {
         return new ParticipantDto
