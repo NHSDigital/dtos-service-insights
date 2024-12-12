@@ -38,7 +38,7 @@ public class ReceiveDataTests
         // Act
         await _function.Run(stream, "bss_episodes_test_data_20240930");
 
-         // Assert -- verify the counters of Rows
+        // Assert -- verify the counters of Rows
         var expectedLogMessages = new List<string>
         {
             "Row No.1 processed successfully",
@@ -288,7 +288,7 @@ public class ReceiveDataTests
         // Act
         await _function.Run(stream, "bss_episodes_test_data_20240930");
 
-   // Assert -- verify the counters of Rows
+        // Assert -- verify the counters of Rows
         var expectedLogMessages = new List<string>
         {
             "Row No.1 processed successfully",
