@@ -38,6 +38,30 @@ public class ReceiveDataTests
         // Act
         await _function.Run(stream, "bss_episodes_test_data_20240930");
 
+         // Assert -- verify the counters of Rows
+        var expectedLogMessages = new List<string>
+        {
+            "Row No.1 processed successfully",
+            "Row No.2 processed successfully",
+            "Row No.3 processed successfully",
+            "Row No.4 processed successfully",
+            "Row No.5 processed successfully",
+            "Row No.6 processed successfully",
+            "Rows Processed: 6, Success: 6, Failures: 0"
+        };
+
+        foreach (var expectedMessage in expectedLogMessages)
+        {
+            _mockLogger.Verify(log =>
+                log.Log(
+                    LogLevel.Information,
+                    0,
+                    It.Is<object>(state => state.ToString().Contains(expectedMessage)),
+                    It.IsAny<Exception>(),
+                    (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Exactly(1)); // Verifies each log message exactly once
+        }
+
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(6));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -248,12 +272,6 @@ public class ReceiveDataTests
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(3));
     }
 
-
-
-
-
-
-
     [TestMethod]
     public async Task ReceiveData_ShouldLogErrorOnFindingABadRowInEpisodesCsvFile()
 
@@ -270,16 +288,29 @@ public class ReceiveDataTests
         // Act
         await _function.Run(stream, "bss_episodes_test_data_20240930");
 
-        // Assert
-        _mockLogger.Verify(log =>
-            log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<object>(state => state.ToString().Contains("The conversion cannot be performed.")),
-            It.IsAny<Exception>(),
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Exactly(2));
+   // Assert -- verify the counters of Rows
+        var expectedLogMessages = new List<string>
+        {
+            "Row No.1 processed successfully",
+            "Row No.2 processed successfully",
+            "Row No.3 processed unsuccessfully",
+            "Row No.4 processed unsuccessfully",
+            "Rows Processed: 4, Success: 2, Failures: 2"
+        };
 
+        foreach (var expectedMessage in expectedLogMessages)
+        {
+            _mockLogger.Verify(log =>
+                log.Log(
+                    LogLevel.Information,
+                    0,
+                    It.Is<object>(state => state.ToString().Contains(expectedMessage)),
+                    It.IsAny<Exception>(),
+                    (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Exactly(1)); // Verifies each log message exactly once
+        }
+
+        // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(2));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
     }
@@ -394,9 +425,6 @@ public class ReceiveDataTests
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
-
-
-
 
     }
 
