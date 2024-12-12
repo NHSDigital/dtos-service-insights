@@ -30,7 +30,7 @@ public class ReceiveData
     }
 
     [Function("ReceiveData")]
-    public async Task Run([BlobTrigger("sample-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
+    public async Task Run([BlobTrigger("inbound/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
     {
 
         try
@@ -188,6 +188,7 @@ public class ReceiveData
             EpisodeType = episode.episode_type,
             ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
+            SrcSysProcessedDateTime = episode.change_db_date_time,
             EpisodeOpenDate = ParseNullableDate(episode.episode_date),
             AppointmentMadeFlag = ParseBooleanStringToShort(episode.appointment_made),
             FirstOfferedAppointmentDate = ParseNullableDate(episode.date_of_foa),
@@ -248,6 +249,7 @@ public class ReceiveData
             ScreeningCeasedReason = subject.reason_for_ceasing_code,
             IsHigherRisk = ParseBooleanStringToShort(subject.is_higher_risk),
             IsHigherRiskActive = ParseBooleanStringToShort(subject.is_higher_risk_active),
+            SrcSysProcessedDateTime = subject.change_db_date_time,
             HigherRiskNextTestDueDate = ParseNullableDate(subject.higher_risk_next_test_due_date),
             HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
             DateIrradiated = ParseNullableDate(subject.date_irradiated),
@@ -286,5 +288,7 @@ public class ReceiveData
 
         return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
     }
+
+
 }
 

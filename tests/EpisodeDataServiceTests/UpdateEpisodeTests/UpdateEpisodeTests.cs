@@ -8,6 +8,8 @@ using NHS.ServiceInsights.EpisodeDataService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Data;
 using Microsoft.EntityFrameworkCore;
+using Azure.Messaging.EventGrid;
+using Azure;
 
 namespace NHS.ServiceInsights.EpisodeDataServiceTests;
 
@@ -23,12 +25,12 @@ public class UpdateEpisodeTests
     private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
     private readonly Mock<IReasonClosedCodeLkpRepository> _mockReasonClosedCodeLkpRepository = new();
     private readonly Mock<IFinalActionCodeLkpRepository> _mockFinalActionCodeLkpRepository = new();
-
+    private readonly Mock<EventGridPublisherClient> _mockEventGridPublisherClient  = new();
 
     public UpdateEpisodeTests()
     {
         _mockRequest = _setupRequest.Setup("");
-        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object);
+        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object, _mockEventGridPublisherClient.Object);
     }
 
     [TestMethod]
@@ -56,6 +58,10 @@ public class UpdateEpisodeTests
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+
+        var mockEventGridResponce = new Mock<Response>();
+        mockEventGridResponce.Setup(m => m.Status).Returns(200);
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(mockEventGridResponce.Object));
 
 
         // Act
@@ -135,7 +141,7 @@ public class UpdateEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_Return_BadRequest_When_EpisodeType_Not_Found()
+    public async Task Run_Return_InternalServerError_When_EpisodeType_Not_Found()
     {
         // Arrange
         var episodeDto = new EpisodeDto
@@ -164,12 +170,12 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
 
     [TestMethod]
-    public async Task Run_Return_BadRequest_When_EndCode_Not_Found()
+    public async Task Run_Return_InternalServerError_When_EndCode_Not_Found()
     {
         // Arrange
         var episodeDto = new EpisodeDto
@@ -198,11 +204,11 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
     [TestMethod]
-    public async Task Run_Return_BadRequest_When_ReasonClosedCode_Not_Found()
+    public async Task Run_Return_InternalServerError_When_ReasonClosedCode_Not_Found()
     {
         // Arrange
         var episodeDto = new EpisodeDto
@@ -231,12 +237,12 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
 
     [TestMethod]
-    public async Task Run_Return_BadRequest_When_FinalActionCode_Not_Found()
+    public async Task Run_Return_InternalServerError_When_FinalActionCode_Not_Found()
     {
         // Arrange
         var episodeDto = new EpisodeDto
@@ -265,7 +271,7 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
     [TestMethod]
@@ -297,4 +303,71 @@ public class UpdateEpisodeTests
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
 
+    [TestMethod]
+    public async Task Run_Return_InternalServerError_When_Exception_Is_Thrown_By_Call_To_Event_Grid()
+    {
+        // Arrange
+        var episodeDto = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Throws(new Exception("Error sending event"));
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Return_InternalServerError_When_Call_To_Event_Grid_Is_Not_200_OK()
+    {
+        // Arrange
+        var episodeDto = new EpisodeDto
+        {
+            EpisodeId = 245395,
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+        };
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+        var episode = new Episode
+        {
+            EpisodeId = 245395
+        };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeIdAsync("C")).ReturnsAsync(11111);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeIdAsync("SC")).ReturnsAsync(22222);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedCodeIdAsync("TEST")).ReturnsAsync(333333);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeIdAsync("MT")).ReturnsAsync(444444);
+
+        var mockEventGridResponce = new Mock<Response>();
+        mockEventGridResponce.Setup(m => m.Status).Returns(404);
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(mockEventGridResponce.Object));
+
+        // Act
+        var result = await _function.Run(_mockRequest.Object);
+        Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+    }
 }

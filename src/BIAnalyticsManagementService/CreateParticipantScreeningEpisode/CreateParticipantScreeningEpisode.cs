@@ -1,10 +1,10 @@
-using System.Net;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
+using System.Text.Json.Serialization;
 
 namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
@@ -18,66 +18,88 @@ public class CreateParticipantScreeningEpisode
         _httpRequestService = httpRequestService;
     }
 
-    [Function("CreateParticipantScreeningEpisode")]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+    [Function(nameof(CreateParticipantScreeningEpisode))]
+    public async Task Run([EventGridTrigger] EventGridEvent eventGridEvent)
     {
-        _logger.LogInformation("Create Participant Screening Episode function start,");
+        _logger.LogInformation("Create Participant Screening Episode function start");
 
-        string episodeId = req.Query["EpisodeId"];
-
-        if (string.IsNullOrEmpty(episodeId))
-        {
-            _logger.LogError("episodeId is null or empty.");
-            return req.CreateResponse(HttpStatusCode.BadRequest);
-        }
-
-        var baseUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
-        var getEpisodeUrl = $"{baseUrl}?EpisodeId={episodeId}";
-        _logger.LogInformation("Requesting episode URL: {Url}", getEpisodeUrl);
+        string serializedEvent = JsonSerializer.Serialize(eventGridEvent);
+        _logger.LogInformation(serializedEvent);
 
         Episode episode;
 
         try
         {
-            var response = await _httpRequestService.SendGet(getEpisodeUrl);
-
-            if (!response.IsSuccessStatusCode)
+            JsonSerializerOptions options = new()
             {
-                _logger.LogError("Failed to retrieve episode with Episode ID {EpisodeId}. Status Code: {StatusCode}", episodeId, response.StatusCode);
-                return req.CreateResponse(HttpStatusCode.InternalServerError);
-            }
+                ReferenceHandler = ReferenceHandler.Preserve
+            };
 
-            string episodeJson = await response.Content.ReadAsStringAsync();
-            episode = JsonSerializer.Deserialize<Episode>(episodeJson);
-            _logger.LogInformation("Episode data retrieved and deserialised");
+            episode = JsonSerializer.Deserialize<Episode>(eventGridEvent.Data.ToString(), options);
         }
-
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to deserialise or retrieve episode from {Url}.", getEpisodeUrl);
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
+            _logger.LogError(ex, "Unable to deserialize event data to Episode object.");
+            return;
         }
 
         try
         {
             await SendToCreateParticipantScreeningEpisodeAsync(episode);
         }
-
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create participant screening episode.");
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
+    }
 
-        return req.CreateResponse(HttpStatusCode.OK);
+    private async Task<ScreeningLkp> GetScreeningDataAsync(long screeningId)
+    {
+        var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
+        var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screeningId}";
+        _logger.LogInformation("Requesting screening data from {Url}", getScreeningDataUrl);
+
+        ScreeningLkp screeningLkp;
+
+        var response = await _httpRequestService.SendGet(getScreeningDataUrl);
+        response.EnsureSuccessStatusCode();
+
+        var screeningDataJson = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation("Screening data retrieved successfully.");
+
+        screeningLkp = JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
+
+        return screeningLkp;
+    }
+
+    private async Task<OrganisationLkp> GetOrganisationDataAsync(long? organisationId)
+    {
+        var baseReferenceServiceUrl = Environment.GetEnvironmentVariable("GetReferenceDataUrl");
+        var getReferenceDataUrl = $"{baseReferenceServiceUrl}?organisation_id={organisationId}";
+        _logger.LogInformation("Requesting organisation data from {Url}", getReferenceDataUrl);
+
+        OrganisationLkp organisationLkp;
+
+        var response = await _httpRequestService.SendGet(getReferenceDataUrl);
+        response.EnsureSuccessStatusCode();
+
+        var organisationDataJson = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation("Organisation data retrieved successfully.");
+
+        organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(organisationDataJson);
+
+        return organisationLkp;
     }
 
     private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode)
     {
+        ScreeningLkp screeningLkp = await GetScreeningDataAsync(episode.ScreeningId);
+        OrganisationLkp organisationLkp = await GetOrganisationDataAsync(episode.OrganisationId);
+
         var screeningEpisode = new ParticipantScreeningEpisode
         {
             EpisodeId = episode.EpisodeId,
-            ScreeningName = episode.ScreeningId.ToString(),
+            ScreeningName = screeningLkp.ScreeningName,
             NhsNumber = episode.NhsNumber,
             EpisodeType = episode.EpisodeTypeId.ToString(),
             EpisodeTypeDescription = String.Empty,
@@ -90,8 +112,8 @@ public class CreateParticipantScreeningEpisode
             EndCode = episode.EndCodeId.ToString(),
             EndCodeDescription = String.Empty,
             EndCodeLastUpdated = episode.EndCodeLastUpdated,
-            OrganisationCode = episode.OrganisationId.ToString(),
-            OrganisationName = String.Empty,
+            OrganisationCode = organisationLkp.OrganisationCode,
+            OrganisationName = organisationLkp.OrganisationName,
             BatchId = episode.BatchId,
             RecordInsertDatetime = DateTime.Now
         };

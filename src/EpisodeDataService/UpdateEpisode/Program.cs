@@ -3,10 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NHS.ServiceInsights.Data;
 using Microsoft.Azure.Functions.Worker;
+using NHS.ServiceInsights.Common;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices(services =>
+    .ConfigureServices((context, services) =>
     {
         services.AddScoped<IEpisodeRepository, EpisodeRepository>();
         services.AddScoped<IEndCodeLkpRepository, EndCodeLkpRepository>();
@@ -17,6 +18,6 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
         services.AddDbContext<ServiceInsightsDbContext>(
             options => options.UseSqlServer(Environment.GetEnvironmentVariable("ServiceInsightsDbConnectionString")));
-    })
+    }).AddEventGridClient()
     .Build();
 await host.RunAsync();

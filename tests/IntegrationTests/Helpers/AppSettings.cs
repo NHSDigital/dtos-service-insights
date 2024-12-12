@@ -7,5 +7,6 @@ namespace IntegrationTests.Helpers
         public string BlobContainerName { get; set; }
         public string AzureWebJobsStorage { get; set; }
         public ConnectionStrings ConnectionStrings { get; set; }
+        public MeshSettings MeshSettings { get; set; }
     }
 }

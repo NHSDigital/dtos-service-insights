@@ -198,6 +198,13 @@ variable "function_apps" {
   })
 }
 
+variable "diagnostic_settings" {
+  description = "Configuration for the diagnostic settings"
+  type = object({
+    metric_enabled = optional(bool, false)
+  })
+}
+
 variable "key_vault" {
   description = "Configuration for the key vault"
   type = object({
@@ -364,3 +371,22 @@ variable "function_app_slots" {
     function_app_slot_enabled = optional(bool, false)
   }))
 }
+
+# variable "event_grid_configs" {
+#   type = map(any) # needs to be a loose type definition to allow merging of var.event_grid_configs
+# }
+
+# variable "event_grid_defaults" {
+#   description = "Default configuration for the Event Grid resource"
+#   type = object({
+#     identity_ids  = list(string)
+#     identity_type = string
+#     inbound_ip_rule = list(object({
+#       ip_mask = string
+#       action  = string
+#     }))
+#     input_schema                  = map(string)
+#     local_auth_enabled            = bool
+#     public_network_access_enabled = bool
+#   })
+# }

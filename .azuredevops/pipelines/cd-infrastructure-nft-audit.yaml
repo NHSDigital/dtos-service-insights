@@ -19,12 +19,12 @@ resources:
     - repository: dtos-devops-templates
       type: github
       name: NHSDigital/dtos-devops-templates
-      ref: 6698a57ef95f35661bb668e1b929e6894a554ac6
+      ref: main
       endpoint: NHSDigital
 
 variables:
   - group: NFT_audit_backend
-  - group: NFT_hub_backend_remote_state
+  - group: DEV_hub_backend_remote_state
   - name: TF_DIRECTORY
     value: $(System.DefaultWorkingDirectory)/$(System.TeamProject)/infrastructure/tf-audit
   - name: TF_VERSION

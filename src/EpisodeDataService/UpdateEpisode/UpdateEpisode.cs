@@ -6,6 +6,8 @@ using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
+using Azure.Messaging.EventGrid;
+using System.Text.Json.Serialization;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
@@ -17,8 +19,10 @@ public class UpdateEpisode
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
     private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
+    private readonly EventGridPublisherClient _eventGridPublisherClient;
 
-    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository)
+
+    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, EventGridPublisherClient eventGridPublisherClient)
     {
         _logger = logger;
         _episodeRepository = episodeRepository;
@@ -26,11 +30,13 @@ public class UpdateEpisode
         _episodeTypeLkpRepository = episodeTypeLkpRepository;
         _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
         _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
+        _eventGridPublisherClient = eventGridPublisherClient;
     }
 
     [Function("UpdateEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put")] HttpRequestData req)
     {
+
         EpisodeDto episodeDto;
 
         try
@@ -39,98 +45,103 @@ public class UpdateEpisode
             {
                 var postData = await reader.ReadToEndAsync();
                 episodeDto = JsonSerializer.Deserialize<EpisodeDto>(postData);
-                _logger.LogInformation("Request to update episode {episodeId} received.", episodeDto.EpisodeId);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not read episode data.");
+            _logger.LogError(ex, "Could not read episode data");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
         try
         {
+            _logger.LogInformation("Request to update episode {episodeId} received.", episodeDto.EpisodeId);
+
             var existingEpisode = await _episodeRepository.GetEpisodeAsync(episodeDto.EpisodeId);
-
-            if (existingEpisode != null)
-            {
-                var episodeTypeId = !string.IsNullOrWhiteSpace(episodeDto.EpisodeType) ?
-                    await _episodeTypeLkpRepository.GetEpisodeTypeIdAsync(episodeDto.EpisodeType) : null;
-
-                if (episodeTypeId == null && !string.IsNullOrWhiteSpace(episodeDto.EpisodeType))
-                {
-                    _logger.LogError("Episode type '{episodeType}' not found in lookup table.", episodeDto.EpisodeType);
-                    return req.CreateResponse(HttpStatusCode.BadRequest);
-                }
-
-                var endCodeId = !string.IsNullOrWhiteSpace(episodeDto.EndCode) ?
-                    await _endCodeLkpRepository.GetEndCodeIdAsync(episodeDto.EndCode) : null;
-
-                if (endCodeId == null && !string.IsNullOrWhiteSpace(episodeDto.EndCode))
-                {
-                    _logger.LogError("End code '{endCode}' not found in lookup table.", episodeDto.EndCode);
-                    return req.CreateResponse(HttpStatusCode.BadRequest);
-                }
-
-                var reasonClosedCodeId = !string.IsNullOrWhiteSpace(episodeDto.ReasonClosedCode) ?
-                    await _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync(episodeDto.ReasonClosedCode) : null;
-
-                if (reasonClosedCodeId == null && !string.IsNullOrWhiteSpace(episodeDto.ReasonClosedCode))
-                {
-                    _logger.LogError("Reason closed code '{reasonClosedCode}' not found in lookup table.", episodeDto.ReasonClosedCode);
-                    return req.CreateResponse(HttpStatusCode.BadRequest);
-                }
-
-                var finalActionCodeId = !string.IsNullOrWhiteSpace(episodeDto.FinalActionCode) ?
-                    await _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync(episodeDto.FinalActionCode) : null;
-
-                if (finalActionCodeId == null && !string.IsNullOrWhiteSpace(episodeDto.FinalActionCode))
-                {
-                    _logger.LogError("Final action code '{finalActionCode}' not found in lookup table.", episodeDto.FinalActionCode);
-                    return req.CreateResponse(HttpStatusCode.BadRequest);
-                }
-
-                existingEpisode.EpisodeIdSystem = null;
-                existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
-                existingEpisode.NhsNumber = episodeDto.NhsNumber;
-                existingEpisode.EpisodeTypeId = episodeTypeId;
-                existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
-                existingEpisode.AppointmentMadeFlag = episodeDto.AppointmentMadeFlag;
-                existingEpisode.FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate;
-                existingEpisode.ActualScreeningDate = episodeDto.ActualScreeningDate;
-                existingEpisode.EarlyRecallDate = episodeDto.EarlyRecallDate;
-                existingEpisode.CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy;
-                existingEpisode.EndCodeId = endCodeId;
-                existingEpisode.EndCodeLastUpdated = episodeDto.EndCodeLastUpdated;
-                existingEpisode.ReasonClosedCodeId = reasonClosedCodeId;
-                existingEpisode.FinalActionCodeId = finalActionCodeId;
-                existingEpisode.EndPoint = episodeDto.EndPoint;
-                existingEpisode.OrganisationId = 111111; // Need to get OrganisationId from Reference Management Data Store
-                existingEpisode.BatchId = episodeDto.BatchId;
-                existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
-
-                try
-                {
-                    await _episodeRepository.UpdateEpisode(existingEpisode);
-                    _logger.LogInformation("Episode {episodeId} updated successfully.", episodeDto.EpisodeId);
-                    return req.CreateResponse(HttpStatusCode.OK);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error updating episode {episodeId}.", episodeDto.EpisodeId);
-                    return req.CreateResponse(HttpStatusCode.InternalServerError);
-                }
-            }
-            else
+            if (existingEpisode == null)
             {
                 _logger.LogError("Episode {episodeId} not found.", episodeDto.EpisodeId);
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
+
+            var episodeTypeId = await GetCodeId(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeIdAsync);
+            var endCodeId = await GetCodeId(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeIdAsync);
+            var reasonClosedCodeId = await GetCodeId(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedCodeIdAsync);
+            var finalActionCodeId = await GetCodeId(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeIdAsync);
+
+            existingEpisode = await MapEpisodeDtoToEpisode(existingEpisode, episodeDto, episodeTypeId, endCodeId, reasonClosedCodeId, finalActionCodeId);
+
+            await _episodeRepository.UpdateEpisode(existingEpisode);
+            _logger.LogInformation("Episode {episodeId} updated successfully.", episodeDto.EpisodeId);
+
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.Preserve
+            };
+
+            string json = JsonSerializer.Serialize(existingEpisode, options);
+            BinaryData binaryData = new BinaryData(json);
+
+            EventGridEvent eventGridEvent = new EventGridEvent(
+                subject: "Episode Updated",
+                eventType: "CreateParticipantScreeningEpisode",
+                dataVersion: "1.0",
+                data: binaryData
+            );
+
+            var result = await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+
+            if (result.Status != (int)HttpStatusCode.OK)
+            {
+                _logger.LogError("Failed to send event to event grid");
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
+            }
+
+            return req.CreateResponse(HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating episode {episodeId}.", episodeDto.EpisodeId);
+            _logger.LogError(ex, "Error updating episode.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
+    }
+
+    private async static Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, EpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId)
+    {
+        existingEpisode.EpisodeIdSystem = null;
+        existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
+        existingEpisode.NhsNumber = episodeDto.NhsNumber;
+        existingEpisode.EpisodeTypeId = episodeTypeId;
+        existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
+        existingEpisode.AppointmentMadeFlag = episodeDto.AppointmentMadeFlag;
+        existingEpisode.FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate;
+        existingEpisode.ActualScreeningDate = episodeDto.ActualScreeningDate;
+        existingEpisode.EarlyRecallDate = episodeDto.EarlyRecallDate;
+        existingEpisode.CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy;
+        existingEpisode.EndCodeId = endCodeId;
+        existingEpisode.EndCodeLastUpdated = episodeDto.EndCodeLastUpdated;
+        existingEpisode.ReasonClosedCodeId = reasonClosedCodeId;
+        existingEpisode.FinalActionCodeId = finalActionCodeId;
+        existingEpisode.EndPoint = episodeDto.EndPoint;
+        existingEpisode.OrganisationId = 111111; // Need to get OrganisationId from Reference Management Data Store
+        existingEpisode.BatchId = episodeDto.BatchId;
+        existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
+        return existingEpisode;
+    }
+
+    private async Task<long?> GetCodeId(string code, string codeName, Func<string, Task<long?>> getCodeIdMethod)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            return null;
+        }
+
+        var codeId = await getCodeIdMethod(code);
+        if (codeId == null)
+        {
+            _logger.LogError("{codeName} '{code}' not found in lookup table.", codeName, code);
+            throw new InvalidOperationException($"{codeName} '{code}' not found in lookup table.");
+        }
+        return codeId;
     }
 }
