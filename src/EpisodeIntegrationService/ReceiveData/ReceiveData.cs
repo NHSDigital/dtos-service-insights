@@ -64,7 +64,7 @@ public class ReceiveData
 
                 DateTime processingEnd = DateTime.UtcNow;
 
-                _logger.LogInformation("================================================================================\n"
+                _logger.LogInformation("===============================================================================\n"
                                 +"Episode Data: File {name} processed successfully.\n"
                                 +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
                                 +"Rows Processed: {episodeRowIndex}, Success: {episodesuccessCount}, Failures: {episodefailureCount}"
