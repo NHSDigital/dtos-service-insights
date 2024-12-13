@@ -38,6 +38,30 @@ public class ReceiveDataTests
         // Act
         await _function.Run(stream, "bss_episodes_test_data_20240930");
 
+        // Assert -- verify the counters of Rows
+        var expectedLogMessages = new List<string>
+        {
+            "Row No.1 processed successfully",
+            "Row No.2 processed successfully",
+            "Row No.3 processed successfully",
+            "Row No.4 processed successfully",
+            "Row No.5 processed successfully",
+            "Row No.6 processed successfully",
+            "Rows Processed: 6, Success: 6, Failures: 0"
+        };
+
+        foreach (var expectedMessage in expectedLogMessages)
+        {
+            _mockLogger.Verify(log =>
+                log.Log(
+                    LogLevel.Information,
+                    0,
+                    It.Is<object>(state => state.ToString().Contains(expectedMessage)),
+                    It.IsAny<Exception>(),
+                    (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Exactly(1)); // Verifies each log message exactly once
+        }
+
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(6));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -270,16 +294,29 @@ public class ReceiveDataTests
         // Act
         await _function.Run(stream, "bss_episodes_test_data_20240930");
 
-        // Assert
-        _mockLogger.Verify(log =>
-            log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<object>(state => state.ToString().Contains("The conversion cannot be performed.")),
-            It.IsAny<Exception>(),
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Exactly(2));
+        // Assert -- verify the counters of Rows
+        var expectedLogMessages = new List<string>
+        {
+            "Row No.1 processed successfully",
+            "Row No.2 processed successfully",
+            "Row No.3 processed unsuccessfully",
+            "Row No.4 processed unsuccessfully",
+            "Rows Processed: 4, Success: 2, Failures: 2"
+        };
 
+        foreach (var expectedMessage in expectedLogMessages)
+        {
+            _mockLogger.Verify(log =>
+                log.Log(
+                    LogLevel.Information,
+                    0,
+                    It.Is<object>(state => state.ToString().Contains(expectedMessage)),
+                    It.IsAny<Exception>(),
+                    (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Exactly(1)); // Verifies each log message exactly once
+        }
+
+        // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(2));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
     }
@@ -320,7 +357,7 @@ public class ReceiveDataTests
     {
         // Arrange
         string data = "change_db_date_time,nhs_number,superseded_nhs_number,gp_practice_code,bso_organisation_code,next_test_due_date,subject_status_code,early_recall_date,latest_invitation_date,removal_reason,removal_date,reason_for_ceasing_code,is_higher_risk,higher_risk_next_test_due_date,hr_recall_due_date,higher_risk_referral_reason_code,date_irradiated,is_higher_risk_active,gene_code,ntdd_calculation_method,preferred_language\n" +
-                "2020-03-31 12:11:47.339148+01,9000007053,,A00014,LAV,2020-01-11,NORMAL,,2017-01-11,,,,False,,,,,,,,\n" +
+                "2020-03-31 12:11:47.339148+01,9000007053,,A00014,LAV,2020-01-11,NORMAL,,2017-02-11,,,,False,,,,,,,,\n" +
                 "2020-03-31 12:49:47.513821+01,9000009808,,A00009,LAV,2019-09-05,NORMAL,,2016-09-05,,,,False,,,,,,,,\n" +
                 "2020-03-31 12:52:13.463901+01,9000006316,,A00017,LAV,2020-01-11,NORMAL,,2017-01-11,,,,False,,,,,,,,\n" +
                 "2020-03-31 13:06:30.814448+01,9000007997,,A00018,LAV,2020-01-11,NORMAL,,2017-01-11,,,,False,,,,,,,,";
