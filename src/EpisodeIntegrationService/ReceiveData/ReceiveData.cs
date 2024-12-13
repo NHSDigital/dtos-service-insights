@@ -144,7 +144,7 @@ public class ReceiveData
             foreach (var episode in episodes)
             {
                 var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
-                string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
+                string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode);
 
                 _logger.LogInformation("Sending Episode to {Url}: {Request}", episodeUrl, serializedEpisode);
 
@@ -196,7 +196,7 @@ public class ReceiveData
             foreach (var subject in subjects)
             {
                 var modifiedParticipant = MapParticipantToParticipantDto(subject);
-                string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant, new JsonSerializerOptions { WriteIndented = true });
+                string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant);
 
                 _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
 
