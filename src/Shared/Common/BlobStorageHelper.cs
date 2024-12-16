@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.Common;
-
 public class BlobStorageHelper : IBlobStorageHelper
 {
     private readonly ILogger<BlobStorageHelper> _logger;
@@ -38,7 +37,7 @@ public class BlobStorageHelper : IBlobStorageHelper
         }
         catch (RequestFailedException ex)
         {
-            _logger.LogError(ex, "there has been a problem while copying the file: {Message}", ex.Message);
+            _logger.LogError($"there has been a problem while copying the file: {ex.Message}");
             return false;
         }
         finally
@@ -57,16 +56,37 @@ public class BlobStorageHelper : IBlobStorageHelper
 
         try
         {
-            await sourceBlobClient.UploadAsync(blobFile.Data);
+            var result = await sourceBlobClient.UploadAsync(blobFile.Data);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "there has been a problem while uploading the file: {Message}", ex.Message);
+            _logger.LogError(ex, $"there has been a problem while uploading the file: {ex.Message}");
             return false;
         }
 
         return true;
     }
 
+    public async Task<BlobFile> GetFileFromBlobStorage(string connectionString, string containerName, string fileName)
+    {
+
+        _logger.LogInformation($"Downloading File: {fileName} From blobStorage Container: {containerName}");
+
+        var blobServiceClient = new BlobServiceClient(connectionString);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobClient = containerClient.GetBlobClient(fileName);
+
+        await containerClient.CreateIfNotExistsAsync(PublicAccessType.None);
+
+        if (await blobClient.ExistsAsync())
+        {
+            var stream = new MemoryStream();
+            await blobClient.DownloadToAsync(stream);
+            return new BlobFile(stream, fileName);
+        }
+        _logger.LogWarning($"File {fileName} does not exist in blobStorageContainer: {containerName}");
+        return null;
+
+    }
 
 }

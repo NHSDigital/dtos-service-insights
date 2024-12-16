@@ -1,15 +1,19 @@
+
+using System.Reflection.Metadata;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Model;
 using NHS.MESH.Client.Contracts.Services;
 using NHS.MESH.Client.Helpers;
+using NHS.MESH.Client.Helpers.ContentHelpers;
 using NHS.MESH.Client.Models;
 
-namespace NHS.ServiceInsights.Common;
 
+namespace NHS.ServiceInsights.Common;
 public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
 {
 
     private readonly IMeshInboxService _meshInboxService;
+    private readonly IMeshOperationService _meshOperationService;
     private readonly IBlobStorageHelper _blobStorageHelper;
     private readonly ILogger<MeshToBlobTransferHandler> _logger;
 
@@ -17,21 +21,36 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
     private string _mailboxId;
     private string _destinationContainer;
 
-    public MeshToBlobTransferHandler(ILogger<MeshToBlobTransferHandler> logger, IBlobStorageHelper blobStorageHelper, IMeshInboxService meshInboxService)
+    private Func<MessageMetaData, string> _fileNameFunction;
+
+    public MeshToBlobTransferHandler(ILogger<MeshToBlobTransferHandler> logger, IBlobStorageHelper blobStorageHelper, IMeshInboxService meshInboxService, IMeshOperationService meshOperationService)
     {
         _logger = logger;
         _meshInboxService = meshInboxService;
         _blobStorageHelper = blobStorageHelper;
+        _meshOperationService = meshOperationService;
 
     }
 
-    public async Task<bool> MoveFilesFromMeshToBlob(Func<MessageMetaData, bool> predicate, string mailboxId, string blobConnectionString, string destinationContainer)
+    public async Task<bool> MoveFilesFromMeshToBlob(Func<MessageMetaData, bool> predicate, Func<MessageMetaData, string> fileNameFunction, string mailboxId, string blobConnectionString, string destinationContainer, bool executeHandshake = false)
     {
         _blobConnectionString = blobConnectionString;
         _mailboxId = mailboxId;
         _destinationContainer = destinationContainer;
+        _fileNameFunction = fileNameFunction;
 
         int messageCount;
+        if (executeHandshake)
+        {
+            var meshValidationResponse = await _meshOperationService.MeshHandshakeAsync(mailboxId);
+
+            if (!meshValidationResponse.IsSuccessful)
+            {
+                _logger.LogError("Error While handshaking with MESH. ErrorCode: {ErrorCode}, ErrorDescription: {ErrorDescription}", meshValidationResponse.Error?.ErrorCode, meshValidationResponse.Error?.ErrorDescription);
+                return false;
+            }
+        }
+
         do
         {
 
@@ -95,7 +114,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             var acknowledgeResponse = await _meshInboxService.AcknowledgeMessageByIdAsync(_mailboxId, messageHead.Response.MessageMetaData.MessageId);
             if (!acknowledgeResponse.IsSuccessful)
             {
-                _logger.LogCritical("Message: {MessageId} was not able to be transferred to be acknowledged, Message will be removed from blob storage", messageHead.Response.MessageMetaData.MessageId);
+                _logger.LogCritical("Message: {MessageId} was not able to be acknowledged, Message will be removed from blob storage", messageHead.Response.MessageMetaData.MessageId);
             }
             messagesMovedToBlobStorage++;
         }
@@ -137,9 +156,11 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             _logger.LogError("Failed to download chunked message from MESH MessageId: {messageId}", messageId);
             return null;
         }
+
+        string fileName = string.Concat(messageId, "_-_", result.Response.FileAttachments);
         var meshFile = await FileHelpers.ReassembleChunkedFile(result.Response.FileAttachments);
 
-        return new BlobFile(meshFile.Content, meshFile.FileName);
+        return new BlobFile(meshFile.Content, fileName);
     }
 
     private async Task<BlobFile?> DownloadFile(string messageId)
