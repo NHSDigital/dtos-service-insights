@@ -23,12 +23,16 @@ public class CreateParticipantScreeningEpisodeTests
     private string episodeJson = "{\"EpisodeId\":245395,\"ParticipantId\":123,\"ScreeningId\":123,\"NhsNumber\":1111111112,\"EpisodeTypeId\":11111,\"EpisodeOpenDate\":\"2000-01-01\"," +
                         "\"AppointmentMadeFlag\":1,\"FirstOfferedAppointmentDate\":\"2000-01-01\",\"ActualScreeningDate\":\"2000-01-01\",\"EarlyRecallDate\":\"2000-01-01\",\"CallRecallStatusAuthorisedBy\":\"" +
                         "SCREENING_OFFICE\",\"EndCodeId\":1000,\"EndCodeLastUpdated\":\"2000-01-01\",\"OrganisationId\":428765,\"BatchId\":\"ECHO\",\"RecordInsertDatetime\":\"2000-01-01\",\"RecordUpdateDatetime\":\"2000-01-01\"}";
+    private string screeningDataJson = "{\"ScreeningId\":1,\"ScreeningName\":\"Breast Screening\",\"ScreeningType\":\"BS\",\"ScreeningAcronym\":\"BSCA\",\"ScreeningWorkflowId\":null}";
+    private string organisationDataJson = "{\"OrganisationId\":11,\"ScreeningName\":\"Breast Screening\",\"OrganisationCode\":\"AGA\",\"OrganisationName\":\"Gateshead\",\"OrganisationType\":null,\"IsActive\":null}";
 
     public CreateParticipantScreeningEpisodeTests()
     {
 
         Environment.SetEnvironmentVariable("GetEpisodeUrl", "http://localhost:6060/api/GetEpisode");
         Environment.SetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl", "http://localhost:6010/api/CreateParticipantScreeningEpisode");
+        Environment.SetEnvironmentVariable("GetScreeningDataUrl", "http://localhost:6082/api/GetScreeningData");
+        Environment.SetEnvironmentVariable("GetReferenceDataUrl", "http://localhost:6081/api/GetReferenceData");
         _function = new CreateParticipantScreeningEpisode(_mockLogger.Object, _mockHttpRequestService.Object);
     }
 
@@ -59,14 +63,41 @@ public class CreateParticipantScreeningEpisodeTests
     public async Task CreateParticipantScreeningEpisode_ShouldSendEpisodeToDownstreamFunctions()
     {
         // Arrange
-        string data = "{\"EpisodeId\":12345,\"EpisodeIdSystem\":null,\"ScreeningId\":1,\"NhsNumber\":9876543210,\"EpisodeTypeId\":null,\"EpisodeOpenDate\":\"2024-11-21\",\"AppointmentMadeFlag\":1,\"FirstOfferedAppointmentDate\":\"2024-12-01\",\"ActualScreeningDate\":\"2024-12-05\",\"EarlyRecallDate\":\"2025-06-01\",\"CallRecallStatusAuthorisedBy\":\"Dr. Smith\",\"EndCodeId\":null,\"EndCodeLastUpdated\":\"2024-11-21T14:35:00\",\"ReasonClosedCodeId\":null,\"FinalActionCodeId\":null,\"EndPoint\":\"https://api.example.com/endpoint\",\"OrganisationId\":111111,\"BatchId\":\"BATCH789\",\"RecordInsertDatetime\":\"2024-12-04T14:23:04.587\",\"RecordUpdateDatetime\":\"2024-12-04T14:39:06.4500865Z\",\"EndCode\":null,\"EpisodeType\":null,\"FinalActionCode\":null,\"ReasonClosedCode\":null}";
+        string data = "{\"EpisodeId\":12345,\"EpisodeIdSystem\":null,\"ScreeningId\":1,\"NhsNumber\":9876543210,\"EpisodeTypeId\":null,\"EpisodeOpenDate\":\"2024-11-21\",\"AppointmentMadeFlag\":1,\"FirstOfferedAppointmentDate\":\"2024-12-01\",\"ActualScreeningDate\":\"2024-12-05\",\"EarlyRecallDate\":\"2025-06-01\",\"CallRecallStatusAuthorisedBy\":\"Dr. Smith\",\"EndCodeId\":null,\"EndCodeLastUpdated\":\"2024-11-21T14:35:00\",\"ReasonClosedCodeId\":null,\"FinalActionCodeId\":null,\"EndPoint\":\"https://api.example.com/endpoint\",\"OrganisationId\":11,\"BatchId\":\"BATCH789\",\"RecordInsertDatetime\":\"2024-12-04T14:23:04.587\",\"RecordUpdateDatetime\":\"2024-12-04T14:39:06.4500865Z\",\"EndCode\":null,\"EpisodeType\":null,\"FinalActionCode\":null,\"ReasonClosedCode\":null}";
         var binaryData = new BinaryData(data);
         EventGridEvent eventGridEvent = new EventGridEvent("Episode Created", "CreateParticipantScreeningEpisode", "1.0", binaryData);
+
+        long screening_id = 1;
+
+        var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
+        var screeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screening_id}";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(screeningDataUrl))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(screeningDataJson, Encoding.UTF8, "application/json")
+            });
+
+        long organisationId = 11;
+
+        var baseReferenceServiceUrl = Environment.GetEnvironmentVariable("GetReferenceDataUrl");
+        var getReferenceDataUrl = $"{baseReferenceServiceUrl}?organisation_id={organisationId}";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(getReferenceDataUrl))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
+
 
         // Act
         await _function.Run(eventGridEvent);
 
         // Assert
+        _mockHttpRequestService.Verify(x => x.SendGet(screeningDataUrl), Times.Once);
+        _mockHttpRequestService.Verify(x => x.SendGet(getReferenceDataUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl"), It.IsAny<string>()), Times.Once);
     }
 

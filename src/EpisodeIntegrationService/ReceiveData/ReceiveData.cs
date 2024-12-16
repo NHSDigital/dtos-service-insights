@@ -19,6 +19,10 @@ public class ReceiveData
     private int participantFailureCount = 0;
     private int participantRowIndex = 0;
 
+    private int episodeSuccessCount = 0;
+    private int episodeFailureCount = 0;
+    private int episodeRowIndex = 0;
+
     public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService)
     {
         _logger = logger;
@@ -55,9 +59,16 @@ public class ReceiveData
                 {
                     var episodesEnumerator = csv.GetRecords<BssEpisode>();
 
-                    await ProcessEpisodeDataAsync(episodesEnumerator, episodeUrl);
+                    await ProcessEpisodeDataAsync(name,episodesEnumerator, episodeUrl);
                 }
 
+                DateTime processingEnd = DateTime.UtcNow;
+
+                _logger.LogInformation("===============================================================================\n"
+                                +"Episode Data: File {name} processed successfully.\n"
+                                +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
+                                +"Rows Processed: {episodeRowIndex}, Success: {episodesuccessCount}, Failures: {episodefailureCount}"
+                                ,name,processingStart,processingEnd,episodeRowIndex,episodeSuccessCount, episodeFailureCount );
 
             }
 
@@ -82,7 +93,7 @@ public class ReceiveData
                 _logger.LogInformation("==================================================================\n"
                                 +"Participant Data: File {name} processed successfully.\n"
                                 +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
-                                +"Rows Processed: {participantRowIndex}, Success: {successCount}, Failures: {failureCount}"
+                                +"Rows Processed: {participantRowIndex}, Success: {participantSuccessCount}, Failures: {participantFailureCount}"
                                 ,name,processingStart,processingEnd,participantRowIndex,participantSuccessCount, participantFailureCount );
             }
             else
@@ -135,7 +146,7 @@ public class ReceiveData
     }
 
 
-    private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
+    private async Task ProcessEpisodeDataAsync(string name,IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
 
         try
@@ -144,17 +155,25 @@ public class ReceiveData
             foreach (var episode in episodes)
             {
                 var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
-                string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode, new JsonSerializerOptions { WriteIndented = true });
+                string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode);
 
                 _logger.LogInformation("Sending Episode to {Url}: {Request}", episodeUrl, serializedEpisode);
 
                 await _httpRequestService.SendPost(episodeUrl, serializedEpisode);
+
+                episodeSuccessCount++;
+                episodeRowIndex++;
+                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
-            await ProcessEpisodeDataAsync(episodes, episodeUrl);
+
+            episodeFailureCount++;
+            episodeRowIndex++;
+            _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+            await ProcessEpisodeDataAsync(name,episodes, episodeUrl);
         }
     }
 
@@ -196,7 +215,7 @@ public class ReceiveData
             foreach (var subject in subjects)
             {
                 var modifiedParticipant = MapParticipantToParticipantDto(subject);
-                string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant, new JsonSerializerOptions { WriteIndented = true });
+                string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant);
 
                 _logger.LogInformation("Sending participant to {Url}: {Request}", participantUrl, serializedParticipant);
 
