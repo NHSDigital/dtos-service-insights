@@ -23,14 +23,14 @@ public class CreateUpdateEpisode
     [Function("CreateUpdateEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
-        EpisodeDto episode;
+        InitialEpisodeDto episode;
 
         try
         {
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = await reader.ReadToEndAsync();
-                episode = JsonSerializer.Deserialize<EpisodeDto>(postData);
+                episode = JsonSerializer.Deserialize<InitialEpisodeDto>(postData);
                 _logger.LogInformation("PostData: {postData}", postData);
             }
         }

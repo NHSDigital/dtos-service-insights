@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.Data;
 
@@ -15,5 +16,11 @@ public class FinalActionCodeLkpRepository : IFinalActionCodeLkpRepository
     {
         var finalActionCodeLkp = await _dbContext.FinalActionCodeLkps.FirstOrDefaultAsync(ec => ec.FinalActionCode == finalActionCode);
         return finalActionCodeLkp?.FinalActionCodeId;
+    }
+
+    public async Task<FinalActionCodeLkp?> GetFinalActionCodeLkp(string finalActionCode)
+    {
+        var finalActionCodeLkp = await _dbContext.FinalActionCodeLkps.FirstOrDefaultAsync(ec => ec.FinalActionCode == finalActionCode);
+        return finalActionCodeLkp;
     }
 }
