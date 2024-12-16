@@ -78,7 +78,7 @@ public class ReceiveDataTests
                     "9000007053,571645,R,2020-03-31 12:11:47.339148+01,2017-01-11,True,2017-03-14,2017-03-14,2018-03-14,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV121798J,BS,S+,RR\n";
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-        var expectedEpisodeDto = new EpisodeDto
+        var expectedEpisodeDto = new InitialEpisodeDto
         {
             EpisodeId = 571645,
             EpisodeType = "R",
