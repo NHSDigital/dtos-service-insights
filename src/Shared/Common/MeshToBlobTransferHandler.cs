@@ -160,7 +160,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         string fileName = string.Concat(messageId, "_-_", result.Response.FileAttachments);
         var meshFile = await FileHelpers.ReassembleChunkedFile(result.Response.FileAttachments);
 
-        return new BlobFile(meshFile.Content, fileName);
+        return new BlobFile(meshFile.Content, meshFile.FileName);
     }
 
     private async Task<BlobFile?> DownloadFile(string messageId)
