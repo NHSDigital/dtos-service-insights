@@ -5,7 +5,7 @@ environment           = "DEV"
 features = {
   private_endpoints_enabled              = true
   private_service_connection_is_manual   = false
-  log_analytics_data_export_rule_enabled = true
+  log_analytics_data_export_rule_enabled = false
   public_network_access_enabled          = false
 }
 
