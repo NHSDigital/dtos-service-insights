@@ -83,6 +83,31 @@ resource "azurerm_key_vault_access_policy" "functionapp" {
 }
 
 /* --------------------------------------------------------------------------------------------------
+  Function App Role Assignments to Event Grid
+-------------------------------------------------------------------------------------------------- */
+
+# Function App 1: nft-uks-si-create-episode
+resource "azurerm_role_assignment" "create_episode_data_sender" {
+  for_each = local.event_grid_map
+
+  principal_id         = module.functionapp["CreateEpisode-${each.value.region}"].function_app_sami_id
+  # principal_id         = azurerm_function_app.nft_uks_si_create_episode.identity.0.principal_id
+  role_definition_name = "EventGrid Data Sender"
+  scope                = module.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].id
+}
+
+# Function App 2: nft-uks-si-update-episode
+resource "azurerm_role_assignment" "update_episode_data_sender" {
+  for_each = local.event_grid_map
+
+  principal_id         = module.functionapp["UpdateEpisode-${each.value.region}"].function_app_sami_id
+  # principal_id         = azurerm_function_app.nft_uks_si_update_episode.identity.0.principal_id
+  role_definition_name = "EventGrid Data Sender"
+  scope                = module.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].id
+}
+
+
+/* --------------------------------------------------------------------------------------------------
   RBAC roles to assign to the Function Apps
 -------------------------------------------------------------------------------------------------- */
 locals {
