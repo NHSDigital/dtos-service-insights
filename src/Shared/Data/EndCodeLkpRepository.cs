@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.Data;
 
@@ -15,5 +16,11 @@ public class EndCodeLkpRepository : IEndCodeLkpRepository
     {
         var endCodeLkp = await _dbContext.EndCodeLkps.FirstOrDefaultAsync(ec => ec.EndCode == endCode);
         return endCodeLkp?.EndCodeId;
+    }
+
+    public async Task<EndCodeLkp?> GetEndCodeLkp(string endCode)
+    {
+        var endCodeLkp = await _dbContext.EndCodeLkps.FirstOrDefaultAsync(ec => ec.EndCode == endCode);
+        return endCodeLkp;
     }
 }

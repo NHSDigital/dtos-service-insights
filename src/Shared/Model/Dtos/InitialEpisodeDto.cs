@@ -1,6 +1,6 @@
 ﻿namespace NHS.ServiceInsights.Model;
 
-public class EpisodeDto
+public class InitialEpisodeDto
 {
     public long EpisodeId { get; set; }
 
