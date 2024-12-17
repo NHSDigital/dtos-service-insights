@@ -10,11 +10,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NHS.MESH.Client.Models;
 
-namespace NHS.ServiceInsights.RetrieveMeshFile;
+namespace NHS.ServiceInsights.MeshIntegrationService;
 
 public class RetrieveMeshFile
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<RetrieveMeshFile> _logger;
     private readonly IMeshToBlobTransferHandler _meshToBlobTransferHandler;
     private readonly string _mailboxId;
     private readonly string _blobConnectionString;

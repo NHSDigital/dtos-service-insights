@@ -1,4 +1,4 @@
-namespace NHS.ServiceInsights.RetrieveMeshFile;
+namespace NHS.ServiceInsights.MeshIntegrationService;
 
 using System.ComponentModel.DataAnnotations;
 

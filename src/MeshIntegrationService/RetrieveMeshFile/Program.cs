@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using Azure.Security.KeyVault.Certificates;
 using Azure.Identity;
 using Microsoft.Extensions.Logging;
-using NHS.ServiceInsights.RetrieveMeshFile;
+using NHS.ServiceInsights.MeshIntegrationService;
 using System.Text.Json;
 
 
