@@ -3,7 +3,7 @@ output "topic_endpoint" {
   value       = azurerm_eventgrid_topic.azurerm_eventgrid.endpoint
 }
 
-output "topic_id" {
+output "id" {
   description = "The event grid topic id."
   value       = azurerm_eventgrid_topic.azurerm_eventgrid.id
 }

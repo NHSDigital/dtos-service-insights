@@ -24,7 +24,7 @@ module "event_grid_subscription" {
   subscription_name   = each.value.subscription_name
   resource_group_name = azurerm_resource_group.core[each.value.region].name
   location            = each.value.region
-  azurerm_eventgrid_id = module.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].topic_id
+  azurerm_eventgrid_id = module.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].id
 
   subscriber_function_endpoints = flatten([
     for functionName in each.value.subscriber_functionName_list : {
