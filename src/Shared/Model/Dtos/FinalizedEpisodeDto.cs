@@ -46,10 +46,6 @@ public class FinalizedEpisodeDto
 
     public DateTime SrcSysProcessedDatetime { get; set; }
 
-    public DateTime? RecordInsertDatetime { get; set; }
-
-    public DateTime? RecordUpdateDatetime { get; set; }
-
     public static explicit operator FinalizedEpisodeDto(Episode episode)
     {
         return new FinalizedEpisodeDto
@@ -66,9 +62,7 @@ public class FinalizedEpisodeDto
             EndCodeLastUpdated = episode.EndCodeLastUpdated,
             EndPoint = episode.EndPoint,
             OrganisationId = episode.OrganisationId,
-            BatchId = episode.BatchId,
-            RecordInsertDatetime = episode.RecordInsertDatetime,
-            RecordUpdateDatetime = episode.RecordUpdateDatetime
+            BatchId = episode.BatchId
         };
     }
 }
