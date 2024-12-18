@@ -134,7 +134,8 @@ public class RetrieveMeshFile
             using (var stream = GenerateStreamFromString(jsonString))
             {
                 var blobFile = new BlobFile(stream, ConfigFileName);
-                var result = await _blobStorageHelper.UploadFileToBlobStorage(_blobConnectionString, "config", blobFile);
+                // Upload blob but do not overwrite an existing blob
+                var result = await _blobStorageHelper.UploadFileToBlobStorage(_blobConnectionString, "config", blobFile, false);
                 return result;
             }
         }
