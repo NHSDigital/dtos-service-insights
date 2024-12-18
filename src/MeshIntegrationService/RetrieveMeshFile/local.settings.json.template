@@ -1,18 +1,18 @@
 {
-    "IsEncrypted": false,
-    "Values": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-        "MeshApiBaseUrl" : "http://localhost:8700/messageexchange",
-        "BSSMailBox": "X26ABC1",
-        "BSSContainerName": "inbound",
-        "MeshPassword": "password",
-        "MeshSharedKey": "TestKey",
-        "MeshKeyPassphrase":"test123",
-        "TimerExpression":"*/5 * * * *"
-    },
-    "Host": {
-      "LocalHttpPort": 6777
-    }
+  "IsEncrypted": false,
+  "Values": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "MeshApiBaseUrl" : "http://localhost:8700/messageexchange",
+    "BSSMailBox": "X26ABC1",
+    "BSSContainerName": "inbound",
+    "MeshPassword": "password",
+    "MeshSharedKey": "TestKey",
+    "MeshKeyPassphrase":"test123",
+    "TimerExpression":"*/5 * * * *"
+  },
+  "Host": {
+    "LocalHttpPort": 6777
+  }
 }
