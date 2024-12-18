@@ -180,9 +180,9 @@ public class ReceiveData
 
     private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
 
-    private EpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
+    private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
-        return new EpisodeDto
+        return new InitialEpisodeDto
         {
             EpisodeId = episode.episode_id,
             EpisodeType = episode.episode_type,
