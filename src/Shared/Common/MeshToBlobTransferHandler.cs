@@ -1,5 +1,3 @@
-
-using System.Reflection.Metadata;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Model;
 using NHS.MESH.Client.Contracts.Services;
@@ -7,11 +5,10 @@ using NHS.MESH.Client.Helpers;
 using NHS.MESH.Client.Helpers.ContentHelpers;
 using NHS.MESH.Client.Models;
 
-
 namespace NHS.ServiceInsights.Common;
+
 public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
 {
-
     private readonly IMeshInboxService _meshInboxService;
     private readonly IMeshOperationService _meshOperationService;
     private readonly IBlobStorageHelper _blobStorageHelper;
@@ -29,7 +26,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         _meshInboxService = meshInboxService;
         _blobStorageHelper = blobStorageHelper;
         _meshOperationService = meshOperationService;
-
     }
 
     public async Task<bool> MoveFilesFromMeshToBlob(Func<MessageMetaData, bool> predicate, Func<MessageMetaData, string> fileNameFunction, string mailboxId, string blobConnectionString, string destinationContainer, bool executeHandshake = false)
@@ -53,7 +49,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
 
         do
         {
-
             var checkForMessages = await _meshInboxService.GetMessagesAsync(mailboxId);
             if (!checkForMessages.IsSuccessful)
             {
@@ -61,7 +56,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
                 // Log Exception
                 return false;
             }
-
 
             messageCount = checkForMessages.Response.Messages.Count();
 
@@ -85,7 +79,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         while (messageCount == 500);
 
         return true;
-
     }
 
     private async Task<int> MoveAllMessagesToBlobStorage(IEnumerable<string> messages, Func<MessageMetaData, bool> predicate)
@@ -118,13 +111,12 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             }
             messagesMovedToBlobStorage++;
         }
-        return messagesMovedToBlobStorage;
 
+        return messagesMovedToBlobStorage;
     }
 
     private async Task<bool> TransferMessageToBlobStorage(MessageMetaData messageHead)
     {
-
         if (messageHead.MessageType != "DATA") { return false; }
 
         BlobFile? blobFile;
@@ -160,7 +152,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         string fileName = string.Concat(messageId, "_-_", result.Response.FileAttachments);
         var meshFile = await FileHelpers.ReassembleChunkedFile(result.Response.FileAttachments);
 
-        return new BlobFile(meshFile.Content, meshFile.FileName);
+        return new BlobFile(meshFile.Content, fileName);
     }
 
     private async Task<BlobFile?> DownloadFile(string messageId)
@@ -172,7 +164,14 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             return null;
         }
 
-        return new BlobFile(result.Response.FileAttachment.Content, result.Response.FileAttachment.FileName);
+        string fileName = _fileNameFunction(result.Response.MessageMetaData);
+
+        if (result.Response.MessageMetaData.ContentEncoding == "GZIP")
+        {
+            var decompressedFileContent = GZIPHelpers.DeCompressBuffer(result.Response.FileAttachment.Content);
+            return new BlobFile(decompressedFileContent, fileName);
+        }
+
+        return new BlobFile(result.Response.FileAttachment.Content, fileName);
     }
 }
-

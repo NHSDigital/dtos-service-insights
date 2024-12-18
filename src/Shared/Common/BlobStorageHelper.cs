@@ -6,13 +6,16 @@ using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.Common;
+
 public class BlobStorageHelper : IBlobStorageHelper
 {
     private readonly ILogger<BlobStorageHelper> _logger;
+
     public BlobStorageHelper(ILogger<BlobStorageHelper> logger)
     {
         _logger = logger;
     }
+
     public async Task<bool> CopyFileAsync(string connectionString, string fileName, string containerName)
     {
         var sourceBlobServiceClient = new BlobServiceClient(connectionString);
@@ -26,7 +29,6 @@ public class BlobStorageHelper : IBlobStorageHelper
         var destinationBlobClient = destinationContainerClient.GetBlobClient(fileName);
 
         await destinationContainerClient.CreateIfNotExistsAsync(PublicAccessType.None);
-
 
         try
         {
@@ -48,7 +50,7 @@ public class BlobStorageHelper : IBlobStorageHelper
         return true;
     }
 
-    public async Task<bool> UploadFileToBlobStorage(string connectionString, string containerName, BlobFile blobFile)
+    public async Task<bool> UploadFileToBlobStorage(string connectionString, string containerName, BlobFile blobFile, bool overwrite = false)
     {
         var sourceBlobServiceClient = new BlobServiceClient(connectionString);
         var sourceContainerClient = sourceBlobServiceClient.GetBlobContainerClient(containerName);
@@ -56,7 +58,7 @@ public class BlobStorageHelper : IBlobStorageHelper
 
         try
         {
-            var result = await sourceBlobClient.UploadAsync(blobFile.Data);
+            var result = await sourceBlobClient.UploadAsync(blobFile.Data, overwrite: overwrite);
         }
         catch (Exception ex)
         {
@@ -69,7 +71,6 @@ public class BlobStorageHelper : IBlobStorageHelper
 
     public async Task<BlobFile> GetFileFromBlobStorage(string connectionString, string containerName, string fileName)
     {
-
         _logger.LogInformation($"Downloading File: {fileName} From blobStorage Container: {containerName}");
 
         var blobServiceClient = new BlobServiceClient(connectionString);
@@ -85,8 +86,7 @@ public class BlobStorageHelper : IBlobStorageHelper
             return new BlobFile(stream, fileName);
         }
         _logger.LogWarning($"File {fileName} does not exist in blobStorageContainer: {containerName}");
+
         return null;
-
     }
-
 }
