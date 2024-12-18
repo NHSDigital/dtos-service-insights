@@ -1,14 +1,11 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NHS.MESH.Client.Models;
+using System.Globalization;
 
 namespace NHS.ServiceInsights.MeshIntegrationService;
 
@@ -29,7 +26,6 @@ public class RetrieveMeshFile
         _meshToBlobTransferHandler = meshToBlobTransferHandler;
         _blobStorageHelper = blobStorageHelper;
         _mailboxId = options.Value.BSSMailBox;
-        // _mailboxId = Environment.GetEnvironmentVariable("BSSMailBox");
         _blobConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
         _destinationContainer = Environment.GetEnvironmentVariable("BSSContainerName");
     }
@@ -46,8 +42,6 @@ public class RetrieveMeshFile
         static bool messageFilter(MessageMetaData i) =>
             (i.FileName.StartsWith("bss_subjects") || i.FileName.StartsWith("bss_episodes")) && i.FileName.EndsWith(".csv");
 
-        // static string fileNameFunction(MessageMetaData i) => string.Concat(i.MessageId, "_-_", i.WorkflowID,".parquet");
-        // do not use the line above, just leave the filename as is when transferring from mesh to blob
         static string fileNameFunction(MessageMetaData i) => i.FileName;
 
         try
@@ -73,7 +67,6 @@ public class RetrieveMeshFile
 
     private async Task<bool> ShouldExecuteHandShake()
     {
-
         Dictionary<string, string> configValues;
         TimeSpan handShakeInterval = new TimeSpan(0, 23, 54, 0);
         var meshState = await _blobStorageHelper.GetFileFromBlobStorage(_blobConnectionString, "config", ConfigFileName);
@@ -110,7 +103,7 @@ public class RetrieveMeshFile
         }
         DateTime nextHandShakeDateTime;
         //date cannot be parsed
-        if (!DateTime.TryParse(nextHandShakeDateString, out nextHandShakeDateTime))
+        if (!DateTime.TryParse(nextHandShakeDateString, CultureInfo.InvariantCulture, out nextHandShakeDateTime))
         {
             _logger.LogInformation("Unable to Parse NextHandShakeTime, Updating config value");
             configValues[NextHandShakeTimeConfigKey] = DateTime.UtcNow.Add(handShakeInterval).ToString();
@@ -124,15 +117,14 @@ public class RetrieveMeshFile
             var NextHandShakeTimeConfig = DateTime.UtcNow.Add(handShakeInterval).ToString();
 
             configValues[NextHandShakeTimeConfigKey] = NextHandShakeTimeConfig;
-            _logger.LogInformation($"Next Handshake scheduled for {NextHandShakeTimeConfig}");
+            _logger.LogInformation("Next Handshake scheduled for {NextHandShakeTimeConfig}", nextHandShakeDateTime);
 
             return true;
 
         }
-        _logger.LogInformation($"Next handshake scheduled for {nextHandShakeDateTime}");
+        _logger.LogInformation("Next handshake scheduled for {nextHandShakeDateTime}", nextHandShakeDateTime);
         return false;
     }
-
 
     private async Task<bool> SetConfigState(Dictionary<string, string> state)
     {

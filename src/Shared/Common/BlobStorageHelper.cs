@@ -39,7 +39,7 @@ public class BlobStorageHelper : IBlobStorageHelper
         }
         catch (RequestFailedException ex)
         {
-            _logger.LogError($"there has been a problem while copying the file: {ex.Message}");
+            _logger.LogError(ex, "there has been a problem while copying the file: {Message}", ex.Message);
             return false;
         }
         finally
@@ -58,11 +58,11 @@ public class BlobStorageHelper : IBlobStorageHelper
 
         try
         {
-            var result = await sourceBlobClient.UploadAsync(blobFile.Data, overwrite: overwrite);
+            await sourceBlobClient.UploadAsync(blobFile.Data, overwrite: overwrite);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"there has been a problem while uploading the file: {ex.Message}");
+            _logger.LogError(ex, "there has been a problem while uploading the file: {Message}", ex.Message);
             return false;
         }
 
@@ -71,7 +71,7 @@ public class BlobStorageHelper : IBlobStorageHelper
 
     public async Task<BlobFile> GetFileFromBlobStorage(string connectionString, string containerName, string fileName)
     {
-        _logger.LogInformation($"Downloading File: {fileName} From blobStorage Container: {containerName}");
+        _logger.LogInformation("Downloading File: {fileName} From blobStorage Container: {containerName}", fileName, containerName);
 
         var blobServiceClient = new BlobServiceClient(connectionString);
         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
@@ -85,7 +85,7 @@ public class BlobStorageHelper : IBlobStorageHelper
             await blobClient.DownloadToAsync(stream);
             return new BlobFile(stream, fileName);
         }
-        _logger.LogWarning($"File {fileName} does not exist in blobStorageContainer: {containerName}");
+        _logger.LogWarning("File {fileName} does not exist in blobStorageContainer: {containerName}", fileName, containerName);
 
         return null;
     }
