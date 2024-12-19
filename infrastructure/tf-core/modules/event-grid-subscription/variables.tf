@@ -13,13 +13,6 @@ variable "location" {
   description = "The location/region where the Event Grid is created."
 }
 
-# variable "subscriber_function_endpoints" {
-#   type = list(object({
-#     function_endpoint = string
-#   }))
-#   default = []
-# }
-
 variable "subscriber_function_endpoints" {
   type = list(object({
     function_endpoint = string
