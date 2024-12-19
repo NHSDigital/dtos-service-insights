@@ -7,6 +7,7 @@ using NHS.ServiceInsights.BIAnalyticsManagementService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Common;
 using System.Collections.Specialized;
+using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
 
@@ -32,89 +33,66 @@ public class CreateParticipantScreeningProfileTests
     }
 
     [TestMethod]
-    public async Task Run_ShouldReturnBadRequest_WhenNhsNumberIsNotProvided()
+    public async Task Run_ShouldLogError_WhenProfileIsNotValid()
     {
         // Arrange
-        var queryParam = new NameValueCollection
-        {
-            { "nhs_number", null }
-        };
-
-        _mockRequest = _setupRequest.SetupGet(queryParam);
+        string data = "{\"NhsNumber\": \"INVALID\",\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\"}";
+        var binaryData = new BinaryData(data);
+        EventGridEvent eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
 
         // Act
-        var response = await _function.Run(_mockRequest.Object);
+        await _function.Run(eventGridEvent);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
         _mockLogger.Verify(log =>
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString() == "nhsNumber is null or empty."),
-            null,
+            It.Is<It.IsAnyType>((state, type) => state.ToString() == "Unable to deserialize event data to Participant object."),
+            It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
-    public async Task Run_ShouldReturnInternalServerError_WhenExceptionIsThrownOnCallToGetParticipant()
+    public async Task Run_ShouldLogError_WhenExceptionIsThrownOnCallCreateParticipantScreeningProfileUrl()
     {
         // Arrange
-        string nhsNumber = "1111111112";
+        string data = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\"}";
+        var binaryData = new BinaryData(data);
+        EventGridEvent eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
 
-        var queryParam = new NameValueCollection
-        {
-            { "nhs_Number", nhsNumber }
-        };
-
-        _mockRequest = _setupRequest.SetupGet(queryParam);
-
-        var getParticipantUrl = "http://localhost:6061/api/GetParticipant?nhs_number=1111111112";
+        var createParticipantScreeningProfileUrl = "http://localhost:6011/api/CreateParticipantScreeningProfile";
 
         _mockHttpRequestService
-            .Setup(service => service.SendGet(getParticipantUrl))
+            .Setup(service => service.SendPost(createParticipantScreeningProfileUrl, It.IsAny<string>()))
             .ThrowsAsync(new HttpRequestException("System.Net.Http.HttpRequestException"));
 
         // Act
-        var response = await _function.Run(_mockRequest.Object);
+        await _function.Run(eventGridEvent);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
-        It.IsAny<EventId>(),
-        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to deserialise or retrieve participant from http://localhost:6061/api/GetParticipant?nhs_number=1111111112.")),
-        It.IsAny<Exception>(),
-        It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-        Times.Once);
-        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to create participant screening profile.")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
     }
 
     [TestMethod]
     public async Task CreateParticipantScreeningProfile_ShouldSendProfileToDownstreamFunctions()
     {
         // Arrange
-        string nhsNumber = "1111111112";
+        string data = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\"}";
+        var binaryData = new BinaryData(data);
+        EventGridEvent eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
 
-        var queryParam = new NameValueCollection
-        {
-            { "nhs_Number", nhsNumber }
-        };
-
-        _mockRequest = _setupRequest.SetupGet(queryParam);
-        var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
-        var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
-
-        _mockHttpRequestService
-            .Setup(service => service.SendGet(participantUrl))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(participantJson, Encoding.UTF8, "application/json")
-            });
+        long NhsNumber = 1111111112;
 
         var baseDemographicsServiceUrl = Environment.GetEnvironmentVariable("DemographicsServiceUrl");
-        var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={nhsNumber}";
+        var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={NhsNumber}";
 
         _mockHttpRequestService
             .Setup(service => service.SendGet(demographicsServiceUrl))
@@ -137,13 +115,11 @@ public class CreateParticipantScreeningProfileTests
             });
 
         // Act
-        var result = await _function.Run(_mockRequest.Object);
+        await _function.Run(eventGridEvent);
 
         // Assert
-        _mockHttpRequestService.Verify(x => x.SendGet(participantUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendGet(demographicsServiceUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendGet(screeningDataUrl), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl"), It.IsAny<string>()), Times.Once);
-        Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }
 }

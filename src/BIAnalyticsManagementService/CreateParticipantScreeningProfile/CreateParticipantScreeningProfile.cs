@@ -1,8 +1,7 @@
-using System.Net;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 
@@ -18,44 +17,25 @@ public class CreateParticipantScreeningProfile
         _httpRequestService = httpRequestService;
     }
 
-    [Function("CreateParticipantScreeningProfile")]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+    [Function(nameof(CreateParticipantScreeningProfile))]
+    public async Task Run([EventGridTrigger] EventGridEvent eventGridEvent)
     {
         _logger.LogInformation("Create Participant Screening Profile function start");
 
-        string nhsNumber = req.Query["nhs_number"];
-
-        if (string.IsNullOrEmpty(nhsNumber))
-        {
-            _logger.LogError("nhsNumber is null or empty.");
-            return req.CreateResponse(HttpStatusCode.BadRequest);
-        }
-
-        var baseParticipantUrl = Environment.GetEnvironmentVariable("GetParticipantUrl");
-        var participantUrl = $"{baseParticipantUrl}?nhs_number={nhsNumber}";
-        _logger.LogInformation("Requesting participant URL: {Url}", participantUrl);
+        string serializedEvent = JsonSerializer.Serialize(eventGridEvent);
+        _logger.LogInformation(serializedEvent);
 
         ParticipantDto participant;
 
         try
         {
-            var participantResponse = await _httpRequestService.SendGet(participantUrl);
-
-            if (!participantResponse.IsSuccessStatusCode)
-            {
-                _logger.LogError("Failed to retrieve participant data with NHS number {NhsNumber}. Status Code: {StatusCode}", nhsNumber, participantResponse.StatusCode);
-                return req.CreateResponse(HttpStatusCode.InternalServerError);
-            }
-
-            var participantJson = await participantResponse.Content.ReadAsStringAsync();
-            participant = JsonSerializer.Deserialize<ParticipantDto>(participantJson);
-            _logger.LogInformation("Participant data retrieved and deserialised");
+            participant = JsonSerializer.Deserialize<ParticipantDto>(eventGridEvent.Data.ToString());
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to deserialise or retrieve participant from {participantUrl}.", participantUrl);
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
+            _logger.LogError(ex, "Unable to deserialize event data to Participant object.");
+            return;
         }
 
         try
@@ -66,10 +46,7 @@ public class CreateParticipantScreeningProfile
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create participant screening profile.");
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
-
-        return req.CreateResponse(HttpStatusCode.OK);
     }
 
     private async Task<DemographicsData> GetDemographicsDataAsync(long nhsNumber)
@@ -90,10 +67,10 @@ public class CreateParticipantScreeningProfile
         return demographicsData;
     }
 
-    private async Task<ScreeningLkp> GetScreeningDataAsync(long screening_id)
+    private async Task<ScreeningLkp> GetScreeningDataAsync(long screeningId)
     {
         var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
-        var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screening_id}";
+        var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screeningId}";
         _logger.LogInformation("Requesting screening data from {Url}", getScreeningDataUrl);
 
         ScreeningLkp screeningLkp;
