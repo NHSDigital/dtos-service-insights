@@ -132,6 +132,8 @@ resource "azurerm_role_assignment" "update_episode_data_sender" {
   Local variables used to create the Environment Variables for the Function Apps
 -------------------------------------------------------------------------------------------------- */
 locals {
+  primary_region = [for k, v in var.regions : k if v.is_primary_region][0]
+
   app_settings_common = {
     DOCKER_ENABLE_CI                    = var.function_apps.docker_CI_enable
     REMOTE_DEBUGGING_ENABLED            = var.function_apps.remote_debugging_enabled
