@@ -5,24 +5,26 @@ module "functionapp" {
 
   function_app_name   = "${module.regions_config[each.value.region_key].names.function-app}-si-${lower(each.value.function_config.name_suffix)}"
   resource_group_name = azurerm_resource_group.core[each.value.region_key].name
-  location            = each.value.region_key
+  location            = each.value.region
 
-  app_settings = local.app_settings[each.value.region_key][each.value.function_key]
+  # app_settings = local.app_settings[each.value.region_key][each.value.function_key]
+  app_settings = each.value.app_settings
 
   log_analytics_workspace_id                           = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id[local.primary_region]
   monitor_diagnostic_setting_function_app_enabled_logs = local.monitor_diagnostic_setting_function_app_enabled_logs
   monitor_diagnostic_setting_function_app_metrics      = local.monitor_diagnostic_setting_function_app_metrics
 
   public_network_access_enabled = var.features.public_network_access_enabled
-  vnet_integration_subnet_id    = module.subnets["${module.regions_config[each.value.region_key].names.subnet}-apps"].id
+  vnet_integration_subnet_id    = module.subnets["${module.regions_config[each.value.region].names.subnet}-apps"].id
 
-  rbac_role_assignments = local.rbac_role_assignments[each.value.region_key]
+  # rbac_role_assignments = local.rbac_role_assignments[each.value.region]
+  rbac_role_assignments = each.value.rbac_role_assignments
 
-  asp_id = module.app-service-plan["${each.value.function_config.app_service_plan_key}-${each.value.region_key}"].app_service_plan_id
+  asp_id = module.app-service-plan["${each.value.function_config.app_service_plan_key}-${each.value.region}"].app_service_plan_id
 
   # Use the storage account assigned identity for the Function Apps:
   storage_account_name          = module.storage["fnapp-${each.value.region_key}"].storage_account_name
-  storage_account_access_key    = var.function_apps.storage_uses_managed_identity == true ? null : module.storage["fnapp-${each.value.region_key}"].storage_account_primary_access_key
+  storage_account_access_key    = var.function_apps.storage_uses_managed_identity == true ? null : module.storage["fnapp-${each.value.region}"].storage_account_primary_access_key
   storage_uses_managed_identity = var.function_apps.storage_uses_managed_identity
 
   # Connection string for Application Insights:
@@ -48,8 +50,8 @@ module "functionapp" {
   private_endpoint_properties = var.features.private_endpoints_enabled ? {
     private_dns_zone_ids                 = [data.terraform_remote_state.hub.outputs.private_dns_zones["${each.value.region_key}-app_services"].id]
     private_endpoint_enabled             = var.features.private_endpoints_enabled
-    private_endpoint_subnet_id           = module.subnets["${module.regions_config[each.value.region_key].names.subnet}-pep"].id
-    private_endpoint_resource_group_name = azurerm_resource_group.rg_private_endpoints[each.value.region_key].name
+    private_endpoint_subnet_id           = module.subnets["${module.regions_config[each.value.region].names.subnet}-pep"].id
+    private_endpoint_resource_group_name = azurerm_resource_group.rg_private_endpoints[each.value.region].name
     private_service_connection_is_manual = var.features.private_service_connection_is_manual
   } : null
 
