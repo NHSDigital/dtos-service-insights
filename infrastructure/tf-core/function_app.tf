@@ -76,11 +76,11 @@ locals {
       {
         function_apps = [
           for function_key, function_value in local.event_grid_function_app_map :
-          if function_value["event_grid_topic_producer"] == event_grid_value.event_topic_name =>
           {
             function_name = function_key
             function_app  = function_value
           }
+          if function_value["event_grid_topic_producer"] == event_grid_value.event_topic_name
         ]
       }
     )
