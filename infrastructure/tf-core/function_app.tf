@@ -61,21 +61,48 @@ module "functionapp" {
 }
 
 locals {
+  # Filter fa_config to only include those with event_grid_topic_producer
   event_grid_function_app_map = {
     for app_key, app_value in var.function_apps.fa_config :
     app_key => app_value
     if contains(keys(app_value), "event_grid_topic_producer")
   }
 
+  # Merge event_grid_function_app_map and event_grid_map into a unified structure
+  unified_event_grid_map = {
+    for event_grid_key, event_grid_value in local.event_grid_map :
+    "${event_grid_key}-${event_grid_value.region}" => merge(
+      event_grid_value,
+      {
+        function_apps = [
+          for function_key, function_value in local.event_grid_function_app_map :
+          if function_value["event_grid_topic_producer"] == event_grid_value.event_topic_name =>
+          {
+            function_name = function_key
+            function_app  = function_value
+          }
+        ]
+      }
+    )
+  }
 }
 
+# Use the merged map in your resources
 resource "azurerm_role_assignment" "data_sender" {
-  for_each = local.event_grid_function_app_map
+  for_each = local.unified_event_grid_map
 
-  scope                = each.value.event_grid_topic_producer
+  principal_id         = module.functionapp["${each.value.function_apps[0].function_name}-${each.value.region}"].function_app_sami_id
   role_definition_name = "EventGrid Data Sender"
-  principal_id         = var.principal_id
+  scope                = module.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].id
 }
+
+# resource "azurerm_role_assignment" "data_sender" {
+#   for_each = local.event_grid_function_app_map
+
+#   scope                = each.value.event_grid_topic_producer
+#   role_definition_name = "EventGrid Data Sender"
+#   principal_id         = var.principal_id
+# }
 
 # resource "azurerm_role_assignment" "create_episode_data_sender" {
 #   for_each = local.event_grid_map
