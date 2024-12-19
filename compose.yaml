@@ -172,7 +172,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6009
-      - GetParticipantUrl=http://get-participant:6061/api/GetParticipant
       - CreateParticipantScreeningProfileUrl=http://create-ps-profile-data:6011/api/CreateParticipantScreeningProfile
       - DemographicsServiceUrl=http://get-demographics-data:6080/api/GetDemographicsData
       - GetScreeningDataUrl=http://get-screening-data:6082/api/GetScreeningData

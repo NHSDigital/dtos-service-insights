@@ -4,7 +4,6 @@
     "ASPNETCORE_ENVIRONMENT": "Development",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "GetParticipantUrl": "http://localhost:6061/api/GetParticipant",
     "CreateParticipantScreeningProfileUrl":"http://localhost:6011/api/CreateParticipantScreeningProfile",
     "DemographicsServiceUrl": "http://localhost:6080/api/GetDemographicsData",
     "GetScreeningDataUrl": "http://localhost:6082/api/GetScreeningData"
