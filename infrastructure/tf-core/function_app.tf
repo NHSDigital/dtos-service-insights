@@ -3,8 +3,8 @@ module "functionapp" {
 
   source = "../../../dtos-devops-templates/infrastructure/modules/function-app"
 
-  function_app_name   = "${module.regions_config[each.value.region_key].names.function-app}-si-${lower(each.value.function_config.name_suffix)}"
-  resource_group_name = azurerm_resource_group.core[each.value.region_key].name
+  function_app_name   = "${module.regions_config[each.value.region].names.function-app}-si-${lower(each.value.name_suffix)}"
+  resource_group_name = azurerm_resource_group.core[each.value.region].name
   location            = each.value.region
 
   # app_settings = local.app_settings[each.value.region_key][each.value.function_key]
