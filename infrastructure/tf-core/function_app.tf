@@ -64,23 +64,23 @@ module "functionapp" {
 -------------------------------------------------------------------------------------------------- */
 
 # Loop through the Key Vault URLs for each region and create the Key Vault Access Policies for each Function App:
-resource "azurerm_key_vault_access_policy" "functionapp" {
-  for_each = local.keyvault_function_app_object_ids_map
+# resource "azurerm_key_vault_access_policy" "functionapp" {
+#   for_each = local.keyvault_function_app_object_ids_map
 
-  key_vault_id = each.value.key_vault_id
-  object_id    = each.value.function_app_sami_id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
+#   key_vault_id = each.value.key_vault_id
+#   object_id    = each.value.function_app_sami_id
+#   tenant_id    = data.azurerm_client_config.current.tenant_id
 
-  secret_permissions = [
-    "Get",
-    "List"
-  ]
+#   secret_permissions = [
+#     "Get",
+#     "List"
+#   ]
 
-  certificate_permissions = [
-    "Get",
-    "List"
-  ]
-}
+#   certificate_permissions = [
+#     "Get",
+#     "List"
+#   ]
+# }
 
 /* --------------------------------------------------------------------------------------------------
   Function App Role Assignments to Event Grid
