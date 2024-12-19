@@ -84,6 +84,11 @@ locals {
         ]
       }
     )
+    if length([
+      for function_key, function_value in local.event_grid_function_app_map :
+      function_value
+      if function_value["event_grid_topic_producer"] == event_grid_value.event_topic_name
+    ]) > 0
   }
 }
 
