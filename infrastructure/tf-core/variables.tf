@@ -195,6 +195,7 @@ variable "function_apps" {
         env_var_name     = string
         function_app_key = string
       })), [])
+      env_vars_static = optional(map(string), {})
     }))
   })
 }
