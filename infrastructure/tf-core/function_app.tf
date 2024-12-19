@@ -198,7 +198,7 @@ locals {
 
             length(config.event_grid_topic_producer) > 0 ? merge(
               {
-                "topicEndpoint" = module.event_grid_topic["${value.event_grid_topic_producer}-${region_key}"].topic_endpoint
+                "topicEndpoint" = module.event_grid_topic["${config.event_grid_topic_producer}-${region}"].topic_endpoint
               }
             ) : {},
 
