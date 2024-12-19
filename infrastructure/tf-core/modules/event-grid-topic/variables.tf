@@ -12,7 +12,7 @@ variable "inbound_ip_rules" {
   type = list(object({
     function_endpoint = string
   }))
-  default = []
+  default     = []
   description = "The list of IP address to allow."
 }
 
