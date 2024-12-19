@@ -21,10 +21,11 @@ data "azurerm_client_config" "current" {}
 
 
 resource "azurerm_role_assignment" "eventgrid_function_permission" {
-  for_each = zipmap(
-    [for i, endpoint in var.subscriber_function_endpoints : i],
-    var.subscriber_function_endpoints
-  )
+  for_each = var.subscriber_function_endpoints
+  # for_each = zipmap(
+  #   [for i, endpoint in var.subscriber_function_endpoints : i],
+  #   var.subscriber_function_endpoints
+  # )
 
   scope                = each.value.function_endpoint
   role_definition_name = "Azure Event Grid System Topic Event Subscription Contributor"
