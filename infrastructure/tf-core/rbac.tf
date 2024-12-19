@@ -11,10 +11,6 @@ locals {
     "Storage Queue Data Contributor"
   ]
 
-  rbac_roles_database = {
-    sql_contributor = "Contributor"
-  }
-
   rbac_roles_key_vault_officers = [
     "Key Vault Certificate Officer",
     "Key Vault Crypto Officer",
