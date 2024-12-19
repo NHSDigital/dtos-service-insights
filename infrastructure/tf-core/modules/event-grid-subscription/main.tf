@@ -22,6 +22,6 @@ resource "azurerm_role_assignment" "eventgrid_subscription_role" {
   for_each = { for idx, endpoint in var.subscriber_function_endpoints : idx => endpoint }
 
   principal_id         = each.value.principal_id
-  role_definition_name = "EventGrid Event Subscription Contributor"
+  role_definition_name = "EventGrid Data Receiver"
   scope                = var.azurerm_eventgrid_id
 }
