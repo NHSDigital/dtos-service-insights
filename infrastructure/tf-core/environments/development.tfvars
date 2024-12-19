@@ -148,7 +148,7 @@ event_grid_defaults = {
 }
 
 event_grid_configs = {
-  topic-1 = {
+  event-grid-topic-1 = {
     identity_type                = "SystemAssigned"
     subscription_name            = "dev1234"
     subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
