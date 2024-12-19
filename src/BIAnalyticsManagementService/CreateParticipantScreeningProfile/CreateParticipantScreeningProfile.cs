@@ -49,10 +49,10 @@ public class CreateParticipantScreeningProfile
         }
     }
 
-    private async Task<DemographicsData> GetDemographicsDataAsync(long NhsNumber)
+    private async Task<DemographicsData> GetDemographicsDataAsync(long nhsNumber)
     {
         var baseDemographicsServiceUrl = Environment.GetEnvironmentVariable("DemographicsServiceUrl");
-        var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={NhsNumber}";
+        var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={nhsNumber}";
         _logger.LogInformation("Requesting demographic service URL: {Url}", demographicsServiceUrl);
 
         DemographicsData demographicsData;
@@ -67,10 +67,10 @@ public class CreateParticipantScreeningProfile
         return demographicsData;
     }
 
-    private async Task<ScreeningLkp> GetScreeningDataAsync(long ScreeningId)
+    private async Task<ScreeningLkp> GetScreeningDataAsync(long screeningId)
     {
         var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
-        var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={ScreeningId}";
+        var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screeningId}";
         _logger.LogInformation("Requesting screening data from {Url}", getScreeningDataUrl);
 
         ScreeningLkp screeningLkp;
