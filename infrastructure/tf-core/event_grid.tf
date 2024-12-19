@@ -29,6 +29,7 @@ module "event_grid_subscription" {
   subscriber_function_endpoints = flatten([
     for functionName in each.value.subscriber_functionName_list : {
       function_endpoint = format("%s/functions/%s", module.functionapp["${functionName}-${each.value.region}"].id, functionName)
+      principal_id      = module.functionapp["${functionName}-${each.value.region}"].function_app_sami_id
     }
   ])
 
@@ -40,14 +41,6 @@ module "event_grid_subscription" {
   dead_letter_storage_account_container_name = "deadletterqueue"
   dead_letter_storage_account_id             = module.storage["eventgrid-${each.value.region}"].storage_account_id
   dead_letter_storage_account_name           = module.storage["eventgrid-${each.value.region}"].storage_account_name
-  # Private Endpoint Configuration if enabled
-  # private_endpoint_properties = var.features.private_endpoints_enabled ? {
-  #   private_dns_zone_ids_keyvault        = [data.terraform_remote_state.hub.outputs.private_dns_zones["${each.key}-event_grid"].id]
-  #   private_endpoint_enabled             = var.features.private_endpoints_enabled
-  #   private_endpoint_subnet_id           = module.subnets["${module.regions_config[each.key].names.subnet}-pep"].id
-  #   private_endpoint_resource_group_name = azurerm_resource_group.rg_private_endpoints[each.key].name
-  #   private_service_connection_is_manual = var.features.private_service_connection_is_manual
-  # } : null
 
   tags = var.tags
 }

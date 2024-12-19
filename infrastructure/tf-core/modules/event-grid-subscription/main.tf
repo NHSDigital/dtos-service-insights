@@ -16,18 +16,12 @@ resource "azurerm_eventgrid_event_subscription" "eventgrid_event_subscription" {
 
   # tags = var.tags
 }
-data "azurerm_client_config" "current" {}
 
 
+resource "azurerm_role_assignment" "eventgrid_subscription_role" {
+  for_each = { for idx, endpoint in var.subscriber_function_endpoints : idx => endpoint }
 
-resource "azurerm_role_assignment" "eventgrid_function_permission" {
-  for_each = var.subscriber_function_endpoints
-  # for_each = zipmap(
-  #   [for i, endpoint in var.subscriber_function_endpoints : i],
-  #   var.subscriber_function_endpoints
-  # )
-
-  scope                = each.value.function_endpoint
-  role_definition_name = "Azure Event Grid System Topic Event Subscription Contributor"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = each.value.principal_id
+  role_definition_name = "EventGrid Event Subscription Contributor"
+  scope                = var.azurerm_eventgrid_id
 }
