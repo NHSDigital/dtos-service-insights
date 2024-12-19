@@ -44,7 +44,7 @@ module "functionapp" {
   assigned_identity_ids = var.function_apps.cont_registry_use_mi ? [data.azurerm_user_assigned_identity.acr_mi.id] : []
 
   image_tag  = var.function_apps.docker_env_tag
-  image_name = "${var.function_apps.docker_img_prefix}-${lower(each.value.function_config.name_suffix)}"
+  image_name = "${var.function_apps.docker_img_prefix}-${lower(each.value.name_suffix)}"
 
   # Private Endpoint Configuration if enabled
   private_endpoint_properties = var.features.private_endpoints_enabled ? {
