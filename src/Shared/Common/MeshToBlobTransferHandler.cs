@@ -149,10 +149,9 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             return null;
         }
 
-        string fileName = string.Concat(messageId, "_-_", result.Response.FileAttachments);
         var meshFile = await FileHelpers.ReassembleChunkedFile(result.Response.FileAttachments);
 
-        return new BlobFile(meshFile.Content, fileName);
+        return new BlobFile(meshFile.Content, meshFile.FileName);
     }
 
     private async Task<BlobFile?> DownloadFile(string messageId)
@@ -164,7 +163,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             return null;
         }
 
-        string fileName = _fileNameFunction(result.Response.MessageMetaData);
+        string fileName = result.Response.FileAttachment.FileName;
 
         if (result.Response.MessageMetaData.ContentEncoding == "GZIP")
         {
