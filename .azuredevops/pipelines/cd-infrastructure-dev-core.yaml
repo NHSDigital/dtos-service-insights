@@ -14,7 +14,7 @@ resources:
     - repository: dtos-devops-templates
       type: github
       name: NHSDigital/dtos-devops-templates
-      ref: main
+      ref: feat/DTOSS-6235-Create-Terraform-Module-for-Azure-Event-Grid
       endpoint: NHSDigital
 
 variables:
