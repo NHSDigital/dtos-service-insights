@@ -138,7 +138,7 @@ locals {
             # Dynamic references to other Function App URLs
             {
               for obj in config.app_urls : obj.env_var_name => format(
-                "https://%s-%s.azurewebsites.net/api/%s",
+                "https://%s-si-%s.azurewebsites.net/api/%s",
                 module.regions_config[region].names["function-app"],
                 var.function_apps.fa_config[obj.function_app_key].name_suffix,
                 var.function_apps.fa_config[obj.function_app_key].function_endpoint_name
