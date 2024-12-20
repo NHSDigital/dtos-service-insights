@@ -137,6 +137,14 @@ diagnostic_settings = {
   metric_enabled = true
 }
 
+event_grid_configs = {
+  topic-1 = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "dev1234"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+}
+
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"
   acr_name    = "acrukshubdevserins"
