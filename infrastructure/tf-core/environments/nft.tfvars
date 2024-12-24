@@ -348,7 +348,7 @@ function_apps = {
     }
 
     RetrieveMeshFile = {
-      name_suffix            = "retrieve-mesh-file-from-cm"
+      name_suffix            = "retrieve-mesh-file"
       function_endpoint_name = "RetrieveMeshFile"
       app_service_plan_key   = "BIAnalyticsDataService"
       key_vault_url          = "KeyVaultConnectionString"
