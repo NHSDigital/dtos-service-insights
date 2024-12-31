@@ -86,6 +86,9 @@ routes = {
   }
 }
 
+
+
+
 app_service_plan = {
   os_type                  = "Linux"
   sku_name                 = "P2v3"
@@ -137,10 +140,19 @@ diagnostic_settings = {
   metric_enabled = true
 }
 
+event_grid_defaults = {
+  identity_ids                  = []
+  identity_type                 = "SystemAssigned"
+  inbound_ip_rules              = []
+  input_schema                  = {}
+  local_auth_enabled            = true
+  public_network_access_enabled = false
+}
+
 event_grid_configs = {
-  topic-1 = {
+  topic-int-1 = {
     identity_type                = "SystemAssigned"
-    subscription_name            = "dev1234"
+    subscription_name            = "dev123"
     subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
   }
 }
@@ -171,21 +183,21 @@ function_apps = {
   fa_config = {
 
     CreateParticipantScreeningEpisodeData = {
-      name_suffix            = "create-participant-screening-episode-data"
+      name_suffix            = "create-ps-episode-data"
       function_endpoint_name = "CreateParticipantScreeningEpisodeData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningProfileData = {
-      name_suffix            = "create-participant-screening-profile-data"
+      name_suffix            = "create-ps-profile-data"
       function_endpoint_name = "CreateParticipantScreeningProfileData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningProfile = {
-      name_suffix            = "get-participant-screening-profile"
+      name_suffix            = "get-ps-profile"
       function_endpoint_name = "GetParticipantScreeningProfile"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
@@ -198,28 +210,28 @@ function_apps = {
     }
 
     GetParticipantScreeningProfileData = {
-      name_suffix            = "get-participant-screening-profile-data"
+      name_suffix            = "get-ps-profile-data"
       function_endpoint_name = "GetParticipantScreeningProfileData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisode = {
-      name_suffix            = "get-participant-screening-episode"
+      name_suffix            = "get-ps-episode"
       function_endpoint_name = "GetParticipantScreeningEpisode"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisodeData = {
-      name_suffix            = "get-participant-screening-episode-data"
+      name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningEpisode = {
-      name_suffix            = "create-participant-screening-episode"
+      name_suffix            = "create-ps-episode"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
       app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
@@ -235,7 +247,7 @@ function_apps = {
     }
 
     CreateParticipantScreeningProfile = {
-      name_suffix            = "create-participant-screening-profile"
+      name_suffix            = "create-ps-profile"
       function_endpoint_name = "CreateParticipantScreeningProfile"
       app_service_plan_key   = "BIAnalyticsDataService"
       app_urls = [
@@ -255,7 +267,7 @@ function_apps = {
     }
 
     GetParticipantScreeningEpisodeData = {
-      name_suffix            = "get-participant-screening-episode-data"
+      name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
@@ -272,6 +284,7 @@ function_apps = {
       function_endpoint_name = "CreateEpisode"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producer = "topic-int-1"
     }
 
     GetEpisode = {
@@ -286,6 +299,7 @@ function_apps = {
       function_endpoint_name = "UpdateEpisode"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producer = "topic-int-1"
     }
 
     ReceiveData = {
@@ -337,9 +351,11 @@ function_apps = {
     }
 
     RetrieveMeshFile = {
-      name_suffix            = "retrieve-mesh-file-from-cm"
+      name_suffix            = "retrieve-mesh-file"
       function_endpoint_name = "RetrieveMeshFile"
       app_service_plan_key   = "BIAnalyticsDataService"
+      key_vault_url          = "KeyVaultConnectionString"
+
     }
 
     GetParticipant = {
@@ -411,14 +427,23 @@ storage_accounts = {
       config = {
         container_name = "config"
       }
-      sample-container = {
-        container_name = "sample-container"
-      }
       inbound = {
         container_name = "inbound"
       }
       inbound-poison = {
         container_name = "inbound-poison"
+      }
+    }
+  }
+
+  eventgrid = {
+    name_suffix                   = "eventgrid"
+    account_tier                  = "Standard"
+    replication_type              = "LRS"
+    public_network_access_enabled = false
+    containers = {
+      config = {
+        container_name = "deadletterqueue"
       }
     }
   }
