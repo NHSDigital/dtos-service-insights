@@ -31,9 +31,9 @@ public partial class Episode
 
     public DateTime? EndCodeLastUpdated { get; set; }
 
-    public long? ReasonClosedCodeId { get; set; }
-
     public long? FinalActionCodeId { get; set; }
+
+    public long? ReasonClosedCodeId { get; set; }
 
     public string? EndPoint { get; set; }
 
