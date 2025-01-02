@@ -5,7 +5,7 @@ namespace NHS.ServiceInsights.Model;
 
 public partial class OrganisationLkp
 {
-    public long OrganisationId { get; set; }
+    public string OrganisationId { get; set; } = null!;
 
     public string? ScreeningName { get; set; }
 

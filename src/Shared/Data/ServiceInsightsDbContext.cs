@@ -28,8 +28,6 @@ public partial class ServiceInsightsDbContext : DbContext
 
     public virtual DbSet<ReasonClosedCodeLkp> ReasonClosedCodeLkps { get; set; }
 
-    public virtual DbSet<ScreeningLkp> ScreeningLkps { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<EndCodeLkp>(entity =>
@@ -159,7 +157,7 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.ToTable("ORGANISATION_LKP");
 
             entity.Property(e => e.OrganisationId)
-                .ValueGeneratedNever()
+                .HasMaxLength(50)
                 .HasColumnName("ORGANISATION_ID");
             entity.Property(e => e.IsActive)
                 .HasMaxLength(50)
@@ -185,117 +183,136 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27D6C9BABA");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC278C4552E8");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.ActualScreeningDate).HasColumnName("ACTUAL_SCREENING_DATE");
-            entity.Property(e => e.AppointmentMadeFlag).HasColumnName("APPOINTMENT_MADE_FLAG");
+            entity.Property(e => e.ActualScreeningDate)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ACTUAL_SCREENING_DATE");
+            entity.Property(e => e.AppointmentMadeFlag)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("APPOINTMENT_MADE_FLAG");
             entity.Property(e => e.BatchId)
-                .HasMaxLength(100)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("BATCH_ID");
             entity.Property(e => e.CallRecallStatusAuthorisedBy)
-                .HasMaxLength(200)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("CALL_RECALL_STATUS_AUTHORISED_BY");
-            entity.Property(e => e.EarlyRecallDate).HasColumnName("EARLY_RECALL_DATE");
+            entity.Property(e => e.EarlyRecallDate)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("EARLY_RECALL_DATE");
             entity.Property(e => e.EndCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("END_CODE");
             entity.Property(e => e.EndCodeDescription)
-                .HasMaxLength(300)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("END_CODE_DESCRIPTION");
             entity.Property(e => e.EndCodeLastUpdated)
-                .HasColumnType("datetime")
-                .HasColumnName("END_CODE_LAST_UPDATED");
-            entity.Property(e => e.EndPoint)
-                .HasMaxLength(200)
+                .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("END_POINT");
-            entity.Property(e => e.EpisodeId).HasColumnName("EPISODE_ID");
-            entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
+                .HasColumnName("END_CODE_LAST_UPDATED");
+            entity.Property(e => e.EpisodeId)
+                .HasMaxLength(50)
+                .HasColumnName("EPISODE_ID");
+            entity.Property(e => e.EpisodeOpenDate)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("EPISODE_OPEN_DATE");
             entity.Property(e => e.EpisodeType)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("EPISODE_TYPE");
             entity.Property(e => e.EpisodeTypeDescription)
-                .HasMaxLength(300)
-                .IsUnicode(false)
-                .HasColumnName("EPISODE_TYPE_DESCRIPTION");
-            entity.Property(e => e.FinalActionCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("FINAL_ACTION_CODE");
-            entity.Property(e => e.FinalActionCodeDescription)
-                .HasMaxLength(300)
+                .HasColumnName("EPISODE_TYPE_DESCRIPTION");
+            entity.Property(e => e.FirstOfferedAppointmentDate)
+                .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("FINAL_ACTION_CODE_DESCRIPTION");
-            entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
-            entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
+                .HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
+            entity.Property(e => e.NhsNumber)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("NHS_NUMBER");
             entity.Property(e => e.OrganisationCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("ORGANISATION_CODE");
             entity.Property(e => e.OrganisationName)
-                .HasMaxLength(300)
-                .IsUnicode(false)
-                .HasColumnName("ORGANISATION_NAME");
-            entity.Property(e => e.ReasonClosedCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("REASON_CLOSED_CODE");
-            entity.Property(e => e.ReasonClosedCodeDescription)
-                .HasMaxLength(300)
-                .IsUnicode(false)
-                .HasColumnName("REASON_CLOSED_CODE_DESCRIPTION");
+                .HasColumnName("ORGANISATION_NAME");
             entity.Property(e => e.RecordInsertDatetime)
-                .HasColumnType("datetime")
+                .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("RECORD_INSERT_DATETIME");
             entity.Property(e => e.ScreeningName)
-                .HasMaxLength(200)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
         });
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27CFBB1614");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27E9FDBDE6");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.DateIrradiated).HasColumnName("DATE_IRRADIATED");
+            entity.Property(e => e.DateIrradiated)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("DATE_IRRADIATED");
             entity.Property(e => e.GeneCode)
-                .HasMaxLength(100)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("GENE_CODE");
             entity.Property(e => e.GeneCodeDescription)
-                .HasMaxLength(200)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("GENE_CODE_DESCRIPTION");
-            entity.Property(e => e.HigherRiskNextTestDueDate).HasColumnName("HIGHER_RISK_NEXT_TEST_DUE_DATE");
+            entity.Property(e => e.HigherRiskNextTestDueDate)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("HIGHER_RISK_NEXT_TEST_DUE_DATE");
             entity.Property(e => e.HigherRiskReferralReasonCode)
-                .HasMaxLength(100)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("HIGHER_RISK_REFERRAL_REASON_CODE");
             entity.Property(e => e.HrReasonCodeDescription)
-                .HasMaxLength(200)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("HR_REASON_CODE_DESCRIPTION");
-            entity.Property(e => e.IsHigherRisk).HasColumnName("IS_HIGHER_RISK");
-            entity.Property(e => e.IsHigherRiskActive).HasColumnName("IS_HIGHER_RISK_ACTIVE");
-            entity.Property(e => e.NextTestDueDate).HasColumnName("NEXT_TEST_DUE_DATE");
-            entity.Property(e => e.NextTestDueDateCalcMethod)
-                .HasMaxLength(100)
+            entity.Property(e => e.IsHigherRisk)
+                .HasMaxLength(10)
                 .IsUnicode(false)
-                .HasColumnName("NEXT_TEST_DUE_DATE_CALC_METHOD");
-            entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
+                .HasColumnName("IS_HIGHER_RISK");
+            entity.Property(e => e.IsHigherRiskActive)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("IS_HIGHER_RISK_ACTIVE");
+            entity.Property(e => e.NextTestDueDate)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("NEXT_TEST_DUE_DATE");
+            entity.Property(e => e.NextTestDueDateCalculationMethod)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("NEXT_TEST_DUE_DATE_CALCULATION_METHOD");
+            entity.Property(e => e.NhsNumber)
+                .HasMaxLength(50)
+                .HasColumnName("NHS_NUMBER");
             entity.Property(e => e.ParticipantScreeningStatus)
-                .HasMaxLength(100)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("PARTICIPANT_SCREENING_STATUS");
             entity.Property(e => e.PreferredLanguage)
@@ -310,16 +327,20 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("REASON_FOR_REMOVAL");
-            entity.Property(e => e.ReasonForRemovalDt).HasColumnName("REASON_FOR_REMOVAL_DT");
+            entity.Property(e => e.ReasonForRemovalDt)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("REASON_FOR_REMOVAL_DT");
             entity.Property(e => e.RecordInsertDatetime)
-                .HasColumnType("datetime")
+                .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("RECORD_INSERT_DATETIME");
             entity.Property(e => e.ScreeningCeasedReason)
-                .HasMaxLength(100)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_CEASED_REASON");
             entity.Property(e => e.ScreeningName)
-                .HasMaxLength(200)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
         });
@@ -341,33 +362,6 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(300)
                 .IsUnicode(false)
                 .HasColumnName("REASON_CLOSED_CODE_DESCRIPTION");
-        });
-
-        modelBuilder.Entity<ScreeningLkp>(entity =>
-        {
-            entity.HasKey(e => e.ScreeningId).HasName("PK_SCREENING_ID");
-
-            entity.ToTable("SCREENING_LKP");
-
-            entity.Property(e => e.ScreeningId)
-                .ValueGeneratedNever()
-                .HasColumnName("SCREENING_ID");
-            entity.Property(e => e.ScreeningAcronym)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("SCREENING_ACRONYM");
-            entity.Property(e => e.ScreeningName)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("SCREENING_NAME");
-            entity.Property(e => e.ScreeningType)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("SCREENING_TYPE");
-            entity.Property(e => e.ScreeningWorkflowId)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("SCREENING_WORKFLOW_ID");
         });
 
         OnModelCreatingPartial(modelBuilder);
