@@ -41,7 +41,7 @@ public class UpdateParticipantTests
     public async Task Run_ShouldReturnOK_WhenValidParticipantReceived()
     {
         // Arrange
-        var participant = new ParticipantDto
+        var participant = new InitialParticipantDto
         {
             NhsNumber = 999999999
         };

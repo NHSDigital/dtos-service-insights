@@ -98,12 +98,12 @@ public class GetParticipantTests
 
         // Assert
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-        ParticipantDto participant;
+        InitialParticipantDto participant;
         using (StreamReader reader = new StreamReader(response.Body, Encoding.UTF8))
         {
             response.Body.Seek(0, SeekOrigin.Begin);
             var responseBody = reader.ReadToEnd();
-            participant = JsonSerializer.Deserialize<ParticipantDto>(responseBody);
+            participant = JsonSerializer.Deserialize<InitialParticipantDto>(responseBody);
         }
         Assert.AreEqual(1111111110, participant.NhsNumber);
     }
