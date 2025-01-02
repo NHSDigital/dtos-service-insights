@@ -27,7 +27,7 @@ public class ParticipantScreeningEpisodeRepository : IParticipantScreeningEpisod
     public async Task<EpisodesDataPage> GetParticipantScreeningEpisode (int page, int pageSize, DateTime? startDate, DateTime? endDate, int skip)
     {
         var query = _dbContext.ParticipantScreeningEpisodes
-            .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
+           .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
                         (!endDate.HasValue || x.RecordInsertDatetime <= endDate))
             .OrderBy(x => x.RecordInsertDatetime)
             .Skip(skip)
