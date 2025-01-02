@@ -68,39 +68,33 @@ locals {
     if contains(keys(app_value), "event_grid_topic_producer")
   }
 
-  # Merge event_grid_function_app_map and event_grid_map into a unified structure
-  unified_event_grid_map = {
-    for event_grid_key, event_grid_value in local.event_grid_map :
-    "${event_grid_key}-${event_grid_value.region}" => merge(
-      event_grid_value,
-      {
-        function_apps = [
-          for function_key, function_value in local.event_grid_function_app_map :
-          {
-            function_name = function_key
-            function_app  = function_value
-          }
-          if function_value["event_grid_topic_producer"] == event_grid_value.event_topic_name
-        ]
-      }
-    )
-    if length([
-      for function_key, function_value in local.event_grid_function_app_map :
-      function_value
-      if function_value["event_grid_topic_producer"] == event_grid_value.event_topic_name
-    ]) > 0
+   # There are multiple collections, and possibly multiple databases.
+  # We cannot nest for loops inside a map, so first iterate all permutations as a list of objects...
+  unified_event_grid_object_list = flatten([
+    for event_key, event_value in local.event_grid_map : [
+      for function_key, function_values in local.event_grid_function_app_map : merge({
+        event_key    = event_key # 1st iterator
+        function_key = function_key # 2nd iterator
+        event_value  = event_value
+      }, function_values) # the block of key/value pairs for a specific MongoDB collection
+     if contains(keys(function_values), "event_grid_topic_producer") && length(function_values.event_grid_topic_producer) > 0 # Check attribute presence and length
+     ]
+  ])
+  # ...then project them into a map with unique keys (combining the iterators), for consumption by a for_each meta argument
+  unified_event_grid_object_map = {
+    for item in local.unified_event_grid_object_list :
+    "${item.event_key}-${item.function_key}" => item
   }
 }
 
-# Use the merged map in your resources
+# # Use the merged map in your resources
 resource "azurerm_role_assignment" "data_sender" {
-  for_each = local.unified_event_grid_map
+  for_each = local.unified_event_grid_object_map
 
-  principal_id         = module.functionapp["${each.value.function_apps[0].function_name}-${each.value.region}"].function_app_sami_id
+  principal_id         = module.functionapp["${each.value.function_key}-${each.value.event_value.region}"].function_app_sami_id
   role_definition_name = "EventGrid Data Sender"
-  scope                = module.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].id
+  scope                = module.event_grid_topic["${each.value.event_key}"].id
 }
-
 
 /* --------------------------------------------------------------------------------------------------
   Local variables used to create the Environment Variables for the Function Apps
