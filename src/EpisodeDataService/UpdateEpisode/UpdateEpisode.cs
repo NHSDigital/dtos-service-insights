@@ -111,7 +111,7 @@ public class UpdateEpisode
 
     private async static Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId)
     {
-        existingEpisode.EpisodeIdSystem = null;
+        existingEpisode.EpisodeId = null;
         existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
         existingEpisode.NhsNumber = episodeDto.NhsNumber;
         existingEpisode.EpisodeTypeId = episodeTypeId;

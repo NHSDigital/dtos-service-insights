@@ -5,7 +5,7 @@ namespace NHS.ServiceInsights.Model;
 
 public partial class Episode
 {
-    public long EpisodeId { get; set; }
+    public long? EpisodeId { get; set; }
 
     public long ScreeningId { get; set; }
 
