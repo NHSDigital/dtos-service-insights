@@ -7,7 +7,7 @@ public partial class ParticipantScreeningEpisode
 {
     public long Id { get; set; }
 
-    public long? EpisodeId { get; set; }
+    public long EpisodeId { get; set; }
 
     public long NhsNumber { get; set; }
 
