@@ -2,7 +2,7 @@ namespace NHS.ServiceInsights.Model;
 
 public class FinalizedEpisodeDto
 {
-    public long EpisodeId { get; set; }
+    public long? EpisodeId { get; set; }
 
     public long NhsNumber { get; set; }
 
