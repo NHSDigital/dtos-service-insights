@@ -104,7 +104,6 @@ public class CreateEpisode
         return new Episode
         {
             EpisodeId = episodeDto.EpisodeId,
-            EpisodeIdSystem = null,
             ScreeningId = 1, // Need to get ScreeningId from ScreeningName
             NhsNumber = episodeDto.NhsNumber,
             EpisodeTypeId = episodeTypeId,

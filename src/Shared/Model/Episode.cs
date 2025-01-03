@@ -7,8 +7,6 @@ public partial class Episode
 {
     public long EpisodeId { get; set; }
 
-    public long? EpisodeIdSystem { get; set; }
-
     public long ScreeningId { get; set; }
 
     public long NhsNumber { get; set; }
@@ -31,15 +29,17 @@ public partial class Episode
 
     public DateTime? EndCodeLastUpdated { get; set; }
 
-    public long? FinalActionCodeId { get; set; }
-
     public long? ReasonClosedCodeId { get; set; }
+
+    public long? FinalActionCodeId { get; set; }
 
     public string? EndPoint { get; set; }
 
     public long? OrganisationId { get; set; }
 
     public string? BatchId { get; set; }
+
+    public DateTime? SrcSysProcessedDatetime { get; set; }
 
     public DateTime? RecordInsertDatetime { get; set; }
 

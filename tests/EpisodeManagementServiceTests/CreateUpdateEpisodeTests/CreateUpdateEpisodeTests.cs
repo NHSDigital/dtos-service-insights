@@ -96,6 +96,7 @@ public class CreateUpdateEpisodeTests
         _mockHttpRequestService.Verify(x => x.SendGet(It.IsAny<string>()), Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
+
     }
 
     [TestMethod]

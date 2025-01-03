@@ -13,27 +13,27 @@ IF NOT EXISTS
 BEGIN
     CREATE TABLE dbo.[EPISODE]
     (
-      EPISODE_ID                        BIGINT               not null,
-      EPISODE_ID_SYSTEM                 BIGINT               null,
-      SCREENING_ID                      BIGINT               not null,
-      NHS_NUMBER                        BIGINT               not null,
-      EPISODE_TYPE_ID                   BIGINT               null,
-      EPISODE_OPEN_DATE                 DATE                 null,
-      APPOINTMENT_MADE_FLAG             SMALLINT             null,
-      FIRST_OFFERED_APPOINTMENT_DATE    DATE                 null,
-      ACTUAL_SCREENING_DATE             DATE                 null,
-      EARLY_RECALL_DATE                 DATE                 null,
-      CALL_RECALL_STATUS_AUTHORISED_BY  VARCHAR(200)         null,
-      END_CODE_ID                       BIGINT               null,
-      END_CODE_LAST_UPDATED             DATETIME             null,
-      FINAL_ACTION_CODE_ID              BIGINT               null,
-      REASON_CLOSED_CODE_ID             BIGINT               null,
-      END_POINT                         VARCHAR(200)         null,
-      ORGANISATION_ID                   BIGINT               null,
-      BATCH_ID                          VARCHAR(100)         null,
-      RECORD_INSERT_DATETIME            DATETIME             null,
-      RECORD_UPDATE_DATETIME            DATETIME             null,
-      constraint PK_EPISODE             primary key (EPISODE_ID)
+      EPISODE_ID           BIGINT               not null,
+      SCREENING_ID         BIGINT               not null,
+      NHS_NUMBER           BIGINT               not null,
+      EPISODE_TYPE_ID      BIGINT               null,
+      EPISODE_OPEN_DATE    DATE                 null,
+      APPOINTMENT_MADE_FLAG SMALLINT             null,
+      FIRST_OFFERED_APPOINTMENT_DATE DATE         null,
+      ACTUAL_SCREENING_DATE DATE                 null,
+      EARLY_RECALL_DATE    DATE                 null,
+      CALL_RECALL_STATUS_AUTHORISED_BY VARCHAR(200)         null,
+      END_CODE_ID          BIGINT               null,
+      END_CODE_LAST_UPDATED DATETIME             null,
+      REASON_CLOSED_CODE_ID BIGINT               null,
+      FINAL_ACTION_CODE_ID BIGINT               null,
+      END_POINT            VARCHAR(200)         null,
+      ORGANISATION_ID      BIGINT               null,
+      BATCH_ID             VARCHAR(100)         null,
+      SRC_SYS_PROCESSED_DATETIME  DATETIME             null,
+      RECORD_INSERT_DATETIME DATETIME             null,
+      RECORD_UPDATE_DATETIME DATETIME             null,
+      constraint PK_EPISODE primary key (EPISODE_ID)
     );
 END
 
