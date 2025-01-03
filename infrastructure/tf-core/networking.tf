@@ -34,7 +34,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "zone_vnet_link" {
 
   provider = azurerm.hub
 
-  name                  = module.vnet[each.value.region].vnet.name
+  name                  = "${module.vnet[each.value.region].vnet.name}-core"
   resource_group_name   = data.terraform_remote_state.hub.outputs.private_dns_rg_name[each.value.region]
   private_dns_zone_name = each.value.name
   virtual_network_id    = module.vnet[each.value.region].vnet.id
