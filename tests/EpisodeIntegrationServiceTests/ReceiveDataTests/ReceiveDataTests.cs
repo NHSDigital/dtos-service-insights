@@ -322,7 +322,7 @@ public class ReceiveDataTests
                 "2020-03-31 12:49:47.513821+01,9000009808,,A00009,LAV,2019-09-05,NORMAL,,2016-09-05,,,INFORMED_SUBJECT_CHOICE,True,2019-09-05,,BRCA_RISK,2021-09-05,True,BRCA1,ROUTINE,\n";
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-        var expectedParticipantDto = new ParticipantDto
+        var expectedParticipantDto = new InitialParticipantDto
         {
             NhsNumber = 9000009808,
             SrcSysProcessedDateTime = DateTime.Parse("2020-03-31 12:49:47.513821+01"),

@@ -25,11 +25,11 @@ public class CreateParticipantScreeningProfile
         string serializedEvent = JsonSerializer.Serialize(eventGridEvent);
         _logger.LogInformation(serializedEvent);
 
-        ParticipantDto participant;
+        FinalizedParticipantDto participant;
 
         try
         {
-            participant = JsonSerializer.Deserialize<ParticipantDto>(eventGridEvent.Data.ToString());
+            participant = JsonSerializer.Deserialize<FinalizedParticipantDto>(eventGridEvent.Data.ToString());
         }
 
         catch (Exception ex)
@@ -86,7 +86,7 @@ public class CreateParticipantScreeningProfile
         return screeningLkp;
     }
 
-    private async Task SendToCreateParticipantScreeningProfileAsync(ParticipantDto participant)
+    private async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant)
     {
         DemographicsData demographicsData = await GetDemographicsDataAsync(participant.NhsNumber);
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(participant.ScreeningId);
@@ -97,8 +97,8 @@ public class CreateParticipantScreeningProfile
             ScreeningName = screeningLkp.ScreeningName,
             PrimaryCareProvider = demographicsData.PrimaryCareProvider,
             PreferredLanguage = demographicsData.PreferredLanguage,
-            ReasonForRemoval = String.Empty,
-            ReasonForRemovalDt = new DateOnly(),
+            ReasonForRemoval = participant.ReasonForRemoval,
+            ReasonForRemovalDt = participant.ReasonForRemovalDt,
             NextTestDueDate = participant.NextTestDueDate,
             NextTestDueDateCalcMethod = participant.NextTestDueDateCalculationMethod,
             ParticipantScreeningStatus = participant.ParticipantScreeningStatus,
@@ -107,10 +107,10 @@ public class CreateParticipantScreeningProfile
             IsHigherRiskActive = participant.IsHigherRiskActive,
             HigherRiskNextTestDueDate = participant.HigherRiskNextTestDueDate,
             HigherRiskReferralReasonCode = participant.HigherRiskReferralReasonCode,
-            HrReasonCodeDescription = String.Empty,
+            HrReasonCodeDescription = participant.HigherRiskReasonCodeDescription,
             DateIrradiated = participant.DateIrradiated,
             GeneCode = participant.GeneCode,
-            GeneCodeDescription = String.Empty,
+            GeneCodeDescription = participant.GeneDescription,
             RecordInsertDatetime = DateTime.Now
         };
 

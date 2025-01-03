@@ -1,5 +1,5 @@
 namespace NHS.ServiceInsights.Model;
-public class ParticipantDto
+public class InitialParticipantDto
 {
     public long NhsNumber { get; set; }
     public string ScreeningName { get; set; }

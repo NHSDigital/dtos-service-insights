@@ -280,10 +280,10 @@ function_apps = {
     }
 
     CreateEpisode = {
-      name_suffix            = "create-episode"
-      function_endpoint_name = "CreateEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
-      db_connection_string   = "ServiceInsightsDbConnectionString"
+      name_suffix               = "create-episode"
+      function_endpoint_name    = "CreateEpisode"
+      app_service_plan_key      = "BIAnalyticsDataService"
+      db_connection_string      = "ServiceInsightsDbConnectionString"
       event_grid_topic_producer = "topic-int-1"
     }
 
@@ -295,10 +295,10 @@ function_apps = {
     }
 
     UpdateEpisode = {
-      name_suffix            = "update-episode"
-      function_endpoint_name = "UpdateEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
-      db_connection_string   = "ServiceInsightsDbConnectionString"
+      name_suffix               = "update-episode"
+      function_endpoint_name    = "UpdateEpisode"
+      app_service_plan_key      = "BIAnalyticsDataService"
+      db_connection_string      = "ServiceInsightsDbConnectionString"
       event_grid_topic_producer = "topic-int-1"
     }
 

@@ -237,9 +237,9 @@ public class ReceiveData
             await ProcessParticipantDataAsync(name,subjects, participantUrl);
         }
     }
-    private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
+    private InitialParticipantDto MapParticipantToParticipantDto(BssSubject subject)
     {
-        return new ParticipantDto
+        return new InitialParticipantDto
         {
             NhsNumber = subject.nhs_number,
             ScreeningName = "Breast Screening",
