@@ -81,7 +81,6 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("END_POINT");
-            entity.Property(e => e.EpisodeIdSystem).HasColumnName("EPISODE_ID_SYSTEM");
             entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
             entity.Property(e => e.EpisodeTypeId).HasColumnName("EPISODE_TYPE_ID");
             entity.Property(e => e.FinalActionCodeId).HasColumnName("FINAL_ACTION_CODE_ID");
@@ -96,6 +95,9 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("RECORD_UPDATE_DATETIME");
             entity.Property(e => e.ScreeningId).HasColumnName("SCREENING_ID");
+            entity.Property(e => e.SrcSysProcessedDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
 
             entity.HasOne(d => d.EndCode).WithMany(p => p.Episodes)
                 .HasForeignKey(d => d.EndCodeId)
@@ -185,7 +187,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27D6C9BABA");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27C7EB90FF");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
@@ -263,7 +265,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27CFBB1614");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC2771383283");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
