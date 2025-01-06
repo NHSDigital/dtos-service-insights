@@ -58,9 +58,9 @@ CREATE USER [dev-uks-si-get-episode-mgmt] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [dev-uks-si-get-episode-mgmt];
 ALTER ROLE [db_datawriter] ADD MEMBER [dev-uks-si-get-episode-mgmt];
 
-CREATE USER [dev-uks-si-retrieve-mesh-file-from-cm] FROM EXTERNAL PROVIDER;
-ALTER ROLE [db_datareader] ADD MEMBER [dev-uks-si-retrieve-mesh-file-from-cm];
-ALTER ROLE [db_datawriter] ADD MEMBER [dev-uks-si-retrieve-mesh-file-from-cm];
+CREATE USER [dev-uks-si-retrieve-mesh-file] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [dev-uks-si-retrieve-mesh-file];
+ALTER ROLE [db_datawriter] ADD MEMBER [dev-uks-si-retrieve-mesh-file];
 
 CREATE USER [dev-uks-si-get-participant] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [dev-uks-si-get-participant];
