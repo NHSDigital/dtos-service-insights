@@ -1,7 +1,7 @@
 locals {
 
   rbac_roles_key_vault_officers = [
-    "Key Vault Certificate Officer",
+    "Key Vault Certificates Officer",
     "Key Vault Crypto Officer",
     "Key Vault Secrets Officer"
   ]
