@@ -68,17 +68,17 @@ locals {
     if contains(keys(app_value), "event_grid_topic_producer")
   }
 
-   # There are multiple collections, and possibly multiple databases.
+  # There are multiple maps
   # We cannot nest for loops inside a map, so first iterate all permutations as a list of objects...
   unified_event_grid_object_list = flatten([
     for event_key, event_value in local.event_grid_map : [
       for function_key, function_values in local.event_grid_function_app_map : merge({
-        event_key    = event_key # 1st iterator
+        event_key    = event_key    # 1st iterator
         function_key = function_key # 2nd iterator
         event_value  = event_value
-      }, function_values) # the block of key/value pairs for a specific MongoDB collection
-     if contains(keys(function_values), "event_grid_topic_producer") && length(function_values.event_grid_topic_producer) > 0 # Check attribute presence and length
-     ]
+      }, function_values)                                                                                                      # the block of key/value pairs for a specific collection
+      if contains(keys(function_values), "event_grid_topic_producer") && length(function_values.event_grid_topic_producer) > 0 # Check attribute presence and length
+    ]
   ])
   # ...then project them into a map with unique keys (combining the iterators), for consumption by a for_each meta argument
   unified_event_grid_object_map = {
@@ -87,7 +87,7 @@ locals {
   }
 }
 
-# # Use the merged map in your resources
+# Use the merged map in your resources
 resource "azurerm_role_assignment" "data_sender" {
   for_each = local.unified_event_grid_object_map
 
