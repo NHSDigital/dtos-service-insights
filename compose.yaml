@@ -257,6 +257,22 @@ services:
       - ASPNETCORE_URLS=http://*:6070
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
 
+  retrieve-episode-ref-data:
+    container_name: retrieve-episode-ref-data
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeDataService/RetrieveEpisodeReferenceData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "7575:7575"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:7575
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
   update-episode:
     container_name: update-episode
     restart: always
@@ -330,6 +346,22 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6060
       - GetEpisodeUrl=http://get-episode:6070/api/GetEpisode
+
+  get-episode-ref-data:
+    container_name: get-episode-ref-data
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./EpisodeManagementService/GetEpisodeReferenceData/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "7574:7574"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:7574
+      - RetrieveEpisodeReferenceDataServiceUrl= "http://localhost:7575/api/RetrieveEpisodeReferenceData"
 
   # Mesh Mailbox Management Service
   retrieve-mesh-file:
