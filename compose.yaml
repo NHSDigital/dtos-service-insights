@@ -361,7 +361,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7574
-      - RetrieveEpisodeReferenceDataServiceUrl= "http://localhost:7575/api/RetrieveEpisodeReferenceData"
+      - RetrieveEpisodeReferenceDataServiceUrl="http://localhost:7575/api/RetrieveEpisodeReferenceData"
 
   # Mesh Mailbox Management Service
   retrieve-mesh-file:
