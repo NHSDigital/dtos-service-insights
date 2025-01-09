@@ -357,6 +357,7 @@ function_apps = {
       key_vault_url          = "KeyVaultConnectionString"
       env_vars_static = {
         TimerExpression  = "*/5 * * * *"
+        BSSContainerName = "inbound"
       }
     }
 
