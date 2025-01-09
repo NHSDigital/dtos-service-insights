@@ -22,8 +22,7 @@ public class GetEpisodeReferenceData
     {
         _logger.LogInformation("Request to retrieve reference data has been processed.");
 
-        var baseUrl = Environment.GetEnvironmentVariable("RetrieveEpisodeReferenceDataServiceUrl");
-        var url = baseUrl;
+        var url = Environment.GetEnvironmentVariable("RetrieveEpisodeReferenceDataServiceUrl");
 
         try
         {

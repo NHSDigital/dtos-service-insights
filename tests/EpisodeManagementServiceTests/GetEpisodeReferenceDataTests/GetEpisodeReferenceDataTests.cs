@@ -88,7 +88,6 @@ public class GetEpisodeReferenceDataTests
     {
         // Arrange
         var queryParam = new NameValueCollection();
-        // var exception = new Exception("Test exception");
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
         _mockHttpRequestService.Setup(s => s.SendGet(It.IsAny<string>())).Throws<Exception>();
@@ -112,7 +111,6 @@ public class GetEpisodeReferenceDataTests
     {
         // Arrange
         var queryParam = new NameValueCollection();
-        // var exception = new Exception("Test exception");
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
         _mockHttpRequestService.Setup(s => s.SendGet(It.IsAny<string>())).Throws<Exception>();
