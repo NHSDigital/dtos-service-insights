@@ -7,4 +7,6 @@ public interface IFinalActionCodeLkpRepository
     Task<long?> GetFinalActionCodeIdAsync(string finalActionCode);
 
     Task<FinalActionCodeLkp?> GetFinalActionCodeLkp(string finalActionCode);
+
+    Task<IEnumerable<FinalActionCodeLkp>> GetAllFinalActionCodesAsync();
 }
