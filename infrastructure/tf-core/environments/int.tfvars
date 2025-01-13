@@ -355,7 +355,9 @@ function_apps = {
       function_endpoint_name = "RetrieveMeshFile"
       app_service_plan_key   = "BIAnalyticsDataService"
       key_vault_url          = "KeyVaultConnectionString"
-
+      env_vars_static = {
+        TimerExpression = "*/5 * * * *"
+      }
     }
 
     GetParticipant = {

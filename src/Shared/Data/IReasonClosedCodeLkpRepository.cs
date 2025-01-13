@@ -6,4 +6,5 @@ public interface IReasonClosedCodeLkpRepository
 {
     Task<long?> GetReasonClosedCodeIdAsync(string reasonClosedCode);
     Task<ReasonClosedCodeLkp?> GetReasonClosedLkp(string reasonClosedCode);
+    Task<IEnumerable<ReasonClosedCodeLkp>> GetAllReasonClosedCodesAsync();
 }
