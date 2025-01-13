@@ -1,26 +1,34 @@
+#!/usr/bin/env python3
 import hmac
 import uuid
 import datetime
 import subprocess
 from hashlib import sha256
 import os
-from dotenv import load_dotenv
+import sys
+
+# Ensure the python-dotenv package is installed
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "python-dotenv"])
+    from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
 AUTH_SCHEMA_NAME = "NHSMESH " # keep the trailing space
 
-def build_auth_header(mailbox_id: str, password: str, shared_key: str, nonce: str = None, nonce_count: int = 0):
+def build_auth_header(mailbox_id_from: str, password: str, shared_key: str, nonce: str = None, nonce_count: int = 0):
     """ Generate MESH Authorization header for mailboxid. """
     if not nonce:
         nonce = str(uuid.uuid4())
     timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M")
-    hmac_msg = mailbox_id + ":" + nonce + ":" + str(nonce_count) + ":" + password + ":" + timestamp
+    hmac_msg = mailbox_id_from + ":" + nonce + ":" + str(nonce_count) + ":" + password + ":" + timestamp
     hash_code = hmac.HMAC(shared_key.encode(), hmac_msg.encode(), sha256).hexdigest()
     return (
             AUTH_SCHEMA_NAME
-            + mailbox_id + ":"
+            + mailbox_id_from + ":"
             + nonce + ":"
             + str(nonce_count) + ":"
             + timestamp + ":"
@@ -28,18 +36,20 @@ def build_auth_header(mailbox_id: str, password: str, shared_key: str, nonce: st
     )
 
 # Load values from environment variables
-MAILBOX_ID = os.getenv("MAILBOX_ID")
-MAILBOX_PASSWORD = os.getenv("MAILBOX_PASSWORD")
+MAILBOX_ID_FROM = os.getenv("MAILBOX_ID_FROM")
+MAILBOX_FROM_PASSWORD = os.getenv("MAILBOX_FROM_PASSWORD")
 SHARED_KEY = os.getenv("SHARED_KEY")
 FILE_PATH = os.getenv("FILE_PATH")
+MAILBOX_ID_TO = os.getenv("MAILBOX_ID_TO")
 
 # Print the loaded values
-print(f"MAILBOX_ID: {MAILBOX_ID}")
-print(f"MAILBOX_PASSWORD: {MAILBOX_PASSWORD}")
+print(f"MAILBOX_ID_FROM: {MAILBOX_ID_FROM}")
+print(f"MAILBOX_FROM_PASSWORD: {MAILBOX_FROM_PASSWORD}")
 print(f"SHARED_KEY: {SHARED_KEY}")
 print(f"FILE_PATH: {FILE_PATH}")
+print(f"MAILBOX_ID_TO: {MAILBOX_ID_TO}")
 
-auth_token = build_auth_header(MAILBOX_ID, MAILBOX_PASSWORD, SHARED_KEY)
+auth_token = build_auth_header(MAILBOX_ID_FROM, MAILBOX_FROM_PASSWORD, SHARED_KEY)
 
 # Print the authentication token
 print(f"Authentication Token: {auth_token}")
@@ -56,14 +66,14 @@ curl_command_outbox = [
     "--header", "accept: application/vnd.mesh.v2+json",
     "--header", f"authorization: {auth_token}",
     "--header", "content-type: application/octet-stream",
-    "--header", f"mex-from: {MAILBOX_ID}",
-    "--header", f"mex-to: {MAILBOX_ID}",
+    "--header", f"mex-from: {MAILBOX_ID_FROM}",
+    "--header", f"mex-to: {MAILBOX_ID_TO}",
     "--header", "mex-workflowid: BSS DtoS Extract",
     "--header", f"mex-filename: {file_name}",
     "--header", "mex-localid: testing123",
     "--data", f"@{FILE_PATH}",
-    f"https://msg.intspineservices.nhs.uk/messageexchange/{MAILBOX_ID}/outbox"
+    f"https://msg.intspineservices.nhs.uk/messageexchange/{MAILBOX_ID_FROM}/outbox"
 ]
 
-result = subprocess.run(curl_command_outbox, capture_output=True, text=True)
-print(f"Mesh Mailbox Response: {result.stdout.strip()}")
+result_outbox = subprocess.run(curl_command_outbox, capture_output=True, text=True)
+print(f"Mesh Mailbox Response (Outbox): {result_outbox.stdout.strip()}")
