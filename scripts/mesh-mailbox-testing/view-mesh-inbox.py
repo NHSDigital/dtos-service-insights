@@ -76,35 +76,7 @@ print(f"\nCERT_PATH: {CERT_PATH}")
 print(f"\nKEY_PATH: {KEY_PATH}")
 print(f"\nWORKFLOW_ID: {WORKFLOW_ID}")
 
-# Generate authentication token for outbox
-# auth_token_outbox = build_auth_header(MAILBOX_ID_FROM, MAILBOX_FROM_PASSWORD, SHARED_KEY)
-
-# Print the authentication token for outbox
-# print(f"\nGenerating Authentication Token (Outbox): {auth_token_outbox}")
-
-# Extract the filename from the FILE_PATH
-# file_name = os.path.basename(FILE_PATH)
-
-# Perform the first curl command to the outbox and capture the response
-# curl_command_outbox = [
-#     "curl", "-k",
-#     "--request", "POST",
-#     "--cert", CERT_PATH,
-#     "--key", KEY_PATH,
-#     "--header", "accept: application/vnd.mesh.v2+json",
-#     "--header", f"authorization: {auth_token_outbox}",
-#     "--header", "content-type: application/octet-stream",
-#     "--header", f"mex-from: {MAILBOX_ID_FROM}",
-#     "--header", f"mex-to: {MAILBOX_ID_TO}",
-#     "--header", f"mex-workflowid: {WORKFLOW_ID}",
-#     "--header", f"mex-filename: {file_name}",
-#     "--header", "mex-localid: testing123",
-#     "--data", f"@{FILE_PATH}",
-#     f"https://msg.intspineservices.nhs.uk/messageexchange/{MAILBOX_ID_FROM}/outbox"
-# ]
-
-# result_outbox = subprocess.run(curl_command_outbox, capture_output=True, text=True)
-# print(f"\nSending to Mesh Mailbox {MAILBOX_ID_FROM} (Outbox): {result_outbox.stdout.strip()}")
+# We are not sending a file in this script, just checking the inbox of the receiving mailbox
 
 # Now lets view the inbox of the receiving mailbox
 print(f"\nNext lets view the inbox of the receiving mailbox: {MAILBOX_ID_TO}")
