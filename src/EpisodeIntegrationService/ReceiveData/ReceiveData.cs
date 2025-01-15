@@ -5,6 +5,7 @@ using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
 using CsvHelper;
 using System.Globalization;
+using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
@@ -12,6 +13,7 @@ public class ReceiveData
 {
     private readonly ILogger<ReceiveData> _logger;
     private readonly IHttpRequestService _httpRequestService;
+    private readonly EventGridPublisherClient _eventGridPublisherClient;
     private readonly string[] episodesExpectedHeaders = new[] { "nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code" };
     private readonly string[] subjectsExpectedHeaders = new[] { "change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language" };
 
@@ -23,10 +25,11 @@ public class ReceiveData
     private int episodeFailureCount = 0;
     private int episodeRowIndex = 0;
 
-    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService)
+    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService, EventGridPublisherClient eventGridPublisherClient)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
+        _eventGridPublisherClient = eventGridPublisherClient;
     }
 
     [Function("ReceiveData")]
@@ -52,7 +55,7 @@ public class ReceiveData
                 return;
             }
 
-            if (name.StartsWith("bss_episodes"))
+            if (name.StartsWith("bss_episodes") || name.EndsWith("_historic.csv"))
             {
                 if (!CheckCsvFileHeaders(myBlob, FileType.Episodes))
                 {
@@ -64,8 +67,17 @@ public class ReceiveData
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var episodesEnumerator = csv.GetRecords<BssEpisode>();
-
-                    await ProcessEpisodeDataAsync(name,episodesEnumerator, episodeUrl);
+                    if (name.EndsWith("_historic.csv"))
+                    {
+                        string? url = Environment.GetEnvironmentVariable("EventGridUrl");
+                        Dictionary<string, string> referenceData = await RetrieveReferenceDataAsync();
+                        await ProcessHistoricalEpisodeDataAsync(name, episodesEnumerator, url, referenceData);
+                    }
+                    else
+                    {
+                        string url = Environment.GetEnvironmentVariable("EpisodeManagementUrl");
+                        await ProcessEpisodeDataAsync(name, episodesEnumerator, episodeUrl);
+                    }
                 }
 
                 DateTime processingEnd = DateTime.UtcNow;
@@ -151,7 +163,6 @@ public class ReceiveData
         }
     }
 
-
     private async Task ProcessEpisodeDataAsync(string name,IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
 
@@ -184,6 +195,37 @@ public class ReceiveData
     }
 
 
+    private async Task ProcessHistoricalEpisodeDataAsync(string name, IEnumerable<BssEpisode> episodes, string url, Dictionary<string, string> referenceData)
+    {
+        try
+        {
+            _logger.LogInformation("Processing historical episode data.");
+
+            foreach (var episode in episodes)
+            {
+                var modifiedEpisode = MapHistoricalEpisodeToEpisodeDto(episode, referenceData);
+                string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode);
+
+                _logger.LogInformation("Sending Episode to {Url}: {Request}", url, serializedEpisode);
+
+                await _httpRequestService.SendPost(url, serializedEpisode);
+
+                episodeSuccessCount++;
+                episodeRowIndex++;
+                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
+
+            episodeFailureCount++;
+            episodeRowIndex++;
+            _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+            await ProcessHistoricalEpisodeDataAsync(name,episodes, url, referenceData);
+        }
+    }
+
     private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
 
     private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
@@ -210,6 +252,94 @@ public class ReceiveData
             FinalActionCode = episode.final_action_code
         };
     }
+    private FinalizedEpisodeDto MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, Dictionary<string, string> referenceData)
+    {
+        var episodeTypeValues = GetReferenceDataValues(referenceData, "EpisodeType");
+        var endCodeValues = GetReferenceDataValues(referenceData, "EndCode");
+        var reasonClosedCodeValues = GetReferenceDataValues(referenceData, "ReasonClosedCode");
+        var finalActionCodeValues = GetReferenceDataValues(referenceData, "FinalActionCode");
+
+        var (episodeType, episodeTypeDescription) = GetCodeAndDescription(episodeTypeValues, episode.episode_type);
+        var (endCode, endCodeDescription) = GetCodeAndDescription(endCodeValues, episode.end_code);
+        var (finalActionCode, finalActionCodeDescription) = GetCodeAndDescription(finalActionCodeValues, episode.final_action_code);
+        var (reasonClosedCode, reasonClosedCodeDescription) = GetCodeAndDescription(reasonClosedCodeValues, episode.reason_closed_code);
+
+        var finalizedEpisodeDto = new FinalizedEpisodeDto
+        {
+            EpisodeId = episode.episode_id,
+            NhsNumber = episode.nhs_number,
+            ScreeningId = 1, // Screening id is required from ScreeningLkp
+            EpisodeType = episodeType,
+            EpisodeTypeDescription = episodeTypeDescription,
+            EpisodeOpenDate = ParseNullableDate(episode.episode_date),
+            AppointmentMadeFlag = ParseBooleanStringToShort(episode.appointment_made),
+            FirstOfferedAppointmentDate = ParseNullableDate(episode.date_of_foa),
+            ActualScreeningDate = ParseNullableDate(episode.date_of_as),
+            EarlyRecallDate = ParseNullableDate(episode.early_recall_date),
+            CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
+            EndCode = endCode,
+            EndCodeDescription = endCodeDescription,
+            EndCodeLastUpdated = ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
+            FinalActionCode = finalActionCode,
+            FinalActionCodeDescription = finalActionCodeDescription,
+            ReasonClosedCode = reasonClosedCode,
+            ReasonClosedCodeDescription = reasonClosedCodeDescription,
+            EndPoint = episode.end_point,
+            OrganisationId = null, // OrganisationCode is required from OrganisationLkp
+            BatchId = episode.bso_batch_id,
+            SrcSysProcessedDatetime = episode.change_db_date_time
+        };
+
+        EventGridEvent eventGridEvent = new EventGridEvent(
+                subject: "Episode Created",
+                eventType: "CreateParticipantScreeningEpisode",
+                dataVersion: "1.0",
+                data: finalizedEpisodeDto);
+
+        _eventGridPublisherClient.SendEvent(eventGridEvent);
+
+        return finalizedEpisodeDto;
+    }
+
+
+    private async Task<Dictionary<string, string>> RetrieveReferenceDataAsync()
+    {
+        var url = Environment.GetEnvironmentVariable("GetEpisodeReferenceDataServiceUrl");
+
+        try
+        {
+            var response = await _httpRequestService.SendGet(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to retrieve episode reference data. Status Code: {StatusCode}", response.StatusCode);
+                throw new Exception("Failed to retrieve episode reference data");
+            }
+
+            var referenceDataJson = await response.Content.ReadAsStringAsync();
+            var referenceData = JsonSerializer.Deserialize<ReferenceData>(referenceDataJson);
+
+            var episodeTypes = string.Join(",", referenceData.EpisodeTypes.Select(et => $"{et.EpisodeType}:{et.EpisodeDescription}"));
+            var endCodes = string.Join(",", referenceData.EndCodes.Select(ec => $"{ec.EndCode}:{ec.EndCodeDescription}"));
+            var reasonClosedCodes = string.Join(",", referenceData.ReasonClosedCodes.Select(rcc => $"{rcc.ReasonClosedCode}:{rcc.ReasonClosedCodeDescription}"));
+            var finalActionCodes = string.Join(",", referenceData.FinalActionCodes.Select(fac => $"{fac.FinalActionCode}:{fac.FinalActionCodeDescription}"));
+
+            return new()
+            {
+                ["EpisodeType"] = episodeTypes,
+                ["EndCode"] = endCodes,
+                ["ReasonClosedCode"] = reasonClosedCodes,
+                ["FinalActionCode"] = finalActionCodes
+            };
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve episode reference data");
+            throw;
+        }
+    }
+
 
     private async Task ProcessParticipantDataAsync(string name,IEnumerable<BssSubject> subjects, string participantUrl)
     {
@@ -287,7 +417,6 @@ public class ReceiveData
         return DateOnly.FromDateTime(dateTime);
     }
 
-
     private static DateTime? ParseNullableDateTime(string? dateTime, string format)
     {
         if (string.IsNullOrEmpty(dateTime)) return null;
@@ -295,6 +424,39 @@ public class ReceiveData
         return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
     }
 
+    public class ReferenceData
+    {
+        public List<EpisodeTypeLkp> EpisodeTypes { get; set; }
+        public List<EndCodeLkp> EndCodes { get; set; }
+        public List<ReasonClosedCodeLkp> ReasonClosedCodes { get; set; }
+        public List<FinalActionCodeLkp> FinalActionCodes { get; set; }
+    }
 
+
+    private string[] GetReferenceDataValues(Dictionary<string, string> referenceData, string key)
+    {
+        if (referenceData.TryGetValue(key, out string value))
+        {
+            return value.Split(",");
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private (string? code, string? description) GetCodeAndDescription(string[] values, string codeValue)
+    {
+        var match = values?.FirstOrDefault(x => x.StartsWith(codeValue + ":"));
+        if (match == null)
+        {
+            return (null, null);
+        }
+        else
+        {
+            var parts = match.Split(":");
+            return (parts[0], parts[1]);
+        }
+    }
 }
 
