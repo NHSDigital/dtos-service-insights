@@ -4,6 +4,8 @@ using NHS.ServiceInsights.Common;
 using System.Text;
 using NHS.ServiceInsights.Model;
 using System.Text.Json;
+using Azure.Messaging.EventGrid;
+using Azure;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationServiceTests;
 
@@ -13,13 +15,14 @@ public class ReceiveDataTests
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
     private readonly Mock<ILogger<EpisodeIntegrationService.ReceiveData>> _mockLogger = new();
     private readonly EpisodeIntegrationService.ReceiveData _function;
+    private readonly Mock<EventGridPublisherClient> _mockEventGridPublisherClient  = new();
 
     public ReceiveDataTests()
     {
         Environment.SetEnvironmentVariable("EpisodeManagementUrl", "EpisodeManagementUrl");
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
 
-        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object);
+        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEventGridPublisherClient.Object);
     }
 
     [TestMethod]
