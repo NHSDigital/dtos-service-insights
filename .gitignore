@@ -42,4 +42,5 @@ appsettings.json
 .crt
 .keystore
 .p12
+.pem
 
