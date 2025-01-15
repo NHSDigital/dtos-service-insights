@@ -54,4 +54,30 @@ public class GetReferenceData
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
+
+    [Function("GetAllOrganisationReferenceData")]
+    public async Task<HttpResponseData> Run2([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    {
+        _logger.LogInformation("Retrieving Organisation Reference Data... ");
+
+        try
+        {
+            var organisationIds = await _organisationLkpRepository.GetAllOrganisationsAsync();
+
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await JsonSerializer.SerializeAsync(response.Body, new
+            {
+                organisationIds = organisationIds.Select(oi => new { oi.OrganisationCode, oi.OrganisationId }),
+
+            });
+            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve data from the db.\nException: {Message}", ex.Message);
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
+        }
+    }
 }
