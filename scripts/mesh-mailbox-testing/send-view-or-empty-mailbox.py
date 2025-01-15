@@ -19,6 +19,7 @@ except ImportError:
 load_dotenv()
 
 AUTH_SCHEMA_NAME = "NHSMESH " # keep the trailing space
+ACCEPT_HEADER = "accept: application/vnd.mesh.v2+json"
 
 def build_auth_header(mailbox_id: str, password: str, shared_key: str, nonce: str = None, nonce_count: int = 0):
     """ Generate MESH Authorization header for mailboxid. """
@@ -93,7 +94,7 @@ def send_to_outbox():
         "--request", "POST",
         "--cert", CERT_PATH,
         "--key", KEY_PATH,
-        "--header", "accept: application/vnd.mesh.v2+json",
+        "--header", ACCEPT_HEADER,
         "--header", f"authorization: {auth_token_outbox}",
         "--header", "content-type: application/octet-stream",
         "--header", f"mex-from: {MAILBOX_ID_FROM}",
@@ -121,7 +122,7 @@ def view_inbox():
         "--request", "GET",
         "--cert", CERT_PATH,
         "--key", KEY_PATH,
-        "--header", "accept: application/vnd.mesh.v2+json",
+        "--header", ACCEPT_HEADER,
         "--header", f"authorization: {auth_token_inbox}",
         f"https://msg.intspineservices.nhs.uk/messageexchange/{MAILBOX_ID_TO}/inbox"
     ]
@@ -140,7 +141,7 @@ def empty_inbox():
             "--request", "GET",
             "--cert", CERT_PATH,
             "--key", KEY_PATH,
-            "--header", "accept: application/vnd.mesh.v2+json",
+            "--header", ACCEPT_HEADER,
             "--header", f"authorization: {auth_token_inbox}",
             f"https://msg.intspineservices.nhs.uk/messageexchange/{MAILBOX_ID_TO}/inbox"
         ]
