@@ -203,7 +203,7 @@ public class ReceiveData
 
             foreach (var episode in episodes)
             {
-                var modifiedEpisode = MapHistoricalEpisodeToEpisodeDto(episode, referenceData);
+                var modifiedEpisode = await MapHistoricalEpisodeToEpisodeDto(episode, referenceData);
                 EventGridEvent eventGridEvent = new EventGridEvent(
                     subject: "Episode Created",
                     eventType: "CreateParticipantScreeningEpisode",
@@ -254,7 +254,7 @@ public class ReceiveData
             FinalActionCode = episode.final_action_code
         };
     }
-    private FinalizedEpisodeDto MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, Dictionary<string, string> referenceData)
+    private async Task<FinalizedEpisodeDto> MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, Dictionary<string, string> referenceData)
     {
         var episodeTypeValues = GetReferenceDataValues(referenceData, "EpisodeType");
         var endCodeValues = GetReferenceDataValues(referenceData, "EndCode");
@@ -265,6 +265,8 @@ public class ReceiveData
         var (endCode, endCodeDescription) = GetCodeAndDescription(endCodeValues, episode.end_code);
         var (finalActionCode, finalActionCodeDescription) = GetCodeAndDescription(finalActionCodeValues, episode.final_action_code);
         var (reasonClosedCode, reasonClosedCodeDescription) = GetCodeAndDescription(reasonClosedCodeValues, episode.reason_closed_code);
+
+        var organisationId = await GetOrganisationIdAsync(episode.bso_organisation_code);
 
         var finalizedEpisodeDto = new FinalizedEpisodeDto
         {
@@ -287,7 +289,7 @@ public class ReceiveData
             ReasonClosedCode = reasonClosedCode,
             ReasonClosedCodeDescription = reasonClosedCodeDescription,
             EndPoint = episode.end_point,
-            OrganisationId = null, // OrganisationCode is required from OrganisationLkp
+            OrganisationId = organisationId,
             BatchId = episode.bso_batch_id,
             SrcSysProcessedDatetime = episode.change_db_date_time
         };
@@ -452,6 +454,35 @@ public class ReceiveData
             return (parts[0], parts[1]);
         }
     }
+
+    private async Task<long?> GetOrganisationIdAsync(string organisationCode)
+    {
+        var url = Environment.GetEnvironmentVariable("GetAllOrganisationReferenceDataUrl");
+        var response = await _httpRequestService.SendGet(url);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to retrieve organisation reference data. Status Code: {StatusCode}", response.StatusCode);
+            return null;
+        }
+
+        var organisationData = await JsonSerializer.DeserializeAsync<OrganisationReferenceData>(await response.Content.ReadAsStreamAsync());
+        var organisationId = organisationData.organisationIds.FirstOrDefault(oi => oi.OrganisationCode == organisationCode)?.OrganisationId;
+
+        return organisationId;
+    }
+
+    public class OrganisationReferenceData
+    {
+        public OrganisationReference[] organisationIds { get; set; }
+    }
+
+    public class OrganisationReference
+    {
+        public string OrganisationCode { get; set; }
+        public long OrganisationId { get; set; }
+    }
+
 
 }
 
