@@ -6,6 +6,7 @@ features = {
   acr_enabled                          = false
   api_management_enabled               = false
   event_grid_enabled                   = false
+  fnapp_event_grid_fw_rule             = true
   private_endpoints_enabled            = true
   private_service_connection_is_manual = false
   public_network_access_enabled        = false
@@ -183,6 +184,13 @@ function_apps = {
   remote_debugging_enabled      = false
   storage_uses_managed_identity = null
   worker_32bit                  = false
+
+  ip_restriction = {
+      rule_name        = "AllowEventGrid"
+      rule_priority    = 300
+      rule_action      = "Allow"
+      rule_service_tag = "AzureEventGrid"
+  }
 
   fa_config = {
 

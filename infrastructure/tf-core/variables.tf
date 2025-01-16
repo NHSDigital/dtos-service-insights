@@ -174,6 +174,12 @@ variable "function_apps" {
     remote_debugging_enabled      = bool
     storage_uses_managed_identity = bool
     worker_32bit                  = bool
+    ip_restriction = optional(map(object({
+      rule_name        = string
+      rule_priority    = number
+      rule_action      = string
+      rule_service_tag = string
+    })))
     slots = optional(map(object({
       name         = string
       slot_enabled = optional(bool, false)
