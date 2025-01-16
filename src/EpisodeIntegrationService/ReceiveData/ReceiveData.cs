@@ -9,7 +9,7 @@ using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
-public class ReceiveData
+public partial class ReceiveData
 {
     private readonly ILogger<ReceiveData> _logger;
     private readonly IHttpRequestService _httpRequestService;
@@ -228,8 +228,6 @@ public class ReceiveData
         }
     }
 
-    private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
-
     private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
         return new InitialEpisodeDto
@@ -239,14 +237,14 @@ public class ReceiveData
             ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
             SrcSysProcessedDateTime = episode.change_db_date_time,
-            EpisodeOpenDate = ParseNullableDate(episode.episode_date),
-            AppointmentMadeFlag = ParseBooleanStringToShort(episode.appointment_made),
-            FirstOfferedAppointmentDate = ParseNullableDate(episode.date_of_foa),
-            ActualScreeningDate = ParseNullableDate(episode.date_of_as),
-            EarlyRecallDate = ParseNullableDate(episode.early_recall_date),
+            EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
+            AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
+            FirstOfferedAppointmentDate = Utils.ParseNullableDate(episode.date_of_foa),
+            ActualScreeningDate = Utils.ParseNullableDate(episode.date_of_as),
+            EarlyRecallDate = Utils.ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = episode.end_code,
-            EndCodeLastUpdated = ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
+            EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
             OrganisationCode = episode.bso_organisation_code,
             BatchId = episode.bso_batch_id,
             EndPoint = episode.end_point,
@@ -272,18 +270,18 @@ public class ReceiveData
         {
             EpisodeId = episode.episode_id,
             NhsNumber = episode.nhs_number,
-            ScreeningId = 1, // Screening id is required from ScreeningLkp
+            ScreeningId = 1, // Hardcoded to 1 for now because we only have one screening type (Breast Screening)
             EpisodeType = episodeType,
             EpisodeTypeDescription = episodeTypeDescription,
-            EpisodeOpenDate = ParseNullableDate(episode.episode_date),
-            AppointmentMadeFlag = ParseBooleanStringToShort(episode.appointment_made),
-            FirstOfferedAppointmentDate = ParseNullableDate(episode.date_of_foa),
-            ActualScreeningDate = ParseNullableDate(episode.date_of_as),
-            EarlyRecallDate = ParseNullableDate(episode.early_recall_date),
+            EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
+            AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
+            FirstOfferedAppointmentDate = Utils.ParseNullableDate(episode.date_of_foa),
+            ActualScreeningDate = Utils.ParseNullableDate(episode.date_of_as),
+            EarlyRecallDate = Utils.ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = endCode,
             EndCodeDescription = endCodeDescription,
-            EndCodeLastUpdated = ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
+            EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
             FinalActionCode = finalActionCode,
             FinalActionCodeDescription = finalActionCodeDescription,
             ReasonClosedCode = reasonClosedCode,
@@ -375,59 +373,19 @@ public class ReceiveData
         {
             NhsNumber = subject.nhs_number,
             ScreeningName = "Breast Screening",
-            NextTestDueDate = ParseNullableDate(subject.next_test_due_date),
+            NextTestDueDate = Utils.ParseNullableDate(subject.next_test_due_date),
             NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
             ParticipantScreeningStatus = subject.subject_status_code,
             ScreeningCeasedReason = subject.reason_for_ceasing_code,
-            IsHigherRisk = ParseBooleanStringToShort(subject.is_higher_risk),
-            IsHigherRiskActive = ParseBooleanStringToShort(subject.is_higher_risk_active),
+            IsHigherRisk = Utils.ParseBooleanStringToShort(subject.is_higher_risk),
+            IsHigherRiskActive = Utils.ParseBooleanStringToShort(subject.is_higher_risk_active),
             SrcSysProcessedDateTime = subject.change_db_date_time,
-            HigherRiskNextTestDueDate = ParseNullableDate(subject.higher_risk_next_test_due_date),
+            HigherRiskNextTestDueDate = Utils.ParseNullableDate(subject.higher_risk_next_test_due_date),
             HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
-            DateIrradiated = ParseNullableDate(subject.date_irradiated),
+            DateIrradiated = Utils.ParseNullableDate(subject.date_irradiated),
             GeneCode = subject.gene_code
         };
     }
-
-    private static short? ParseBooleanStringToShort(string booleanString)
-    {
-        if (booleanString.ToUpper() == "TRUE")
-        {
-            return (short)1;
-        }
-        else if (booleanString.ToUpper() == "FALSE")
-        {
-            return (short)0;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    private static DateOnly? ParseNullableDate(string? date)
-    {
-        if (string.IsNullOrEmpty(date)) return null;
-
-        var dateTime = DateTime.ParseExact(date, AllowedDateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None);
-        return DateOnly.FromDateTime(dateTime);
-    }
-
-    private static DateTime? ParseNullableDateTime(string? dateTime, string format)
-    {
-        if (string.IsNullOrEmpty(dateTime)) return null;
-
-        return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
-    }
-
-    public class ReferenceData
-    {
-        public List<EpisodeTypeLkp> EpisodeTypes { get; set; }
-        public List<EndCodeLkp> EndCodes { get; set; }
-        public List<ReasonClosedCodeLkp> ReasonClosedCodes { get; set; }
-        public List<FinalActionCodeLkp> FinalActionCodes { get; set; }
-    }
-
 
     private string[] GetReferenceDataValues(Dictionary<string, string> referenceData, string key)
     {
@@ -471,18 +429,6 @@ public class ReceiveData
 
         return organisationId;
     }
-
-    public class OrganisationReferenceData
-    {
-        public OrganisationReference[] organisationIds { get; set; }
-    }
-
-    public class OrganisationReference
-    {
-        public string OrganisationCode { get; set; }
-        public long OrganisationId { get; set; }
-    }
-
 
 }
 
