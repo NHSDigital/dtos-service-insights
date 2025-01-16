@@ -75,7 +75,6 @@ public partial class ReceiveData
                     }
                     else
                     {
-                        string url = Environment.GetEnvironmentVariable("EpisodeManagementUrl");
                         await ProcessEpisodeDataAsync(name, episodesEnumerator, episodeUrl);
                     }
                 }
@@ -211,7 +210,7 @@ public partial class ReceiveData
                     data: modifiedEpisode
                 );
                 _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
-                _eventGridPublisherClient.SendEvent(eventGridEvent);
+                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
                 episodeSuccessCount++;
                 episodeRowIndex++;
                 _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
@@ -307,7 +306,7 @@ public partial class ReceiveData
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to retrieve episode reference data. Status Code: {StatusCode}", response.StatusCode);
-                throw new Exception("Failed to retrieve episode reference data");
+                throw new HttpRequestException($"Failed to retrieve episode reference data. Status Code: {response.StatusCode}");
             }
 
             var referenceDataJson = await response.Content.ReadAsStringAsync();
@@ -330,7 +329,7 @@ public partial class ReceiveData
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to retrieve episode reference data");
-            throw;
+            throw new HttpRequestException("Failed to retrieve episode reference data", ex);
         }
     }
 
@@ -387,7 +386,7 @@ public partial class ReceiveData
         };
     }
 
-    private string[] GetReferenceDataValues(Dictionary<string, string> referenceData, string key)
+    private static string[] GetReferenceDataValues(Dictionary<string, string> referenceData, string key)
     {
         if (referenceData.TryGetValue(key, out string value))
         {
@@ -395,11 +394,11 @@ public partial class ReceiveData
         }
         else
         {
-            return null;
+            return  Array.Empty<string>();
         }
     }
 
-    private (string? code, string? description) GetCodeAndDescription(string[] values, string codeValue)
+    private static (string? code, string? description) GetCodeAndDescription(string[] values, string codeValue)
     {
         var match = values?.FirstOrDefault(x => x.StartsWith(codeValue + ":"));
         if (match == null)

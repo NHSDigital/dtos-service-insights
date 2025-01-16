@@ -1,7 +1,7 @@
 using System.Globalization;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
-public class Utils
+public static class Utils
 {
     private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
     public static short? ParseBooleanStringToShort(string booleanString)
