@@ -28,7 +28,7 @@ public class ParticipantScreeningProfileRepository : IParticipantScreeningProfil
     {
         var query = _dbContext.ParticipantScreeningProfiles
             .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
-                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate))
+                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate) && x.ExceptionFlag == false)
             .OrderBy(x => x.RecordInsertDatetime)
             .Skip(skip)
             .Take(pageSize);
@@ -37,7 +37,7 @@ public class ParticipantScreeningProfileRepository : IParticipantScreeningProfil
 
         int count = await _dbContext.ParticipantScreeningProfiles
             .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
-                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate))
+                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate) && x.ExceptionFlag == false)
             .CountAsync();
 
         int totalPages = (int)Math.Ceiling((double)count/(double)pageSize);

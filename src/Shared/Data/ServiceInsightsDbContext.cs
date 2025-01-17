@@ -185,7 +185,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27D6C9BABA");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC277AC5A942");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
@@ -226,6 +226,7 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(300)
                 .IsUnicode(false)
                 .HasColumnName("EPISODE_TYPE_DESCRIPTION");
+            entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
             entity.Property(e => e.FinalActionCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -263,12 +264,13 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27CFBB1614");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC279584465A");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.DateIrradiated).HasColumnName("DATE_IRRADIATED");
+            entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
             entity.Property(e => e.GeneCode)
                 .HasMaxLength(100)
                 .IsUnicode(false)

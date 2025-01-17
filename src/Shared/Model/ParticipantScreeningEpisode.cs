@@ -52,4 +52,6 @@ public partial class ParticipantScreeningEpisode
     public string? BatchId { get; set; }
 
     public DateTime? RecordInsertDatetime { get; set; }
+
+    public bool ExceptionFlag { get; set; }
 }

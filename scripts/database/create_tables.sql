@@ -170,7 +170,8 @@ BEGIN
       DATE_IRRADIATED                     DATE NULL,
       GENE_CODE                           VARCHAR(100) NULL,
       GENE_CODE_DESCRIPTION               VARCHAR(200) NULL,
-      RECORD_INSERT_DATETIME              DATETIME NULL
+      RECORD_INSERT_DATETIME              DATETIME NULL,
+      EXCEPTION_FLAG                      BIT NOT NULL DEFAULT 0
     );
 END
 
@@ -210,7 +211,8 @@ BEGIN
       ORGANISATION_CODE                 VARCHAR(50) NULL,
       ORGANISATION_NAME                 VARCHAR(300) NULL,
       BATCH_ID                          VARCHAR(100) NULL,
-      RECORD_INSERT_DATETIME            DATETIME NULL
+      RECORD_INSERT_DATETIME            DATETIME NULL,
+      EXCEPTION_FLAG                    BIT NOT NULL DEFAULT 0
     );
 END
 
