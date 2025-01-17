@@ -51,7 +51,11 @@ public partial class ParticipantScreeningEpisode
 
     public string? BatchId { get; set; }
 
+    public DateTime? SrcSysProcessedDatetime { get; set; }
+
     public DateTime? RecordInsertDatetime { get; set; }
+
+    public DateTime? RecordUpdateDatetime { get; set; }
 
     public bool ExceptionFlag { get; set; }
 }

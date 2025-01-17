@@ -83,6 +83,7 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasColumnName("END_POINT");
             entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
             entity.Property(e => e.EpisodeTypeId).HasColumnName("EPISODE_TYPE_ID");
+            entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
             entity.Property(e => e.FinalActionCodeId).HasColumnName("FINAL_ACTION_CODE_ID");
             entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
             entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
@@ -187,7 +188,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27C7EB90FF");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27FE3B3A64");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
@@ -258,15 +259,21 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.RecordInsertDatetime)
                 .HasColumnType("datetime")
                 .HasColumnName("RECORD_INSERT_DATETIME");
+            entity.Property(e => e.RecordUpdateDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("RECORD_UPDATE_DATETIME");
             entity.Property(e => e.ScreeningName)
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
+            entity.Property(e => e.SrcSysProcessedDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
         });
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC2771383283");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27064EDDEA");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
@@ -318,6 +325,9 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.RecordInsertDatetime)
                 .HasColumnType("datetime")
                 .HasColumnName("RECORD_INSERT_DATETIME");
+            entity.Property(e => e.RecordUpdateDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("RECORD_UPDATE_DATETIME");
             entity.Property(e => e.ScreeningCeasedReason)
                 .HasMaxLength(100)
                 .IsUnicode(false)
@@ -326,6 +336,9 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
+            entity.Property(e => e.SrcSysProcessedDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
         });
 
         modelBuilder.Entity<ReasonClosedCodeLkp>(entity =>

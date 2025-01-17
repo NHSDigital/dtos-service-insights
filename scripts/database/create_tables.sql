@@ -173,7 +173,8 @@ alter table EPISODE
         GENE_CODE_DESCRIPTION               VARCHAR(200)    NULL,
         SRC_SYS_PROCESSED_DATETIME          DATETIME        NULL,
         RECORD_INSERT_DATETIME              DATETIME        NULL,
-        RECORD_UPDATE_DATETIME              DATETIME        NULL
+        RECORD_UPDATE_DATETIME              DATETIME        NULL,
+        EXCEPTION_FLAG                      BIT NOT NULL DEFAULT 0
       );
   END
 
@@ -214,9 +215,9 @@ BEGIN
       ORGANISATION_NAME                 VARCHAR(300)    NULL,
       BATCH_ID                          VARCHAR(100)    NULL,
       SRC_SYS_PROCESSED_DATETIME        DATETIME        NULL,
-      EXCEPTION_FLAG                    SMALLINT        NULL,
       RECORD_INSERT_DATETIME            DATETIME        NULL,
-      RECORD_UPDATE_DATETIME            DATETIME        NULL
+      RECORD_UPDATE_DATETIME            DATETIME        NULL,
+      EXCEPTION_FLAG                    BIT NOT NULL DEFAULT 0
     );
 END
 
