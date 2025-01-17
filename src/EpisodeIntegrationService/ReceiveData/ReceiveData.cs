@@ -39,6 +39,12 @@ public class ReceiveData
 
             _logger.LogInformation("C# HTTP trigger function ReceiveData received a request.");
 
+            if (!name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogError("Invalid file extension. Only .csv files are supported.");
+                return;
+            }
+
             var (episodeUrl, participantUrl) = GetConfigurationUrls();
             if (string.IsNullOrEmpty(episodeUrl) || string.IsNullOrEmpty(participantUrl))
             {
@@ -237,9 +243,9 @@ public class ReceiveData
             await ProcessParticipantDataAsync(name,subjects, participantUrl);
         }
     }
-    private ParticipantDto MapParticipantToParticipantDto(BssSubject subject)
+    private InitialParticipantDto MapParticipantToParticipantDto(BssSubject subject)
     {
-        return new ParticipantDto
+        return new InitialParticipantDto
         {
             NhsNumber = subject.nhs_number,
             ScreeningName = "Breast Screening",

@@ -26,7 +26,7 @@ public class CreateParticipantScreeningEpisode
         string serializedEvent = JsonSerializer.Serialize(eventGridEvent);
         _logger.LogInformation(serializedEvent);
 
-        Episode episode;
+        FinalizedEpisodeDto episode;
 
         try
         {
@@ -35,7 +35,7 @@ public class CreateParticipantScreeningEpisode
                 ReferenceHandler = ReferenceHandler.Preserve
             };
 
-            episode = JsonSerializer.Deserialize<Episode>(eventGridEvent.Data.ToString(), options);
+            episode = JsonSerializer.Deserialize<FinalizedEpisodeDto>(eventGridEvent.Data.ToString(), options);
         }
         catch (Exception ex)
         {
@@ -91,7 +91,7 @@ public class CreateParticipantScreeningEpisode
         return organisationLkp;
     }
 
-    private async Task SendToCreateParticipantScreeningEpisodeAsync(Episode episode)
+    private async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode)
     {
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(episode.ScreeningId);
         OrganisationLkp organisationLkp = await GetOrganisationDataAsync(episode.OrganisationId);
@@ -101,17 +101,21 @@ public class CreateParticipantScreeningEpisode
             EpisodeId = episode.EpisodeId,
             ScreeningName = screeningLkp.ScreeningName,
             NhsNumber = episode.NhsNumber,
-            EpisodeType = episode.EpisodeTypeId.ToString(),
-            EpisodeTypeDescription = String.Empty,
+            EpisodeType = episode.EpisodeType,
+            EpisodeTypeDescription = episode.EpisodeTypeDescription,
             EpisodeOpenDate = episode.EpisodeOpenDate,
             AppointmentMadeFlag = episode.AppointmentMadeFlag,
             FirstOfferedAppointmentDate = episode.FirstOfferedAppointmentDate,
             ActualScreeningDate = episode.ActualScreeningDate,
             EarlyRecallDate = episode.EarlyRecallDate,
             CallRecallStatusAuthorisedBy = episode.CallRecallStatusAuthorisedBy,
-            EndCode = episode.EndCodeId.ToString(),
-            EndCodeDescription = String.Empty,
+            EndCode = episode.EndCode,
+            EndCodeDescription = episode.EndCodeDescription,
             EndCodeLastUpdated = episode.EndCodeLastUpdated,
+            ReasonClosedCode = episode.ReasonClosedCode,
+            ReasonClosedCodeDescription = episode.ReasonClosedCodeDescription,
+            FinalActionCode =  episode.FinalActionCode,
+            FinalActionCodeDescription = episode.FinalActionCodeDescription,
             OrganisationCode = organisationLkp.OrganisationCode,
             OrganisationName = organisationLkp.OrganisationName,
             BatchId = episode.BatchId,

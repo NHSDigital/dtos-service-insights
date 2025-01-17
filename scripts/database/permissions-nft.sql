@@ -6,6 +6,22 @@ CREATE USER [nft-uks-si-create-ps-profile-data] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-create-ps-profile-data];
 ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-create-ps-profile-data];
 
+CREATE USER [nft-uks-si-get-ps-profile-data] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-get-ps-profile-data];
+ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-get-ps-profile-data];
+
+CREATE USER [nft-uks-si-get-ps-profile] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-get-ps-profile];
+ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-get-ps-profile];
+
+CREATE USER [nft-uks-si-get-ps-episode-data] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-get-ps-episode-data];
+ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-get-ps-episode-data];
+
+CREATE USER [nft-uks-si-get-ps-episode] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-get-ps-episode];
+ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-get-ps-episode];
+
 CREATE USER [nft-uks-si-create-ps-episode] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-create-ps-episode];
 ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-create-ps-episode];
@@ -42,9 +58,9 @@ CREATE USER [nft-uks-si-get-episode-mgmt] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-get-episode-mgmt];
 ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-get-episode-mgmt];
 
-CREATE USER [nft-uks-si-retrieve-mesh-file-from-cm] FROM EXTERNAL PROVIDER;
-ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-retrieve-mesh-file-from-cm];
-ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-retrieve-mesh-file-from-cm];
+CREATE USER [nft-uks-si-retrieve-mesh-file] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-retrieve-mesh-file];
+ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-retrieve-mesh-file];
 
 CREATE USER [nft-uks-si-get-participant] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-get-participant];

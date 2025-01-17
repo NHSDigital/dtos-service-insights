@@ -13,27 +13,28 @@ IF NOT EXISTS
 BEGIN
     CREATE TABLE dbo.[EPISODE]
     (
-      EPISODE_ID                        BIGINT               not null,
-      EPISODE_ID_SYSTEM                 BIGINT               null,
-      SCREENING_ID                      BIGINT               not null,
-      NHS_NUMBER                        BIGINT               not null,
-      EPISODE_TYPE_ID                   BIGINT               null,
-      EPISODE_OPEN_DATE                 DATE                 null,
-      APPOINTMENT_MADE_FLAG             SMALLINT             null,
-      FIRST_OFFERED_APPOINTMENT_DATE    DATE                 null,
-      ACTUAL_SCREENING_DATE             DATE                 null,
-      EARLY_RECALL_DATE                 DATE                 null,
-      CALL_RECALL_STATUS_AUTHORISED_BY  VARCHAR(200)         null,
-      END_CODE_ID                       BIGINT               null,
-      END_CODE_LAST_UPDATED             DATETIME             null,
-      FINAL_ACTION_CODE_ID              BIGINT               null,
-      REASON_CLOSED_CODE_ID             BIGINT               null,
-      END_POINT                         VARCHAR(200)         null,
-      ORGANISATION_ID                   BIGINT               null,
-      BATCH_ID                          VARCHAR(100)         null,
-      RECORD_INSERT_DATETIME            DATETIME             null,
-      RECORD_UPDATE_DATETIME            DATETIME             null,
-      constraint PK_EPISODE             primary key (EPISODE_ID)
+      EPISODE_ID                          BIGINT          NOT NULL,
+      SCREENING_ID                        BIGINT          NOT NULL,
+      NHS_NUMBER                          BIGINT          NOT NULL,
+      EPISODE_TYPE_ID                     BIGINT          NULL,
+      EPISODE_OPEN_DATE                   DATE            NULL,
+      APPOINTMENT_MADE_FLAG               SMALLINT        NULL,
+      FIRST_OFFERED_APPOINTMENT_DATE      DATE            NULL,
+      ACTUAL_SCREENING_DATE               DATE            NULL,
+      EARLY_RECALL_DATE                   DATE            NULL,
+      CALL_RECALL_STATUS_AUTHORISED_BY    VARCHAR(200)    NULL,
+      END_CODE_ID                         BIGINT          NULL,
+      END_CODE_LAST_UPDATED               DATETIME        NULL,
+      REASON_CLOSED_CODE_ID               BIGINT          NULL,
+      FINAL_ACTION_CODE_ID                BIGINT          NULL,
+      END_POINT                           VARCHAR(200)    NULL,
+      ORGANISATION_ID                     BIGINT          NULL,
+      BATCH_ID                            VARCHAR(100)    NULL,
+      SRC_SYS_PROCESSED_DATETIME          DATETIME        NULL,
+      EXCEPTION_FLAG                      SMALLINT        NULL,
+      RECORD_INSERT_DATETIME              DATETIME        NULL,
+      RECORD_UPDATE_DATETIME              DATETIME        NULL,
+      constraint PK_EPISODE primary key (EPISODE_ID)
     );
 END
 
@@ -141,39 +142,40 @@ alter table EPISODE
 
 -- Table: PARTICIPANT_SCREENING_PROFILE
 
-IF NOT EXISTS
-(
-    SELECT *
-    FROM INFORMATION_SCHEMA.TABLES
-    WHERE TABLE_SCHEMA = 'dbo'
-    AND TABLE_NAME = 'PARTICIPANT_SCREENING_PROFILE'
-)
-BEGIN
-    CREATE TABLE PARTICIPANT_SCREENING_PROFILE
-    (
-      ID BIGINT IDENTITY(1,1) PRIMARY KEY,
-      NHS_NUMBER                          BIGINT NOT NULL,
-      SCREENING_NAME                      VARCHAR(200) NULL,
-      PRIMARY_CARE_PROVIDER               VARCHAR(50) NULL,
-      PREFERRED_LANGUAGE                  VARCHAR(50) NULL,
-      REASON_FOR_REMOVAL                  VARCHAR(50) NULL,
-      REASON_FOR_REMOVAL_DT               DATE NULL,
-      NEXT_TEST_DUE_DATE                  DATE NULL,
-      NEXT_TEST_DUE_DATE_CALC_METHOD      VARCHAR(100) NULL,
-      PARTICIPANT_SCREENING_STATUS        VARCHAR(100) NULL,
-      SCREENING_CEASED_REASON             VARCHAR(100) NULL,
-      IS_HIGHER_RISK                      SMALLINT NULL,
-      IS_HIGHER_RISK_ACTIVE               SMALLINT NULL,
-      HIGHER_RISK_NEXT_TEST_DUE_DATE      DATE NULL,
-      HIGHER_RISK_REFERRAL_REASON_CODE    VARCHAR(100) NULL,
-      HR_REASON_CODE_DESCRIPTION          VARCHAR(200) NULL,
-      DATE_IRRADIATED                     DATE NULL,
-      GENE_CODE                           VARCHAR(100) NULL,
-      GENE_CODE_DESCRIPTION               VARCHAR(200) NULL,
-      RECORD_INSERT_DATETIME              DATETIME NULL,
-      EXCEPTION_FLAG                      BIT NOT NULL DEFAULT 0
-    );
-END
+  IF NOT EXISTS
+  (
+      SELECT *
+      FROM INFORMATION_SCHEMA.TABLES
+      WHERE TABLE_SCHEMA = 'dbo'
+      AND TABLE_NAME = 'PARTICIPANT_SCREENING_PROFILE'
+  )
+  BEGIN
+      CREATE TABLE PARTICIPANT_SCREENING_PROFILE
+      (
+        ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+        NHS_NUMBER                          BIGINT          NOT NULL,
+        SCREENING_NAME                      VARCHAR(200)    NULL,
+        PRIMARY_CARE_PROVIDER               VARCHAR(50)     NULL,
+        PREFERRED_LANGUAGE                  VARCHAR(50)     NULL,
+        REASON_FOR_REMOVAL                  VARCHAR(50)     NULL,
+        REASON_FOR_REMOVAL_DT               DATE            NULL,
+        NEXT_TEST_DUE_DATE                  DATE            NULL,
+        NEXT_TEST_DUE_DATE_CALC_METHOD      VARCHAR(100)    NULL,
+        PARTICIPANT_SCREENING_STATUS        VARCHAR(100)    NULL,
+        SCREENING_CEASED_REASON             VARCHAR(100)    NULL,
+        IS_HIGHER_RISK                      SMALLINT        NULL,
+        IS_HIGHER_RISK_ACTIVE               SMALLINT        NULL,
+        HIGHER_RISK_NEXT_TEST_DUE_DATE      DATE            NULL,
+        HIGHER_RISK_REFERRAL_REASON_CODE    VARCHAR(100)    NULL,
+        HR_REASON_CODE_DESCRIPTION          VARCHAR(200)    NULL,
+        DATE_IRRADIATED                     DATE            NULL,
+        GENE_CODE                           VARCHAR(100)    NULL,
+        GENE_CODE_DESCRIPTION               VARCHAR(200)    NULL,
+        SRC_SYS_PROCESSED_DATETIME          DATETIME        NULL,
+        RECORD_INSERT_DATETIME              DATETIME        NULL,
+        RECORD_UPDATE_DATETIME              DATETIME        NULL
+      );
+  END
 
 
 -- Table: PARTICIPANT_SCREENING_EPISODE
@@ -189,30 +191,32 @@ BEGIN
     CREATE TABLE PARTICIPANT_SCREENING_EPISODE
     (
       ID BIGINT IDENTITY(1,1) PRIMARY KEY,
-      EPISODE_ID                        BIGINT NOT NULL,
-      NHS_NUMBER                        BIGINT NOT NULL,
-      SCREENING_NAME                    VARCHAR(200) NULL,
-      EPISODE_TYPE                      VARCHAR(50) NULL,
-      EPISODE_TYPE_DESCRIPTION          VARCHAR(300) NULL,
-      EPISODE_OPEN_DATE                 DATE NULL,
-      APPOINTMENT_MADE_FLAG             SMALLINT NULL,
-      FIRST_OFFERED_APPOINTMENT_DATE    DATE NULL,
-      ACTUAL_SCREENING_DATE             DATE NULL,
-      EARLY_RECALL_DATE                 DATE NULL,
-      CALL_RECALL_STATUS_AUTHORISED_BY  VARCHAR(200) NULL,
-      END_CODE                          VARCHAR(50) NULL,
-      END_CODE_DESCRIPTION              VARCHAR(300) NULL,
-      END_CODE_LAST_UPDATED             DATETIME NULL,
-      REASON_CLOSED_CODE                VARCHAR(50) NULL,
-      REASON_CLOSED_CODE_DESCRIPTION    VARCHAR(300) NULL,
-      FINAL_ACTION_CODE                 VARCHAR(50) NULL,
-      FINAL_ACTION_CODE_DESCRIPTION     VARCHAR(300) NULL,
-      END_POINT                         VARCHAR(200) NULL,
-      ORGANISATION_CODE                 VARCHAR(50) NULL,
-      ORGANISATION_NAME                 VARCHAR(300) NULL,
-      BATCH_ID                          VARCHAR(100) NULL,
-      RECORD_INSERT_DATETIME            DATETIME NULL,
-      EXCEPTION_FLAG                    BIT NOT NULL DEFAULT 0
+      EPISODE_ID                        BIGINT          NOT NULL,
+      NHS_NUMBER                        BIGINT          NOT NULL,
+      SCREENING_NAME                    VARCHAR(200)    NULL,
+      EPISODE_TYPE                      VARCHAR(50)     NULL,
+      EPISODE_TYPE_DESCRIPTION          VARCHAR(300)    NULL,
+      EPISODE_OPEN_DATE                 DATE            NULL,
+      APPOINTMENT_MADE_FLAG             SMALLINT        NULL,
+      FIRST_OFFERED_APPOINTMENT_DATE    DATE            NULL,
+      ACTUAL_SCREENING_DATE             DATE            NULL,
+      EARLY_RECALL_DATE                 DATE            NULL,
+      CALL_RECALL_STATUS_AUTHORISED_BY  VARCHAR(200)    NULL,
+      END_CODE                          VARCHAR(50)     NULL,
+      END_CODE_DESCRIPTION              VARCHAR(300)    NULL,
+      END_CODE_LAST_UPDATED             DATETIME        NULL,
+      REASON_CLOSED_CODE                VARCHAR(50)     NULL,
+      REASON_CLOSED_CODE_DESCRIPTION    VARCHAR(300)    NULL,
+      FINAL_ACTION_CODE                 VARCHAR(50)     NULL,
+      FINAL_ACTION_CODE_DESCRIPTION     VARCHAR(300)    NULL,
+      END_POINT                         VARCHAR(200)    NULL,
+      ORGANISATION_CODE                 VARCHAR(50)     NULL,
+      ORGANISATION_NAME                 VARCHAR(300)    NULL,
+      BATCH_ID                          VARCHAR(100)    NULL,
+      SRC_SYS_PROCESSED_DATETIME        DATETIME        NULL,
+      EXCEPTION_FLAG                    SMALLINT        NULL,
+      RECORD_INSERT_DATETIME            DATETIME        NULL,
+      RECORD_UPDATE_DATETIME            DATETIME        NULL
     );
 END
 

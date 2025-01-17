@@ -38,7 +38,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert -- verify the counters of Rows
         var expectedLogMessages = new List<string>
@@ -102,7 +102,7 @@ public class ReceiveDataTests
         var expectedJson = JsonSerializer.Serialize(expectedEpisodeDto);
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.Is<string>(x => x == expectedJson)), Times.Once);
@@ -124,7 +124,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(6));
@@ -147,7 +147,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(6));
@@ -171,7 +171,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(6));
@@ -195,7 +195,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(6));
@@ -215,7 +215,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
         _mockLogger.Verify(log =>
@@ -241,7 +241,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert -- verify the counters of Rows
         var expectedLogMessages = new List<string>
@@ -284,7 +284,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert -- verify the counters of Rows
         var expectedLogMessages = new List<string>
@@ -322,7 +322,7 @@ public class ReceiveDataTests
                 "2020-03-31 12:49:47.513821+01,9000009808,,A00009,LAV,2019-09-05,NORMAL,,2016-09-05,,,INFORMED_SUBJECT_CHOICE,True,2019-09-05,,BRCA_RISK,2021-09-05,True,BRCA1,ROUTINE,\n";
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-        var expectedParticipantDto = new ParticipantDto
+        var expectedParticipantDto = new InitialParticipantDto
         {
             NhsNumber = 9000009808,
             SrcSysProcessedDateTime = DateTime.Parse("2020-03-31 12:49:47.513821+01"),
@@ -341,7 +341,7 @@ public class ReceiveDataTests
         var expectedJson = JsonSerializer.Serialize(expectedParticipantDto);
 
         // Act
-        await _function.Run(stream, "bss_subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.Is<string>(x => x == expectedJson)), Times.Once);
@@ -361,7 +361,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert -- verify the counters of Rows
         var expectedLogMessages = new List<string>
@@ -405,7 +405,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert
         _mockLogger.Verify(log =>
@@ -434,7 +434,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "invalid_file_name");
+        await _function.Run(stream, "invalid_file_name.csv");
 
         // Assert
         _mockLogger.Verify(log =>
@@ -459,7 +459,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -487,7 +487,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -522,7 +522,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(6));
@@ -544,7 +544,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_test_data_20240930");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -564,7 +564,7 @@ public class ReceiveDataTests
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "");
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930");
+        await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
         _mockLogger.Verify(log =>
@@ -576,6 +576,34 @@ public class ReceiveDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
     }
+
+
+    [TestMethod]
+    public async Task ReceiveData_ShouldLogErrorAndReturnIfFileExtensionIsNotCsv()
+    {
+        // Arrange
+        string data = "nhs_number,episode_id,episode_type,change_db_date_time,episode_date,appointment_made,date_of_foa,date_of_as,early_recall_date,call_recall_status_authorised_by,end_code,end_code_last_updated,bso_organisation_code,bso_batch_id,reason_closed_code,end_point,final_action_code\n" +
+                    "9000007053,571645,R,2020-03-31 12:11:47.339148+01,2017-01-11,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV121798J,,,\n" +
+                    "9000009808,333330,R,2020-03-31 12:49:47.513821+01,2016-09-05,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV000001A,,,\n";
+
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+
+        // Act
+        await _function.Run(stream, "bss_episodes_test_data_20240930.txt");
+
+        // Assert
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<object>(state => state.ToString().Contains("Invalid file extension. Only .csv files are supported.")),
+            It.IsAny<Exception>(),
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Exactly(1));
+
+        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
 
 }
 

@@ -137,6 +137,23 @@ diagnostic_settings = {
   metric_enabled = true
 }
 
+event_grid_defaults = {
+  identity_ids                  = []
+  identity_type                 = "SystemAssigned"
+  inbound_ip_rules              = []
+  input_schema                  = {}
+  local_auth_enabled            = true
+  public_network_access_enabled = false
+}
+
+event_grid_configs = {
+  topic-1 = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "sub1"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+}
+
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"
   acr_name    = "acrukshubdevserins"
@@ -260,10 +277,11 @@ function_apps = {
     }
 
     CreateEpisode = {
-      name_suffix            = "create-episode"
-      function_endpoint_name = "CreateEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
-      db_connection_string   = "ServiceInsightsDbConnectionString"
+      name_suffix               = "create-episode"
+      function_endpoint_name    = "CreateEpisode"
+      app_service_plan_key      = "BIAnalyticsDataService"
+      db_connection_string      = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producer = "topic-1"
     }
 
     GetEpisode = {
@@ -274,10 +292,11 @@ function_apps = {
     }
 
     UpdateEpisode = {
-      name_suffix            = "update-episode"
-      function_endpoint_name = "UpdateEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
-      db_connection_string   = "ServiceInsightsDbConnectionString"
+      name_suffix               = "update-episode"
+      function_endpoint_name    = "UpdateEpisode"
+      app_service_plan_key      = "BIAnalyticsDataService"
+      db_connection_string      = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producer = "topic-1"
     }
 
     ReceiveData = {
@@ -329,9 +348,13 @@ function_apps = {
     }
 
     RetrieveMeshFile = {
-      name_suffix            = "retrieve-mesh-file-from-cm"
+      name_suffix            = "retrieve-mesh-file"
       function_endpoint_name = "RetrieveMeshFile"
       app_service_plan_key   = "BIAnalyticsDataService"
+      key_vault_url          = "KeyVaultConnectionString"
+      env_vars_static = {
+        TimerExpression = "*/5 * * * *"
+      }
     }
 
     GetParticipant = {
@@ -409,6 +432,18 @@ storage_accounts = {
       }
       inbound-poison = {
         container_name = "inbound-poison"
+      }
+    }
+  }
+
+  eventgrid = {
+    name_suffix                   = "eventgrid"
+    account_tier                  = "Standard"
+    replication_type              = "LRS"
+    public_network_access_enabled = false
+    containers = {
+      config = {
+        container_name = "deadletterqueue"
       }
     }
   }

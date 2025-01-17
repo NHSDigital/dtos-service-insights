@@ -188,12 +188,14 @@ variable "function_apps" {
           env_var_name   = string
           container_name = string
       })), [])
-      db_connection_string = optional(string, "")
-      key_vault_url        = optional(string, "")
+      db_connection_string      = optional(string, "")
+      event_grid_topic_producer = optional(string, "")
+      key_vault_url             = optional(string, "")
       app_urls = optional(list(object({
         env_var_name     = string
         function_app_key = string
       })), [])
+      env_vars_static = optional(map(string), {})
     }))
   })
 }
@@ -372,21 +374,25 @@ variable "function_app_slots" {
   }))
 }
 
-# variable "event_grid_configs" {
-#   type = map(any) # needs to be a loose type definition to allow merging of var.event_grid_configs
+# variable "event_grids" {
+#   type = map(any) # needs to be a loose type definition to allow merging of var.event_grid
 # }
 
-# variable "event_grid_defaults" {
-#   description = "Default configuration for the Event Grid resource"
-#   type = object({
-#     identity_ids  = list(string)
-#     identity_type = string
-#     inbound_ip_rule = list(object({
-#       ip_mask = string
-#       action  = string
-#     }))
-#     input_schema                  = map(string)
-#     local_auth_enabled            = bool
-#     public_network_access_enabled = bool
-#   })
-# }
+variable "event_grid_configs" {
+  type = map(any) # needs to be a loose type definition to allow merging of var.event_grid_configs
+}
+
+variable "event_grid_defaults" {
+  description = "Default configuration for the Event Grid resource"
+  type = object({
+    identity_ids  = list(string)
+    identity_type = string
+    inbound_ip_rules = list(object({
+      ip_mask = string
+      action  = string
+    }))
+    input_schema                  = map(string)
+    local_auth_enabled            = bool
+    public_network_access_enabled = bool
+  })
+}
