@@ -83,6 +83,7 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasColumnName("END_POINT");
             entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
             entity.Property(e => e.EpisodeTypeId).HasColumnName("EPISODE_TYPE_ID");
+            entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
             entity.Property(e => e.FinalActionCodeId).HasColumnName("FINAL_ACTION_CODE_ID");
             entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
             entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
@@ -187,11 +188,14 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27C7EB90FF");
+            entity.HasKey(e => new { e.EpisodeId, e.SrcSysProcessedDatetime }).HasName("PK__PARTICIP__6BB7DFCBB15238AD");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
-            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.EpisodeId).HasColumnName("EPISODE_ID");
+            entity.Property(e => e.SrcSysProcessedDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
             entity.Property(e => e.ActualScreeningDate).HasColumnName("ACTUAL_SCREENING_DATE");
             entity.Property(e => e.AppointmentMadeFlag).HasColumnName("APPOINTMENT_MADE_FLAG");
             entity.Property(e => e.BatchId)
@@ -218,7 +222,6 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("END_POINT");
-            entity.Property(e => e.EpisodeId).HasColumnName("EPISODE_ID");
             entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
             entity.Property(e => e.EpisodeType)
                 .HasMaxLength(50)
@@ -228,6 +231,7 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(300)
                 .IsUnicode(false)
                 .HasColumnName("EPISODE_TYPE_DESCRIPTION");
+            entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
             entity.Property(e => e.FinalActionCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -257,6 +261,9 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.RecordInsertDatetime)
                 .HasColumnType("datetime")
                 .HasColumnName("RECORD_INSERT_DATETIME");
+            entity.Property(e => e.RecordUpdateDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("RECORD_UPDATE_DATETIME");
             entity.Property(e => e.ScreeningName)
                 .HasMaxLength(200)
                 .IsUnicode(false)
@@ -265,11 +272,14 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC2771383283");
+            entity.HasKey(e => new { e.NhsNumber, e.SrcSysProcessedDatetime }).HasName("PK__PARTICIP__D62BD6BC55E6AA2A");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
-            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
+            entity.Property(e => e.SrcSysProcessedDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
             entity.Property(e => e.DateIrradiated).HasColumnName("DATE_IRRADIATED");
             entity.Property(e => e.GeneCode)
                 .HasMaxLength(100)
@@ -295,7 +305,6 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("NEXT_TEST_DUE_DATE_CALC_METHOD");
-            entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
             entity.Property(e => e.ParticipantScreeningStatus)
                 .HasMaxLength(100)
                 .IsUnicode(false)
@@ -316,6 +325,9 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.RecordInsertDatetime)
                 .HasColumnType("datetime")
                 .HasColumnName("RECORD_INSERT_DATETIME");
+            entity.Property(e => e.RecordUpdateDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("RECORD_UPDATE_DATETIME");
             entity.Property(e => e.ScreeningCeasedReason)
                 .HasMaxLength(100)
                 .IsUnicode(false)
