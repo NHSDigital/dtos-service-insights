@@ -71,7 +71,7 @@ public partial class ReceiveData
                     if (name.EndsWith("_historic.csv"))
                     {
                         var referenceData = await RetrieveReferenceDataAsync();
-                         var organisationReferenceData = await GetOrganisationIdAsync();
+                        var organisationReferenceData = await GetOrganisationIdAsync();
                         await ProcessHistoricalEpisodeDataAsync(name, episodesEnumerator, referenceData, organisationReferenceData);
 
                     }

@@ -624,7 +624,7 @@ public class ReceiveDataTests
 
         var referenceDataJson = "{\"EndCodes\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypes\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodes\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodes\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
 
-         _mockHttpRequestService
+        _mockHttpRequestService
             .Setup(service => service.SendGet("GetEpisodeReferenceDataServiceUrl"))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
@@ -633,7 +633,7 @@ public class ReceiveDataTests
 
         var organisationReferenceDataJson = "{\"OrganisationIds\":{\"AGA\":1,\"ANE\":2,\"ANT\":3,\"AWC\":4,\"BHL\":5,\"BHU\":6,\"BLE\":7,\"BYO\":8,\"CBA\":9,\"CDN\":10}}";
 
-         _mockHttpRequestService
+        _mockHttpRequestService
             .Setup(service => service.SendGet("GetAllOrganisationReferenceDataUrl"))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
