@@ -6,6 +6,7 @@ using System.Text.Json;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
 
+
 namespace NHS.ServiceInsights.ReferenceDataService;
 
 public class GetReferenceData
@@ -66,9 +67,9 @@ public class GetReferenceData
 
 
             var response = req.CreateResponse(HttpStatusCode.OK);
-            await JsonSerializer.SerializeAsync(response.Body, new
+            await JsonSerializer.SerializeAsync(response.Body, new OrganisationReferenceData
             {
-                organisationIds = organisationIds.Select(oi => new { oi.OrganisationCode, oi.OrganisationId }),
+                OrganisationIds = organisationIds.ToDictionary(oi => oi.OrganisationCode , oi => oi.OrganisationId ),
 
             });
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");

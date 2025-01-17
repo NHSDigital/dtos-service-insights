@@ -70,8 +70,10 @@ public partial class ReceiveData
                     var episodesEnumerator = csv.GetRecords<BssEpisode>();
                     if (name.EndsWith("_historic.csv"))
                     {
-                        Dictionary<string, string> referenceData = await RetrieveReferenceDataAsync();
-                        await ProcessHistoricalEpisodeDataAsync(name, episodesEnumerator, referenceData);
+                        var referenceData = await RetrieveReferenceDataAsync();
+                         var organisationReferenceData = await GetOrganisationIdAsync();
+                        await ProcessHistoricalEpisodeDataAsync(name, episodesEnumerator, referenceData, organisationReferenceData);
+
                     }
                     else
                     {
@@ -194,7 +196,7 @@ public partial class ReceiveData
     }
 
 
-    private async Task ProcessHistoricalEpisodeDataAsync(string name, IEnumerable<BssEpisode> episodes, Dictionary<string, string> referenceData)
+    private async Task ProcessHistoricalEpisodeDataAsync(string name, IEnumerable<BssEpisode> episodes, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
         try
         {
@@ -202,30 +204,39 @@ public partial class ReceiveData
 
             foreach (var episode in episodes)
             {
-                var modifiedEpisode = await MapHistoricalEpisodeToEpisodeDto(episode, referenceData);
-                EventGridEvent eventGridEvent = new EventGridEvent(
-                    subject: "Episode Created",
-                    eventType: "CreateParticipantScreeningEpisode",
-                    dataVersion: "1.0",
-                    data: modifiedEpisode
-                );
-                _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
-                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
-                episodeSuccessCount++;
-                episodeRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+                try
+                {
+                    var modifiedEpisode = await MapHistoricalEpisodeToEpisodeDto(episode, referenceData, organisationReferenceData);
+                    EventGridEvent eventGridEvent = new EventGridEvent(
+                        subject: "Episode Created",
+                        eventType: "CreateParticipantScreeningEpisode",
+                        dataVersion: "1.0",
+                        data: modifiedEpisode
+                    );
+                    _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
+                    await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+                    episodeSuccessCount++;
+                    episodeRowIndex++;
+                    _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
+
+                    episodeFailureCount++;
+                    episodeRowIndex++;
+                    _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+                    await ProcessHistoricalEpisodeDataAsync(name,episodes, referenceData, organisationReferenceData);
+                }
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
-
-            episodeFailureCount++;
-            episodeRowIndex++;
-            _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
-            await ProcessHistoricalEpisodeDataAsync(name,episodes, referenceData);
         }
     }
+
 
     private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
@@ -251,42 +262,30 @@ public partial class ReceiveData
             FinalActionCode = episode.final_action_code
         };
     }
-    private async Task<FinalizedEpisodeDto> MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, Dictionary<string, string> referenceData)
+    private async Task<FinalizedEpisodeDto> MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
-        var episodeTypeValues = GetReferenceDataValues(referenceData, "EpisodeType");
-        var endCodeValues = GetReferenceDataValues(referenceData, "EndCode");
-        var reasonClosedCodeValues = GetReferenceDataValues(referenceData, "ReasonClosedCode");
-        var finalActionCodeValues = GetReferenceDataValues(referenceData, "FinalActionCode");
-
-        var (episodeType, episodeTypeDescription) = GetCodeAndDescription(episodeTypeValues, episode.episode_type);
-        var (endCode, endCodeDescription) = GetCodeAndDescription(endCodeValues, episode.end_code);
-        var (finalActionCode, finalActionCodeDescription) = GetCodeAndDescription(finalActionCodeValues, episode.final_action_code);
-        var (reasonClosedCode, reasonClosedCodeDescription) = GetCodeAndDescription(reasonClosedCodeValues, episode.reason_closed_code);
-
-        var organisationId = await GetOrganisationIdAsync(episode.bso_organisation_code);
-
         var finalizedEpisodeDto = new FinalizedEpisodeDto
         {
             EpisodeId = episode.episode_id,
             NhsNumber = episode.nhs_number,
             ScreeningId = 1, // Hardcoded to 1 for now because we only have one screening type (Breast Screening)
-            EpisodeType = episodeType,
-            EpisodeTypeDescription = episodeTypeDescription,
+            EpisodeType = episode.episode_type,
+            EpisodeTypeDescription = string.IsNullOrEmpty(episode.episode_type) ? "" : referenceData.EpisodeTypes[episode.episode_type],
             EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
             AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
             FirstOfferedAppointmentDate = Utils.ParseNullableDate(episode.date_of_foa),
             ActualScreeningDate = Utils.ParseNullableDate(episode.date_of_as),
             EarlyRecallDate = Utils.ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
-            EndCode = endCode,
-            EndCodeDescription = endCodeDescription,
+            EndCode = episode.end_code,
+            EndCodeDescription = string.IsNullOrEmpty(episode.end_code) ? "" : referenceData.EndCodes[episode.end_code],
             EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
-            FinalActionCode = finalActionCode,
-            FinalActionCodeDescription = finalActionCodeDescription,
-            ReasonClosedCode = reasonClosedCode,
-            ReasonClosedCodeDescription = reasonClosedCodeDescription,
+            FinalActionCode = episode.final_action_code,
+            FinalActionCodeDescription = string.IsNullOrEmpty(episode.final_action_code) ? "" : referenceData.FinalActionCodes[episode.final_action_code],
+            ReasonClosedCode = episode.reason_closed_code,
+            ReasonClosedCodeDescription = string.IsNullOrEmpty(episode.reason_closed_code) ? "" : referenceData.ReasonClosedCodes[episode.reason_closed_code],
             EndPoint = episode.end_point,
-            OrganisationId = organisationId,
+            OrganisationId = string.IsNullOrEmpty(episode.bso_organisation_code) ? null : organisationReferenceData.OrganisationIds[episode.bso_organisation_code],
             BatchId = episode.bso_batch_id,
             SrcSysProcessedDatetime = episode.change_db_date_time
         };
@@ -295,7 +294,7 @@ public partial class ReceiveData
     }
 
 
-    private async Task<Dictionary<string, string>> RetrieveReferenceDataAsync()
+    private async Task<EpisodeReferenceData> RetrieveReferenceDataAsync()
     {
         var url = Environment.GetEnvironmentVariable("GetEpisodeReferenceDataServiceUrl");
 
@@ -310,20 +309,7 @@ public partial class ReceiveData
             }
 
             var referenceDataJson = await response.Content.ReadAsStringAsync();
-            var referenceData = JsonSerializer.Deserialize<ReferenceData>(referenceDataJson);
-
-            var episodeTypes = string.Join(",", referenceData.EpisodeTypes.Select(et => $"{et.EpisodeType}:{et.EpisodeDescription}"));
-            var endCodes = string.Join(",", referenceData.EndCodes.Select(ec => $"{ec.EndCode}:{ec.EndCodeDescription}"));
-            var reasonClosedCodes = string.Join(",", referenceData.ReasonClosedCodes.Select(rcc => $"{rcc.ReasonClosedCode}:{rcc.ReasonClosedCodeDescription}"));
-            var finalActionCodes = string.Join(",", referenceData.FinalActionCodes.Select(fac => $"{fac.FinalActionCode}:{fac.FinalActionCodeDescription}"));
-
-            return new()
-            {
-                ["EpisodeType"] = episodeTypes,
-                ["EndCode"] = endCodes,
-                ["ReasonClosedCode"] = reasonClosedCodes,
-                ["FinalActionCode"] = finalActionCodes
-            };
+            return JsonSerializer.Deserialize<EpisodeReferenceData>(referenceDataJson);
 
         }
         catch (Exception ex)
@@ -386,47 +372,15 @@ public partial class ReceiveData
         };
     }
 
-    private static string[] GetReferenceDataValues(Dictionary<string, string> referenceData, string key)
-    {
-        if (referenceData.TryGetValue(key, out string value))
-        {
-            return value.Split(",");
-        }
-        else
-        {
-            return  Array.Empty<string>();
-        }
-    }
-
-    private static (string? code, string? description) GetCodeAndDescription(string[] values, string codeValue)
-    {
-        var match = values?.FirstOrDefault(x => x.StartsWith(codeValue + ":"));
-        if (match == null)
-        {
-            return (null, null);
-        }
-        else
-        {
-            var parts = match.Split(":");
-            return (parts[0], parts[1]);
-        }
-    }
-
-    private async Task<long?> GetOrganisationIdAsync(string organisationCode)
+    private async Task<OrganisationReferenceData> GetOrganisationIdAsync()
     {
         var url = Environment.GetEnvironmentVariable("GetAllOrganisationReferenceDataUrl");
         var response = await _httpRequestService.SendGet(url);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError("Failed to retrieve organisation reference data. Status Code: {StatusCode}", response.StatusCode);
-            return null;
-        }
+        response.EnsureSuccessStatusCode();
 
-        var organisationData = await JsonSerializer.DeserializeAsync<OrganisationReferenceData>(await response.Content.ReadAsStreamAsync());
-        var organisationId = organisationData.organisationIds.FirstOrDefault(oi => oi.OrganisationCode == organisationCode)?.OrganisationId;
+        return await JsonSerializer.DeserializeAsync<OrganisationReferenceData>(await response.Content.ReadAsStreamAsync());
 
-        return organisationId;
     }
 
 }

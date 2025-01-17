@@ -4,10 +4,11 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using NHS.ServiceInsights.Data;
+using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
-public class RetrieveEpisodeReferenceData
+public partial class RetrieveEpisodeReferenceData
 {
     private readonly ILogger<RetrieveEpisodeReferenceData> _logger;
 
@@ -43,12 +44,12 @@ public class RetrieveEpisodeReferenceData
             var reasonClosedCodes = await _reasonClosedCodeLkpRepository.GetAllReasonClosedCodesAsync();
 
             var response = req.CreateResponse(HttpStatusCode.OK);
-            await JsonSerializer.SerializeAsync(response.Body, new
+            await JsonSerializer.SerializeAsync(response.Body, new EpisodeReferenceData
             {
-                EndCodes = endCodes.Select(ec => new { ec.EndCode, ec.EndCodeDescription }),
-                EpisodeTypes = episodeTypes.Select(et => new { et.EpisodeType, et.EpisodeDescription }),
-                FinalActionCodes = finalActionCodes.Select(fac => new { fac.FinalActionCode, fac.FinalActionCodeDescription }),
-                ReasonClosedCodes = reasonClosedCodes.Select(rcc => new { rcc.ReasonClosedCode, rcc.ReasonClosedCodeDescription })
+                EndCodes = endCodes.ToDictionary(ec => ec.EndCode, ec => ec.EndCodeDescription),
+                EpisodeTypes = episodeTypes.ToDictionary(et => et.EpisodeType, et => et.EpisodeDescription),
+                FinalActionCodes = finalActionCodes.ToDictionary(fac => fac.FinalActionCode, fac => fac.FinalActionCodeDescription),
+                ReasonClosedCodes = reasonClosedCodes.ToDictionary(rcc => rcc.ReasonClosedCode, rcc => rcc.ReasonClosedCodeDescription)
             });
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
             return response;
