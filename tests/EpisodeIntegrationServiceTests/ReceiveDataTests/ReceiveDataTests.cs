@@ -623,7 +623,7 @@ public class ReceiveDataTests
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-        var referenceDataJson = "{\"EndCodeToIdLookup\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypes\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodes\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodes\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
+        var referenceDataJson = "{\"EndCodeToIdLookup\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypeToIdLookup\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodeToIdLookup\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodeToIdLookup\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
 
         _mockHttpRequestService
             .Setup(service => service.SendGet("GetEpisodeReferenceDataServiceUrl"))
@@ -663,7 +663,7 @@ public class ReceiveDataTests
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-        var referenceDataJson = "{\"EndCodeToIdLookup\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypes\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodes\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodes\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
+        var referenceDataJson = "{\"EndCodeToIdLookup\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypeToIdLookup\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodeToIdLookup\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodeToIdLookup\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
 
         _mockHttpRequestService
             .Setup(service => service.SendGet("GetEpisodeReferenceDataServiceUrl"))
