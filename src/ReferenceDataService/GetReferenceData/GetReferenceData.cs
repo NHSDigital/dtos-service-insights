@@ -6,6 +6,7 @@ using System.Text.Json;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
 
+
 namespace NHS.ServiceInsights.ReferenceDataService;
 
 public class GetReferenceData
@@ -51,6 +52,32 @@ public class GetReferenceData
         catch (Exception ex)
         {
             _logger.LogError(ex, "GetReferenceData: Failed to get organisation from the db.\nException: {Message}", ex.Message);
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
+        }
+    }
+
+    [Function("GetAllOrganisationReferenceData")]
+    public async Task<HttpResponseData> Run2([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    {
+        _logger.LogInformation("Retrieving Organisation Reference Data... ");
+
+        try
+        {
+            var organisationIds = await _organisationLkpRepository.GetAllOrganisationsAsync();
+
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await JsonSerializer.SerializeAsync(response.Body, new OrganisationReferenceData
+            {
+                OrganisationCodeToIdLookup = organisationIds.ToDictionary(oi => oi.OrganisationCode , oi => oi.OrganisationId ),
+
+            });
+            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve all organisation reference data.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
