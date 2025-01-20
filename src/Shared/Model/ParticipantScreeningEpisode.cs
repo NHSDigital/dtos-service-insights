@@ -57,5 +57,5 @@ public partial class ParticipantScreeningEpisode
 
     public DateTime? RecordUpdateDatetime { get; set; }
 
-    public bool ExceptionFlag { get; set; }
+    public short? ExceptionFlag { get; set; }
 }

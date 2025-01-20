@@ -216,7 +216,7 @@ BEGIN
       SRC_SYS_PROCESSED_DATETIME        DATETIME        NULL,
       RECORD_INSERT_DATETIME            DATETIME        NULL,
       RECORD_UPDATE_DATETIME            DATETIME        NULL,
-      EXCEPTION_FLAG                    BIT NOT NULL DEFAULT 0
+      EXCEPTION_FLAG                    SMALLINT        NULL
     );
 END
 

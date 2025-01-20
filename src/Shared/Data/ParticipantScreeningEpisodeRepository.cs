@@ -28,7 +28,7 @@ public class ParticipantScreeningEpisodeRepository : IParticipantScreeningEpisod
     {
         var query = _dbContext.ParticipantScreeningEpisodes
             .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
-                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate) && x.ExceptionFlag == false)
+                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate) && x.ExceptionFlag == 0)
             .OrderBy(x => x.RecordInsertDatetime)
             .Skip(skip)
             .Take(pageSize);
@@ -37,7 +37,7 @@ public class ParticipantScreeningEpisodeRepository : IParticipantScreeningEpisod
 
         int count = await _dbContext.ParticipantScreeningEpisodes
             .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
-                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate) && x.ExceptionFlag == false)
+                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate) && x.ExceptionFlag == 0)
             .CountAsync();
 
         int totalPages = (int)Math.Ceiling((double)count/(double)pageSize);
