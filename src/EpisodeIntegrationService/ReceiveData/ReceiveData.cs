@@ -9,7 +9,7 @@ using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
-public partial class ReceiveData
+public class ReceiveData
 {
     private readonly ILogger<ReceiveData> _logger;
     private readonly IHttpRequestService _httpRequestService;
@@ -198,42 +198,34 @@ public partial class ReceiveData
 
     private async Task ProcessHistoricalEpisodeDataAsync(string name, IEnumerable<BssEpisode> episodes, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
-        try
-        {
-            _logger.LogInformation("Processing historical episode data.");
+        _logger.LogInformation("Processing historical episode data.");
 
-            foreach (var episode in episodes)
+        foreach (var episode in episodes)
+        {
+            try
             {
-                try
-                {
-                    var modifiedEpisode = await MapHistoricalEpisodeToEpisodeDto(episode, referenceData, organisationReferenceData);
-                    EventGridEvent eventGridEvent = new EventGridEvent(
-                        subject: "Episode Created",
-                        eventType: "CreateParticipantScreeningEpisode",
-                        dataVersion: "1.0",
-                        data: modifiedEpisode
-                    );
-                    _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
-                    await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
-                    episodeSuccessCount++;
-                    episodeRowIndex++;
-                    _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+                var modifiedEpisode = await MapHistoricalEpisodeToEpisodeDto(episode, referenceData, organisationReferenceData);
+                EventGridEvent eventGridEvent = new EventGridEvent(
+                    subject: "Episode Created",
+                    eventType: "CreateParticipantScreeningEpisode",
+                    dataVersion: "1.0",
+                    data: modifiedEpisode
+                );
+                _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
+                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+                episodeSuccessCount++;
+                episodeRowIndex++;
+                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
 
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
-
-                    episodeFailureCount++;
-                    episodeRowIndex++;
-                    _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
-                    await ProcessHistoricalEpisodeDataAsync(name,episodes, referenceData, organisationReferenceData);
-                }
             }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
+
+                episodeFailureCount++;
+                episodeRowIndex++;
+                _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+            }
         }
     }
 
@@ -278,14 +270,14 @@ public partial class ReceiveData
             EarlyRecallDate = Utils.ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = episode.end_code,
-            EndCodeDescription = string.IsNullOrEmpty(episode.end_code) ? "" : referenceData.EndCodes[episode.end_code],
+            EndCodeDescription = string.IsNullOrEmpty(episode.end_code) ? "" : referenceData.EndCodeToIdLookup[episode.end_code],
             EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
             FinalActionCode = episode.final_action_code,
             FinalActionCodeDescription = string.IsNullOrEmpty(episode.final_action_code) ? "" : referenceData.FinalActionCodes[episode.final_action_code],
             ReasonClosedCode = episode.reason_closed_code,
             ReasonClosedCodeDescription = string.IsNullOrEmpty(episode.reason_closed_code) ? "" : referenceData.ReasonClosedCodes[episode.reason_closed_code],
             EndPoint = episode.end_point,
-            OrganisationId = string.IsNullOrEmpty(episode.bso_organisation_code) ? null : organisationReferenceData.OrganisationIds[episode.bso_organisation_code],
+            OrganisationId = string.IsNullOrEmpty(episode.bso_organisation_code) ? null : organisationReferenceData.OrganisationCodeToIdLookup[episode.bso_organisation_code],
             BatchId = episode.bso_batch_id,
             SrcSysProcessedDatetime = episode.change_db_date_time
         };
