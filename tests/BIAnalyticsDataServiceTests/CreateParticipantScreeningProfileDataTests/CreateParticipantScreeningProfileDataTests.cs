@@ -22,6 +22,7 @@ public class CreateParticipantScreeningProfileDataTests
     private readonly ParticipantScreeningProfile ValidParticipantScreeningProfile = new ParticipantScreeningProfile()
     {
         NhsNumber = 123456789,
+        SrcSysProcessedDatetime = DateTime.Parse("2023-07-05 10:30:00"),
         ScreeningName = "TestScreeningName",
         PrimaryCareProvider = "TestPrimaryCareProvider",
         PreferredLanguage = "TestPreferredLanguage",
