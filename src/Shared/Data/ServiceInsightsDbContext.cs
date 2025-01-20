@@ -188,7 +188,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27FE3B3A64");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC277D5DB9E3");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
@@ -273,13 +273,12 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC27064EDDEA");
+            entity.HasKey(e => e.Id).HasName("PK__PARTICIP__3214EC276366A7EB");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.DateIrradiated).HasColumnName("DATE_IRRADIATED");
-            entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
             entity.Property(e => e.GeneCode)
                 .HasMaxLength(100)
                 .IsUnicode(false)

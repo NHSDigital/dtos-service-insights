@@ -48,6 +48,4 @@ public partial class ParticipantScreeningProfile
     public DateTime? RecordInsertDatetime { get; set; }
 
     public DateTime? RecordUpdateDatetime { get; set; }
-
-    public bool ExceptionFlag { get; set; }
 }
