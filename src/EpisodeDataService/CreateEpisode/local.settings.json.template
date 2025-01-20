@@ -6,7 +6,8 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "ServiceInsightsDbConnectionString": "YOUR_CONNECTION_STRING",
     "topicEndpoint": "https://sams-test-topic.uksouth-1.eventgrid.azure.net/api/events",
-    "topicKey": "TOPIC_KEY"
+    "topicKey": "TOPIC_KEY",
+    "CheckParticipantExistsUrl": "http://localhost:6061/api/CheckParticipantExists"
   },
   "Host": {
     "LocalHttpPort": 6007

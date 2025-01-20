@@ -1,12 +1,13 @@
 {
-    "IsEncrypted": false,
-    "Values": {
-      "ASPNETCORE_ENVIRONMENT": "Development",
-      "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-      "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-      "ServiceInsightsDbConnectionString": "YOU_CONNECTION_STRING",
-      "topicEndpoint": "https://sams-test-topic.uksouth-1.eventgrid.azure.net/api/events",
-      "topicKey": "TOPIC_KEY"
+  "IsEncrypted": false,
+  "Values": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "ServiceInsightsDbConnectionString": "YOU_CONNECTION_STRING",
+    "topicEndpoint": "https://sams-test-topic.uksouth-1.eventgrid.azure.net/api/events",
+    "topicKey": "TOPIC_KEY",
+    "CheckParticipantExistsUrl": "http://localhost:6061/api/CheckParticipantExists"
     },
     "Host": {
     "LocalHttpPort": 7777

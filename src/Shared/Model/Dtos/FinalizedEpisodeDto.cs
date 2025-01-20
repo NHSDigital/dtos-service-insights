@@ -45,6 +45,7 @@ public class FinalizedEpisodeDto
     public string? BatchId { get; set; }
 
     public DateTime SrcSysProcessedDatetime { get; set; }
+    public short? ExceptionFlag { get; set; }
 
     public static explicit operator FinalizedEpisodeDto(Episode episode)
     {
@@ -62,7 +63,8 @@ public class FinalizedEpisodeDto
             EndCodeLastUpdated = episode.EndCodeLastUpdated,
             EndPoint = episode.EndPoint,
             OrganisationId = episode.OrganisationId,
-            BatchId = episode.BatchId
+            BatchId = episode.BatchId,
+            ExceptionFlag = episode.ExceptionFlag
         };
     }
 }

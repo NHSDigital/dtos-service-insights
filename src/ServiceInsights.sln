@@ -33,8 +33,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Shared\Model\Model
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetParticipant", "ParticipantManagementService\GetParticipant\GetParticipant.csproj", "{982DCCA8-E719-4316-9D2F-03C134E03F7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetParticipantTests", "..\tests\ParticipantManagementServiceTests\GetParticipantTests\GetParticipantTests.csproj", "{62B77FEF-E6E0-435D-B6E5-6FB1B8F8C46D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisode", "EpisodeManagementService\GetEpisode\GetEpisode.csproj", "{C9406CEA-A228-44C0-A474-1EC1F190DA34}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisode", "EpisodeDataService\GetEpisode\GetEpisode.csproj", "{878E7696-C0CB-4779-B300-46647F434AE8}"

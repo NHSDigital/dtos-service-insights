@@ -83,6 +83,7 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasColumnName("END_POINT");
             entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
             entity.Property(e => e.EpisodeTypeId).HasColumnName("EPISODE_TYPE_ID");
+            entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
             entity.Property(e => e.FinalActionCodeId).HasColumnName("FINAL_ACTION_CODE_ID");
             entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
             entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
