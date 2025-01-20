@@ -72,7 +72,7 @@ public class ReceiveData
                     {
                         var referenceData = await RetrieveReferenceDataAsync();
                         var organisationReferenceData = await GetOrganisationIdAsync();
-                        await ProcessHistoricalEpisodeDataAsync(name, episodesEnumerator, referenceData, organisationReferenceData);
+                        await ProcessHistoricalEpisodeDataAsync(episodesEnumerator, referenceData, organisationReferenceData);
 
                     }
                     else
@@ -196,7 +196,7 @@ public class ReceiveData
     }
 
 
-    private async Task ProcessHistoricalEpisodeDataAsync(string name, IEnumerable<BssEpisode> episodes, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
+    private async Task ProcessHistoricalEpisodeDataAsync(IEnumerable<BssEpisode> episodes, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
         _logger.LogInformation("Processing historical episode data.");
 
