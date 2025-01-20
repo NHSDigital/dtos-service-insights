@@ -371,4 +371,42 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
+
+    [TestMethod]
+    public async Task Run_ShouldUpdate_When_DtoHasNewerProcessedDateTime()
+    {
+        // Arrange
+        var episodeDto = new InitialEpisodeDto { SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1) };
+        var episode = new Episode { SrcSysProcessedDatetime = DateTime.UtcNow };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+
+        // Act
+        await _function.Run(_mockRequest.Object);
+
+        // Assert
+        _mockEpisodeRepository.Verify(x => x.UpdateEpisode(It.IsAny<Episode>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task Run_ShouldNotUpdate_When_DtoHasOlderProcessedDateTime()
+    {
+        // Arrange
+        var episodeDto = new InitialEpisodeDto { SrcSysProcessedDateTime = DateTime.UtcNow };
+        var episode = new Episode { SrcSysProcessedDatetime = DateTime.UtcNow.AddDays(1) };
+
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
+
+        var json = JsonSerializer.Serialize(episodeDto);
+        _mockRequest = _setupRequest.Setup(json);
+
+        // Act
+        await _function.Run(_mockRequest.Object);
+
+        // Assert
+        _mockEpisodeRepository.Verify(x => x.UpdateEpisode(It.IsAny<Episode>()), Times.Never);
+    }
 }
