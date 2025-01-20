@@ -7,6 +7,7 @@ using System.Text.Json;
 using Azure.Messaging.EventGrid;
 using Azure;
 using System.Net;
+using NHS.ServiceInsights.EpisodeIntegrationService;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationServiceTests;
 
@@ -622,7 +623,7 @@ public class ReceiveDataTests
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-        var referenceDataJson = "{\"EndCodes\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypes\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodes\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodes\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
+        var referenceDataJson = "{\"EndCodeToIdLookup\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypes\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodes\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodes\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
 
         _mockHttpRequestService
             .Setup(service => service.SendGet("GetEpisodeReferenceDataServiceUrl"))
@@ -631,7 +632,7 @@ public class ReceiveDataTests
                 Content = new StringContent(referenceDataJson, Encoding.UTF8, "application/json")
             });
 
-        var organisationReferenceDataJson = "{\"OrganisationIds\":{\"AGA\":1,\"ANE\":2,\"ANT\":3,\"AWC\":4,\"BHL\":5,\"BHU\":6,\"BLE\":7,\"BYO\":8,\"CBA\":9,\"CDN\":10}}";
+        var organisationReferenceDataJson = "{\"OrganisationCodeToIdLookup\":{\"AGA\":1,\"ANE\":2,\"ANT\":3,\"AWC\":4,\"BHL\":5,\"BHU\":6,\"BLE\":7,\"BYO\":8,\"CBA\":9,\"CDN\":10}}";
 
         _mockHttpRequestService
             .Setup(service => service.SendGet("GetAllOrganisationReferenceDataUrl"))
@@ -649,6 +650,67 @@ public class ReceiveDataTests
         _mockHttpRequestService.Verify(x => x.SendGet("GetAllOrganisationReferenceDataUrl"), Times.Once());
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+    }
+
+
+    [TestMethod]
+    public async Task ProcessHistoricalEpisodeDataAsync_ShouldLogErrorAndIncrementFailureCount_WhenExceptionOccurs()
+    {
+        // Arrange
+        string data = "nhs_number,episode_id,episode_type,change_db_date_time,episode_date,appointment_made,date_of_foa,date_of_as,early_recall_date,call_recall_status_authorised_by,end_code,end_code_last_updated,bso_organisation_code,bso_batch_id,reason_closed_code,end_point,final_action_code\n" +
+                    "9000007053,571645,R,2020-03-31 12:11:47.339148+01,2017-01-11,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,,LAV121798J,,,\n" +
+                    "9000009808,333330,R,2020-03-31 12:49:47.513821+01,2016-09-05,True,,,,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,XXX,LAV000001A,,,\n";
+
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+
+        var referenceDataJson = "{\"EndCodeToIdLookup\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypes\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodes\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodes\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet("GetEpisodeReferenceDataServiceUrl"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(referenceDataJson, Encoding.UTF8, "application/json")
+            });
+
+        var organisationReferenceDataJson = "{\"OrganisationCodeToIdLookup\":{\"AGA\":1,\"ANE\":2,\"ANT\":3,\"AWC\":4,\"BHL\":5,\"BHU\":6,\"BLE\":7,\"BYO\":8,\"CBA\":9,\"CDN\":10}}";
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet("GetAllOrganisationReferenceDataUrl"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationReferenceDataJson, Encoding.UTF8, "application/json")
+            });
+
+        // Act
+        await _function.Run(stream, "bss_episodes_test_data_20240930_historic.csv");
+
+        // Assert
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<object>(state => state.ToString().Contains("Error in ProcessHistoricalEpisodeDataAsync:")),
+            It.IsAny<Exception>(),
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Exactly(1));
+
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Information,
+            0,
+            It.Is<object>(state => state.ToString().Equals("Row No.1 processed successfully")),
+            It.IsAny<Exception>(),
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Exactly(1));
+        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Once());
+        _mockLogger.Verify(log =>
+            log.Log(
+            LogLevel.Information,
+            0,
+            It.Is<object>(state => state.ToString().Equals("Row No.2 processed unsuccessfully")),
+            It.IsAny<Exception>(),
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Exactly(1));
     }
 
 }

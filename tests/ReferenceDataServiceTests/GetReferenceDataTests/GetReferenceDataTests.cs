@@ -219,7 +219,7 @@ public class GetReferenceDataTests
         _mockLogger.Verify(x => x.Log(
             LogLevel.Error,
             It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Failed to retrieve data from the db.\nException:")),
+            It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Failed to retrieve all organisation reference data.")),
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception, string>>()
         ), Times.Once);
