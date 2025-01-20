@@ -8,7 +8,7 @@ using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
-public partial class RetrieveEpisodeReferenceData
+public class RetrieveEpisodeReferenceData
 {
     private readonly ILogger<RetrieveEpisodeReferenceData> _logger;
 
@@ -46,7 +46,7 @@ public partial class RetrieveEpisodeReferenceData
             var response = req.CreateResponse(HttpStatusCode.OK);
             await JsonSerializer.SerializeAsync(response.Body, new EpisodeReferenceData
             {
-                EndCodes = endCodes.ToDictionary(ec => ec.EndCode, ec => ec.EndCodeDescription),
+                EndCodeToIdLookup = endCodes.ToDictionary(ec => ec.EndCode, ec => ec.EndCodeDescription),
                 EpisodeTypes = episodeTypes.ToDictionary(et => et.EpisodeType, et => et.EpisodeDescription),
                 FinalActionCodes = finalActionCodes.ToDictionary(fac => fac.FinalActionCode, fac => fac.FinalActionCodeDescription),
                 ReasonClosedCodes = reasonClosedCodes.ToDictionary(rcc => rcc.ReasonClosedCode, rcc => rcc.ReasonClosedCodeDescription)

@@ -69,7 +69,7 @@ public class GetReferenceData
             var response = req.CreateResponse(HttpStatusCode.OK);
             await JsonSerializer.SerializeAsync(response.Body, new OrganisationReferenceData
             {
-                OrganisationIds = organisationIds.ToDictionary(oi => oi.OrganisationCode , oi => oi.OrganisationId ),
+                OrganisationCodeToIdLookup = organisationIds.ToDictionary(oi => oi.OrganisationCode , oi => oi.OrganisationId ),
 
             });
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
@@ -77,7 +77,7 @@ public class GetReferenceData
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to retrieve data from the db.\nException: {Message}", ex.Message);
+            _logger.LogError(ex, "Failed to retrieve all organisation reference data.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
