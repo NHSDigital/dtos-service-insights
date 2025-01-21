@@ -11,13 +11,6 @@ public class OrganisationLkpRepository : IOrganisationLkpRepository
     {
         _dbContext = dbContext;
     }
-
-    public async Task<long?> GetOrganisationIdAsync(string organisationCode)
-    {
-        var organisationLkp = await _dbContext.OrganisationLkps.FirstOrDefaultAsync(ol => ol.OrganisationCode == organisationCode);
-        return organisationLkp?.OrganisationId;
-    }
-
     public async Task<OrganisationLkp?> GetOrganisationLkp(string organisationCode)
     {
         var organisationLkp = await _dbContext.OrganisationLkps.FirstOrDefaultAsync(ol => ol.OrganisationCode == organisationCode);
