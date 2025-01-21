@@ -185,12 +185,12 @@ function_apps = {
   storage_uses_managed_identity = null
   worker_32bit                  = false
 
-  ip_restriction = {
-      rule_name        = "AllowEventGrid"
-      rule_priority    = 300
-      rule_action      = "Allow"
-      rule_service_tag = "AzureEventGrid"
-  }
+  # ip_restriction = {
+  #     rule_name        = "AllowEventGrid"
+  #     rule_priority    = 300
+  #     rule_action      = "Allow"
+  #     rule_service_tag = "AzureEventGrid"
+  # }
 
   fa_config = {
 
@@ -403,7 +403,7 @@ function_apps = {
     GetScreeningData = {
       name_suffix            = "get-screening-data"
       function_endpoint_name = "GetScreeningData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "Default"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
