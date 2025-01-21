@@ -213,9 +213,9 @@ BEGIN
       ORGANISATION_NAME                 VARCHAR(300)    NULL,
       BATCH_ID                          VARCHAR(100)    NULL,
       SRC_SYS_PROCESSED_DATETIME        DATETIME        NOT NULL,
-      EXCEPTION_FLAG                    SMALLINT        NULL,
       RECORD_INSERT_DATETIME            DATETIME        NULL,
       RECORD_UPDATE_DATETIME            DATETIME        NULL,
+      EXCEPTION_FLAG                    SMALLINT        NULL,
       PRIMARY KEY (EPISODE_ID, SRC_SYS_PROCESSED_DATETIME)
     );
 END

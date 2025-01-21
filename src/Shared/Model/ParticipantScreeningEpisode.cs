@@ -51,9 +51,10 @@ public partial class ParticipantScreeningEpisode
 
     public DateTime SrcSysProcessedDatetime { get; set; }
 
-    public short? ExceptionFlag { get; set; }
 
     public DateTime? RecordInsertDatetime { get; set; }
 
     public DateTime? RecordUpdateDatetime { get; set; }
+
+    public short? ExceptionFlag { get; set; }
 }

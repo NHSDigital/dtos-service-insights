@@ -268,6 +268,9 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
+            entity.Property(e => e.SrcSysProcessedDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
         });
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
@@ -336,6 +339,9 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
+            entity.Property(e => e.SrcSysProcessedDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
         });
 
         modelBuilder.Entity<ReasonClosedCodeLkp>(entity =>
