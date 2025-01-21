@@ -303,7 +303,7 @@ public class ReceiveData
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to retrieve episode reference data from url: {Url}", url);
-            throw;
+            throw new Exception($"Failed to retrieve episode reference data from {url}. See inner exception for details.", ex);
         }
     }
 
