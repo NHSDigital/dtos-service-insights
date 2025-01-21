@@ -294,11 +294,7 @@ public class ReceiveData
         {
             var response = await _httpRequestService.SendGet(url);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogError("Failed to retrieve episode reference data. Status Code: {StatusCode}", response.StatusCode);
-                throw new HttpRequestException($"Failed to retrieve episode reference data. Status Code: {response.StatusCode}");
-            }
+            response.EnsureSuccessStatusCode();
 
             var referenceDataJson = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<EpisodeReferenceData>(referenceDataJson);
@@ -307,7 +303,7 @@ public class ReceiveData
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to retrieve episode reference data");
-            throw new HttpRequestException("Failed to retrieve episode reference data", ex);
+            throw;
         }
     }
 
