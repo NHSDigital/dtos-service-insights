@@ -185,13 +185,6 @@ function_apps = {
   storage_uses_managed_identity = null
   worker_32bit                  = false
 
-  ip_restriction = {
-      rule_name        = "AllowEventGrid"
-      rule_priority    = 300
-      rule_action      = "Allow"
-      rule_service_tag = "AzureEventGrid"
-  }
-
   fa_config = {
 
     CreateParticipantScreeningEpisodeData = {
@@ -254,6 +247,14 @@ function_apps = {
         {
           env_var_name     = "CreateParticipantScreeningEpisodeUrl"
           function_app_key = "CreateParticipantScreeningEpisode"
+        }
+      ]
+      ip_restrictions = [
+        {
+          name        = "AllowEventGrid"
+          priority    = 300
+          action      = "Allow"
+          service_tag = "AzureEventGrid"
         }
       ]
     }

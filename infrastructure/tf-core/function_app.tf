@@ -55,17 +55,6 @@ module "functionapp" {
     private_service_connection_is_manual = var.features.private_service_connection_is_manual
   } : null
 
-  # Firewall configuration to allow access for the Event Grid
-  ip_restriction = var.features.fnapp_event_grid_fw_rule ? {
-    fw_rule_headers     = var.function_apps.ip_restrictions.rule_headers
-    fw_rule_id_address  = var.function_apps.ip_restrictions.rule_ip_address
-    fw_rule_name        = var.function_apps.ip_restrictions.rule_name
-    fw_rule_priority    = var.function_apps.ip_restrictions.rule_priority
-    fw_rule_action      = var.function_apps.ip_restrictions.rule_action
-    fw_rule_service_tag = var.function_apps.ip_restrictions.rule_service_tag
-    fw_rule_subnet_id   = var.function_apps.ip_restrictions.rule_subnet_id
-  } : null
-
   function_app_slots = var.function_app_slots
 
   tags = var.tags
@@ -134,6 +123,7 @@ locals {
           app_settings = merge(
             local.app_settings_common,
             config.env_vars_static,
+            config.ip_restrictions,
 
             # # Dynamic env vars which cannot be stored in tfvars file
             # function == "example-function" ? {
