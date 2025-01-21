@@ -230,7 +230,7 @@ function_apps = {
     CreateParticipantScreeningEpisode = {
       name_suffix            = "create-ps-episode"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "Default"
       app_urls = [
         {
           env_var_name     = "GetEpisodeUrl"
@@ -238,7 +238,15 @@ function_apps = {
         },
         {
           env_var_name     = "CreateParticipantScreeningEpisodeUrl"
-          function_app_key = "CreateParticipantScreeningEpisode"
+          function_app_key = "GetParticipantScreeningEpisodeData"
+        },
+        {
+          env_var_name     = "GetScreeningDataUrl"
+          function_app_key = "GetScreeningData"
+        },
+        {
+          env_var_name     = "GetReferenceDataUrl"
+          function_app_key = "GetOrganisationData"
         }
       ]
     }
@@ -373,6 +381,13 @@ function_apps = {
     GetOrganisationData = {
       name_suffix            = "get-organisation-data"
       function_endpoint_name = "GetOrganisationData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
+
+    GetScreeningData = {
+      name_suffix            = "get-screening-data"
+      function_endpoint_name = "GetScreeningData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }

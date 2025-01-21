@@ -253,7 +253,15 @@ function_apps = {
         },
         {
           env_var_name     = "CreateParticipantScreeningEpisodeUrl"
-          function_app_key = "CreateParticipantScreeningEpisode"
+          function_app_key = "GetParticipantScreeningEpisodeData"
+        },
+        {
+          env_var_name     = "GetScreeningDataUrl"
+          function_app_key = "GetScreeningData"
+        },
+        {
+          env_var_name     = "GetReferenceDataUrl"
+          function_app_key = "GetOrganisationData"
         }
       ]
     }
@@ -391,6 +399,14 @@ function_apps = {
       app_service_plan_key   = "Default"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
+
+    GetScreeningData = {
+      name_suffix            = "get-screening-data"
+      function_endpoint_name = "GetScreeningData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
+
   }
 
 }
