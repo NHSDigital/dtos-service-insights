@@ -84,7 +84,6 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.EpisodeOpenDate).HasColumnName("EPISODE_OPEN_DATE");
             entity.Property(e => e.EpisodeTypeId).HasColumnName("EPISODE_TYPE_ID");
             entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
-            entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
             entity.Property(e => e.FinalActionCodeId).HasColumnName("FINAL_ACTION_CODE_ID");
             entity.Property(e => e.FirstOfferedAppointmentDate).HasColumnName("FIRST_OFFERED_APPOINTMENT_DATE");
             entity.Property(e => e.NhsNumber).HasColumnName("NHS_NUMBER");
@@ -189,7 +188,7 @@ public partial class ServiceInsightsDbContext : DbContext
 
         modelBuilder.Entity<ParticipantScreeningEpisode>(entity =>
         {
-            entity.HasKey(e => new { e.EpisodeId, e.SrcSysProcessedDatetime }).HasName("PK__PARTICIP__6BB7DFCBB15238AD");
+            entity.HasKey(e => new { e.EpisodeId, e.SrcSysProcessedDatetime }).HasName("PK__PARTICIP__6BB7DFCBE464CC4A");
 
             entity.ToTable("PARTICIPANT_SCREENING_EPISODE");
 
@@ -233,7 +232,6 @@ public partial class ServiceInsightsDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("EPISODE_TYPE_DESCRIPTION");
             entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
-            entity.Property(e => e.ExceptionFlag).HasColumnName("EXCEPTION_FLAG");
             entity.Property(e => e.FinalActionCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -266,24 +264,15 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.RecordUpdateDatetime)
                 .HasColumnType("datetime")
                 .HasColumnName("RECORD_UPDATE_DATETIME");
-            entity.Property(e => e.RecordUpdateDatetime)
-                .HasColumnType("datetime")
-                .HasColumnName("RECORD_UPDATE_DATETIME");
             entity.Property(e => e.ScreeningName)
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
-            entity.Property(e => e.SrcSysProcessedDatetime)
-                .HasColumnType("datetime")
-                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
-            entity.Property(e => e.SrcSysProcessedDatetime)
-                .HasColumnType("datetime")
-                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
         });
 
         modelBuilder.Entity<ParticipantScreeningProfile>(entity =>
         {
-            entity.HasKey(e => new { e.NhsNumber, e.SrcSysProcessedDatetime }).HasName("PK__PARTICIP__D62BD6BC55E6AA2A");
+            entity.HasKey(e => new { e.NhsNumber, e.SrcSysProcessedDatetime }).HasName("PK__PARTICIP__D62BD6BCDE6C1924");
 
             entity.ToTable("PARTICIPANT_SCREENING_PROFILE");
 
@@ -339,9 +328,6 @@ public partial class ServiceInsightsDbContext : DbContext
             entity.Property(e => e.RecordUpdateDatetime)
                 .HasColumnType("datetime")
                 .HasColumnName("RECORD_UPDATE_DATETIME");
-            entity.Property(e => e.RecordUpdateDatetime)
-                .HasColumnType("datetime")
-                .HasColumnName("RECORD_UPDATE_DATETIME");
             entity.Property(e => e.ScreeningCeasedReason)
                 .HasMaxLength(100)
                 .IsUnicode(false)
@@ -350,12 +336,6 @@ public partial class ServiceInsightsDbContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("SCREENING_NAME");
-            entity.Property(e => e.SrcSysProcessedDatetime)
-                .HasColumnType("datetime")
-                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
-            entity.Property(e => e.SrcSysProcessedDatetime)
-                .HasColumnType("datetime")
-                .HasColumnName("SRC_SYS_PROCESSED_DATETIME");
         });
 
         modelBuilder.Entity<ReasonClosedCodeLkp>(entity =>
