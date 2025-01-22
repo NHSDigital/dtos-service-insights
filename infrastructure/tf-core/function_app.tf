@@ -55,7 +55,7 @@ module "functionapp" {
     private_service_connection_is_manual = var.features.private_service_connection_is_manual
   } : null
 
-  ip_restrictions = var.features.fnapp_event_grid_fw_rule ? each.value.ip_restrictions : null
+  ip_restrictions = each.value.ip_restrictions
 
   function_app_slots = var.function_app_slots
 
@@ -127,6 +127,7 @@ locals {
           app_settings = merge(
             local.app_settings_common,
             config.env_vars_static,
+
 
             # # Dynamic env vars which cannot be stored in tfvars file
             # function == "example-function" ? {

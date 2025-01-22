@@ -6,7 +6,6 @@ features = {
   acr_enabled                          = false
   api_management_enabled               = false
   event_grid_enabled                   = false
-  fnapp_event_grid_fw_rule             = true
   private_endpoints_enabled            = true
   private_service_connection_is_manual = false
   public_network_access_enabled        = false
@@ -246,17 +245,25 @@ function_apps = {
         },
         {
           env_var_name     = "CreateParticipantScreeningEpisodeUrl"
-          function_app_key = "CreateParticipantScreeningEpisode"
+          function_app_key = "GetParticipantScreeningEpisodeData"
+        },
+        {
+          env_var_name     = "GetScreeningDataUrl"
+          function_app_key = "GetScreeningData"
+        },
+        {
+          env_var_name     = "GetReferenceDataUrl"
+          function_app_key = "GetOrganisationData"
         }
       ]
-      ip_restrictions = [
-        {
+      ip_restrictions = {
+        "AllowEventGrid" : {
           name        = "AllowEventGrid"
           priority    = 300
           action      = "Allow"
           service_tag = "AzureEventGrid"
         }
-      ]
+      }
     }
 
     CreateParticipantScreeningProfile = {
@@ -369,7 +376,8 @@ function_apps = {
       app_service_plan_key   = "Default"
       key_vault_url          = "KeyVaultConnectionString"
       env_vars_static = {
-        TimerExpression = "*/5 * * * *"
+        TimerExpression  = "*/5 * * * *"
+        BSSContainerName = "inbound"
       }
     }
 
@@ -388,6 +396,13 @@ function_apps = {
     GetOrganisationData = {
       name_suffix            = "get-organisation-data"
       function_endpoint_name = "GetOrganisationData"
+      app_service_plan_key   = "Default"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
+
+    GetScreeningData = {
+      name_suffix            = "get-screening-data"
+      function_endpoint_name = "GetScreeningData"
       app_service_plan_key   = "Default"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
