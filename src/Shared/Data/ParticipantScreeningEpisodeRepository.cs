@@ -27,17 +27,17 @@ public class ParticipantScreeningEpisodeRepository : IParticipantScreeningEpisod
     public async Task<EpisodesDataPage> GetParticipantScreeningEpisode (int page, int pageSize, DateTime? startDate, DateTime? endDate, int skip)
     {
         var query = _dbContext.ParticipantScreeningEpisodes
-            .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
-                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate) && x.ExceptionFlag == 0)
-            .OrderBy(x => x.RecordInsertDatetime)
+            .Where(x => (!startDate.HasValue || x.RecordUpdateDatetime >= startDate) &&
+                        (!endDate.HasValue || x.RecordUpdateDatetime <= endDate) && x.ExceptionFlag == 0)
+            .OrderBy(x => x.RecordUpdateDatetime)
             .Skip(skip)
             .Take(pageSize);
 
         var data = await query.ToListAsync();
 
         int count = await _dbContext.ParticipantScreeningEpisodes
-            .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
-                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate) && x.ExceptionFlag == 0)
+            .Where(x => (!startDate.HasValue || x.RecordUpdateDatetime >= startDate) &&
+                        (!endDate.HasValue || x.RecordUpdateDatetime <= endDate) && x.ExceptionFlag == 0)
             .CountAsync();
 
         int totalPages = (int)Math.Ceiling((double)count/(double)pageSize);
