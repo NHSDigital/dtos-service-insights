@@ -5,8 +5,6 @@ namespace NHS.ServiceInsights.Model;
 
 public partial class ParticipantScreeningProfile
 {
-    public long Id { get; set; }
-
     public long NhsNumber { get; set; }
 
     public string? ScreeningName { get; set; }
@@ -43,7 +41,7 @@ public partial class ParticipantScreeningProfile
 
     public string? GeneCodeDescription { get; set; }
 
-    public DateTime? SrcSysProcessedDatetime { get; set; }
+    public DateTime SrcSysProcessedDatetime { get; set; }
 
     public DateTime? RecordInsertDatetime { get; set; }
 
