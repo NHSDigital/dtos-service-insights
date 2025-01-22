@@ -298,13 +298,12 @@ public class ReceiveData
 
             var referenceDataJson = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<EpisodeReferenceData>(referenceDataJson);
-
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Failed to retrieve episode reference data from url: {Url}", url);
-            throw;
+            throw new HttpRequestException($"Failed to retrieve episode reference data from {url}", ex);
         }
+
     }
 
 
