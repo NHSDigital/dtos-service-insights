@@ -274,6 +274,10 @@ services:
       - ASPNETCORE_URLS=http://*:7072
       - EpisodeManagementUrl=http://127.0.0.1:6006/api/CreateUpdateEpisode
       - ParticipantManagementUrl=http://127.0.0.1:7074/api/UpdateParticipant
+      - GetEpisodeReferenceDataServiceUrl=http://localhost:7574/api/GetEpisodeReferenceData
+      - GetAllOrganisationReferenceDataUrl=http://localhost:6081/api/GetAllOrganisationReferenceData
+      - topicEndpoint=${EVENTGRID_URL}
+      - topicKey=${EVENTGRID_KEY}
 
   # Episode Management Service
   create-update-episode:
