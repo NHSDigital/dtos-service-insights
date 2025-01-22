@@ -5,6 +5,7 @@ using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
 using CsvHelper;
 using System.Globalization;
+using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 
@@ -12,6 +13,7 @@ public class ReceiveData
 {
     private readonly ILogger<ReceiveData> _logger;
     private readonly IHttpRequestService _httpRequestService;
+    private readonly EventGridPublisherClient _eventGridPublisherClient;
     private readonly string[] episodesExpectedHeaders = new[] { "nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code" };
     private readonly string[] subjectsExpectedHeaders = new[] { "change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language" };
 
@@ -23,10 +25,12 @@ public class ReceiveData
     private int episodeFailureCount = 0;
     private int episodeRowIndex = 0;
 
-    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService)
+    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService, EventGridPublisherClient eventGridPublisherClient)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
+        _eventGridPublisherClient = eventGridPublisherClient;
+
     }
 
     [Function("ReceiveData")]
@@ -52,7 +56,7 @@ public class ReceiveData
                 return;
             }
 
-            if (name.StartsWith("bss_episodes"))
+            if (name.StartsWith("bss_episodes") || name.EndsWith("_historic.csv"))
             {
                 if (!CheckCsvFileHeaders(myBlob, FileType.Episodes))
                 {
@@ -64,8 +68,17 @@ public class ReceiveData
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var episodesEnumerator = csv.GetRecords<BssEpisode>();
+                    if (name.EndsWith("_historic.csv"))
+                    {
+                        var referenceData = await RetrieveReferenceDataAsync();
+                        var organisationReferenceData = await GetOrganisationIdAsync();
+                        await ProcessHistoricalEpisodeDataAsync(episodesEnumerator, referenceData, organisationReferenceData);
 
-                    await ProcessEpisodeDataAsync(name,episodesEnumerator, episodeUrl);
+                    }
+                    else
+                    {
+                        await ProcessEpisodeDataAsync(name, episodesEnumerator, episodeUrl);
+                    }
                 }
 
                 DateTime processingEnd = DateTime.UtcNow;
@@ -151,7 +164,6 @@ public class ReceiveData
         }
     }
 
-
     private async Task ProcessEpisodeDataAsync(string name,IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
 
@@ -184,7 +196,39 @@ public class ReceiveData
     }
 
 
-    private static readonly string[] AllowedDateFormats = ["dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd"];
+    private async Task ProcessHistoricalEpisodeDataAsync(IEnumerable<BssEpisode> episodes, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
+    {
+        _logger.LogInformation("Processing historical episode data.");
+
+        foreach (var episode in episodes)
+        {
+            try
+            {
+                var modifiedEpisode = await MapHistoricalEpisodeToEpisodeDto(episode, referenceData, organisationReferenceData);
+                EventGridEvent eventGridEvent = new EventGridEvent(
+                    subject: "Episode Created",
+                    eventType: "CreateParticipantScreeningEpisode",
+                    dataVersion: "1.0",
+                    data: modifiedEpisode
+                );
+                _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
+                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+                episodeSuccessCount++;
+                episodeRowIndex++;
+                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
+
+                episodeFailureCount++;
+                episodeRowIndex++;
+                _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+            }
+        }
+    }
+
 
     private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
@@ -195,14 +239,14 @@ public class ReceiveData
             ScreeningName = "Breast Screening",
             NhsNumber = episode.nhs_number,
             SrcSysProcessedDateTime = episode.change_db_date_time,
-            EpisodeOpenDate = ParseNullableDate(episode.episode_date),
-            AppointmentMadeFlag = ParseBooleanStringToShort(episode.appointment_made),
-            FirstOfferedAppointmentDate = ParseNullableDate(episode.date_of_foa),
-            ActualScreeningDate = ParseNullableDate(episode.date_of_as),
-            EarlyRecallDate = ParseNullableDate(episode.early_recall_date),
+            EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
+            AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
+            FirstOfferedAppointmentDate = Utils.ParseNullableDate(episode.date_of_foa),
+            ActualScreeningDate = Utils.ParseNullableDate(episode.date_of_as),
+            EarlyRecallDate = Utils.ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = episode.end_code,
-            EndCodeLastUpdated = ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
+            EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
             OrganisationCode = episode.bso_organisation_code,
             BatchId = episode.bso_batch_id,
             EndPoint = episode.end_point,
@@ -210,6 +254,58 @@ public class ReceiveData
             FinalActionCode = episode.final_action_code
         };
     }
+    private async Task<FinalizedEpisodeDto> MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
+    {
+        var finalizedEpisodeDto = new FinalizedEpisodeDto
+        {
+            EpisodeId = episode.episode_id,
+            NhsNumber = episode.nhs_number,
+            ScreeningId = 1, // Hardcoded to 1 for now because we only have one screening type (Breast Screening)
+            EpisodeType = episode.episode_type,
+            EpisodeTypeDescription = string.IsNullOrEmpty(episode.episode_type) ? "" : referenceData.EpisodeTypeToIdLookup[episode.episode_type],
+            EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
+            AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
+            FirstOfferedAppointmentDate = Utils.ParseNullableDate(episode.date_of_foa),
+            ActualScreeningDate = Utils.ParseNullableDate(episode.date_of_as),
+            EarlyRecallDate = Utils.ParseNullableDate(episode.early_recall_date),
+            CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
+            EndCode = episode.end_code,
+            EndCodeDescription = string.IsNullOrEmpty(episode.end_code) ? "" : referenceData.EndCodeToIdLookup[episode.end_code],
+            EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
+            FinalActionCode = episode.final_action_code,
+            FinalActionCodeDescription = string.IsNullOrEmpty(episode.final_action_code) ? "" : referenceData.FinalActionCodeToIdLookup[episode.final_action_code],
+            ReasonClosedCode = episode.reason_closed_code,
+            ReasonClosedCodeDescription = string.IsNullOrEmpty(episode.reason_closed_code) ? "" : referenceData.ReasonClosedCodeToIdLookup[episode.reason_closed_code],
+            EndPoint = episode.end_point,
+            OrganisationId = string.IsNullOrEmpty(episode.bso_organisation_code) ? null : organisationReferenceData.OrganisationCodeToIdLookup[episode.bso_organisation_code],
+            BatchId = episode.bso_batch_id,
+            SrcSysProcessedDatetime = episode.change_db_date_time
+        };
+
+        return finalizedEpisodeDto;
+    }
+
+
+    private async Task<EpisodeReferenceData> RetrieveReferenceDataAsync()
+    {
+        var url = Environment.GetEnvironmentVariable("GetEpisodeReferenceDataServiceUrl");
+
+        try
+        {
+            var response = await _httpRequestService.SendGet(url);
+
+            response.EnsureSuccessStatusCode();
+
+            var referenceDataJson = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<EpisodeReferenceData>(referenceDataJson);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new HttpRequestException($"Failed to retrieve episode reference data from {url}", ex);
+        }
+
+    }
+
 
     private async Task ProcessParticipantDataAsync(string name,IEnumerable<BssSubject> subjects, string participantUrl)
     {
@@ -249,52 +345,30 @@ public class ReceiveData
         {
             NhsNumber = subject.nhs_number,
             ScreeningName = "Breast Screening",
-            NextTestDueDate = ParseNullableDate(subject.next_test_due_date),
+            NextTestDueDate = Utils.ParseNullableDate(subject.next_test_due_date),
             NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
             ParticipantScreeningStatus = subject.subject_status_code,
             ScreeningCeasedReason = subject.reason_for_ceasing_code,
-            IsHigherRisk = ParseBooleanStringToShort(subject.is_higher_risk),
-            IsHigherRiskActive = ParseBooleanStringToShort(subject.is_higher_risk_active),
+            IsHigherRisk = Utils.ParseBooleanStringToShort(subject.is_higher_risk),
+            IsHigherRiskActive = Utils.ParseBooleanStringToShort(subject.is_higher_risk_active),
             SrcSysProcessedDateTime = subject.change_db_date_time,
-            HigherRiskNextTestDueDate = ParseNullableDate(subject.higher_risk_next_test_due_date),
+            HigherRiskNextTestDueDate = Utils.ParseNullableDate(subject.higher_risk_next_test_due_date),
             HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
-            DateIrradiated = ParseNullableDate(subject.date_irradiated),
+            DateIrradiated = Utils.ParseNullableDate(subject.date_irradiated),
             GeneCode = subject.gene_code
         };
     }
 
-    private static short? ParseBooleanStringToShort(string booleanString)
+    private async Task<OrganisationReferenceData> GetOrganisationIdAsync()
     {
-        if (booleanString.ToUpper() == "TRUE")
-        {
-            return (short)1;
-        }
-        else if (booleanString.ToUpper() == "FALSE")
-        {
-            return (short)0;
-        }
-        else
-        {
-            return null;
-        }
+        var url = Environment.GetEnvironmentVariable("GetAllOrganisationReferenceDataUrl");
+        var response = await _httpRequestService.SendGet(url);
+
+        response.EnsureSuccessStatusCode();
+
+        return await JsonSerializer.DeserializeAsync<OrganisationReferenceData>(await response.Content.ReadAsStreamAsync());
+
     }
-
-    private static DateOnly? ParseNullableDate(string? date)
-    {
-        if (string.IsNullOrEmpty(date)) return null;
-
-        var dateTime = DateTime.ParseExact(date, AllowedDateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None);
-        return DateOnly.FromDateTime(dateTime);
-    }
-
-
-    private static DateTime? ParseNullableDateTime(string? dateTime, string format)
-    {
-        if (string.IsNullOrEmpty(dateTime)) return null;
-
-        return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
-    }
-
 
 }
 
