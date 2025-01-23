@@ -14,7 +14,7 @@ namespace NHS.ServiceInsights.EpisodeDataService;
 public class CreateEpisode
 {
     private readonly ILogger<CreateEpisode> _logger;
-    private readonly IEpisodeRepository _episodesRepository;
+    private readonly IEpisodeRepository _episodeRepository;
     private readonly IEndCodeLkpRepository _endCodeLkpRepository;
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
     private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
@@ -26,7 +26,7 @@ public class CreateEpisode
     public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
     {
         _logger = logger;
-        _episodesRepository = episodeRepository;
+        _episodeRepository = episodeRepository;
         _endCodeLkpRepository = endCodeLkpRepository;
         _episodeTypeLkpRepository = episodeTypeLkpRepository;
         _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
@@ -69,7 +69,7 @@ public class CreateEpisode
             var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
 
             _logger.LogInformation("Calling CreateEpisode method...");
-            _episodesRepository.CreateEpisode(episode);
+            _episodeRepository.CreateEpisode(episode);
             _logger.LogInformation("Episode created successfully.");
 
             var finalizedEpisodeDto = (FinalizedEpisodeDto)episode;
