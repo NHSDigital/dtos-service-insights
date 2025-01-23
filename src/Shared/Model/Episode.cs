@@ -43,6 +43,8 @@ public partial class Episode
 
     public short? ExceptionFlag { get; set; }
 
+    public short? ExceptionFlag { get; set; }
+
     public DateTime? RecordInsertDatetime { get; set; }
 
     public DateTime? RecordUpdateDatetime { get; set; }

@@ -5,8 +5,6 @@ namespace NHS.ServiceInsights.Model;
 
 public partial class ParticipantScreeningEpisode
 {
-    public long Id { get; set; }
-
     public long EpisodeId { get; set; }
 
     public long NhsNumber { get; set; }
@@ -51,5 +49,12 @@ public partial class ParticipantScreeningEpisode
 
     public string? BatchId { get; set; }
 
+    public DateTime SrcSysProcessedDatetime { get; set; }
+
+
     public DateTime? RecordInsertDatetime { get; set; }
+
+    public DateTime? RecordUpdateDatetime { get; set; }
+
+    public short? ExceptionFlag { get; set; }
 }

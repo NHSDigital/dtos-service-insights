@@ -32,7 +32,6 @@ public class UpdateParticipant
             }
 
             return req.CreateResponse(HttpStatusCode.OK);
-
         }
         catch (Exception ex)
         {

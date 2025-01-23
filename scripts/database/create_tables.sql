@@ -152,7 +152,6 @@ alter table EPISODE
   BEGIN
       CREATE TABLE PARTICIPANT_SCREENING_PROFILE
       (
-        ID BIGINT IDENTITY(1,1) PRIMARY KEY,
         NHS_NUMBER                          BIGINT          NOT NULL,
         SCREENING_NAME                      VARCHAR(200)    NULL,
         PRIMARY_CARE_PROVIDER               VARCHAR(50)     NULL,
@@ -171,9 +170,10 @@ alter table EPISODE
         DATE_IRRADIATED                     DATE            NULL,
         GENE_CODE                           VARCHAR(100)    NULL,
         GENE_CODE_DESCRIPTION               VARCHAR(200)    NULL,
-        SRC_SYS_PROCESSED_DATETIME          DATETIME        NULL,
+        SRC_SYS_PROCESSED_DATETIME          DATETIME        NOT NULL,
         RECORD_INSERT_DATETIME              DATETIME        NULL,
-        RECORD_UPDATE_DATETIME              DATETIME        NULL
+        RECORD_UPDATE_DATETIME              DATETIME        NULL,
+        PRIMARY KEY (NHS_NUMBER, SRC_SYS_PROCESSED_DATETIME)
       );
   END
 
@@ -190,7 +190,6 @@ IF NOT EXISTS
 BEGIN
     CREATE TABLE PARTICIPANT_SCREENING_EPISODE
     (
-      ID BIGINT IDENTITY(1,1) PRIMARY KEY,
       EPISODE_ID                        BIGINT          NOT NULL,
       NHS_NUMBER                        BIGINT          NOT NULL,
       SCREENING_NAME                    VARCHAR(200)    NULL,
@@ -213,10 +212,11 @@ BEGIN
       ORGANISATION_CODE                 VARCHAR(50)     NULL,
       ORGANISATION_NAME                 VARCHAR(300)    NULL,
       BATCH_ID                          VARCHAR(100)    NULL,
-      SRC_SYS_PROCESSED_DATETIME        DATETIME        NULL,
-      EXCEPTION_FLAG                    SMALLINT        NULL,
+      SRC_SYS_PROCESSED_DATETIME        DATETIME        NOT NULL,
       RECORD_INSERT_DATETIME            DATETIME        NULL,
-      RECORD_UPDATE_DATETIME            DATETIME        NULL
+      RECORD_UPDATE_DATETIME            DATETIME        NULL,
+      EXCEPTION_FLAG                    SMALLINT        NULL,
+      PRIMARY KEY (EPISODE_ID, SRC_SYS_PROCESSED_DATETIME)
     );
 END
 
