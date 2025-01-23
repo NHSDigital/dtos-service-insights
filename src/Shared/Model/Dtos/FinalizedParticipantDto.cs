@@ -11,7 +11,7 @@ public class FinalizedParticipantDto
     public string? ScreeningCeasedReason { get; set; }
     public short? IsHigherRisk { get; set; }
     public short? IsHigherRiskActive { get; set; }
-    public DateTime SrcSysProcessedDateTime { get; set; }
+    public DateTime SrcSysProcessedDatetime { get; set; }
     public DateOnly? HigherRiskNextTestDueDate { get; set; }
     public string? HigherRiskReferralReasonCode { get; set; }
     public string? HigherRiskReasonCodeDescription { get; set; }

@@ -112,7 +112,7 @@ public class CreateParticipantScreeningProfile
             GeneCode = participant.GeneCode,
             GeneCodeDescription = participant.GeneDescription,
             RecordInsertDatetime = DateTime.Now,
-            SrcSysProcessedDatetime = participant.SrcSysProcessedDateTime
+            SrcSysProcessedDatetime = participant.SrcSysProcessedDatetime
         };
 
         var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");
