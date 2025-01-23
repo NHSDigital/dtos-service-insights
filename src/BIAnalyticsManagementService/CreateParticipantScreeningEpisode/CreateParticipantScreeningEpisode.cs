@@ -120,7 +120,8 @@ public class CreateParticipantScreeningEpisode
             OrganisationName = organisationLkp.OrganisationName,
             BatchId = episode.BatchId,
             RecordInsertDatetime = DateTime.Now,
-            ExceptionFlag =  episode.ExceptionFlag
+            ExceptionFlag =  episode.ExceptionFlag,
+            SrcSysProcessedDatetime = episode.SrcSysProcessedDatetime
         };
 
         var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
