@@ -398,6 +398,8 @@ public class UpdateEpisodeTests
         var json = JsonSerializer.Serialize(episodeDto);
         _mockRequest = _setupRequest.Setup(json);
 
+        _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+
         // Act
         await _function.Run(_mockRequest.Object);
 
@@ -417,6 +419,8 @@ public class UpdateEpisodeTests
         var json = JsonSerializer.Serialize(episodeDto);
         _mockRequest = _setupRequest.Setup(json);
 
+        _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+
         // Act
         await _function.Run(_mockRequest.Object);
 
@@ -434,6 +438,7 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395,
             NhsNumber = 9990000000,
+            SrcSysProcessedDateTime = DateTime.UtcNow
         };
         var json = JsonSerializer.Serialize(episodeDto);
         _mockRequest = _setupRequest.Setup(json);
@@ -442,6 +447,7 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395,
             NhsNumber = 9990000000,
+            SrcSysProcessedDatetime = DateTime.UtcNow.AddDays(-1)
         };
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
 
@@ -467,6 +473,7 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395,
             NhsNumber = 9990000000,
+            SrcSysProcessedDateTime = DateTime.UtcNow
         };
         var json = JsonSerializer.Serialize(episodeDto);
         _mockRequest = _setupRequest.Setup(json);
@@ -475,6 +482,7 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395,
             NhsNumber = 9990000000,
+            SrcSysProcessedDatetime = DateTime.UtcNow.AddDays(-1)
         };
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
 
