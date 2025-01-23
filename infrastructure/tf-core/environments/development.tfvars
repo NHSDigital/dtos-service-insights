@@ -262,6 +262,11 @@ function_apps = {
           priority    = 300
           action      = "Allow"
           service_tag = "AzureEventGrid"
+        },
+        "DenyAll" : {
+          name        = "DenyAll"
+          priority    = 2147483647
+          action      = "Deny"
         }
       }
     }
