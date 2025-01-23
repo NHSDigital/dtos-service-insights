@@ -142,4 +142,86 @@ public class GetReferenceDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
     }
+
+    [TestMethod]
+    public async Task Run_Logs_Information_Message_When_Getting_Organisation_Reference_Data()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection();
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        await _function.Run2(_mockRequest.Object);
+
+        // Assert
+        _mockLogger.Verify(x => x.Log(
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Retrieving Organisation Reference Data... ")),
+            null,
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()
+        ), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task Run_Returns_Ok_Response_When_Data_Is_Retrieved_Successfully()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection();
+        var organisationData = new List<OrganisationLkp> { new OrganisationLkp { OrganisationCode = "LAV", OrganisationId = 1 } };
+
+
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetAllOrganisationsAsync()).ReturnsAsync(organisationData);
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run2(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Run_Returns_InternalServerError_Response_When_Exception_Is_Thrown()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection();
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetAllOrganisationsAsync()).Throws<Exception>();
+
+
+        // Act
+        var response = await _function.Run2(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+    }
+
+    [TestMethod]
+
+    public async Task Run_Logs_Error_When_Exception_Is_Thrown()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection();
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetAllOrganisationsAsync()).Throws<Exception>();
+
+        // Act
+        await _function.Run2(_mockRequest.Object);
+
+        // Assert
+        _mockLogger.Verify(x => x.Log(
+            LogLevel.Error,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Failed to retrieve all organisation reference data.")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()
+        ), Times.Once);
+    }
 }
