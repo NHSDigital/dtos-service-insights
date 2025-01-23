@@ -56,6 +56,7 @@ module "functionapp" {
   } : null
 
   ip_restrictions = each.value.ip_restrictions
+  ip_restriction_default_action = var.function_apps.ip_restriction_default_action
 
   function_app_slots = var.function_app_slots
 
@@ -109,6 +110,7 @@ locals {
     REMOTE_DEBUGGING_ENABLED            = var.function_apps.remote_debugging_enabled
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = var.function_apps.enable_appsrv_storage
     WEBSITE_PULL_IMAGE_OVER_VNET        = var.features.private_endpoints_enabled
+
   }
 
   # There are multiple Function Apps and possibly multiple regions.

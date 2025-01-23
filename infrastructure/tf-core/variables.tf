@@ -171,6 +171,7 @@ variable "function_apps" {
     enable_appsrv_storage         = bool
     ftps_state                    = string
     https_only                    = bool
+    ip_restriction_default_action = optional(string, "Deny")
     remote_debugging_enabled      = bool
     storage_uses_managed_identity = bool
     worker_32bit                  = bool
