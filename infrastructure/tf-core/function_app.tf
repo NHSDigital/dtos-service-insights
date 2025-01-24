@@ -14,7 +14,8 @@ module "functionapp" {
   monitor_diagnostic_setting_function_app_enabled_logs = local.monitor_diagnostic_setting_function_app_enabled_logs
   monitor_diagnostic_setting_function_app_metrics      = local.monitor_diagnostic_setting_function_app_metrics
 
-  public_network_access_enabled = var.features.public_network_access_enabled
+  public_network_access_enabled = length(keys(each.value.ip_restrictions)) > 0 ? true : var.features.public_network_access_enabled
+
   vnet_integration_subnet_id    = module.subnets["${module.regions_config[each.value.region].names.subnet}-apps"].id
 
   # rbac_role_assignments = local.rbac_role_assignments[each.value.region]
