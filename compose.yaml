@@ -33,6 +33,7 @@ services:
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
       - AZURITE_CONTAINER_NAME=${AZURITE_CONTAINER_NAME}
+      - AZURITE_CREATE_CONTAINER_NAMES=${AZURITE_CREATE_CONTAINER_NAMES}
 
   sql-database:
     container_name: sql-database

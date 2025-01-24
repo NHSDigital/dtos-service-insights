@@ -16,6 +16,7 @@ public class RetrieveMeshFile
     private readonly string _mailboxId;
     private readonly string _blobConnectionString;
     private readonly string _destinationContainer;
+    private readonly string _poisonContainer;
     private readonly IBlobStorageHelper _blobStorageHelper;
     private const string NextHandShakeTimeConfigKey = "NextHandShakeTime";
     private const string ConfigFileName = "MeshState.json";
@@ -28,6 +29,8 @@ public class RetrieveMeshFile
         _mailboxId = options.Value.BSSMailBox;
         _blobConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
         _destinationContainer = Environment.GetEnvironmentVariable("BSSContainerName");
+        _poisonContainer = Environment.GetEnvironmentVariable("PoisonContainerName");
+
     }
 
     /// <summary>
@@ -47,11 +50,21 @@ public class RetrieveMeshFile
         try
         {
             var shouldExecuteHandShake = await ShouldExecuteHandShake();
+
+            // Move valid files to the inbound container
             var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(messageFilter, fileNameFunction, _mailboxId, _blobConnectionString, _destinationContainer, shouldExecuteHandShake);
 
             if (!result)
             {
-                _logger.LogError("An error was encountered while moving files from Mesh to Blob");
+                _logger.LogError("An error was encountered while moving files from Mesh to the inbound container");
+            }
+
+            // Then move invalid files to the poison container
+            var poisonResult = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(i => !messageFilter(i), fileNameFunction, _mailboxId, _blobConnectionString, _poisonContainer, shouldExecuteHandShake);
+
+            if (!poisonResult)
+            {
+                _logger.LogError("An error was encountered while moving files from Mesh to the poison container");
             }
         }
         catch (Exception ex)
