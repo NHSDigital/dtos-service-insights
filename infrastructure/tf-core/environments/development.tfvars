@@ -283,6 +283,10 @@ function_apps = {
         {
           env_var_name     = "DemographicsServiceUrl"
           function_app_key = "GetDemographicsData"
+        },
+        {
+          env_var_name     = "GetScreeningDataUrl"
+          function_app_key = "GetScreeningData"
         }
       ]
     }
@@ -324,9 +328,9 @@ function_apps = {
     }
 
     ReceiveData = {
-      name_suffix            = "receive-data"
-      function_endpoint_name = "ReceiveData"
-      app_service_plan_key   = "Default"
+      name_suffix               = "receive-data"
+      function_endpoint_name    = "ReceiveData"
+      app_service_plan_key      = "Default"
       event_grid_topic_producer = "event-grid-topic-1"
       app_urls = [
         {
@@ -339,7 +343,7 @@ function_apps = {
         },
         {
           env_var_name     = "GetEpisodeReferenceDataServiceUrl"
-          function_app_key = "GetEpisodeRefData"
+          function_app_key = "GetEpisodeReferenceData"
         },
         {
           env_var_name     = "GetAllOrganisationReferenceDataUrl"
@@ -417,9 +421,9 @@ function_apps = {
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
-    GetEpisodeRefData = {
+    GetEpisodeReferenceData = {
       name_suffix            = "get-episode-ref-data"
-      function_endpoint_name = "GetScreeningData"
+      function_endpoint_name = "GetEpisodeReferenceData"
       app_service_plan_key   = "Default"
       app_urls = [
         {
