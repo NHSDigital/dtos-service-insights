@@ -51,7 +51,7 @@ public class CreateParticipantScreeningProfile
 
             else
             {
-                _logger.LogInformation("Data is being processed.");
+                _logger.LogInformation("Data is not historic.");
             }
 
             await SendToCreateParticipantScreeningProfileAsync(participant, isHistoric);
