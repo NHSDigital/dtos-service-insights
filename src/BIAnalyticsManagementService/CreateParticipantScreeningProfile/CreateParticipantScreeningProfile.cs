@@ -40,7 +40,21 @@ public class CreateParticipantScreeningProfile
 
         try
         {
-            await SendToCreateParticipantScreeningProfileAsync(participant);
+            DateTime historicDataCutOffDate = new DateTime(2025, 03, 01);
+
+            bool isHistoric = participant.SrcSysProcessedDateTime < historicDataCutOffDate;
+
+            if (isHistoric)
+            {
+                _logger.LogInformation("Data is historic.");
+            }
+
+            else
+            {
+                _logger.LogInformation("Data is being processed.");
+            }
+
+            await SendToCreateParticipantScreeningProfileAsync(participant, isHistoric);
         }
 
         catch (Exception ex)
@@ -86,7 +100,7 @@ public class CreateParticipantScreeningProfile
         return screeningLkp;
     }
 
-    private async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant)
+    private async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant, bool isHistoric)
     {
         DemographicsData demographicsData = await GetDemographicsDataAsync(participant.NhsNumber);
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(participant.ScreeningId);
@@ -111,7 +125,9 @@ public class CreateParticipantScreeningProfile
             DateIrradiated = participant.DateIrradiated,
             GeneCode = participant.GeneCode,
             GeneCodeDescription = participant.GeneDescription,
-            RecordInsertDatetime = DateTime.Now
+            SrcSysProcessedDatetime = participant.SrcSysProcessedDateTime,
+            RecordInsertDatetime = isHistoric ? participant.SrcSysProcessedDateTime.AddDays(1) : DateTime.Now,
+            RecordUpdateDatetime = isHistoric ? participant.SrcSysProcessedDateTime.AddDays(1) : DateTime.Now,
         };
 
         var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");

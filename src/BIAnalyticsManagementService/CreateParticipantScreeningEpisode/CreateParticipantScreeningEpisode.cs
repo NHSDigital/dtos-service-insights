@@ -5,6 +5,7 @@ using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using System.Text.Json.Serialization;
+using Microsoft.Net.Http.Headers;
 
 namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
@@ -45,7 +46,21 @@ public class CreateParticipantScreeningEpisode
 
         try
         {
-            await SendToCreateParticipantScreeningEpisodeAsync(episode);
+            DateTime historicDataCutOffDate = new DateTime(2025, 03, 01);
+
+            bool isHistoric = episode.SrcSysProcessedDatetime < historicDataCutOffDate;
+
+            if (isHistoric)
+            {
+                _logger.LogInformation("Data is historic.");
+            }
+
+            else
+            {
+                _logger.LogInformation("Data is being processed.");
+            }
+
+            await SendToCreateParticipantScreeningEpisodeAsync(episode, isHistoric);
         }
         catch (Exception ex)
         {
@@ -91,7 +106,7 @@ public class CreateParticipantScreeningEpisode
         return organisationLkp;
     }
 
-    private async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode)
+    private async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode, bool isHistoric)
     {
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(episode.ScreeningId);
         OrganisationLkp organisationLkp = await GetOrganisationDataAsync(episode.OrganisationId);
@@ -119,7 +134,9 @@ public class CreateParticipantScreeningEpisode
             OrganisationCode = organisationLkp.OrganisationCode,
             OrganisationName = organisationLkp.OrganisationName,
             BatchId = episode.BatchId,
-            RecordInsertDatetime = DateTime.Now,
+            SrcSysProcessedDatetime = episode.SrcSysProcessedDatetime,
+            RecordInsertDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.Now,
+            RecordUpdateDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.Now,
             ExceptionFlag =  episode.ExceptionFlag
         };
 
