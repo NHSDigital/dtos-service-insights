@@ -20,8 +20,9 @@ public class CreateEpisode
     private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
     private readonly EventGridPublisherClient _eventGridPublisherClient;
+    private readonly IOrganisationLkpRepository _organisationLkpRepository;
 
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, EventGridPublisherClient eventGridPublisherClient)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository,  IOrganisationLkpRepository organisationLkpRepository, EventGridPublisherClient eventGridPublisherClient)
     {
         _logger = logger;
         _episodesRepository = episodeRepository;
@@ -29,6 +30,7 @@ public class CreateEpisode
         _episodeTypeLkpRepository = episodeTypeLkpRepository;
         _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
         _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
+        _organisationLkpRepository = organisationLkpRepository; // Initialize for organisation ID lkp;
         _eventGridPublisherClient = eventGridPublisherClient;
     }
 
@@ -55,25 +57,20 @@ public class CreateEpisode
         try
         {
             EpisodeTypeLkp? episodeTypeLkp = await GetCodeObject<EpisodeTypeLkp?>(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeLkp);
+
+            OrganisationLkp? organisationLkp = await GetCodeObject<OrganisationLkp?>(episodeDto.OrganisationCode, "Organisation code", _organisationLkpRepository.GetOrganisationByCodeAsync);
+
             EndCodeLkp? endCodeLkp = await GetCodeObject<EndCodeLkp?>(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeLkp);
             ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
-            var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId);
+            var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, organisationLkp?.OrganisationId);
             _logger.LogInformation("Calling CreateEpisode method...");
             _episodesRepository.CreateEpisode(episode);
             _logger.LogInformation("Episode created successfully.");
 
-            var finalizedEpisodeDto = (FinalizedEpisodeDto)episode;
-
-            finalizedEpisodeDto.EpisodeType = episodeTypeLkp?.EpisodeType;
-            finalizedEpisodeDto.EpisodeTypeDescription = episodeTypeLkp?.EpisodeDescription;
-            finalizedEpisodeDto.EndCode = endCodeLkp?.EndCode;
-            finalizedEpisodeDto.EndCodeDescription = endCodeLkp?.EndCodeDescription;
-            finalizedEpisodeDto.ReasonClosedCode = reasonClosedCodeLkp?.ReasonClosedCode;
-            finalizedEpisodeDto.ReasonClosedCodeDescription = reasonClosedCodeLkp?.ReasonClosedCodeDescription;
-            finalizedEpisodeDto.FinalActionCode = finalActionCodeLkp?.FinalActionCode;
-            finalizedEpisodeDto.FinalActionCodeDescription = finalActionCodeLkp?.FinalActionCodeDescription;
+            // Prepare finalized episode DTO
+            var finalizedEpisodeDto = MapToFinalizedEpisodeDto(episode, episodeTypeLkp, endCodeLkp, reasonClosedCodeLkp, finalActionCodeLkp,organisationLkp);
 
             EventGridEvent eventGridEvent = new EventGridEvent(
                 subject: "Episode Created",
@@ -99,8 +96,9 @@ public class CreateEpisode
         }
     }
 
-    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId)
+    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, long? organisationId)
     {
+
         return new Episode
         {
             EpisodeId = episodeDto.EpisodeId,
@@ -118,10 +116,28 @@ public class CreateEpisode
             ReasonClosedCodeId = reasonClosedCodeId,
             FinalActionCodeId = finalActionCodeId,
             EndPoint = episodeDto.EndPoint,
-            OrganisationId = 111111, // Need to get OrganisationId from Reference Management Data Store
+            OrganisationId=organisationId,
+
             BatchId = episodeDto.BatchId,
             RecordInsertDatetime = DateTime.UtcNow,
             RecordUpdateDatetime = DateTime.UtcNow
+        };
+    }
+
+     private FinalizedEpisodeDto MapToFinalizedEpisodeDto(Episode episode, EpisodeTypeLkp? episodeTypeLkp, EndCodeLkp? endCodeLkp, ReasonClosedCodeLkp? reasonClosedCodeLkp, FinalActionCodeLkp? finalActionCodeLkp, OrganisationLkp? organisationLkp)
+    {
+        return new FinalizedEpisodeDto
+        {
+            EpisodeId = episode.EpisodeId,
+            EpisodeType = episodeTypeLkp?.EpisodeType,
+            EpisodeTypeDescription = episodeTypeLkp?.EpisodeDescription,
+            EndCode = endCodeLkp?.EndCode,
+            EndCodeDescription = endCodeLkp?.EndCodeDescription,
+            ReasonClosedCode = reasonClosedCodeLkp?.ReasonClosedCode,
+            ReasonClosedCodeDescription = reasonClosedCodeLkp?.ReasonClosedCodeDescription,
+            FinalActionCode = finalActionCodeLkp?.FinalActionCode,
+            FinalActionCodeDescription = finalActionCodeLkp?.FinalActionCodeDescription,
+            OrganisationId = organisationLkp?.OrganisationId
         };
     }
 
