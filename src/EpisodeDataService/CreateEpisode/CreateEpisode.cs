@@ -23,14 +23,14 @@ public class CreateEpisode
     private readonly IHttpRequestService _httpRequestService;
     private const long ScreeningId = 1;
 
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _episodeRepository = episodeRepository;
-        _endCodeLkpRepository = endCodeLkpRepository;
-        _episodeTypeLkpRepository = episodeTypeLkpRepository;
-        _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
-        _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
+        _endCodeLkpRepository = episodeLkpRepository.EndCodeLkpRepository;
+        _episodeTypeLkpRepository = episodeLkpRepository.EpisodeTypeLkpRepository;
+        _finalActionCodeLkpRepository = episodeLkpRepository.FinalActionCodeLkpRepository;
+        _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
         _eventGridPublisherClient = eventGridPublisherClient;
         _httpRequestService = httpRequestService;
     }
