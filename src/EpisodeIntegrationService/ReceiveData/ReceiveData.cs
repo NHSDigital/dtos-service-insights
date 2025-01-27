@@ -374,7 +374,7 @@ public class ReceiveData
 
     }
 
-    private void ValidateBooleanField(string fieldName, string fieldValue)
+    private static void ValidateBooleanField(string fieldName, string fieldValue)
     {
         if (!string.IsNullOrEmpty(fieldValue) &&
             !(fieldValue.ToLower() == "true" || fieldValue.ToLower() == "false"))
