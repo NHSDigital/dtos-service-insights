@@ -44,6 +44,8 @@ public class FinalizedEpisodeDto
 
     public string? BatchId { get; set; }
 
+    public short? ExceptionFlag { get; set; }
+
     public DateTime SrcSysProcessedDatetime { get; set; }
     public short? ExceptionFlag { get; set; }
 
