@@ -61,6 +61,9 @@ module "functionapp" {
 
   function_app_slots = var.function_app_slots
 
+  app_service_logs_retention_period_days = 7
+  app_service_logs_disk_quota_mb  = 35
+
   tags = var.tags
 }
 
