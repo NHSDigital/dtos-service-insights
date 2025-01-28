@@ -166,8 +166,10 @@ function_apps = {
   acr_name    = "acrukshubdevserins"
   acr_rg_name = "rg-hub-dev-uks-serins"
 
-  app_insights_name    = "appi-dev-uks-serins"
-  app_insights_rg_name = "rg-serins-dev-uks-audit"
+  app_insights_name                      = "appi-dev-uks-serins"
+  app_insights_rg_name                   = "rg-serins-dev-uks-audit"
+  app_service_logs_disk_quota_mb         = 35
+  app_service_logs_retention_period_days = 7
 
   always_on = true
 
@@ -179,6 +181,7 @@ function_apps = {
 
   enable_appsrv_storage         = "false"
   ftps_state                    = "Disabled"
+  health_check_path             = "/api/health"
   https_only                    = true
   remote_debugging_enabled      = false
   storage_uses_managed_identity = null
@@ -255,6 +258,7 @@ function_apps = {
         {
           env_var_name     = "GetReferenceDataUrl"
           function_app_key = "GetOrganisationData"
+          endpoint_name    = "GetReferenceData"
         }
       ]
       ip_restrictions = {
@@ -348,6 +352,7 @@ function_apps = {
         {
           env_var_name     = "GetAllOrganisationReferenceDataUrl"
           function_app_key = "GetOrganisationData"
+          endpoint_name    = "GetAllOrganisationReferenceData"
         }
       ]
     }
@@ -429,7 +434,7 @@ function_apps = {
         {
           env_var_name     = "RetrieveEpisodeReferenceDataServiceUrl"
           function_app_key = "RetrieveEpisodeRefData"
-        }
+        },
       ]
     }
 

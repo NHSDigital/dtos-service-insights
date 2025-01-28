@@ -162,8 +162,10 @@ function_apps = {
   acr_name    = "acrukshubdevserins"
   acr_rg_name = "rg-hub-dev-uks-serins"
 
-  app_insights_name    = "appi-int-uks-serins"
-  app_insights_rg_name = "rg-serins-int-uks-audit"
+  app_insights_name                      = "appi-int-uks-serins"
+  app_insights_rg_name                   = "rg-serins-int-uks-audit"
+  app_service_logs_disk_quota_mb         = 35
+  app_service_logs_retention_period_days = 7
 
   always_on = true
 
@@ -175,6 +177,7 @@ function_apps = {
 
   enable_appsrv_storage         = "false"
   ftps_state                    = "Disabled"
+  health_check_path             = "/api/health"
   https_only                    = true
   remote_debugging_enabled      = false
   storage_uses_managed_identity = null

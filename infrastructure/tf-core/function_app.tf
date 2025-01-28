@@ -16,7 +16,7 @@ module "functionapp" {
 
   public_network_access_enabled = length(keys(each.value.ip_restrictions)) > 0 ? true : var.features.public_network_access_enabled
 
-  vnet_integration_subnet_id    = module.subnets["${module.regions_config[each.value.region].names.subnet}-apps"].id
+  vnet_integration_subnet_id = module.subnets["${module.regions_config[each.value.region].names.subnet}-apps"].id
 
   # rbac_role_assignments = local.rbac_role_assignments[each.value.region]
   rbac_role_assignments = each.value.rbac_role_assignments
@@ -56,13 +56,17 @@ module "functionapp" {
     private_service_connection_is_manual = var.features.private_service_connection_is_manual
   } : null
 
-  ip_restrictions = each.value.ip_restrictions
+  ip_restrictions               = each.value.ip_restrictions
   ip_restriction_default_action = var.function_apps.ip_restriction_default_action
 
   function_app_slots = var.function_app_slots
 
-  app_service_logs_retention_period_days = 7
-  app_service_logs_disk_quota_mb  = 35
+  # To enable health checks for function apps
+  health_check_path = var.function_apps.health_check_path
+
+  # To enable app service log for function apps
+  app_service_logs_retention_period_days = var.function_apps.app_service_logs_retention_period_days
+  app_service_logs_disk_quota_mb         = var.function_apps.app_service_logs_disk_quota_mb
 
   tags = var.tags
 }
@@ -146,7 +150,7 @@ locals {
                 "https://%s-si-%s.azurewebsites.net/api/%s",
                 module.regions_config[region].names["function-app"],
                 var.function_apps.fa_config[obj.function_app_key].name_suffix,
-                var.function_apps.fa_config[obj.function_app_key].function_endpoint_name
+                length(obj.endpoint_name) > 0 ? obj.endpoint_name : var.function_apps.fa_config[obj.function_app_key].function_endpoint_name
               )
             },
 
