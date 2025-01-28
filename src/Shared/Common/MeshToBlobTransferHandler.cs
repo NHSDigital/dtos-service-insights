@@ -95,7 +95,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             }
             if (!predicate(messageHead.Response.MessageMetaData))
             {
-                _logger.LogInformation("Message: {MessageId} with fileName: {FileName} \ndid not meet the predicate for transferring to inbound Blob Storage", messageHead.Response.MessageMetaData.MessageId, messageHead.Response.MessageMetaData.FileName);
+                _logger.LogInformation("Message: {MessageId} with fileName: {FileName} did not meet the predicate for transferring to inbound Blob Storage", messageHead.Response.MessageMetaData.MessageId, messageHead.Response.MessageMetaData.FileName);
                 continue;
             }
             bool wasMessageDownloaded = await TransferMessageToBlobStorage(messageHead.Response.MessageMetaData);
@@ -139,11 +139,11 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
 
         if (uploadedToBlob)
         {
-            _logger.LogInformation("Message: {MessageId} with fileName: {FileName} \nwas uploaded to Blob Storage container: {DestinationContainer}", messageHead.MessageId, blobFile.FileName, _destinationContainer);
+            _logger.LogInformation("Message: {MessageId} with fileName: {FileName} was uploaded to Blob Storage container: {DestinationContainer}", messageHead.MessageId, blobFile.FileName, _destinationContainer);
         }
         else
         {
-            _logger.LogError("Message: {MessageId} with fileName: {FileName} \nfailed to upload to Blob Storage container: {DestinationContainer}", messageHead.MessageId, blobFile.FileName, _destinationContainer);
+            _logger.LogError("Message: {MessageId} with fileName: {FileName} failed to upload to Blob Storage container: {DestinationContainer}", messageHead.MessageId, blobFile.FileName, _destinationContainer);
         }
 
         return uploadedToBlob;

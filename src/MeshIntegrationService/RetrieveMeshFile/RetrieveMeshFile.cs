@@ -34,42 +34,41 @@ public class RetrieveMeshFile
     }
 
     /// <summary>
-    /// This function polls the MESH Mailbox every 5 minutes, if there is a file posted to the mailbox.
-    /// If there is a file in there will move the file to the Service Insights Blob Storage where it will be picked up by the ReceiveData Function.
+    /// This function polls the MESH Mailbox based on a timer trigger. It moves files from the mailbox to the appropriate Blob Storage container.
+    /// Files are filtered and moved to either the destination container or the poison container based on their validity.
+    /// A handshake mechanism is used to determine if the function should execute based on a configured interval.
     /// </summary>
     [Function("RetrieveMeshFile")]
     public async Task RunAsync([TimerTrigger("%TimerExpression%")] TimerInfo myTimer)
     {
         _logger.LogInformation("C# Timer trigger function executed at: {DateTime}", DateTime.Now);
 
-        static bool messageFilter(MessageMetaData i) =>
+        bool messageFilter(MessageMetaData i) =>
             (i.FileName.StartsWith("bss_subjects") || i.FileName.StartsWith("bss_episodes")) && i.FileName.EndsWith(".csv");
 
-        static string fileNameFunction(MessageMetaData i) => i.FileName;
+        string fileNameFunction(MessageMetaData i) => i.FileName;
 
         try
         {
             var shouldExecuteHandShake = await ShouldExecuteHandShake();
 
-            // Move valid files to the inbound container
-            var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(messageFilter, fileNameFunction, _mailboxId, _blobConnectionString, _destinationContainer, shouldExecuteHandShake);
-
-            if (!result)
+            // Move files from Mesh to Blob, deciding container based on validity
+            foreach (var isValid in new[] { true, false })
             {
-                _logger.LogError("An error was encountered while moving files from Mesh to the inbound container");
-            }
+                var container = isValid ? _destinationContainer : _poisonContainer;
+                var filter = isValid ? messageFilter : (Func<MessageMetaData, bool>)(i => !messageFilter(i));
 
-            // Then move invalid files to the poison container
-            var poisonResult = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(i => !messageFilter(i), fileNameFunction, _mailboxId, _blobConnectionString, _poisonContainer, shouldExecuteHandShake);
+                var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(filter, fileNameFunction, _mailboxId, _blobConnectionString, container, shouldExecuteHandShake);
 
-            if (!poisonResult)
-            {
-                _logger.LogError("An error was encountered while moving files from Mesh to the poison container");
+                if (!result)
+                {
+                    _logger.LogError("An error was encountered while moving files from Mesh to the Blob Storage container: {Container}", container);
+                }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error encountered while moving files from Mesh to Blob");
+            _logger.LogError(ex, "An error encountered while moving files from Mesh to Blob Storage");
         }
 
         if (myTimer.ScheduleStatus is not null)
