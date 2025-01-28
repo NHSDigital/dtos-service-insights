@@ -43,10 +43,10 @@ public class RetrieveMeshFile
     {
         _logger.LogInformation("C# Timer trigger function executed at: {DateTime}", DateTime.Now);
 
-        bool messageFilter(MessageMetaData i) =>
+        static bool messageFilter(MessageMetaData i) =>
             (i.FileName.StartsWith("bss_subjects") || i.FileName.StartsWith("bss_episodes")) && i.FileName.EndsWith(".csv");
 
-        string fileNameFunction(MessageMetaData i) => i.FileName;
+        static string fileNameFunction(MessageMetaData i) => i.FileName;
 
         try
         {
@@ -62,13 +62,13 @@ public class RetrieveMeshFile
 
                 if (!result)
                 {
-                    _logger.LogError("An error was encountered while moving files from Mesh to the Blob Storage container: {Container}", container);
+                    _logger.LogError("An error was encountered while moving files from Mesh to the Blob container: {Container}", container);
                 }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error encountered while moving files from Mesh to Blob Storage");
+            _logger.LogError(ex, "An error encountered while moving files from Mesh to Blob");
         }
 
         if (myTimer.ScheduleStatus is not null)
