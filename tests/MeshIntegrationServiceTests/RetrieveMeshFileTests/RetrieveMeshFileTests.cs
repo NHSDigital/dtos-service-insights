@@ -32,6 +32,8 @@ public class RetrieveMeshFileTests
         Environment.SetEnvironmentVariable("BSSMailBox", mailboxId);
         Environment.SetEnvironmentVariable("AzureWebJobsStorage", "BlobStorage_ConnectionString");
         Environment.SetEnvironmentVariable("BSSContainerName", "BlobStorage_DestinationContainer");
+        Environment.SetEnvironmentVariable("PoisonContainerName", "BlobStorage_PoisonContainer");
+
 
         _mockOptions.Setup(i => i.Value).Returns(new RetrieveMeshFileConfig
         {
@@ -401,5 +403,67 @@ public class RetrieveMeshFileTests
         _mockMeshInboxService.Verify(i => i.GetMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.AtLeastOnce);
         _mockBlobStorageHelper.Verify(i => i.UploadFileToBlobStorage(It.IsAny<string>(), "BlobStorage_DestinationContainer", It.IsAny<BlobFile>(), false), Times.Never);
         _mockMeshInboxService.Verify(i => i.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task Run_InvalidFileName_MovesToPoisonContainer()
+    {
+        // Arrange
+        var messageId = "MessageId";
+        var fileName = "invalid_file.txt";
+        var content = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+        var handshakeResponse = MeshResponseTestHelper.CreateSuccessfulHandshakeResponse(mailboxId);
+        var inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse(new List<string> { messageId });
+        var headResponse = MeshResponseTestHelper.CreateSuccessfulMeshHeadResponse(mailboxId, messageId, fileName);
+        var messageResponse = MeshResponseTestHelper.CreateSuccessfulGetMessageResponse(mailboxId, messageId, fileName, content, "application/csv");
+        var acknowledgeMessageResponse = MeshResponseTestHelper.CreateSuccessfulAcknowledgeResponse(messageId);
+
+        _mockMeshInboxService.Setup(i => i.GetMessagesAsync(mailboxId)).ReturnsAsync(inboxResponse);
+        _mockMeshInboxService.Setup(i => i.GetHeadMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(headResponse);
+        _mockMeshInboxService.Setup(i => i.GetMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(messageResponse);
+        _mockBlobStorageHelper.Setup(i => i.UploadFileToBlobStorage("BlobStorage_ConnectionString", "BlobStorage_PoisonContainer", It.IsAny<BlobFile>(), false)).ReturnsAsync(true);
+        _mockMeshInboxService.Setup(i => i.AcknowledgeMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(acknowledgeMessageResponse);
+        _mockMeshOperationService.Setup(i => i.MeshHandshakeAsync(mailboxId)).ReturnsAsync(handshakeResponse);
+
+        // Act
+        await _retrieveMeshFile.RunAsync(new Microsoft.Azure.Functions.Worker.TimerInfo());
+
+        // Assert
+        _mockMeshInboxService.Verify(i => i.GetMessagesAsync(It.IsAny<string>()), Times.AtLeastOnce);
+        _mockMeshInboxService.Verify(i => i.GetHeadMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.AtLeastOnce);
+        _mockMeshInboxService.Verify(i => i.GetMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.AtLeastOnce);
+        _mockBlobStorageHelper.Verify(i => i.UploadFileToBlobStorage(It.IsAny<string>(), "BlobStorage_PoisonContainer", It.IsAny<BlobFile>(), false), Times.AtLeastOnce);
+        _mockMeshInboxService.Verify(i => i.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.AtLeastOnce);
+    }
+
+    [TestMethod]
+    public async Task Run_ValidFileName_MovesToDestinationContainer()
+    {
+        // Arrange
+        var messageId = "MessageId";
+        var fileName = "bss_episodes.csv";
+        var content = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+        var handshakeResponse = MeshResponseTestHelper.CreateSuccessfulHandshakeResponse(mailboxId);
+        var inboxResponse = MeshResponseTestHelper.CreateSuccessfulCheckInboxResponse(new List<string> { messageId });
+        var headResponse = MeshResponseTestHelper.CreateSuccessfulMeshHeadResponse(mailboxId, messageId, fileName);
+        var messageResponse = MeshResponseTestHelper.CreateSuccessfulGetMessageResponse(mailboxId, messageId, fileName, content, "application/csv");
+        var acknowledgeMessageResponse = MeshResponseTestHelper.CreateSuccessfulAcknowledgeResponse(messageId);
+
+        _mockMeshInboxService.Setup(i => i.GetMessagesAsync(mailboxId)).ReturnsAsync(inboxResponse);
+        _mockMeshInboxService.Setup(i => i.GetHeadMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(headResponse);
+        _mockMeshInboxService.Setup(i => i.GetMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(messageResponse);
+        _mockBlobStorageHelper.Setup(i => i.UploadFileToBlobStorage("BlobStorage_ConnectionString", "BlobStorage_DestinationContainer", It.IsAny<BlobFile>(), false)).ReturnsAsync(true);
+        _mockMeshInboxService.Setup(i => i.AcknowledgeMessageByIdAsync(mailboxId, messageId)).ReturnsAsync(acknowledgeMessageResponse);
+        _mockMeshOperationService.Setup(i => i.MeshHandshakeAsync(mailboxId)).ReturnsAsync(handshakeResponse);
+
+        // Act
+        await _retrieveMeshFile.RunAsync(new Microsoft.Azure.Functions.Worker.TimerInfo());
+
+        // Assert
+        _mockMeshInboxService.Verify(i => i.GetMessagesAsync(It.IsAny<string>()), Times.AtLeastOnce);
+        _mockMeshInboxService.Verify(i => i.GetHeadMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.AtLeastOnce);
+        _mockMeshInboxService.Verify(i => i.GetMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.AtLeastOnce);
+        _mockBlobStorageHelper.Verify(i => i.UploadFileToBlobStorage(It.IsAny<string>(), "BlobStorage_DestinationContainer", It.IsAny<BlobFile>(), false), Times.AtLeastOnce);
+        _mockMeshInboxService.Verify(i => i.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.AtLeastOnce);
     }
 }
