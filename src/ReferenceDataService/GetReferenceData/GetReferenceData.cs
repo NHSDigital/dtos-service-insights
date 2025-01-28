@@ -21,6 +21,41 @@ public class GetReferenceData
         _organisationLkpRepository = organisationLkpRepository;
     }
 
+    [Function("GetOrganisationIdByCode")]
+    public async Task<HttpResponseData> GetOrganisationIdByCode([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    {
+        _logger.LogInformation("GetOrganisationIdByCode: start");
+
+        string organisationCode = req.Query["organisation_code"];
+
+        if (string.IsNullOrWhiteSpace(organisationCode))
+        {
+            _logger.LogError("Missing organisation code.");
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+
+        try
+        {
+            // Query the OrganisationLkpRepository for the ID
+            OrganisationLkp? organisationLkp = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
+
+            if (organisationLkp == null)
+            {
+                _logger.LogError($"Organisation with code {organisationCode} not found.");
+                return req.CreateResponse(HttpStatusCode.NotFound);
+            }
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await JsonSerializer.SerializeAsync(response.Body, organisationLkp);
+            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve organisation ID by code. Exception: {Message}", ex.Message);
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
+        }
+    }
     [Function("GetReferenceData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {

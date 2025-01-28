@@ -31,7 +31,7 @@ public class UpdateEpisode
         _episodeTypeLkpRepository = episodeTypeLkpRepository;
         _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
         _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
-        _organisationLkpRepository= organisationLkpRepository;// OrganisationID included
+        _organisationLkpRepository= organisationLkpRepository;
         _eventGridPublisherClient = eventGridPublisherClient;
     }
 

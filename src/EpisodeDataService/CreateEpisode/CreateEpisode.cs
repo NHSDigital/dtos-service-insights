@@ -9,6 +9,8 @@ using NHS.ServiceInsights.Model;
 using Azure.Messaging.EventGrid;
 using System.Text.Json.Serialization;
 
+
+
 namespace NHS.ServiceInsights.EpisodeDataService;
 
 public class CreateEpisode
@@ -21,6 +23,8 @@ public class CreateEpisode
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
     private readonly EventGridPublisherClient _eventGridPublisherClient;
     private readonly IOrganisationLkpRepository _organisationLkpRepository;
+   // private readonly GetReference
+ // private readonly ReferenceDataService _referenceDataService;
 
     public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository,  IOrganisationLkpRepository organisationLkpRepository, EventGridPublisherClient eventGridPublisherClient)
     {
@@ -30,7 +34,7 @@ public class CreateEpisode
         _episodeTypeLkpRepository = episodeTypeLkpRepository;
         _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
         _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
-        _organisationLkpRepository = organisationLkpRepository; // Initialize for organisation ID lkp;
+        _organisationLkpRepository = organisationLkpRepository;
         _eventGridPublisherClient = eventGridPublisherClient;
     }
 
@@ -58,19 +62,22 @@ public class CreateEpisode
         {
             EpisodeTypeLkp? episodeTypeLkp = await GetCodeObject<EpisodeTypeLkp?>(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeLkp);
 
-            OrganisationLkp? organisationLkp = await GetCodeObject<OrganisationLkp?>(episodeDto.OrganisationCode, "Organisation code", _organisationLkpRepository.GetOrganisationByCodeAsync);
+           // OrganisationLkp? organisationLkp = await GetCodeObject<OrganisationLkp?>(episodeDto.OrganisationCode, "Organisation code", code => _referenceDataService.GetOrganisationIdByCode(code) );
 
             EndCodeLkp? endCodeLkp = await GetCodeObject<EndCodeLkp?>(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeLkp);
             ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
-            var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, organisationLkp?.OrganisationId);
+          //  OrganisationReferenceData? organisationReferenceData = await GetCodeObject<OrganisationReferenceData?>(episodeDto.OrganisationCode, "Organisation code", _organisationLkpRepository.GetOrganisationAsync);
+
+            var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, ;
+
             _logger.LogInformation("Calling CreateEpisode method...");
             _episodesRepository.CreateEpisode(episode);
             _logger.LogInformation("Episode created successfully.");
 
             // Prepare finalized episode DTO
-            var finalizedEpisodeDto = MapToFinalizedEpisodeDto(episode, episodeTypeLkp, endCodeLkp, reasonClosedCodeLkp, finalActionCodeLkp,organisationLkp);
+            var finalizedEpisodeDto = MapToFinalizedEpisodeDto(episode, episodeTypeLkp, endCodeLkp, reasonClosedCodeLkp, finalActionCodeLkp);
 
             EventGridEvent eventGridEvent = new EventGridEvent(
                 subject: "Episode Created",
@@ -96,8 +103,9 @@ public class CreateEpisode
         }
     }
 
-    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, long? organisationId)
-    {
+    //private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, long? organisationID)
+    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, OrganisationReferenceData organisationReferenceData)
+   {
 
         return new Episode
         {
@@ -116,7 +124,7 @@ public class CreateEpisode
             ReasonClosedCodeId = reasonClosedCodeId,
             FinalActionCodeId = finalActionCodeId,
             EndPoint = episodeDto.EndPoint,
-            OrganisationId=organisationId,
+            OrganisationId=string.IsNullOrEmpty(episodeDto.OrganisationCode) ? null : organisationReferenceData.OrganisationCodeToIdLookup[episodeDto.OrganisationCode],
 
             BatchId = episodeDto.BatchId,
             RecordInsertDatetime = DateTime.UtcNow,
