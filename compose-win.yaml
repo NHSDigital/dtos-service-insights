@@ -338,7 +338,7 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6777
       - MeshApiBaseUrl=${MESHAPIBASEURL}
-      - BSSMailBox=${BSSMAxILBOX}
+      - BSSMailBox=${BSSMAILBOX}
       - BSSContainerName=${AZURITE_CONTAINER_NAME}
       - MeshPassword=${MESHPASSWORD}
       - MeshSharedKey=${MESHSHAREDKEY}
