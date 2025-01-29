@@ -27,11 +27,11 @@ public class GetParticipant
         }
         catch (Exception ex)
         {
-            _logger.LogError("Request parameters invalid: {Ex}", ex);
+            _logger.LogError(ex, "Request parameters invalid");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
-        if (nhsNumber == 9999999999)
+        if (nhsNumber == 9999999999 && screeningId == 1)
         {
             return req.CreateResponse(HttpStatusCode.NotFound);
         }
