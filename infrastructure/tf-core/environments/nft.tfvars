@@ -179,6 +179,7 @@ function_apps = {
   remote_debugging_enabled      = false
   storage_uses_managed_identity = null
   worker_32bit                  = false
+  ip_restriction_default_action = "Deny"
 
   fa_config = {
 
