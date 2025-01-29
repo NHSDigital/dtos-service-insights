@@ -14,10 +14,28 @@ public class GetParticipant
         _logger = logger;
     }
 
-    [Function("CheckParticipantExists")]
+    // Stub function that will be replaced
+    // Checks that the participant exists
+    [Function("GetParticipant")]
     public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        _logger.LogInformation("CheckParticipantExists stub returning 200");
+        long nhsNumber, screeningId;
+        try
+        {
+            nhsNumber = long.Parse(req.Query["NhsNumber"]);
+            screeningId = long.Parse(req.Query["ScreeningId"]);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Request parameters invalid: {Ex}", ex);
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+
+        if (nhsNumber == 9999999999)
+        {
+            return req.CreateResponse(HttpStatusCode.NotFound);
+        }
+
         return req.CreateResponse(HttpStatusCode.OK);
     }
 }
