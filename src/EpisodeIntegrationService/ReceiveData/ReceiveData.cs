@@ -341,9 +341,6 @@ public class ReceiveData
     }
     private InitialParticipantDto MapParticipantToParticipantDto(BssSubject subject)
     {
-        ValidateBooleanField("is_higher_risk", subject.is_higher_risk);
-        ValidateBooleanField("is_higher_risk_active", subject.is_higher_risk_active);
-
         return new InitialParticipantDto
         {
             NhsNumber = subject.nhs_number,
@@ -373,16 +370,6 @@ public class ReceiveData
         return await JsonSerializer.DeserializeAsync<OrganisationReferenceData>(await response.Content.ReadAsStreamAsync());
 
     }
-
-    private static void ValidateBooleanField(string fieldName, string fieldValue)
-    {
-        if (!string.IsNullOrEmpty(fieldValue) &&
-            !(fieldValue.ToLower() == "true" || fieldValue.ToLower() == "false"))
-        {
-            throw new ArgumentException($"Invalid value for '{fieldName}': {fieldValue}");
-        }
-    }
-
 
 }
 
