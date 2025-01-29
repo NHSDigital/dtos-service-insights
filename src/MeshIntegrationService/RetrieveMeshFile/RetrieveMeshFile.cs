@@ -52,18 +52,34 @@ public class RetrieveMeshFile
         {
             var shouldExecuteHandShake = await ShouldExecuteHandShake();
 
-            // Move files from Mesh to Blob, deciding container based on validity
-            foreach (var isValid in new[] { true, false })
+            // Process valid files
+            var validResult = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(
+                messageFilter,            // Only process valid files
+                fileNameFunction,
+                _mailboxId,
+                _blobConnectionString,
+                _destinationContainer,    // Valid files go to the destination container
+                shouldExecuteHandShake
+            );
+
+            if (!validResult)
             {
-                var container = isValid ? _destinationContainer : _poisonContainer;
-                var filter = isValid ? messageFilter : (Func<MessageMetaData, bool>)(i => !messageFilter(i));
+                _logger.LogError("An error was encountered while moving valid files to the Blob container: {Container}", _destinationContainer);
+            }
 
-                var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(filter, fileNameFunction, _mailboxId, _blobConnectionString, container, shouldExecuteHandShake);
+            // Process invalid files
+            var invalidResult = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(
+                i => !messageFilter(i),   // Only process invalid files
+                fileNameFunction,
+                _mailboxId,
+                _blobConnectionString,
+                _poisonContainer,         // Invalid files go to the poison container
+                shouldExecuteHandShake
+            );
 
-                if (!result)
-                {
-                    _logger.LogError("An error was encountered while moving files from Mesh to the Blob container: {Container}", container);
-                }
+            if (!invalidResult)
+            {
+                _logger.LogError("An error was encountered while moving invalid files to the Blob container: {Container}", _poisonContainer);
             }
         }
         catch (Exception ex)
