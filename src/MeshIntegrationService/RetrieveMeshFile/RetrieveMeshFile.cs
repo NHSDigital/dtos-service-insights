@@ -31,6 +31,26 @@ public class RetrieveMeshFile
         _destinationContainer = Environment.GetEnvironmentVariable("BSSContainerName");
         _poisonContainer = Environment.GetEnvironmentVariable("PoisonContainerName");
 
+        // Check for required environment variables
+        if (string.IsNullOrEmpty(_mailboxId))
+        {
+            throw new InvalidOperationException("Environment variable 'BSSMailBox' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(_blobConnectionString))
+        {
+            throw new InvalidOperationException("Environment variable 'AzureWebJobsStorage' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(_destinationContainer))
+        {
+            throw new InvalidOperationException("Environment variable 'BSSContainerName' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(_poisonContainer))
+        {
+            throw new InvalidOperationException("Environment variable 'PoisonContainerName' is missing.");
+        }
     }
 
     /// <summary>

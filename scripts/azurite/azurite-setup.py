@@ -9,19 +9,22 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 def setup_azurite():
     try:
         connect_str = os.getenv("AZURITE_CONNECTION_STRING")
-        container_names = os.getenv("AZURITE_CREATE_CONTAINER_NAMES", "default-container").split(",")  # Fallback to "default-container"
+        container_names = [
+            os.getenv("AZURITE_CONTAINER_NAME"),
+            os.getenv("AZURITE_POISON_CONTAINER_NAME")
+        ]
 
         if not connect_str:
             logging.error("AZURITE_CONNECTION_STRING is not set.")
             return
 
-        if not container_names:
-            logging.error("AZURITE_CREATE_CONTAINER_NAMES is not set.")
+        if not all(container_names):
+            logging.error("One or more container names are not set.")
             return
 
         # Log the full connection string and container names
         logging.info(f"AZURITE_CONNECTION_STRING: {connect_str}")
-        logging.info(f"AZURITE_CREATE_CONTAINER_NAMES: {container_names}")
+        logging.info(f"AZURITE_CONTAINER_NAMES: {container_names}")
 
         # Establish connection to Azurite
         try:
