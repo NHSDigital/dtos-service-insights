@@ -34,9 +34,9 @@ public class RetrieveMeshFile
     }
 
     /// <summary>
-    /// This function polls the MESH Mailbox based on a timer trigger. It moves files from the mailbox to the appropriate Blob Storage container.
-    /// Files are filtered and moved to either the destination container or the poison container based on their validity.
-    /// A handshake mechanism is used to determine if the function should execute based on a configured interval.
+    /// This function polls the MESH Mailbox every 5 minutes, if there is a file posted to the mailbox.
+    /// If there is a file in there will move the file to the Service Insights Blob Storage where it will be picked up by the ReceiveData Function.
+    /// Invalid files will be moved to the Blob Storage Poison Container.
     /// </summary>
     [Function("RetrieveMeshFile")]
     public async Task RunAsync([TimerTrigger("%TimerExpression%")] TimerInfo myTimer)
@@ -64,7 +64,7 @@ public class RetrieveMeshFile
 
             if (!validResult)
             {
-                _logger.LogError("An error was encountered while moving valid files to the Blob container: {Container}", _destinationContainer);
+                _logger.LogError("An error was encountered while moving valid files to the Blob Storage container: {Container}", _destinationContainer);
             }
 
             // Process invalid files
@@ -79,12 +79,12 @@ public class RetrieveMeshFile
 
             if (!invalidResult)
             {
-                _logger.LogError("An error was encountered while moving invalid files to the Blob container: {Container}", _poisonContainer);
+                _logger.LogError("An error was encountered while moving invalid files to the Blob Storage container: {Container}", _poisonContainer);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error encountered while moving files from Mesh to Blob");
+            _logger.LogError(ex, "An error encountered while moving files from Mesh to Blob Storage");
         }
 
         if (myTimer.ScheduleStatus is not null)
@@ -101,7 +101,7 @@ public class RetrieveMeshFile
         if (meshState == null)
         {
 
-            _logger.LogInformation("MeshState File did not exist, Creating new MeshState File in blob Storage");
+            _logger.LogInformation("MeshState File did not exist, Creating new MeshState File in Blob Storage");
             configValues = new Dictionary<string, string>
             {
                 { NextHandShakeTimeConfigKey, DateTime.UtcNow.Add(handShakeInterval).ToString() }
