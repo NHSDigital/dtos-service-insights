@@ -328,9 +328,9 @@ function_apps = {
     }
 
     ReceiveData = {
-      name_suffix            = "receive-data"
-      function_endpoint_name = "ReceiveData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      name_suffix               = "receive-data"
+      function_endpoint_name    = "ReceiveData"
+      app_service_plan_key      = "BIAnalyticsDataService"
       event_grid_topic_producer = "event-grid-topic-1"
       app_urls = [
         {
