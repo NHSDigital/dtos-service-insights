@@ -250,6 +250,7 @@ function_apps = {
         {
           env_var_name     = "GetReferenceDataUrl"
           function_app_key = "GetOrganisationData"
+          endpoint_name    = "GetReferenceData"
         }
       ]
       ip_restrictions = {
@@ -278,6 +279,10 @@ function_apps = {
         {
           env_var_name     = "DemographicsServiceUrl"
           function_app_key = "GetDemographicsData"
+        },
+        {
+          env_var_name     = "GetScreeningDataUrl"
+          function_app_key = "GetScreeningData"
         }
       ]
     }
@@ -319,9 +324,10 @@ function_apps = {
     }
 
     ReceiveData = {
-      name_suffix            = "receive-data"
-      function_endpoint_name = "ReceiveData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      name_suffix               = "receive-data"
+      function_endpoint_name    = "ReceiveData"
+      app_service_plan_key      = "BIAnalyticsDataService"
+      event_grid_topic_producer = "topic-1"
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
@@ -330,6 +336,15 @@ function_apps = {
         {
           env_var_name     = "ParticipantManagementUrl"
           function_app_key = "UpdateParticipant"
+        },
+        {
+          env_var_name     = "GetEpisodeReferenceDataServiceUrl"
+          function_app_key = "GetEpisodeReferenceData"
+        },
+        {
+          env_var_name     = "GetAllOrganisationReferenceDataUrl"
+          function_app_key = "GetOrganisationData"
+          endpoint_name    = "GetAllOrganisationReferenceData"
         }
       ]
     }
@@ -399,6 +414,25 @@ function_apps = {
     GetScreeningData = {
       name_suffix            = "get-screening-data"
       function_endpoint_name = "GetScreeningData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
+
+    GetEpisodeReferenceData = {
+      name_suffix            = "get-episode-ref-data"
+      function_endpoint_name = "GetEpisodeReferenceData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      app_urls = [
+        {
+          env_var_name     = "RetrieveEpisodeReferenceDataServiceUrl"
+          function_app_key = "RetrieveEpisodeRefData"
+        },
+      ]
+    }
+
+    RetrieveEpisodeRefData = {
+      name_suffix            = "retrieve-episode-ref-data"
+      function_endpoint_name = "RetrieveEpisodeRefData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
