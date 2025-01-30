@@ -37,11 +37,12 @@ public static class Utils
 
     public static void CheckForNullOrEmptyStrings(params string[] values)
     {
-        if (values.Where(v => string.IsNullOrEmpty(v)).Any())
+        if (values.Any(v => string.IsNullOrEmpty(v)))
         {
             throw new ArgumentException("Value cannot be null or empty");
         }
     }
+
 
 
 }
