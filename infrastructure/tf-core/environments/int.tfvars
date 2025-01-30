@@ -162,8 +162,10 @@ function_apps = {
   acr_name    = "acrukshubdevserins"
   acr_rg_name = "rg-hub-dev-uks-serins"
 
-  app_insights_name    = "appi-int-uks-serins"
-  app_insights_rg_name = "rg-serins-int-uks-audit"
+  app_insights_name                      = "appi-int-uks-serins"
+  app_insights_rg_name                   = "rg-serins-int-uks-audit"
+  app_service_logs_disk_quota_mb         = 35
+  app_service_logs_retention_period_days = 7
 
   always_on = true
 
@@ -179,6 +181,7 @@ function_apps = {
   remote_debugging_enabled      = false
   storage_uses_managed_identity = null
   worker_32bit                  = false
+  ip_restriction_default_action = "Deny"
 
   fa_config = {
 
@@ -241,9 +244,26 @@ function_apps = {
         },
         {
           env_var_name     = "CreateParticipantScreeningEpisodeUrl"
-          function_app_key = "CreateParticipantScreeningEpisode"
+          function_app_key = "GetParticipantScreeningEpisodeData"
+        },
+        {
+          env_var_name     = "GetScreeningDataUrl"
+          function_app_key = "GetScreeningData"
+        },
+        {
+          env_var_name     = "GetReferenceDataUrl"
+          function_app_key = "GetOrganisationData"
+          endpoint_name    = "GetReferenceData"
         }
       ]
+      ip_restrictions = {
+        "AllowEventGrid" : {
+          name        = "AllowEventGrid"
+          priority    = 300
+          action      = "Allow"
+          service_tag = "AzureEventGrid"
+        }
+      }
     }
 
     CreateParticipantScreeningProfile = {
@@ -262,6 +282,10 @@ function_apps = {
         {
           env_var_name     = "DemographicsServiceUrl"
           function_app_key = "GetDemographicsData"
+        },
+        {
+          env_var_name     = "GetScreeningDataUrl"
+          function_app_key = "GetScreeningData"
         }
       ]
     }
@@ -303,9 +327,10 @@ function_apps = {
     }
 
     ReceiveData = {
-      name_suffix            = "receive-data"
-      function_endpoint_name = "ReceiveData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      name_suffix               = "receive-data"
+      function_endpoint_name    = "ReceiveData"
+      app_service_plan_key      = "BIAnalyticsDataService"
+      event_grid_topic_producer = "event-grid-topic-1"
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
@@ -314,6 +339,15 @@ function_apps = {
         {
           env_var_name     = "ParticipantManagementUrl"
           function_app_key = "UpdateParticipant"
+        },
+        {
+          env_var_name     = "GetEpisodeReferenceDataServiceUrl"
+          function_app_key = "GetEpisodeReferenceData"
+        },
+        {
+          env_var_name     = "GetAllOrganisationReferenceDataUrl"
+          function_app_key = "GetOrganisationData"
+          endpoint_name    = "GetAllOrganisationReferenceData"
         }
       ]
     }
@@ -356,7 +390,8 @@ function_apps = {
       app_service_plan_key   = "BIAnalyticsDataService"
       key_vault_url          = "KeyVaultConnectionString"
       env_vars_static = {
-        TimerExpression = "*/5 * * * *"
+        TimerExpression  = "*/5 * * * *"
+        BSSContainerName = "inbound"
       }
     }
 
@@ -375,6 +410,33 @@ function_apps = {
     GetOrganisationData = {
       name_suffix            = "get-organisation-data"
       function_endpoint_name = "GetOrganisationData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
+
+    GetScreeningData = {
+      name_suffix            = "get-screening-data"
+      function_endpoint_name = "GetScreeningData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      db_connection_string   = "ServiceInsightsDbConnectionString"
+    }
+
+    GetEpisodeReferenceData = {
+      name_suffix            = "get-episode-ref-data"
+      function_endpoint_name = "GetEpisodeReferenceData"
+      app_service_plan_key   = "BIAnalyticsDataService"
+      app_urls = [
+        {
+          env_var_name     = "RetrieveEpisodeReferenceDataServiceUrl"
+          function_app_key = "RetrieveEpisodeRefData"
+          endpoint_name    = "RetrieveEpisodeReferenceData"
+        },
+      ]
+    }
+
+    RetrieveEpisodeRefData = {
+      name_suffix            = "retrieve-episode-ref-data"
+      function_endpoint_name = "RetrieveEpisodeRefData"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
