@@ -47,7 +47,6 @@ public class FinalizedEpisodeDto
     public short? ExceptionFlag { get; set; }
 
     public DateTime SrcSysProcessedDatetime { get; set; }
-    public short? ExceptionFlag { get; set; }
 
     public static explicit operator FinalizedEpisodeDto(Episode episode)
     {

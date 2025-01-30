@@ -211,7 +211,7 @@ services:
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
       - topicEndpoint=${EVENTGRID_URL}
       - topicKey=${EVENTGRID_KEY}
-      - CheckParticipantExistsUrl=http://127.0.0.1:6061/api/CheckParticipantExists
+      - CheckParticipantExistsUrl=http://127.0.0.1:6061/api/GetParticipant
 
   get-episode:
     container_name: get-episode
@@ -256,7 +256,7 @@ services:
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
       - topicEndpoint=${EVENTGRID_URL}
       - topicKey=${EVENTGRID_KEY}
-      - CheckParticipantExistsUrl=http://127.0.0.1:6061/api/CheckParticipantExists
+      - CheckParticipantExistsUrl=http://127.0.0.1:6061/api/GetParticipant
 
   # Episode Integration Service
   receive-data:
