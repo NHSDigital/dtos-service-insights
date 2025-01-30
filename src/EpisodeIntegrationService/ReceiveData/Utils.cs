@@ -35,4 +35,11 @@ public static class Utils
         return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
     }
 
+    public static void CheckForNullOrEmptyStrings(params string[] values)
+    {
+        if (values.Any(v => string.IsNullOrEmpty(v)))
+        {
+            throw new ArgumentException("Value cannot be null or empty");
+        }
+    }
 }

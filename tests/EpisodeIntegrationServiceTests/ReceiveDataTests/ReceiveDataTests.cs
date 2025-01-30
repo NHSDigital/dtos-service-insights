@@ -475,7 +475,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<object>(state => state.ToString() == "Episodes CSV file headers are invalid."),
+            It.Is<object>(state => state.ToString() == "Episodes CSV file headers are invalid. file name: bss_episodes_test_data_20240930.csv"),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
@@ -503,7 +503,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<object>(state => state.ToString().Contains("Subjects CSV file headers are invalid.")),
+            It.Is<object>(state => state.ToString() == "Subjects CSV file headers are invalid. file name: bss_subjects_test_data_20240930.csv"),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
