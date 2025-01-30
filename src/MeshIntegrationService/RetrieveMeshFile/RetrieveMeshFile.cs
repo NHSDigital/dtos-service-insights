@@ -72,34 +72,20 @@ public class RetrieveMeshFile
         {
             var shouldExecuteHandShake = await ShouldExecuteHandShake();
 
-            // Process valid files
-            var validResult = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(
-                messageFilter,            // Only process valid files
+            // Process files
+            var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(
+                messageFilter,
                 fileNameFunction,
                 _mailboxId,
                 _blobConnectionString,
-                _destinationContainer,    // Valid files go to the destination container
+                _destinationContainer,
+                _poisonContainer,
                 shouldExecuteHandShake
             );
 
-            if (!validResult)
+            if (!result)
             {
-                _logger.LogError("An error was encountered while moving valid files to the Blob Storage container: {Container}", _destinationContainer);
-            }
-
-            // Process invalid files
-            var invalidResult = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(
-                i => !messageFilter(i),   // Only process invalid files
-                fileNameFunction,
-                _mailboxId,
-                _blobConnectionString,
-                _poisonContainer,         // Invalid files go to the poison container
-                shouldExecuteHandShake
-            );
-
-            if (!invalidResult)
-            {
-                _logger.LogError("An error was encountered while moving invalid files to the Blob Storage container: {Container}", _poisonContainer);
+                _logger.LogError("An error encountered while moving files from Mesh to Blob Storage");
             }
         }
         catch (Exception ex)
