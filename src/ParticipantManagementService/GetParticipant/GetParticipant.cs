@@ -33,6 +33,7 @@ public class GetParticipant
 
         if (nhsNumber == 9999999999 && screeningId == 1)
         {
+            _logger.LogInformation("Participant does not exist");
             return req.CreateResponse(HttpStatusCode.NotFound);
         }
 
