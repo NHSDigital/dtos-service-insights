@@ -429,6 +429,7 @@ function_apps = {
         {
           env_var_name     = "RetrieveEpisodeReferenceDataServiceUrl"
           function_app_key = "RetrieveEpisodeRefData"
+          endpoint_name    = "RetrieveEpisodeReferenceData"
         },
       ]
     }
