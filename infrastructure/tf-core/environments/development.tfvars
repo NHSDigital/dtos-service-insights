@@ -289,6 +289,12 @@ function_apps = {
       app_service_plan_key      = "Default"
       db_connection_string      = "ServiceInsightsDbConnectionString"
       event_grid_topic_producer = "event-grid-topic-1"
+      app_urls = [
+        {
+          env_var_name     = "CheckParticipantExistsUrl"
+          function_app_key = "GetParticipant"
+        }
+      ]
     }
 
     GetEpisode = {
@@ -304,6 +310,12 @@ function_apps = {
       app_service_plan_key      = "Default"
       db_connection_string      = "ServiceInsightsDbConnectionString"
       event_grid_topic_producer = "event-grid-topic-1"
+      app_urls = [
+        {
+          env_var_name     = "CheckParticipantExistsUrl"
+          function_app_key = "GetParticipant"
+        }
+      ]
     }
 
     ReceiveData = {
