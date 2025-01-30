@@ -42,7 +42,4 @@ public static class Utils
             throw new ArgumentException("Value cannot be null or empty");
         }
     }
-
-
-
 }
