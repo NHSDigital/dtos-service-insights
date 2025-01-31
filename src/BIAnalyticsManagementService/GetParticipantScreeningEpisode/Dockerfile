@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS installer-env
 
+RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 COPY ./BIAnalyticsManagementService/GetParticipantScreeningEpisode /src/dotnet-function-app
 COPY ./Shared /Shared
 RUN cd /src/dotnet-function-app && \
