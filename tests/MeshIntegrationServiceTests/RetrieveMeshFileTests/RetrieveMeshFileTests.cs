@@ -34,7 +34,6 @@ public class RetrieveMeshFileTests
         Environment.SetEnvironmentVariable("BSSContainerName", "BlobStorage_DestinationContainer");
         Environment.SetEnvironmentVariable("PoisonContainerName", "BlobStorage_PoisonContainer");
 
-
         _mockOptions.Setup(i => i.Value).Returns(new RetrieveMeshFileConfig
         {
             BSSMailBox = mailboxId
