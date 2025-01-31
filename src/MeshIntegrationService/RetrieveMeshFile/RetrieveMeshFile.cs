@@ -16,6 +16,7 @@ public class RetrieveMeshFile
     private readonly string _mailboxId;
     private readonly string _blobConnectionString;
     private readonly string _destinationContainer;
+    private readonly string _poisonContainer;
     private readonly IBlobStorageHelper _blobStorageHelper;
     private const string NextHandShakeTimeConfigKey = "NextHandShakeTime";
     private const string ConfigFileName = "MeshState.json";
@@ -28,11 +29,34 @@ public class RetrieveMeshFile
         _mailboxId = options.Value.BSSMailBox;
         _blobConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
         _destinationContainer = Environment.GetEnvironmentVariable("BSSContainerName");
+        _poisonContainer = Environment.GetEnvironmentVariable("PoisonContainerName");
+
+        // Check for required environment variables
+        if (string.IsNullOrEmpty(_mailboxId))
+        {
+            throw new InvalidOperationException("Environment variable 'BSSMailBox' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(_blobConnectionString))
+        {
+            throw new InvalidOperationException("Environment variable 'AzureWebJobsStorage' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(_destinationContainer))
+        {
+            throw new InvalidOperationException("Environment variable 'BSSContainerName' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(_poisonContainer))
+        {
+            throw new InvalidOperationException("Environment variable 'PoisonContainerName' is missing.");
+        }
     }
 
     /// <summary>
     /// This function polls the MESH Mailbox every 5 minutes, if there is a file posted to the mailbox.
     /// If there is a file in there will move the file to the Service Insights Blob Storage where it will be picked up by the ReceiveData Function.
+    /// Invalid files will be moved to the Blob Storage Poison Container.
     /// </summary>
     [Function("RetrieveMeshFile")]
     public async Task RunAsync([TimerTrigger("%TimerExpression%")] TimerInfo myTimer)
@@ -47,16 +71,26 @@ public class RetrieveMeshFile
         try
         {
             var shouldExecuteHandShake = await ShouldExecuteHandShake();
-            var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(messageFilter, fileNameFunction, _mailboxId, _blobConnectionString, _destinationContainer, shouldExecuteHandShake);
+
+            // Process files
+            var result = await _meshToBlobTransferHandler.MoveFilesFromMeshToBlob(
+                messageFilter,
+                fileNameFunction,
+                _mailboxId,
+                _blobConnectionString,
+                _destinationContainer,
+                _poisonContainer,
+                shouldExecuteHandShake
+            );
 
             if (!result)
             {
-                _logger.LogError("An error was encountered while moving files from Mesh to Blob");
+                _logger.LogError("An error encountered while moving files from Mesh to Blob Storage");
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error encountered while moving files from Mesh to Blob");
+            _logger.LogError(ex, "An error encountered while moving files from Mesh to Blob Storage");
         }
 
         if (myTimer.ScheduleStatus is not null)
@@ -73,7 +107,7 @@ public class RetrieveMeshFile
         if (meshState == null)
         {
 
-            _logger.LogInformation("MeshState File did not exist, Creating new MeshState File in blob Storage");
+            _logger.LogInformation("MeshState File did not exist, Creating new MeshState File in Blob Storage");
             configValues = new Dictionary<string, string>
             {
                 { NextHandShakeTimeConfigKey, DateTime.UtcNow.Add(handShakeInterval).ToString() }

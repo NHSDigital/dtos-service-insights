@@ -29,6 +29,7 @@ services:
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
       - AZURITE_CONTAINER_NAME=${AZURITE_CONTAINER_NAME}
+      - AZURITE_POISON_CONTAINER_NAME=${AZURITE_POISON_CONTAINER_NAME}
 
   sql-database:
     container_name: sql-database
@@ -339,6 +340,7 @@ services:
       - MeshApiBaseUrl=${MESHAPIBASEURL}
       - BSSMailBox=${BSSMAILBOX}
       - BSSContainerName=${AZURITE_CONTAINER_NAME}
+      - PoisonContainerName=${AZURITE_POISON_CONTAINER_NAME}
       - MeshPassword=${MESHPASSWORD}
       - MeshSharedKey=${MESHSHAREDKEY}
       - MeshKeyPassphrase=${MESHKEYPASSPHRASE}
