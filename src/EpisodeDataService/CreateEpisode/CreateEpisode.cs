@@ -7,35 +7,37 @@ using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 using Azure.Messaging.EventGrid;
-using System.Text.Json.Serialization;
+using NHS.ServiceInsights.Common;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
 public class CreateEpisode
 {
     private readonly ILogger<CreateEpisode> _logger;
-    private readonly IEpisodeRepository _episodesRepository;
+    private readonly IEpisodeRepository _episodeRepository;
     private readonly IEndCodeLkpRepository _endCodeLkpRepository;
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
     private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
     private readonly EventGridPublisherClient _eventGridPublisherClient;
+    private readonly IHttpRequestService _httpRequestService;
+    private const long ScreeningId = 1;
 
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, EventGridPublisherClient eventGridPublisherClient)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
     {
         _logger = logger;
-        _episodesRepository = episodeRepository;
-        _endCodeLkpRepository = endCodeLkpRepository;
-        _episodeTypeLkpRepository = episodeTypeLkpRepository;
-        _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
-        _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
+        _episodeRepository = episodeRepository;
+        _endCodeLkpRepository = episodeLkpRepository.EndCodeLkpRepository;
+        _episodeTypeLkpRepository = episodeLkpRepository.EpisodeTypeLkpRepository;
+        _finalActionCodeLkpRepository = episodeLkpRepository.FinalActionCodeLkpRepository;
+        _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
         _eventGridPublisherClient = eventGridPublisherClient;
+        _httpRequestService = httpRequestService;
     }
 
     [Function("CreateEpisode")]
     public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
-
         InitialEpisodeDto episodeDto;
 
         try
@@ -54,14 +56,20 @@ public class CreateEpisode
 
         try
         {
+            var checkParticipantExistsUrl = $"{Environment.GetEnvironmentVariable("CheckParticipantExistsUrl")}?NhsNumber={episodeDto.NhsNumber}&ScreeningId={ScreeningId}";
+            var checkParticipantExistsResult = await _httpRequestService.SendGet(checkParticipantExistsUrl);
+            // If the participant does not exist then flag as an exception
+            var exceptionFlag = !checkParticipantExistsResult.IsSuccessStatusCode;
+
             EpisodeTypeLkp? episodeTypeLkp = await GetCodeObject<EpisodeTypeLkp?>(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeLkp);
             EndCodeLkp? endCodeLkp = await GetCodeObject<EndCodeLkp?>(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeLkp);
             ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
-            var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId);
+            var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
+
             _logger.LogInformation("Calling CreateEpisode method...");
-            _episodesRepository.CreateEpisode(episode);
+            _episodeRepository.CreateEpisode(episode);
             _logger.LogInformation("Episode created successfully.");
 
             var finalizedEpisodeDto = (FinalizedEpisodeDto)episode;
@@ -99,7 +107,7 @@ public class CreateEpisode
         }
     }
 
-    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId)
+    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
         return new Episode
         {
@@ -120,6 +128,7 @@ public class CreateEpisode
             EndPoint = episodeDto.EndPoint,
             OrganisationId = 111111, // Need to get OrganisationId from Reference Management Data Store
             BatchId = episodeDto.BatchId,
+            ExceptionFlag = exceptionFlag ? (short)1 : (short)0,
             RecordInsertDatetime = DateTime.UtcNow,
             RecordUpdateDatetime = DateTime.UtcNow
         };
@@ -141,4 +150,3 @@ public class CreateEpisode
         return codeObject;
     }
 }
-
