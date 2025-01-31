@@ -143,6 +143,7 @@ public class UpdateEpisode
         existingEpisode.OrganisationId = 111111; // Need to get OrganisationId from Reference Management Data Store
         existingEpisode.BatchId = episodeDto.BatchId;
         existingEpisode.ExceptionFlag = exceptionFlag ? (short)1 : (short)0;
+        existingEpisode.SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime;
         existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
         return existingEpisode;
     }
