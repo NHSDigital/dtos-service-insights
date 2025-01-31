@@ -402,6 +402,7 @@ public class RetrieveMeshFileTests
         _mockMeshInboxService.Verify(i => i.GetHeadMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         _mockMeshInboxService.Verify(i => i.GetMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         _mockBlobStorageHelper.Verify(i => i.UploadFileToBlobStorage(It.IsAny<string>(), "BlobStorage_DestinationContainer", It.IsAny<BlobFile>(), false), Times.Never);
+        _mockBlobStorageHelper.Verify(i => i.UploadFileToBlobStorage(It.IsAny<string>(), "BlobStorage_PoisonContainer", It.IsAny<BlobFile>(), false), Times.Once);
         _mockMeshInboxService.Verify(i => i.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
