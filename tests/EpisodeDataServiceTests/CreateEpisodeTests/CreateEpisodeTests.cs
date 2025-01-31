@@ -7,10 +7,13 @@ using NHS.ServiceInsights.EpisodeDataService;
 using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
+using NHS.ServiceInsights.Common;
 using Azure.Messaging.EventGrid;
 using Azure;
 
 namespace NHS.ServiceInsights.EpisodeDataServiceTests;
+
+
 
 [TestClass]
 public class CreateEpisodeTests
@@ -28,9 +31,11 @@ public class CreateEpisodeTests
 
     private readonly Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
 
+    private readonly IHttpRequestService _httpRequestService;
+
     public CreateEpisodeTests()
     {
-        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object,  _mockOrganisationLkpRepository.Object, _mockEventGridPublisherClient.Object);
+        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object, _mockEventGridPublisherClient.Object);
     }
 
     [TestMethod]
@@ -63,7 +68,9 @@ public class CreateEpisodeTests
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
+
         _mockOrganisationLkpRepository.Setup(x => x.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
+
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
@@ -97,7 +104,7 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
-        _mockOrganisationLkpRepository.Setup(x => x.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
+       // _mockOrganisationLkpRepository.Setup(x => x.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
@@ -187,7 +194,7 @@ public class CreateEpisodeTests
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
+       // _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});

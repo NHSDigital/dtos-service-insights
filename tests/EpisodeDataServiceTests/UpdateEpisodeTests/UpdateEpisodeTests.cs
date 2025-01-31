@@ -31,7 +31,7 @@ public class UpdateEpisodeTests
     public UpdateEpisodeTests()
     {
         _mockRequest = _setupRequest.Setup("");
-        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object, _mockOrganisationLkpRepository.Object, _mockEventGridPublisherClient.Object);
+        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object,_mockOrganisationLkpRepository.Object,  _mockEventGridPublisherClient.Object);
     }
 
     [TestMethod]
@@ -42,7 +42,7 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395,
             EpisodeType = "C",
-            OrganisationCode="LAV",
+           // OrganisationCode="LAV",
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
@@ -56,7 +56,6 @@ public class UpdateEpisodeTests
         };
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
@@ -65,6 +64,7 @@ public class UpdateEpisodeTests
         var mockEventGridResponce = new Mock<Response>();
         mockEventGridResponce.Setup(m => m.Status).Returns(200);
         _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(mockEventGridResponce.Object));
+
 
         // Act
         var result = await _function.Run(_mockRequest.Object);

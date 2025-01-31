@@ -22,40 +22,41 @@ public class GetReferenceData
     }
 
     [Function("GetOrganisationIdByCode")]
-    public async Task<HttpResponseData> GetOrganisationIdByCode([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    public async Task<HttpResponseData> Run3([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        _logger.LogInformation("GetOrganisationIdByCode: start");
+        _logger.LogInformation("GetReferenceData: start");
 
+        //string organisationCode ;
         string organisationCode = req.Query["organisation_code"];
-
         if (string.IsNullOrWhiteSpace(organisationCode))
         {
-            _logger.LogError("Missing organisation code.");
+            _logger.LogError("Missing or invalid organisation code.");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
-        try
-        {
-            // Query the OrganisationLkpRepository for the ID
-            OrganisationLkp? organisationLkp = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
-
-            if (organisationLkp == null)
+            try
             {
-                _logger.LogError($"Organisation with code {organisationCode} not found.");
-                return req.CreateResponse(HttpStatusCode.NotFound);
+                OrganisationLkp? organisationLkp = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
+                if (organisationLkp == null)
+                {
+                    _logger.LogError("organisation not found.");
+                    return req.CreateResponse(HttpStatusCode.NotFound);
+                }
+                _logger.LogInformation("organisation found successfully.");
+
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                await JsonSerializer.SerializeAsync(response.Body, organisationLkp);
+                response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetReferenceData: Failed to get organisation from the db.\nException: {Message}", ex.Message);
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            await JsonSerializer.SerializeAsync(response.Body, organisationLkp);
-            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-            return response;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to retrieve organisation ID by code. Exception: {Message}", ex.Message);
-            return req.CreateResponse(HttpStatusCode.InternalServerError);
-        }
     }
+
     [Function("GetReferenceData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
