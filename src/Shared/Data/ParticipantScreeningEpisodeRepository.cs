@@ -42,6 +42,7 @@ public class ParticipantScreeningEpisodeRepository : IParticipantScreeningEpisod
 
         int totalPages = (int)Math.Ceiling((double)count/(double)pageSize);
         int totalRemainingPages = totalPages - page;
+        if (totalRemainingPages < 0) totalRemainingPages = 0;
 
         var episodesPage = new EpisodesDataPage()
         {
