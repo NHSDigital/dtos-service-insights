@@ -65,6 +65,8 @@ public class UpdateEpisode
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 
+            bool shouldUpdate = episodeDto.SrcSysProcessedDateTime > existingEpisode.SrcSysProcessedDatetime;
+
             var checkParticipantExistsUrl = $"{Environment.GetEnvironmentVariable("CheckParticipantExistsUrl")}?NhsNumber={episodeDto.NhsNumber}&ScreeningId={ScreeningId}";
             var checkParticipantExistsResult = await _httpRequestService.SendGet(checkParticipantExistsUrl);
             // If the participant does not exist then flag as an exception
@@ -76,8 +78,6 @@ public class UpdateEpisode
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
             existingEpisode = await MapEpisodeDtoToEpisode(existingEpisode, episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
-
-            bool shouldUpdate = episodeDto.SrcSysProcessedDateTime > existingEpisode.SrcSysProcessedDatetime;
 
             if (shouldUpdate)
             {
@@ -143,6 +143,7 @@ public class UpdateEpisode
         existingEpisode.OrganisationId = 111111; // Need to get OrganisationId from Reference Management Data Store
         existingEpisode.BatchId = episodeDto.BatchId;
         existingEpisode.ExceptionFlag = exceptionFlag ? (short)1 : (short)0;
+        existingEpisode.SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime;
         existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
         return existingEpisode;
     }

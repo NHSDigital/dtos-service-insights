@@ -129,6 +129,7 @@ public class CreateEpisode
             OrganisationId = 111111, // Need to get OrganisationId from Reference Management Data Store
             BatchId = episodeDto.BatchId,
             ExceptionFlag = exceptionFlag ? (short)1 : (short)0,
+            SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime,
             RecordInsertDatetime = DateTime.UtcNow,
             RecordUpdateDatetime = DateTime.UtcNow
         };
