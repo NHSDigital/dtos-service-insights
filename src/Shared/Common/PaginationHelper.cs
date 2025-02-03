@@ -25,15 +25,47 @@ public static class PaginationHelper
             return false;
         }
 
+        if (startDate > endDate)
+        {
+            errorMessage = "The startDate is greater than the endDate.";
+            return false;
+        }
+
+        if (startDate > DateTime.Now.AddDays(1))
+        {
+            errorMessage = "The startDate is greater than today date.";
+            return false;
+        }
+
+        if (endDate > DateTime.Now.AddDays(1))
+        {
+            errorMessage = "The endDate is greater than today date.";
+            return false;
+        }
+
         if (!int.TryParse(query["pageSize"], out pageSize))
         {
             errorMessage = "The pageSize is invalid.";
             return false;
         }
 
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 1;
-        if (pageSize > 5000) pageSize = 5000;
+        if (page < 1)
+        {
+            errorMessage = "Page cannot be less than one.";
+            return false;
+        }
+
+        if (pageSize < 1)
+        {
+            errorMessage = "The pageSize cannot be less than one.";
+            return false;
+        }
+
+        if (pageSize > 5000)
+        {
+            errorMessage = "The pageSize cannot be more than 5000.";
+            return false;
+        }
 
         return true;
     }
