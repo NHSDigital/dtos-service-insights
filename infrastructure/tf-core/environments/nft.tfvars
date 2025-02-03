@@ -401,6 +401,7 @@ function_apps = {
       env_vars_static = {
         TimerExpression  = "*/5 * * * *"
         BSSContainerName = "inbound"
+        PoisonContainerName = "inbound-poison"
       }
     }
 
