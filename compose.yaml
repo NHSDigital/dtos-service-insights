@@ -62,16 +62,26 @@ services:
     restart: on-failure
     build:
       context: ./scripts/
-      dockerfile: ./database/Dockerfile
-    depends_on:
-      sql-database:
-        condition: service_healthy
+      dockerfile: ./BaseImage/Dockerfile
     networks:
       - app-network
+
+  base-image:
+    container_name: base-image
+    restart: always
+    build:
+      context: ./src/
+      dockerfile: ./BaseImage/Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "6062:6062"
     environment:
-      - PASSWORD=${PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - DB_CONNECTION=${DB_CONNECTION}
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+      - ASPNETCORE_URLS=http://*:6062
+      - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
+
 
   # BI Analytics Data Service
   create-ps-episode-data:
