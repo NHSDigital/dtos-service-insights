@@ -1,0 +1,11 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "RetrieveEpisodeReferenceDataServiceUrl": "http://localhost:7575/api/RetrieveEpisodeReferenceData"
+  },
+  "Host": {
+    "LocalHttpPort": 7574
+  }
+}

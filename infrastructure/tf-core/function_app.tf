@@ -14,8 +14,9 @@ module "functionapp" {
   monitor_diagnostic_setting_function_app_enabled_logs = local.monitor_diagnostic_setting_function_app_enabled_logs
   monitor_diagnostic_setting_function_app_metrics      = local.monitor_diagnostic_setting_function_app_metrics
 
-  public_network_access_enabled = var.features.public_network_access_enabled
-  vnet_integration_subnet_id    = module.subnets["${module.regions_config[each.value.region].names.subnet}-apps"].id
+  public_network_access_enabled = length(keys(each.value.ip_restrictions)) > 0 ? true : var.features.public_network_access_enabled
+
+  vnet_integration_subnet_id = module.subnets["${module.regions_config[each.value.region].names.subnet}-apps"].id
 
   # rbac_role_assignments = local.rbac_role_assignments[each.value.region]
   rbac_role_assignments = each.value.rbac_role_assignments
@@ -55,7 +56,17 @@ module "functionapp" {
     private_service_connection_is_manual = var.features.private_service_connection_is_manual
   } : null
 
+  ip_restrictions               = each.value.ip_restrictions
+  ip_restriction_default_action = var.function_apps.ip_restriction_default_action
+
   function_app_slots = var.function_app_slots
+
+  # To enable health checks for function apps
+  health_check_path = var.function_apps.health_check_path
+
+  # To enable app service log for function apps
+  app_service_logs_retention_period_days = var.function_apps.app_service_logs_retention_period_days
+  app_service_logs_disk_quota_mb         = var.function_apps.app_service_logs_disk_quota_mb
 
   tags = var.tags
 }
@@ -107,6 +118,7 @@ locals {
     REMOTE_DEBUGGING_ENABLED            = var.function_apps.remote_debugging_enabled
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = var.function_apps.enable_appsrv_storage
     WEBSITE_PULL_IMAGE_OVER_VNET        = var.features.private_endpoints_enabled
+
   }
 
   # There are multiple Function Apps and possibly multiple regions.
@@ -120,9 +132,12 @@ locals {
         },
         config, # the rest of the key/value pairs for a specific function
         {
+          ip_restriction = config.ip_restrictions
+
           app_settings = merge(
             local.app_settings_common,
             config.env_vars_static,
+
 
             # # Dynamic env vars which cannot be stored in tfvars file
             # function == "example-function" ? {
@@ -135,7 +150,7 @@ locals {
                 "https://%s-si-%s.azurewebsites.net/api/%s",
                 module.regions_config[region].names["function-app"],
                 var.function_apps.fa_config[obj.function_app_key].name_suffix,
-                var.function_apps.fa_config[obj.function_app_key].function_endpoint_name
+                length(obj.endpoint_name) > 0 ? obj.endpoint_name : var.function_apps.fa_config[obj.function_app_key].function_endpoint_name
               )
             },
 
@@ -202,6 +217,7 @@ locals {
             ]
 
           ])
+
         }
       )
     ]

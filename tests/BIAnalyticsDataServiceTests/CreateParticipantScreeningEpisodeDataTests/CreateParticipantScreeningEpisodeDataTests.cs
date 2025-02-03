@@ -21,9 +21,9 @@ public class CreateParticipantScreeningEpisodeDataTests
 
     private readonly ParticipantScreeningEpisode ValidParticipantScreeningEpisode = new ParticipantScreeningEpisode()
     {
-        EpisodeId = 1,
         ScreeningName = "TestScreeningName",
         NhsNumber = 123456789,
+        SrcSysProcessedDatetime = DateTime.Parse("2023-07-05 10:30:00"),
         EpisodeType = "TestEpisodeType",
         EpisodeTypeDescription = "TestEpisodeTypeDescription",
         EpisodeOpenDate = new DateOnly(2019, 08, 01),

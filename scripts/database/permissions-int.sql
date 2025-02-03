@@ -73,3 +73,11 @@ ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-update-participant];
 CREATE USER [int-uks-si-get-organisation-data] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-get-organisation-data];
 ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-get-organisation-data];
+
+CREATE USER [int-uks-si-retrieve-episode-ref-data] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-retrieve-episode-ref-data];
+ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-retrieve-episode-ref-data];
+
+CREATE USER [int-uks-si-get-screening-data] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [int-uks-si-get-screening-data];
+ALTER ROLE [db_datawriter] ADD MEMBER [int-uks-si-get-screening-data];

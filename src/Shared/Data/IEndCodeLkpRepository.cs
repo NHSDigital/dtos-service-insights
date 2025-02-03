@@ -7,4 +7,6 @@ public interface IEndCodeLkpRepository
     Task<long?> GetEndCodeIdAsync(string endCode);
 
     Task<EndCodeLkp?> GetEndCodeLkp(string endCode);
+
+    Task<IEnumerable<EndCodeLkp>> GetAllEndCodesAsync();
 }

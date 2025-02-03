@@ -23,4 +23,10 @@ public class FinalActionCodeLkpRepository : IFinalActionCodeLkpRepository
         var finalActionCodeLkp = await _dbContext.FinalActionCodeLkps.FirstOrDefaultAsync(ec => ec.FinalActionCode == finalActionCode);
         return finalActionCodeLkp;
     }
+
+    public async Task<IEnumerable<FinalActionCodeLkp>> GetAllFinalActionCodesAsync()
+    {
+        var finalActionCodeLkps = await _dbContext.FinalActionCodeLkps.ToListAsync();
+        return finalActionCodeLkps;
+    }
 }

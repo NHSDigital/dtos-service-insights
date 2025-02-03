@@ -23,4 +23,10 @@ public class EndCodeLkpRepository : IEndCodeLkpRepository
         var endCodeLkp = await _dbContext.EndCodeLkps.FirstOrDefaultAsync(ec => ec.EndCode == endCode);
         return endCodeLkp;
     }
+
+    public async Task<IEnumerable<EndCodeLkp>> GetAllEndCodesAsync()
+    {
+        var endCodeLkps = await _dbContext.EndCodeLkps.ToListAsync();
+        return endCodeLkps;
+    }
 }

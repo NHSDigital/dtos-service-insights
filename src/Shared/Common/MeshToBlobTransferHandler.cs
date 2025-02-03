@@ -17,6 +17,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
     private string _blobConnectionString;
     private string _mailboxId;
     private string _destinationContainer;
+    private string _poisonContainer;
 
     private Func<MessageMetaData, string> _fileNameFunction;
 
@@ -28,11 +29,12 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         _meshOperationService = meshOperationService;
     }
 
-    public async Task<bool> MoveFilesFromMeshToBlob(Func<MessageMetaData, bool> predicate, Func<MessageMetaData, string> fileNameFunction, string mailboxId, string blobConnectionString, string destinationContainer, bool executeHandshake = false)
+    public async Task<bool> MoveFilesFromMeshToBlob(Func<MessageMetaData, bool> predicate, Func<MessageMetaData, string> fileNameFunction, string mailboxId, string blobConnectionString, string destinationContainer, string poisonContainer, bool executeHandshake = false)
     {
         _blobConnectionString = blobConnectionString;
         _mailboxId = mailboxId;
         _destinationContainer = destinationContainer;
+        _poisonContainer = poisonContainer;
         _fileNameFunction = fileNameFunction;
 
         int messageCount;
@@ -68,7 +70,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
 
             var messagesMoved = await MoveAllMessagesToBlobStorage(checkForMessages.Response.Messages, predicate);
 
-            _logger.LogInformation("{messagesMoved} out of {messageCount} Messages were moved mailbox: {mailboxId} to Blob Storage", messagesMoved, messageCount, mailboxId);
+            _logger.LogInformation("{messagesMoved} out of {messageCount} Messages were moved from mailbox: {mailboxId} to Blob Storage", messagesMoved, messageCount, mailboxId);
 
             if (messagesMoved == 0 && messageCount == 500)
             {
@@ -93,21 +95,21 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
                 _logger.LogCritical("Error while getting Message Head from MESH. ErrorCode: {ErrorCode}, ErrorDescription: {ErrorDescription}", messageHead.Error?.ErrorCode, messageHead.Error?.ErrorDescription);
                 continue;
             }
+            var container = predicate(messageHead.Response.MessageMetaData) ? _destinationContainer : _poisonContainer;
             if (!predicate(messageHead.Response.MessageMetaData))
             {
-                _logger.LogInformation("Message: {MessageId} did not meet the predicate for transferring to BlobStorage", messageHead.Response.MessageMetaData.MessageId);
-                continue;
+                _logger.LogInformation("Message: {MessageId} with fileName: {FileName} did not meet the predicate for transferring to inbound Blob Storage", messageHead.Response.MessageMetaData.MessageId, messageHead.Response.MessageMetaData.FileName);
             }
-            bool wasMessageDownloaded = await TransferMessageToBlobStorage(messageHead.Response.MessageMetaData);
+            bool wasMessageDownloaded = await TransferMessageToBlobStorage(messageHead.Response.MessageMetaData, container);
             if (!wasMessageDownloaded)
             {
-                _logger.LogCritical("Message: {MessageId} was not able to be transferred to BlobStorage", messageHead.Response.MessageMetaData.MessageId);
+                _logger.LogCritical("Message: {MessageId} was not able to be transferred to Blob Storage", messageHead.Response.MessageMetaData.MessageId);
                 continue;
             }
             var acknowledgeResponse = await _meshInboxService.AcknowledgeMessageByIdAsync(_mailboxId, messageHead.Response.MessageMetaData.MessageId);
             if (!acknowledgeResponse.IsSuccessful)
             {
-                _logger.LogCritical("Message: {MessageId} was not able to be acknowledged, Message will be removed from blob storage", messageHead.Response.MessageMetaData.MessageId);
+                _logger.LogCritical("Message: {MessageId} was not able to be acknowledged, Message will be removed from Blob Storage", messageHead.Response.MessageMetaData.MessageId);
             }
             messagesMovedToBlobStorage++;
         }
@@ -115,7 +117,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         return messagesMovedToBlobStorage;
     }
 
-    private async Task<bool> TransferMessageToBlobStorage(MessageMetaData messageHead)
+    private async Task<bool> TransferMessageToBlobStorage(MessageMetaData messageHead, string container)
     {
         if (messageHead.MessageType != "DATA") { return false; }
 
@@ -135,7 +137,16 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             return false;
         }
 
-        var uploadedToBlob = await _blobStorageHelper.UploadFileToBlobStorage(_blobConnectionString, _destinationContainer, blobFile);
+        var uploadedToBlob = await _blobStorageHelper.UploadFileToBlobStorage(_blobConnectionString, container, blobFile);
+
+        if (uploadedToBlob)
+        {
+            _logger.LogInformation("Message: {MessageId} with fileName: {FileName} was uploaded to Blob Storage container: {Container}", messageHead.MessageId, blobFile.FileName, container);
+        }
+        else
+        {
+            _logger.LogError("Message: {MessageId} with fileName: {FileName} failed to upload to Blob Storage container: {Container}", messageHead.MessageId, blobFile.FileName, container);
+        }
 
         return uploadedToBlob;
     }

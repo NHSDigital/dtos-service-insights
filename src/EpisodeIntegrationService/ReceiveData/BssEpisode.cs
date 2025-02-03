@@ -3,9 +3,9 @@ public class BssEpisode
 {
     public long episode_id { get; set; }
     public long nhs_number { get; set; }
-    public string? episode_type { get; set; }
+    public required string episode_type { get; set; }
     public DateTime change_db_date_time { get; set; }
-    public string? episode_date { get; set; }
+    public required string episode_date { get; set; }
     public string? appointment_made { get; set; }
     public string? date_of_foa { get; set; }
     public string? date_of_as { get; set; }
