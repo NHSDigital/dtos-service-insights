@@ -399,8 +399,8 @@ function_apps = {
       app_service_plan_key   = "BIAnalyticsDataService"
       key_vault_url          = "KeyVaultConnectionString"
       env_vars_static = {
-        TimerExpression  = "*/5 * * * *"
-        BSSContainerName = "inbound"
+        TimerExpression     = "*/5 * * * *"
+        BSSContainerName    = "inbound"
         PoisonContainerName = "inbound-poison"
       }
     }
