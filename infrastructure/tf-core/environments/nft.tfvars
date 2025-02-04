@@ -184,14 +184,14 @@ function_apps = {
 
     CreateParticipantScreeningEpisodeData = {
       name_suffix            = "create-ps-episode-data"
-      function_endpoint_name = "CreateParticipantScreeningEpisodeData"
+      function_endpoint_name = "CreateParticipantScreeningEpisode"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningProfileData = {
       name_suffix            = "create-ps-profile-data"
-      function_endpoint_name = "CreateParticipantScreeningProfileData"
+      function_endpoint_name = "CreateParticipantScreeningProfile"
       app_service_plan_key   = "BIAnalyticsDataService"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
