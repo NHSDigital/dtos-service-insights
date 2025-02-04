@@ -243,12 +243,8 @@ function_apps = {
       app_service_plan_key   = "Default"
       app_urls = [
         {
-          env_var_name     = "GetEpisodeUrl"
-          function_app_key = "GetEpisode"
-        },
-        {
           env_var_name     = "CreateParticipantScreeningEpisodeUrl"
-          function_app_key = "GetParticipantScreeningEpisodeData"
+          function_app_key = "CreateParticipantScreeningEpisodeData"
         },
         {
           env_var_name     = "GetScreeningDataUrl"
@@ -276,12 +272,8 @@ function_apps = {
       app_service_plan_key   = "Default"
       app_urls = [
         {
-          env_var_name     = "GetParticipantUrl"
-          function_app_key = "GetParticipant"
-        },
-        {
           env_var_name     = "CreateParticipantScreeningProfileUrl"
-          function_app_key = "CreateParticipantScreeningProfile"
+          function_app_key = "CreateParticipantScreeningProfileData"
         },
         {
           env_var_name     = "DemographicsServiceUrl"
