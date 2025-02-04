@@ -47,7 +47,7 @@ public static class Utils
     {
         if (!string.IsNullOrWhiteSpace(dataValue) && dataValue.ToLower() != "true" && dataValue.ToLower() != "false")
         {
-            throw new Exception($"Invalid value: {dataValue}. Expected 'true', 'false', null, or an empty string");
+            throw new ArgumentException($"Invalid value: {dataValue}. Expected 'true', 'false', null, or an empty string");
         }
     }
 }
