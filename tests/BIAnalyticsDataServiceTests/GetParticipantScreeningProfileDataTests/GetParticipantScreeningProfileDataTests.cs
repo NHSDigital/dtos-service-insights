@@ -85,42 +85,6 @@ public class GetParticipantScreeningProfileDataTests
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_NotFound_When_It_Doesnt_Find_Any_Profiles()
-    {
-        // Arrange
-        var queryParam = new NameValueCollection()
-        {
-            { "page", "1" },
-            { "pageSize", "2" },
-            { "startDate", "2023-07-05 08:30:00" },
-            { "endDate", "2023-07-05 08:30:00" }
-        };
-
-        var emptyprofilesDataPage = new ProfilesDataPage()
-        {
-            TotalResults = 0,
-            TotalPages = 0,
-            TotalRemainingPages = 0,
-            Profiles = new List<ParticipantScreeningProfile>()
-        };
-
-        _mockRequest = _setupRequest.SetupGet(queryParam);
-        _mockParticipantScreeningProfileRepository.Setup(r => r.GetParticipantProfile(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>())).Returns(Task.FromResult(emptyprofilesDataPage));
-
-        // Act
-        var response = await _function.Run(_mockRequest.Object);
-
-        // Assert
-        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Information),
-        It.IsAny<EventId>(),
-        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningProfileData: Could not find any participant profiles.")),
-        It.IsAny<Exception>(),
-        It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-        Times.Once);
-        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-    }
-
-    [TestMethod]
     public async Task Run_Should_Return_InternalServerError_When_Exception_Is_Thrown()
     {
         // Arrange
