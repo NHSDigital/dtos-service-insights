@@ -233,6 +233,7 @@ public class ReceiveData
     private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
         Utils.CheckForNullOrEmptyStrings(episode.episode_type, episode.episode_date);
+        Utils.ValidateDataValue(episode.appointment_made);
         return new InitialEpisodeDto
         {
             EpisodeId = episode.episode_id,
@@ -258,6 +259,7 @@ public class ReceiveData
     private async Task<FinalizedEpisodeDto> MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
         Utils.CheckForNullOrEmptyStrings(episode.episode_type, episode.episode_date);
+        Utils.ValidateDataValue(episode.appointment_made);
         var finalizedEpisodeDto = new FinalizedEpisodeDto
         {
             EpisodeId = episode.episode_id,

@@ -42,4 +42,12 @@ public static class Utils
             throw new ArgumentException("Value cannot be null or empty");
         }
     }
+
+    public static void ValidateDataValue(string dataValue)
+    {
+        if (!string.IsNullOrWhiteSpace(dataValue) && dataValue.ToLower() != "true" && dataValue.ToLower() != "false")
+        {
+            throw new ArgumentException($"Invalid value: {dataValue}. Expected 'true', 'false', null, or an empty string");
+        }
+    }
 }
