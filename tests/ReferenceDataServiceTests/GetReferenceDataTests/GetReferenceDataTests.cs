@@ -168,7 +168,7 @@ public class GetReferenceDataTests
             Times.Once);
     }
 
-   [TestMethod]
+    [TestMethod]
     public async Task Run_ShouldReturnOk_WhenEpisodeIsFound()
     {
         // Arrange
