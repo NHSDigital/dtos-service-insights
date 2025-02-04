@@ -20,7 +20,7 @@ public class CreateParticipantScreeningProfileTests
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
-    private string participantJson = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\"}";
+    private string participantJson = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\", \"SrcSysProcessedDatetime\": \"2023-10-01T12:00:00Z\"}";
     private string demographicsJson = "{\"PrimaryCareProvider\":\"A81002\",\"PreferredLanguage\":\"EN\"}";
     private string screeningDataJson = "{\"ScreeningId\":1,\"ScreeningName\":\"Breast Screening\",\"ScreeningType\":\"BS\",\"ScreeningAcronym\":\"BSCA\",\"ScreeningWorkflowId\":null}";
     public CreateParticipantScreeningProfileTests()
@@ -36,7 +36,7 @@ public class CreateParticipantScreeningProfileTests
     public async Task Run_ShouldLogError_WhenProfileIsNotValid()
     {
         // Arrange
-        string data = "{\"NhsNumber\": \"INVALID\",\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\"}";
+        string data = "{\"NhsNumber\": \"INVALID\",\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\", \"SrcSysProcessedDatetime\": \"2023-10-01T12:00:00Z\"}";
         var binaryData = new BinaryData(data);
         EventGridEvent eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
 
@@ -59,7 +59,7 @@ public class CreateParticipantScreeningProfileTests
     public async Task Run_ShouldLogError_WhenExceptionIsThrownOnCallCreateParticipantScreeningProfileUrl()
     {
         // Arrange
-        string data = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\"}";
+        string data = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\", \"SrcSysProcessedDatetime\": \"2023-10-01T12:00:00Z\"}";
         var binaryData = new BinaryData(data);
         EventGridEvent eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
 
@@ -85,7 +85,7 @@ public class CreateParticipantScreeningProfileTests
     public async Task CreateParticipantScreeningProfile_ShouldSendProfileToDownstreamFunctions()
     {
         // Arrange
-        string data = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\"}";
+        string data = "{\"NhsNumber\": 1111111112,\"ScreeningName\": \"Breast Screening\",\"ScreeningId\":1,\"NextTestDueDate\": \"2019-08-01\",\"NextTestDueDateCalculationMethod\": \"ROUTINE\",\"ParticipantScreeningStatus\": \"NORMAL\", \"ScreeningCeasedReason\": \"PERSONAL_WELFARE\",\"IsHigherRisk\": 1,\"IsHigherRiskActive\": 1,\"HigherRiskNextTestDueDate\": \"2020-02-01\",\"HigherRiskReferralReasonCode\": \"\",\"DateIrradiated\": \"2019-12-01\",\"GeneCode\": \"BRCA1\", \"SrcSysProcessedDatetime\": \"2023-10-01T12:00:00Z\"}";
         var binaryData = new BinaryData(data);
         EventGridEvent eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
 

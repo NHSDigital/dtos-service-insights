@@ -9,7 +9,9 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices((context, services) =>
     {
+        services.AddSingleton<IHttpRequestService, HttpRequestService>();
         services.AddScoped<IEpisodeRepository, EpisodeRepository>();
+        services.AddScoped<IEpisodeLkpRepository, EpisodeLkpRepository>();
         services.AddScoped<IEndCodeLkpRepository, EndCodeLkpRepository>();
         services.AddScoped<IEpisodeTypeLkpRepository, EpisodeTypeLkpRepository>();
         services.AddScoped<IReasonClosedCodeLkpRepository, ReasonClosedCodeLkpRepository>();

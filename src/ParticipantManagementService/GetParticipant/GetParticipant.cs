@@ -2,7 +2,6 @@ using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace NHS.ServiceInsights.ParticipantManagementService;
 
@@ -15,31 +14,29 @@ public class GetParticipant
         _logger = logger;
     }
 
+    // Stub function that will be replaced
+    // Checks that the participant exists
     [Function("GetParticipant")]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        _logger.LogInformation("Request to retrieve a participant has been processed.");
-
-        long nhsNumber;
-        if (!long.TryParse(req.Query["nhs_number"], out nhsNumber))
+        long nhsNumber, screeningId;
+        try
         {
-            _logger.LogError("Please enter a valid NHS Number.");
+            nhsNumber = long.Parse(req.Query["NhsNumber"]);
+            screeningId = long.Parse(req.Query["ScreeningId"]);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Request parameters invalid");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
-        var participant = ParticipantRepository.GetParticipantByNhsNumber(nhsNumber);
-
-        if (participant == null)
+        if (nhsNumber == 9999999999 && screeningId == 1)
         {
-            _logger.LogError("Participant with NHS Number {NhsNumber} not found.", nhsNumber);
-
+            _logger.LogInformation("Participant does not exist");
             return req.CreateResponse(HttpStatusCode.NotFound);
         }
 
-        var response = req.CreateResponse(HttpStatusCode.OK);
-        response.Headers.Add("Content-Type", "application/json");
-        var json = JsonSerializer.Serialize(participant);
-        await response.WriteStringAsync(json);
-        return response;
+        return req.CreateResponse(HttpStatusCode.OK);
     }
 }

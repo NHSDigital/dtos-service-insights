@@ -158,22 +158,26 @@ variable "app_service_plan" {
 variable "function_apps" {
   description = "Configuration for function apps"
   type = object({
-    acr_mi_name                   = string
-    acr_name                      = string
-    acr_rg_name                   = string
-    always_on                     = bool
-    app_insights_name             = string
-    app_insights_rg_name          = string
-    cont_registry_use_mi          = bool
-    docker_CI_enable              = string
-    docker_env_tag                = string
-    docker_img_prefix             = string
-    enable_appsrv_storage         = bool
-    ftps_state                    = string
-    https_only                    = bool
-    remote_debugging_enabled      = bool
-    storage_uses_managed_identity = bool
-    worker_32bit                  = bool
+    acr_mi_name                            = string
+    acr_name                               = string
+    acr_rg_name                            = string
+    always_on                              = bool
+    app_insights_name                      = string
+    app_insights_rg_name                   = string
+    app_service_logs_disk_quota_mb         = optional(number)
+    app_service_logs_retention_period_days = optional(number)
+    cont_registry_use_mi                   = bool
+    docker_CI_enable                       = string
+    docker_env_tag                         = string
+    docker_img_prefix                      = string
+    enable_appsrv_storage                  = bool
+    ftps_state                             = string
+    health_check_path                      = optional(string, "")
+    https_only                             = bool
+    ip_restriction_default_action          = optional(string, "Deny")
+    remote_debugging_enabled               = bool
+    storage_uses_managed_identity          = bool
+    worker_32bit                           = bool
     slots = optional(map(object({
       name         = string
       slot_enabled = optional(bool, false)
@@ -194,8 +198,23 @@ variable "function_apps" {
       app_urls = optional(list(object({
         env_var_name     = string
         function_app_key = string
+        endpoint_name    = optional(string, "")
       })), [])
       env_vars_static = optional(map(string), {})
+      ip_restrictions = optional(map(object({
+        headers = optional(list(object({
+          x_azure_fdid      = optional(list(string))
+          x_fd_health_probe = optional(list(string))
+          x_forwarded_for   = optional(list(string))
+          x_forwarded_host  = optional(list(string))
+        })), [])
+        ip_address                = optional(string)
+        name                      = optional(string)
+        priority                  = optional(number)
+        action                    = optional(string)
+        service_tag               = optional(string)
+        virtual_network_subnet_id = optional(string)
+      })), {})
     }))
   })
 }

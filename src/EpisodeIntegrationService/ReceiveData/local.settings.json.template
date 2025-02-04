@@ -1,11 +1,14 @@
 {
   "IsEncrypted": false,
   "Values": {
-    "ASPNETCORE_ENVIRONMENT": "Development",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "EpisodeManagementUrl": "http://localhost:6006/api/CreateUpdateEpisode",
-    "ParticipantManagementUrl": "http://localhost:7074/api/UpdateParticipant"
+    "ParticipantManagementUrl": "http://localhost:7074/api/UpdateParticipant",
+    "GetEpisodeReferenceDataServiceUrl": "http://localhost:7574/api/GetEpisodeReferenceData",
+    "GetAllOrganisationReferenceDataUrl": "http://localhost:6081/api/GetAllOrganisationReferenceData",
+    "topicEndpoint": "https://sams-test-topic.uksouth-1.eventgrid.azure.net/api/events",
+    "topicKey": "TOPIC_KEY"
   },
   "Host": {
     "LocalHttpPort": 7072

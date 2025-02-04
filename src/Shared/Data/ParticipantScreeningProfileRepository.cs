@@ -27,17 +27,17 @@ public class ParticipantScreeningProfileRepository : IParticipantScreeningProfil
     public async Task<ProfilesDataPage> GetParticipantProfile(int page, int pageSize, DateTime? startDate, DateTime? endDate, int skip)
     {
         var query = _dbContext.ParticipantScreeningProfiles
-            .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
-                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate))
-            .OrderBy(x => x.RecordInsertDatetime)
+            .Where(x => (!startDate.HasValue || x.RecordUpdateDatetime >= startDate) &&
+                        (!endDate.HasValue || x.RecordUpdateDatetime <= endDate))
+            .OrderBy(x => x.RecordUpdateDatetime)
             .Skip(skip)
             .Take(pageSize);
 
         var data = await query.ToListAsync();
 
         int count = await _dbContext.ParticipantScreeningProfiles
-            .Where(x => (!startDate.HasValue || x.RecordInsertDatetime >= startDate) &&
-                        (!endDate.HasValue || x.RecordInsertDatetime <= endDate))
+            .Where(x => (!startDate.HasValue || x.RecordUpdateDatetime >= startDate) &&
+                        (!endDate.HasValue || x.RecordUpdateDatetime <= endDate))
             .CountAsync();
 
         int totalPages = (int)Math.Ceiling((double)count/(double)pageSize);

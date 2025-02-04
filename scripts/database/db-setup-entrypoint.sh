@@ -32,9 +32,17 @@ fi
 
 # Set up database
 echo "Setting up the database..."
+
+echo "Creating the database..."
 /opt/mssql-tools/bin/sqlcmd -S "${DB_CONNECTION}" -U SA -P "${PASSWORD}" -i create_database.sql || { echo "Failed to create database"; exit 1; }
+
+echo "Dropping database tables..."
 /opt/mssql-tools/bin/sqlcmd -S "${DB_CONNECTION}" -U SA -P "${PASSWORD}" -d "${DB_NAME}" -i drop_tables.sql || { echo "Failed to drop tables"; exit 1; }
+
+echo "Creating database tables..."
 /opt/mssql-tools/bin/sqlcmd -S "${DB_CONNECTION}" -U SA -P "${PASSWORD}" -d "${DB_NAME}" -i create_tables.sql || { echo "Failed to create tables"; exit 1; }
+
+echo "Inserting database reference data..."
 /opt/mssql-tools/bin/sqlcmd -S "${DB_CONNECTION}" -U SA -P "${PASSWORD}" -d "${DB_NAME}" -i insert_reference_data.sql || { echo "Failed to insert test data"; exit 1; }
 
 echo "Database setup complete."

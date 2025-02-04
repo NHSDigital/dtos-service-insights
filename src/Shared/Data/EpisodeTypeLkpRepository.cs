@@ -23,4 +23,10 @@ public class EpisodeTypeLkpRepository : IEpisodeTypeLkpRepository
         var episodeTypeLkp = await _dbContext.EpisodeTypeLkps.FirstOrDefaultAsync(et => et.EpisodeType == episodeType);
         return episodeTypeLkp;
     }
+
+    public async Task<IEnumerable<EpisodeTypeLkp>> GetAllEpisodeTypesAsync()
+    {
+        var episodeTypeLkps = await _dbContext.EpisodeTypeLkps.ToListAsync();
+        return episodeTypeLkps;
+    }
 }

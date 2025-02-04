@@ -29,14 +29,14 @@ public class GetParticipantScreeningProfileDataTests
         {
             new ParticipantScreeningProfile
             {
-                Id = 1,
+                SrcSysProcessedDatetime = DateTime.Parse("2023-07-05 10:30:00"),
                 NhsNumber = 1234567890,
                 ScreeningName = "John Doe",
                 RecordInsertDatetime = DateTime.Parse("2023-07-05 10:30:00")
             },
             new ParticipantScreeningProfile
             {
-                Id = 2,
+                SrcSysProcessedDatetime = DateTime.Parse("2023-07-05 11:30:00"),
                 NhsNumber = 9876543210,
                 ScreeningName = "Jane Smith",
                 RecordInsertDatetime = DateTime.Parse("2023-07-05 11:30:00")
@@ -96,7 +96,8 @@ public class GetParticipantScreeningProfileDataTests
             { "endDate", "2023-07-05 08:30:00" }
         };
 
-        var emptyprofilesDataPage = new ProfilesDataPage(){
+        var emptyprofilesDataPage = new ProfilesDataPage()
+        {
             TotalResults = 0,
             TotalPages = 0,
             TotalRemainingPages = 0,

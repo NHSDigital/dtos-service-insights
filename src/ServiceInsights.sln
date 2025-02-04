@@ -119,6 +119,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetScreeningData", "Referen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetScreeningDataTests", "..\tests\ReferenceDataServiceTests\GetScreeningDataTests\GetScreeningDataTests.csproj", "{FFD37AD4-C549-4C24-AF45-04CA643634FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeReferenceData", "EpisodeManagementService\GetEpisodeReferenceData\GetEpisodeReferenceData.csproj", "{2DF45792-30DA-4BFB-A8B4-08393E82635C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveEpisodeReferenceData", "EpisodeDataService\RetrieveEpisodeReferenceData\RetrieveEpisodeReferenceData.csproj", "{E6F00821-4385-4C9A-8D25-667BB81F1F05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetEpisodeReferenceDataTests", "..\tests\EpisodeManagementServiceTests\GetEpisodeReferenceDataTests\GetEpisodeReferenceDataTests.csproj", "{6B07B999-62F0-4ED4-AA4D-2DC15420E847}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetrieveEpisodeReferenceDataTests", "..\tests\EpisodeDataServiceTests\RetrieveEpisodeReferenceDataTests\RetrieveEpisodeReferenceDataTests.csproj", "{1B29DBA6-0D13-4511-8B3C-55FF1BCCDE3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -305,6 +313,22 @@ Global
 		{FFD37AD4-C549-4C24-AF45-04CA643634FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFD37AD4-C549-4C24-AF45-04CA643634FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFD37AD4-C549-4C24-AF45-04CA643634FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DF45792-30DA-4BFB-A8B4-08393E82635C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DF45792-30DA-4BFB-A8B4-08393E82635C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DF45792-30DA-4BFB-A8B4-08393E82635C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DF45792-30DA-4BFB-A8B4-08393E82635C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6F00821-4385-4C9A-8D25-667BB81F1F05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6F00821-4385-4C9A-8D25-667BB81F1F05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6F00821-4385-4C9A-8D25-667BB81F1F05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F00821-4385-4C9A-8D25-667BB81F1F05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B07B999-62F0-4ED4-AA4D-2DC15420E847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B07B999-62F0-4ED4-AA4D-2DC15420E847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B07B999-62F0-4ED4-AA4D-2DC15420E847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B07B999-62F0-4ED4-AA4D-2DC15420E847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B29DBA6-0D13-4511-8B3C-55FF1BCCDE3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B29DBA6-0D13-4511-8B3C-55FF1BCCDE3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B29DBA6-0D13-4511-8B3C-55FF1BCCDE3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B29DBA6-0D13-4511-8B3C-55FF1BCCDE3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -337,5 +361,7 @@ Global
 		{CA3E027E-91B4-4BB8-9640-7B757721AEF1} = {4B0AD4B3-4508-4F6B-AEBF-24B4578DB1DC}
 		{872B28EE-962A-4871-9697-3E576213DC8A} = {390CC6B6-86C5-4522-AC41-203659030A21}
 		{73D191FB-AC4B-4383-BB1A-81DDEF6AF14E} = {390CC6B6-86C5-4522-AC41-203659030A21}
+		{2DF45792-30DA-4BFB-A8B4-08393E82635C} = {55FB169A-E543-41E4-882A-7B12DF00016B}
+		{E6F00821-4385-4C9A-8D25-667BB81F1F05} = {DACA4EB5-14F5-42D8-AD61-DA1FA4DBB6ED}
 	EndGlobalSection
 EndGlobal
