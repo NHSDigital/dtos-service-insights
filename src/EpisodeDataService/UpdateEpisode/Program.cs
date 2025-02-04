@@ -18,6 +18,7 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
         services.AddDbContext<ServiceInsightsDbContext>(
             options => options.UseSqlServer(Environment.GetEnvironmentVariable("ServiceInsightsDbConnectionString")));
+        services.AddScoped<IHttpRequestService, HttpRequestService>();
     }).AddEventGridClient()
     .Build();
 await host.RunAsync();

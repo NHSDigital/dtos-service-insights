@@ -10,6 +10,8 @@ using NHS.ServiceInsights.Data;
 using Microsoft.EntityFrameworkCore;
 using Azure.Messaging.EventGrid;
 using Azure;
+using System.Text;
+using NHS.ServiceInsights.Common;
 
 namespace NHS.ServiceInsights.EpisodeDataServiceTests;
 
@@ -27,11 +29,15 @@ public class UpdateEpisodeTests
     private readonly Mock<IFinalActionCodeLkpRepository> _mockFinalActionCodeLkpRepository = new();
     private readonly Mock<EventGridPublisherClient> _mockEventGridPublisherClient  = new();
     private readonly Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
+    private readonly Mock<Response> _mockEventGridResponse = new();
+    private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
+
 
     public UpdateEpisodeTests()
     {
         _mockRequest = _setupRequest.Setup("");
-        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object,_mockOrganisationLkpRepository.Object,  _mockEventGridPublisherClient.Object);
+        _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object,  _mockEventGridPublisherClient.Object, _mockHttpRequestService.Object);
+        Environment.SetEnvironmentVariable("GetOrganisationIdByCodeUrl", "GetOrganisationIdByCodeUrl");
     }
 
     [TestMethod]
@@ -42,7 +48,7 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395,
             EpisodeType = "C",
-           // OrganisationCode="LAV",
+            OrganisationCode="LAV",
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
@@ -55,6 +61,13 @@ public class UpdateEpisodeTests
             EpisodeId = 245395
         };
 
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -114,10 +127,16 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395
         };
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp(episodeDto.EpisodeType)).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
-        _mockOrganisationLkpRepository.Setup(x => x.GetOrganisationByCodeAsync(episodeDto.OrganisationCode)).ReturnsAsync(new OrganisationLkp { OrganisationId = 1});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp(episodeDto.EndCode)).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp(episodeDto.ReasonClosedCode)).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp(episodeDto.FinalActionCode)).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
@@ -160,12 +179,18 @@ public class UpdateEpisodeTests
 
         var json = JsonSerializer.Serialize(episodeDto);
         _mockRequest = _setupRequest.Setup(json);
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"InvalidOrganisationCode\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=InvalidOrganisationCode"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(new Episode { EpisodeId = 245395 });
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description" });
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description" });
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description" });
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description" });
-        _mockOrganisationLkpRepository.Setup(x => x.GetOrganisationByCodeAsync("InvalidOrganisationCode")).ReturnsAsync((OrganisationLkp)null);
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
@@ -194,9 +219,15 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395
         };
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
@@ -230,11 +261,17 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395
         };
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
-        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("InvalidType")).ReturnsAsync((EndCodeLkp?)null);
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("InvalidCode")).ReturnsAsync((EndCodeLkp?)null);
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
 
@@ -265,12 +302,18 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395
         };
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
-        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("InvalidType")).ReturnsAsync((ReasonClosedCodeLkp?)null);
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("InvalidCode")).ReturnsAsync((ReasonClosedCodeLkp?)null);
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
 
         // Act
@@ -279,7 +322,6 @@ public class UpdateEpisodeTests
         // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
-
 
     [TestMethod]
     public async Task Run_Return_InternalServerError_When_FinalActionCode_Not_Found()
@@ -302,12 +344,19 @@ public class UpdateEpisodeTests
             EpisodeId = 245395
         };
 
-        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
+          var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
+
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
-        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("InvalidType")).ReturnsAsync((FinalActionCodeLkp?)null);
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("InvalidCode")).ReturnsAsync((FinalActionCodeLkp?)null);
+        _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
@@ -336,6 +385,18 @@ public class UpdateEpisodeTests
         {
             EpisodeId = 245395
         };
+
+                var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
         _mockEpisodeRepository.Setup(repo => repo.GetEpisodeAsync(245395)).Throws(new Exception("Error updating episode {episodeId}."));
@@ -367,13 +428,20 @@ public class UpdateEpisodeTests
         };
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
+
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Throws(new Exception("Error sending event"));
 
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Throws(new Exception("Error sending event"));
         // Act
         var result = await _function.Run(_mockRequest.Object);
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
@@ -401,7 +469,14 @@ public class UpdateEpisodeTests
         };
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(new OrganisationLkp { OrganisationId = 1 });
+           var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
+
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
@@ -413,8 +488,10 @@ public class UpdateEpisodeTests
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
+        // Assert
         Assert.AreEqual(HttpStatusCode.InternalServerError, result.StatusCode);
     }
+
 
     [TestMethod]
     public async Task Run_ShouldUpdate_When_DtoHasNewerProcessedDateTime()
@@ -453,4 +530,5 @@ public class UpdateEpisodeTests
         // Assert
         _mockEpisodeRepository.Verify(x => x.UpdateEpisode(It.IsAny<Episode>()), Times.Never);
     }
+
 }

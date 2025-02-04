@@ -6,9 +6,8 @@ using System.Text;
 using System.Text.Json;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
-using NHS.ServiceInsights.Common;
 using Azure.Messaging.EventGrid;
-using System.Text.Json.Serialization;
+using NHS.ServiceInsights.Common;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
@@ -20,11 +19,10 @@ public class UpdateEpisode
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
     private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
-    private readonly IOrganisationLkpRepository _organisationLkpRepository;
     private readonly EventGridPublisherClient _eventGridPublisherClient;
-     private readonly IHttpRequestService _httpRequestService;
+    private readonly IHttpRequestService _httpRequestService;
 
-    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, IOrganisationLkpRepository organisationLkpRepository ,EventGridPublisherClient eventGridPublisherClient)
+    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _episodeRepository = episodeRepository;
@@ -32,8 +30,8 @@ public class UpdateEpisode
         _episodeTypeLkpRepository = episodeTypeLkpRepository;
         _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
         _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
-        _organisationLkpRepository= organisationLkpRepository;
         _eventGridPublisherClient = eventGridPublisherClient;
+        _httpRequestService = httpRequestService;
     }
 
     [Function("UpdateEpisode")]
@@ -72,29 +70,25 @@ public class UpdateEpisode
             ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
-            var organisationId = await GetOrganisationIdByCodeAsync(episodeDto.OrganisationCode);
+            existingEpisode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId);
 
-            existingEpisode = await MapEpisodeDtoToEpisode(existingEpisode, episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, organisationId);
+            await _episodeRepository.UpdateEpisode(existingEpisode);
+            _logger.LogInformation("Episode {episodeId} updated successfully.", episodeDto.EpisodeId);
 
-            bool shouldUpdate = episodeDto.SrcSysProcessedDateTime > existingEpisode.SrcSysProcessedDatetime;
+            var finalizedEpisodeDto = (FinalizedEpisodeDto)existingEpisode;
 
-            if (shouldUpdate)
-            {
-                await _episodeRepository.UpdateEpisode(existingEpisode);
-                _logger.LogInformation("Episode {episodeId} updated successfully.", episodeDto.EpisodeId);
-            }
-
-            else
-            {
-                _logger.LogInformation("Incoming data is not newer. Skipping update for episode {episodeId}.", episodeDto.EpisodeId);
-            }
-
-            // Prepare finalized episode DTO
-            var finalizedEpisodeDto = MapToFinalizedEpisodeDto(existingEpisode, episodeTypeLkp, endCodeLkp, reasonClosedCodeLkp, finalActionCodeLkp,organisationId);
+            finalizedEpisodeDto.EpisodeType = episodeTypeLkp?.EpisodeType;
+            finalizedEpisodeDto.EpisodeTypeDescription = episodeTypeLkp?.EpisodeDescription;
+            finalizedEpisodeDto.EndCode = endCodeLkp?.EndCode;
+            finalizedEpisodeDto.EndCodeDescription = endCodeLkp?.EndCodeDescription;
+            finalizedEpisodeDto.ReasonClosedCode = reasonClosedCodeLkp?.ReasonClosedCode;
+            finalizedEpisodeDto.ReasonClosedCodeDescription = reasonClosedCodeLkp?.ReasonClosedCodeDescription;
+            finalizedEpisodeDto.FinalActionCode = finalActionCodeLkp?.FinalActionCode;
+            finalizedEpisodeDto.FinalActionCodeDescription = finalActionCodeLkp?.FinalActionCodeDescription;
 
             EventGridEvent eventGridEvent = new EventGridEvent(
-                subject: "EpisodeUpdate",
-                eventType: "NSP.EpisodeUpdateReceived",
+                subject: "Episode Updated",
+                eventType: "UpdateParticipantScreeningEpisode",
                 dataVersion: "1.0",
                 data: finalizedEpisodeDto
             );
@@ -116,42 +110,32 @@ public class UpdateEpisode
         }
     }
 
-    private async static Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, long? organisationId)
-    {
-        existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
-        existingEpisode.NhsNumber = episodeDto.NhsNumber;
-        existingEpisode.EpisodeTypeId = episodeTypeId;
-        existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
-        existingEpisode.AppointmentMadeFlag = episodeDto.AppointmentMadeFlag;
-        existingEpisode.FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate;
-        existingEpisode.ActualScreeningDate = episodeDto.ActualScreeningDate;
-        existingEpisode.EarlyRecallDate = episodeDto.EarlyRecallDate;
-        existingEpisode.CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy;
-        existingEpisode.EndCodeId = endCodeId;
-        existingEpisode.EndCodeLastUpdated = episodeDto.EndCodeLastUpdated;
-        existingEpisode.ReasonClosedCodeId = reasonClosedCodeId;
-        existingEpisode.FinalActionCodeId = finalActionCodeId;
-        existingEpisode.EndPoint = episodeDto.EndPoint;
-        existingEpisode.OrganisationId=organisationId;
-        existingEpisode.BatchId = episodeDto.BatchId;
-        existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
-        return existingEpisode;
-    }
 
-    private FinalizedEpisodeDto MapToFinalizedEpisodeDto(Episode episode, EpisodeTypeLkp? episodeTypeLkp, EndCodeLkp? endCodeLkp, ReasonClosedCodeLkp? reasonClosedCodeLkp, FinalActionCodeLkp? finalActionCodeLkp, long? organisationId)
+    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId)
     {
-        return new FinalizedEpisodeDto
+        var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
+        return new Episode
         {
-            EpisodeId = episode.EpisodeId,
-            EpisodeType = episodeTypeLkp?.EpisodeType,
-            EpisodeTypeDescription = episodeTypeLkp?.EpisodeDescription,
-            EndCode = endCodeLkp?.EndCode,
-            EndCodeDescription = endCodeLkp?.EndCodeDescription,
-            ReasonClosedCode = reasonClosedCodeLkp?.ReasonClosedCode,
-            ReasonClosedCodeDescription = reasonClosedCodeLkp?.ReasonClosedCodeDescription,
-            FinalActionCode = finalActionCodeLkp?.FinalActionCode,
-            FinalActionCodeDescription = finalActionCodeLkp?.FinalActionCodeDescription,
-            OrganisationId = organisationId
+            EpisodeId = episodeDto.EpisodeId,
+            ScreeningId = 1, // Need to get ScreeningId from ScreeningName
+            NhsNumber = episodeDto.NhsNumber,
+            EpisodeTypeId = episodeTypeId,
+            EpisodeOpenDate = episodeDto.EpisodeOpenDate,
+            AppointmentMadeFlag = episodeDto.AppointmentMadeFlag,
+            FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate,
+            ActualScreeningDate = episodeDto.ActualScreeningDate,
+            EarlyRecallDate = episodeDto.EarlyRecallDate,
+            CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy,
+            EndCodeId = endCodeId,
+            EndCodeLastUpdated = episodeDto.EndCodeLastUpdated,
+            ReasonClosedCodeId = reasonClosedCodeId,
+            FinalActionCodeId = finalActionCodeId,
+            EndPoint = episodeDto.EndPoint,
+            OrganisationId = organisationId,
+            BatchId = episodeDto.BatchId,
+            SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime,
+            RecordInsertDatetime = DateTime.UtcNow,
+            RecordUpdateDatetime = DateTime.UtcNow
         };
     }
 
@@ -171,16 +155,17 @@ public class UpdateEpisode
         return codeObject;
     }
 
-    private async Task<long?> GetOrganisationIdByCodeAsync(string organisationCode)
+    private async Task<long> GetOrganisationId(string organisationCode)
     {
-        var url = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
-        var response = await _httpRequestService.SendGet(url);
-
-        response.EnsureSuccessStatusCode();
-
-        var organisationId = await response.Content.ReadAsStringAsync();
-        return long.Parse(organisationId);
+        var getOrganisationUrl = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
+        var getOrganisationResponse = await _httpRequestService.SendGet(getOrganisationUrl);
+        if (!getOrganisationResponse.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to retrieve Organisation ID for organisation code '{organisationCode}'", organisationCode);
+            throw new Exception($"Failed to retrieve Organisation ID for organisation code '{organisationCode}'");
+        }
+        var getOrganisationJson = await getOrganisationResponse.Content.ReadAsStringAsync();
+        var organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
+        return organisationLkp.OrganisationId;
     }
-
 }
-
