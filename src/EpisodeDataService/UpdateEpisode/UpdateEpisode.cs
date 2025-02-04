@@ -37,7 +37,6 @@ public class UpdateEpisode
     [Function("UpdateEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put")] HttpRequestData req)
     {
-
         InitialEpisodeDto episodeDto;
 
         try

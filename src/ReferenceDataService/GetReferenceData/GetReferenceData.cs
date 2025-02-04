@@ -83,7 +83,7 @@ public class GetReferenceData
         }
     }
 
-     [Function("GetOrganisationIdByCode")]
+    [Function("GetOrganisationIdByCode")]
     public async Task<HttpResponseData> Run3([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
         _logger.LogInformation("GetReferenceData: start");

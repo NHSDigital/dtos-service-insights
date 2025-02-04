@@ -28,8 +28,6 @@ public class UpdateEpisodeTests
     private readonly Mock<IReasonClosedCodeLkpRepository> _mockReasonClosedCodeLkpRepository = new();
     private readonly Mock<IFinalActionCodeLkpRepository> _mockFinalActionCodeLkpRepository = new();
     private readonly Mock<EventGridPublisherClient> _mockEventGridPublisherClient  = new();
-    private readonly Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
-    private readonly Mock<Response> _mockEventGridResponse = new();
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
 
 
@@ -344,7 +342,7 @@ public class UpdateEpisodeTests
             EpisodeId = 245395
         };
 
-          var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
         _mockHttpRequestService
             .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
@@ -469,7 +467,7 @@ public class UpdateEpisodeTests
         };
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
-           var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
         _mockHttpRequestService
             .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
@@ -497,13 +495,44 @@ public class UpdateEpisodeTests
     public async Task Run_ShouldUpdate_When_DtoHasNewerProcessedDateTime()
     {
         // Arrange
-        var episodeDto = new InitialEpisodeDto { SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1) };
-        var episode = new Episode { SrcSysProcessedDatetime = DateTime.UtcNow };
+        var episodeDto = new InitialEpisodeDto
+        {
+            EpisodeId = 245395,
+            OrganisationCode="LAV",
+            EpisodeType = "C",
+            EndCode = "SC",
+            ReasonClosedCode = "TEST",
+            FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
+        };
+        var episode = new Episode
+        {
+            EpisodeId = 245395,
+            OrganisationId = 1,
+            EpisodeTypeId = 1,
+            EndCodeId = 1,
+            ReasonClosedCodeId = 1,
+            FinalActionCodeId = 1,
+            SrcSysProcessedDatetime = DateTime.UtcNow,
+        };
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
 
         var json = JsonSerializer.Serialize(episodeDto);
         _mockRequest = _setupRequest.Setup(json);
+
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
+            });
+
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
 
         // Act
         await _function.Run(_mockRequest.Object);
