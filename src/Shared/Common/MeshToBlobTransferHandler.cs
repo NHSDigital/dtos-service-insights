@@ -4,6 +4,7 @@ using NHS.MESH.Client.Contracts.Services;
 using NHS.MESH.Client.Helpers;
 using NHS.MESH.Client.Helpers.ContentHelpers;
 using NHS.MESH.Client.Models;
+using System.Text.Json;
 
 namespace NHS.ServiceInsights.Common;
 
@@ -170,18 +171,38 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         var result = await _meshInboxService.GetMessageByIdAsync(_mailboxId, messageId);
         if (!result.IsSuccessful)
         {
-            _logger.LogError("Failed to download chunked message from MESH MessageId: {messageId}", messageId);
+            _logger.LogError("Failed to download single message from MESH MessageId: {messageId}", messageId);
             return null;
         }
 
         string fileName = result.Response.FileAttachment.FileName;
 
-        if (result.Response.MessageMetaData.ContentEncoding == "GZIP")
+        // Convert MessageMetaData to JSON string for detailed logging
+        string metadataJson = JsonSerializer.Serialize(result.Response.MessageMetaData, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation("Metadata for file {fileName}: {Metadata}", fileName, metadataJson);
+
+
+        // Check for GZIP magic bytes (1F 8B)
+        bool isGzip = result.Response.FileAttachment.Content.Length > 2 &&
+                  result.Response.FileAttachment.Content[0] == 0x1F &&
+                  result.Response.FileAttachment.Content[1] == 0x8B;
+
+        if (result.Response.FileAttachment.Content.Length > 2)
         {
-            var decompressedFileContent = GZIPHelpers.DeCompressBuffer(result.Response.FileAttachment.Content);
-            return new BlobFile(decompressedFileContent, fileName);
+            _logger.LogInformation("Magic bytes for file {fileName}: {Byte1:X2} {Byte2:X2}", fileName, result.Response.FileAttachment.Content[0], result.Response.FileAttachment.Content[1]);
+            _logger.LogInformation("Reference: GZIP magic bytes are 1F 8B");
         }
 
+        if (isGzip)
+        {
+            _logger.LogInformation("Detected GZIP file by magic bytes, decompressing: {fileName}", fileName);
+            var decompressedFileContent = GZIPHelpers.DeCompressBuffer(result.Response.FileAttachment.Content);
+            string originalFileName = GZIPHelpers.GetOriginalFileName(result.Response.FileAttachment.Content) ?? fileName;
+            return new BlobFile(decompressedFileContent, originalFileName);
+        }
+
+        _logger.LogInformation("File {fileName} does not appear to be GZIP", fileName);
         return new BlobFile(result.Response.FileAttachment.Content, fileName);
     }
+
 }
