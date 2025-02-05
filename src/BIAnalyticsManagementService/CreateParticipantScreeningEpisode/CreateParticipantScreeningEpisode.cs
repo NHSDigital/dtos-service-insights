@@ -46,7 +46,7 @@ public class CreateParticipantScreeningEpisode
 
         try
         {
-            DateTime historicDataCutOffDate = new DateTime(2025, 03, 01);
+            DateTime historicDataCutOffDate = new DateTime(2025, 03, 01, 0, 0, 0, DateTimeKind.Utc);
 
             bool isHistoric = episode.SrcSysProcessedDatetime < historicDataCutOffDate;
 
