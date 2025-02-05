@@ -88,9 +88,9 @@ public class CreateParticipantScreeningProfileTests
     {
         // Arrange
         var participant = JsonSerializer.Deserialize<FinalizedParticipantDto>(participantJson);
-        participant.SrcSysProcessedDateTime = new DateTime(2025, 02, 28);
+        participant.SrcSysProcessedDatetime = new DateTime(2025, 02, 28);
 
-        var expectedDatetime = participant.SrcSysProcessedDateTime.AddDays(1);
+        var expectedDatetime = participant.SrcSysProcessedDatetime.AddDays(1);
 
         _mockHttpRequestService
             .Setup(service => service.SendGet(It.IsAny<string>()))
@@ -123,7 +123,7 @@ public class CreateParticipantScreeningProfileTests
     {
         // Arrange
         var participant = JsonSerializer.Deserialize<FinalizedParticipantDto>(participantJson);
-        participant.SrcSysProcessedDateTime = new DateTime(2025, 03, 05);
+        participant.SrcSysProcessedDatetime = new DateTime(2025, 03, 05);
 
         var expectedDatetime = DateTime.Now;
 
