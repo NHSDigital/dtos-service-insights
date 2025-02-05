@@ -198,7 +198,7 @@ public class GetParticipantScreeningEpisodeTests
         using (StreamReader reader = new StreamReader(response.Body))
         {
             string result = await reader.ReadToEndAsync();
-            Assert.AreEqual(result, "The startDate is greater than the endDate.");
+            Assert.AreEqual("The startDate is greater than the endDate.", result);
         }
     }
 
@@ -225,7 +225,7 @@ public class GetParticipantScreeningEpisodeTests
         using (StreamReader reader = new StreamReader(response.Body))
         {
             string result = await reader.ReadToEndAsync();
-            Assert.AreEqual(result, "The page number is invalid.");
+            Assert.AreEqual("The page number is invalid.", result);
         }
     }
 
@@ -252,7 +252,7 @@ public class GetParticipantScreeningEpisodeTests
         using (StreamReader reader = new StreamReader(response.Body))
         {
             string result = await reader.ReadToEndAsync();
-            Assert.AreEqual(result, "The startDate or endDate is invalid.");
+            Assert.AreEqual("The startDate or endDate is invalid.", result);
         }
     }
 
@@ -280,7 +280,7 @@ public class GetParticipantScreeningEpisodeTests
         using (StreamReader reader = new StreamReader(response.Body))
         {
             string result = await reader.ReadToEndAsync();
-            Assert.AreEqual(result, "The startDate is greater than today date.");
+            Assert.AreEqual("The startDate is greater than today date.", result);
         }
     }
 
@@ -308,7 +308,7 @@ public class GetParticipantScreeningEpisodeTests
         using (StreamReader reader = new StreamReader(response.Body))
         {
             string result = await reader.ReadToEndAsync();
-            Assert.AreEqual(result, "The endDate is greater than today date.");
+            Assert.AreEqual("The endDate is greater than today date.", result);
         }
     }
 
@@ -335,7 +335,7 @@ public class GetParticipantScreeningEpisodeTests
         using (StreamReader reader = new StreamReader(response.Body))
         {
             string result = await reader.ReadToEndAsync();
-            Assert.AreEqual(result, "The pageSize is invalid.");
+            Assert.AreEqual( "The pageSize is invalid.", result);
         }
     }
 }
