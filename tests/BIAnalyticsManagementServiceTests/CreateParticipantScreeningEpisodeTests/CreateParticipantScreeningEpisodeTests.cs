@@ -9,6 +9,7 @@ using NHS.ServiceInsights.Common;
 using System.Collections.Specialized;
 using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Model;
+using System.Text.Json;
 
 namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
 
@@ -58,6 +59,84 @@ public class CreateParticipantScreeningEpisodeTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task SendToCreateParticipantScreeningEpisodeAsync_ShouldSetRecordDatetimeCorrectly_ForHistoricData()
+    {
+        // Arrange
+        var episode = new FinalizedEpisodeDto
+        {
+            EpisodeId = 12345,
+            ScreeningId = 1,
+            OrganisationId = 1,
+            SrcSysProcessedDatetime = new DateTime(2025, 02, 28)
+        };
+
+        var screeningLkp = new ScreeningLkp { ScreeningName = "Breast Screening" };
+        var organisationLkp = new OrganisationLkp { OrganisationCode = "AGA", OrganisationName = "Gateshead" };
+
+        _mockHttpRequestService
+            .SetupSequence(service => service.SendGet(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(screeningLkp), Encoding.UTF8, "application/json")
+            })
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(organisationLkp), Encoding.UTF8, "application/json")
+            });
+
+        DateTime expectedDatetime = episode.SrcSysProcessedDatetime.AddDays(1);
+
+        // Act
+        await _function.SendToCreateParticipantScreeningEpisodeAsync(episode, isHistoric: true);
+
+        // Assert
+        _mockHttpRequestService.Verify(service =>
+            service.SendPost(It.IsAny<string>(),
+                It.Is<string>(json =>
+                    json.Contains($"\"RecordInsertDatetime\":\"{expectedDatetime:yyyy-MM-ddTHH:mm:ss}\"") &&
+                    json.Contains($"\"RecordUpdateDatetime\":\"{expectedDatetime:yyyy-MM-ddTHH:mm:ss}\""))),
+            Times.Once);
+    }
+
+    [TestMethod]
+    public async Task SendToCreateParticipantScreeningEpisodeAsync_ShouldSetRecordDatetimeCorrectly_ForNonHistoricData()
+    {
+        // Arrange
+        var episode = new FinalizedEpisodeDto
+        {
+            EpisodeId = 12345,
+            ScreeningId = 1,
+            OrganisationId = 1,
+            SrcSysProcessedDatetime = new DateTime(2025, 03, 05)
+        };
+
+        var screeningLkp = new ScreeningLkp { ScreeningName = "Breast Screening" };
+        var organisationLkp = new OrganisationLkp { OrganisationCode = "AGA", OrganisationName = "Gateshead" };
+
+        _mockHttpRequestService
+            .SetupSequence(service => service.SendGet(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(screeningLkp), Encoding.UTF8, "application/json")
+            })
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(organisationLkp), Encoding.UTF8, "application/json")
+            });
+
+        // Act
+        await _function.SendToCreateParticipantScreeningEpisodeAsync(episode, isHistoric: false);
+
+        // Assert
+        _mockHttpRequestService.Verify(service =>
+            service.SendPost(It.IsAny<string>(),
+                It.Is<string>(json =>
+                    json.Contains($"\"RecordInsertDatetime\":\"{DateTime.Now:yyyy-MM-ddTHH:mm}") &&
+                    json.Contains($"\"RecordUpdateDatetime\":\"{DateTime.Now:yyyy-MM-ddTHH:mm}"))),
+        Times.Once);
     }
 
     [TestMethod]

@@ -100,7 +100,7 @@ public class CreateParticipantScreeningProfile
         return screeningLkp;
     }
 
-    private async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant, bool isHistoric)
+    public async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant, bool isHistoric)
     {
         DemographicsData demographicsData = await GetDemographicsDataAsync(participant.NhsNumber);
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(participant.ScreeningId);

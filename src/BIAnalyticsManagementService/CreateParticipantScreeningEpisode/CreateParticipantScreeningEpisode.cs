@@ -106,7 +106,7 @@ public class CreateParticipantScreeningEpisode
         return organisationLkp;
     }
 
-    private async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode, bool isHistoric)
+    public async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode, bool isHistoric)
     {
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(episode.ScreeningId);
         OrganisationLkp organisationLkp = await GetOrganisationDataAsync(episode.OrganisationId);
