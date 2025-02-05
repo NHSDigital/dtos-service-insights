@@ -85,42 +85,6 @@ public class GetParticipantScreeningEpisodeTests
     }
 
     [TestMethod]
-    public async Task Run_Should_Return_NotFound_When_It_Doesnt_Find_Any_Episodes()
-    {
-        // Arrange
-        var queryParam = new NameValueCollection()
-        {
-            { "page", "1" },
-            { "pageSize", "2" },
-            { "startDate", "2023-07-05 08:30:00" },
-            { "endDate", "2023-07-05 08:30:00" }
-        };
-
-        var emptyEpisodesDataPage = new EpisodesDataPage()
-        {
-            TotalResults = 0,
-            TotalPages = 0,
-            TotalRemainingPages = 0,
-            episodes = new List<ParticipantScreeningEpisode>()
-        };
-
-        _mockRequest = _setupRequest.SetupGet(queryParam);
-        _mockParticipantScreeningEpisodeRepository.Setup(r => r.GetParticipantScreeningEpisode(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>())).Returns(Task.FromResult(emptyEpisodesDataPage));
-
-        // Act
-        var response = await _function.Run(_mockRequest.Object);
-
-        // Assert
-        _mockLogger.Verify(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
-        It.IsAny<EventId>(),
-        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GetParticipantScreeningEpisode: Could not find any participant episodes")),
-        It.IsAny<Exception>(),
-        It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-        Times.Once);
-        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-    }
-
-    [TestMethod]
     public async Task Run_Should_Return_InternalServerError_When_Exception_Is_Thrown()
     {
         // Arrange

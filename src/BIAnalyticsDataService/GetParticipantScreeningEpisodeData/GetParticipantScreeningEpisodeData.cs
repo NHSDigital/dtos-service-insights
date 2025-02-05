@@ -33,11 +33,6 @@ public class GetParticipantScreeningEpisodeData
         try
         {
             EpisodesDataPage result = await _participantScreeningEpisodeRepository.GetParticipantScreeningEpisode(page, pageSize, startDate, endDate, numberOfRowsToSkip);
-            if(result.episodes.Count == 0)
-            {
-                _logger.LogError("GetParticipantScreeningEpisode: Could not find any participant episodes");
-                return req.CreateResponse(HttpStatusCode.NotFound);
-            }
 
             _logger.LogInformation("GetParticipantScreeningEpisode: Participant episodes found successfully");
 
