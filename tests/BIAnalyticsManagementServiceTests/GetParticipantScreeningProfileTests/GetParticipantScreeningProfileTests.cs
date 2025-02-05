@@ -171,4 +171,168 @@ public class GetParticipantScreeningProfileTests
         Times.Once);
         Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
     }
+
+    [TestMethod]
+    public async Task Run_Should_Return_Bad_Request_When_StartDate_IsGreaterThan_EndDate()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection()
+        {
+            { "page", "1" },
+            { "pageSize", "2" },
+            { "startDate", "2024-07-05 08:30:00" },
+            { "endDate", "2023-07-05 08:30:00" }
+        };
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        response.Body.Position = 0;
+        using (StreamReader reader = new StreamReader(response.Body))
+        {
+            string result = await reader.ReadToEndAsync();
+            Assert.AreEqual("The startDate is greater than the endDate.", result);
+        }
+    }
+
+        [TestMethod]
+    public async Task Run_Should_Return_Bad_Request_When_Page_Is_Invalid()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection()
+        {
+            { "page", "abc" },
+            { "pageSize", "2" },
+            { "startDate", "2024-07-05 08:30:00" },
+            { "endDate", "2024-07-06 08:30:00" }
+        };
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        response.Body.Position = 0;
+        using (StreamReader reader = new StreamReader(response.Body))
+        {
+            string result = await reader.ReadToEndAsync();
+            Assert.AreEqual("The page number is invalid.", result);
+        }
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Return_Bad_Request_When_StartDate_Or_EndDate_Is_Invalid()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection()
+        {
+            { "page", "1" },
+            { "pageSize", "2" },
+            { "startDate", "invalid-date" },
+            { "endDate", "invalid-date" }
+        };
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        response.Body.Position = 0;
+        using (StreamReader reader = new StreamReader(response.Body))
+        {
+            string result = await reader.ReadToEndAsync();
+            Assert.AreEqual("The startDate or endDate is invalid.", result);
+        }
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Return_Bad_Request_When_StartDate_Is_Greater_Than_Today()
+    {
+        // Arrange
+        var futureDate = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd HH:mm:ss");
+        var queryParam = new NameValueCollection()
+        {
+            { "page", "1" },
+            { "pageSize", "2" },
+            { "startDate", futureDate },
+            { "endDate", futureDate }
+        };
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        response.Body.Position = 0;
+        using (StreamReader reader = new StreamReader(response.Body))
+        {
+            string result = await reader.ReadToEndAsync();
+            Assert.AreEqual("The startDate is greater than today date.", result);
+        }
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Return_Bad_Request_When_EndDate_Is_Greater_Than_Today()
+    {
+        // Arrange
+        var futureDate = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd HH:mm:ss");
+        var queryParam = new NameValueCollection()
+        {
+            { "page", "1" },
+            { "pageSize", "2" },
+            { "startDate", "2024-07-05 08:30:00" },
+            { "endDate", futureDate }
+        };
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        response.Body.Position = 0;
+        using (StreamReader reader = new StreamReader(response.Body))
+        {
+            string result = await reader.ReadToEndAsync();
+            Assert.AreEqual("The endDate is greater than today date.", result);
+        }
+    }
+
+    [TestMethod]
+    public async Task Run_Should_Return_Bad_Request_When_PageSize_Is_Invalid()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection()
+        {
+            { "page", "1" },
+            { "pageSize", "abc" },
+            { "startDate", "2024-07-05 08:30:00" },
+            { "endDate", "2024-07-06 08:30:00" }
+        };
+
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        response.Body.Position = 0;
+        using (StreamReader reader = new StreamReader(response.Body))
+        {
+            string result = await reader.ReadToEndAsync();
+            Assert.AreEqual("The pageSize is invalid.", result);
+        }
+    }
 }

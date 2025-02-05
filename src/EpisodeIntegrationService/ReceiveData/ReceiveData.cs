@@ -60,7 +60,7 @@ public class ReceiveData
             {
                 if (!CheckCsvFileHeaders(myBlob, FileType.Episodes))
                 {
-                    _logger.LogError("Episodes CSV file headers are invalid.");
+                    _logger.LogError("Episodes CSV file headers are invalid. file name: {Name}", name);
                     return;
                 }
 
@@ -95,7 +95,7 @@ public class ReceiveData
             {
                 if (!CheckCsvFileHeaders(myBlob, FileType.Subjects))
                 {
-                    _logger.LogError("Subjects CSV file headers are invalid.");
+                    _logger.LogError("Subjects CSV file headers are invalid. file name: {Name}", name);
                     return;
                 }
 
@@ -232,6 +232,8 @@ public class ReceiveData
 
     private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
+        Utils.CheckForNullOrEmptyStrings(episode.episode_type, episode.episode_date);
+        Utils.ValidateDataValue(episode.appointment_made);
         return new InitialEpisodeDto
         {
             EpisodeId = episode.episode_id,
@@ -256,6 +258,8 @@ public class ReceiveData
     }
     private async Task<FinalizedEpisodeDto> MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
+        Utils.CheckForNullOrEmptyStrings(episode.episode_type, episode.episode_date);
+        Utils.ValidateDataValue(episode.appointment_made);
         var finalizedEpisodeDto = new FinalizedEpisodeDto
         {
             EpisodeId = episode.episode_id,
@@ -358,6 +362,7 @@ public class ReceiveData
             GeneCode = subject.gene_code
         };
     }
+
 
     private async Task<OrganisationReferenceData> GetOrganisationIdAsync()
     {

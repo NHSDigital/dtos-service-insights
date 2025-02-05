@@ -33,6 +33,7 @@ services:
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
       - AZURITE_CONTAINER_NAME=${AZURITE_CONTAINER_NAME}
+      - AZURITE_POISON_CONTAINER_NAME=${AZURITE_POISON_CONTAINER_NAME}
 
   sql-database:
     container_name: sql-database
@@ -240,6 +241,7 @@ services:
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
       - topicEndpoint=${EVENTGRID_URL}
       - topicKey=${EVENTGRID_KEY}
+      - CheckParticipantExistsUrl=http://get-participant:6061/api/GetParticipant
 
   get-episode:
     container_name: get-episode
@@ -290,6 +292,7 @@ services:
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
       - topicEndpoint=${EVENTGRID_URL}
       - topicKey=${EVENTGRID_KEY}
+      - CheckParticipantExistsUrl=http://get-participant:6061/api/GetParticipant
 
   # Episode Integration Service
   receive-data:
@@ -311,6 +314,10 @@ services:
       - ASPNETCORE_URLS=http://*:7072
       - EpisodeManagementUrl=http://create-update-episode:6006/api/CreateUpdateEpisode
       - ParticipantManagementUrl=http://update-participant:7074/api/UpdateParticipant
+      - GetEpisodeReferenceDataServiceUrl=http://localhost:7574/api/GetEpisodeReferenceData
+      - GetAllOrganisationReferenceDataUrl=http://localhost:6081/api/GetAllOrganisationReferenceData
+      - topicEndpoint=${EVENTGRID_URL}
+      - topicKey=${EVENTGRID_KEY}
 
   # Episode Management Service
   create-update-episode:
@@ -384,6 +391,7 @@ services:
       - MeshApiBaseUrl=${MESHAPIBASEURL}
       - BSSMailBox=${BSSMAILBOX}
       - BSSContainerName=${AZURITE_CONTAINER_NAME}
+      - PoisonContainerName=${AZURITE_POISON_CONTAINER_NAME}
       - MeshPassword=${MESHPASSWORD}
       - MeshSharedKey=${MESHSHAREDKEY}
       - MeshKeyPassphrase=${MESHKEYPASSPHRASE}

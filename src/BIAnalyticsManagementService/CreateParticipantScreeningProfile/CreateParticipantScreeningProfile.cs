@@ -42,7 +42,7 @@ public class CreateParticipantScreeningProfile
         {
             DateTime historicDataCutOffDate = new DateTime(2025, 03, 01, 0, 0, 0, DateTimeKind.Utc);
 
-            bool isHistoric = participant.SrcSysProcessedDateTime < historicDataCutOffDate;
+            bool isHistoric = participant.SrcSysProcessedDatetime < historicDataCutOffDate;
 
             if (isHistoric)
             {
@@ -125,9 +125,9 @@ public class CreateParticipantScreeningProfile
             DateIrradiated = participant.DateIrradiated,
             GeneCode = participant.GeneCode,
             GeneCodeDescription = participant.GeneDescription,
-            SrcSysProcessedDatetime = participant.SrcSysProcessedDateTime,
-            RecordInsertDatetime = isHistoric ? participant.SrcSysProcessedDateTime.AddDays(1) : DateTime.Now,
-            RecordUpdateDatetime = isHistoric ? participant.SrcSysProcessedDateTime.AddDays(1) : DateTime.Now,
+            SrcSysProcessedDatetime = participant.SrcSysProcessedDatetime,
+            RecordInsertDatetime = isHistoric ? participant.SrcSysProcessedDatetime.AddDays(1) : DateTime.Now,
+            RecordUpdateDatetime = isHistoric ? participant.SrcSysProcessedDatetime.AddDays(1) : DateTime.Now,
         };
 
         var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");
