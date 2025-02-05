@@ -37,7 +37,7 @@ public static class PaginationHelper
             return false;
         }
 
-        if (endDate > DateTime.Now.AddDays(1))
+        if (endDate > DateTime.Now)
         {
             errorMessage = "The endDate is greater than today date.";
             return false;
