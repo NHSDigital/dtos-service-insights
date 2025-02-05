@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "ServiceInsightsDbConnectionString": "YOUR_CONNECTION_STRING"
+  },
+  "Host": {
+    "LocalHttpPort": 6010
+  }
+}
