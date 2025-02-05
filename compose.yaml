@@ -326,12 +326,11 @@ services:
     container_name: receive-data
     restart: always
     depends_on:
+      - azurite
       - base-image
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
-    depends_on:
-      - azurite
     networks:
       - app-network
     ports:
