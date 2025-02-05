@@ -31,13 +31,13 @@ public static class PaginationHelper
             return false;
         }
 
-        if (startDate > DateTime.Now)
+        if (startDate > DateTime.UtcNow)
         {
             errorMessage = "The startDate is greater than today date.";
             return false;
         }
 
-        if (endDate > DateTime.Now)
+        if (endDate > DateTime.UtcNow)
         {
             errorMessage = "The endDate is greater than today date.";
             return false;
