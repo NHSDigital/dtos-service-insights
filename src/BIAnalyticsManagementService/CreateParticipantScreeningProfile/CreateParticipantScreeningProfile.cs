@@ -100,7 +100,7 @@ public class CreateParticipantScreeningProfile
         return screeningLkp;
     }
 
-    public async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant, bool isHistoric)
+    private async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant, bool isHistoric)
     {
         DemographicsData demographicsData = await GetDemographicsDataAsync(participant.NhsNumber);
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(participant.ScreeningId);
@@ -126,8 +126,8 @@ public class CreateParticipantScreeningProfile
             GeneCode = participant.GeneCode,
             GeneCodeDescription = participant.GeneDescription,
             SrcSysProcessedDatetime = participant.SrcSysProcessedDatetime,
-            RecordInsertDatetime = isHistoric ? participant.SrcSysProcessedDatetime.AddDays(1) : DateTime.Now,
-            RecordUpdateDatetime = isHistoric ? participant.SrcSysProcessedDatetime.AddDays(1) : DateTime.Now,
+            RecordInsertDatetime = isHistoric ? participant.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
+            RecordUpdateDatetime = isHistoric ? participant.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
         };
 
         var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");

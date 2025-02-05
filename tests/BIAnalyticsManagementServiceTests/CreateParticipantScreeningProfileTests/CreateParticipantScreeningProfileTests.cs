@@ -87,10 +87,12 @@ public class CreateParticipantScreeningProfileTests
     public async Task SendToCreateParticipantScreeningProfileAsync_ShouldSetRecordDatetimeCorrectly_ForHistoricData()
     {
         // Arrange
-        var participant = JsonSerializer.Deserialize<FinalizedParticipantDto>(participantJson);
-        participant.SrcSysProcessedDatetime = new DateTime(2025, 02, 28);
+        string participant = "{ \"NhsNumber\": 1111111112, \"ScreeningId\": 1, \"SrcSysProcessedDatetime\": \"2025-02-28T00:00:00Z\" }";
 
-        var expectedDatetime = participant.SrcSysProcessedDatetime.AddDays(1);
+        var binaryData = new BinaryData(participant);
+        var eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
+
+        var expectedDatetime = DateTime.SpecifyKind(new DateTime(2025, 02, 28).AddDays(1), DateTimeKind.Utc);
 
         _mockHttpRequestService
             .Setup(service => service.SendGet(It.IsAny<string>()))
@@ -107,14 +109,14 @@ public class CreateParticipantScreeningProfileTests
             });
 
         // Act
-        await _function.SendToCreateParticipantScreeningProfileAsync(participant, isHistoric: true);
+        await _function.Run(eventGridEvent);
 
         // Assert
         _mockHttpRequestService.Verify(service =>
             service.SendPost(It.IsAny<string>(),
                 It.Is<string>(json =>
-                    json.Contains($"\"RecordInsertDatetime\":\"{expectedDatetime:yyyy-MM-ddTHH:mm:ss}\"") &&
-                    json.Contains($"\"RecordUpdateDatetime\":\"{expectedDatetime:yyyy-MM-ddTHH:mm:ss}\""))),
+                    json.Contains($"\"RecordInsertDatetime\":\"{expectedDatetime:yyyy-MM-ddTHH:mm:ssZ}\"") &&
+                    json.Contains($"\"RecordUpdateDatetime\":\"{expectedDatetime:yyyy-MM-ddTHH:mm:ssZ}\""))),
             Times.Once);
     }
 
@@ -122,10 +124,12 @@ public class CreateParticipantScreeningProfileTests
     public async Task SendToCreateParticipantScreeningProfileAsync_ShouldSetRecordDatetimeCorrectly_ForNonHistoricData()
     {
         // Arrange
-        var participant = JsonSerializer.Deserialize<FinalizedParticipantDto>(participantJson);
-        participant.SrcSysProcessedDatetime = new DateTime(2025, 03, 05);
+        string participant = "{ \"NhsNumber\": 1111111112, \"ScreeningId\": 1, \"SrcSysProcessedDatetime\": \"2025-03-02T00:00:00Z\" }";
 
-        var expectedDatetime = DateTime.Now;
+        var binaryData = new BinaryData(participant);
+        var eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
+
+        var expectedDatetime = DateTime.UtcNow;
 
         _mockHttpRequestService
             .Setup(service => service.SendGet(It.IsAny<string>()))
@@ -142,7 +146,7 @@ public class CreateParticipantScreeningProfileTests
             });
 
         // Act
-        await _function.SendToCreateParticipantScreeningProfileAsync(participant, isHistoric: false);
+        await _function.Run(eventGridEvent);
 
         // Assert
         _mockHttpRequestService.Verify(service =>

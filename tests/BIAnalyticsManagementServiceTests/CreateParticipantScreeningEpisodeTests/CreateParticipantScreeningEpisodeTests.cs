@@ -73,6 +73,10 @@ public class CreateParticipantScreeningEpisodeTests
             SrcSysProcessedDatetime = new DateTime(2025, 02, 28)
         };
 
+        string episodeJson = JsonSerializer.Serialize(episode);
+        var binaryData = new BinaryData(episode);
+        EventGridEvent eventGridEvent = new EventGridEvent("Episode Created", "CreateParticipantScreeningEpisode", "1.0", binaryData);
+
         var screeningLkp = new ScreeningLkp { ScreeningName = "Breast Screening" };
         var organisationLkp = new OrganisationLkp { OrganisationCode = "AGA", OrganisationName = "Gateshead" };
 
@@ -90,7 +94,7 @@ public class CreateParticipantScreeningEpisodeTests
         DateTime expectedDatetime = episode.SrcSysProcessedDatetime.AddDays(1);
 
         // Act
-        await _function.SendToCreateParticipantScreeningEpisodeAsync(episode, isHistoric: true);
+        await _function.Run(eventGridEvent);
 
         // Assert
         _mockHttpRequestService.Verify(service =>
@@ -113,6 +117,10 @@ public class CreateParticipantScreeningEpisodeTests
             SrcSysProcessedDatetime = new DateTime(2025, 03, 05)
         };
 
+        string episodeJson = JsonSerializer.Serialize(episode);
+        var binaryData = new BinaryData(episode);
+        EventGridEvent eventGridEvent = new EventGridEvent("Episode Created", "CreateParticipantScreeningEpisode", "1.0", binaryData);
+
         var screeningLkp = new ScreeningLkp { ScreeningName = "Breast Screening" };
         var organisationLkp = new OrganisationLkp { OrganisationCode = "AGA", OrganisationName = "Gateshead" };
 
@@ -128,7 +136,7 @@ public class CreateParticipantScreeningEpisodeTests
             });
 
         // Act
-        await _function.SendToCreateParticipantScreeningEpisodeAsync(episode, isHistoric: false);
+        await _function.Run(eventGridEvent);
 
         // Assert
         _mockHttpRequestService.Verify(service =>

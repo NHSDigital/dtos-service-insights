@@ -5,7 +5,6 @@ using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using System.Text.Json.Serialization;
-using Microsoft.Net.Http.Headers;
 
 namespace NHS.ServiceInsights.BIAnalyticsManagementService;
 
@@ -106,7 +105,7 @@ public class CreateParticipantScreeningEpisode
         return organisationLkp;
     }
 
-    public async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode, bool isHistoric)
+    private async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode, bool isHistoric)
     {
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(episode.ScreeningId);
         OrganisationLkp organisationLkp = await GetOrganisationDataAsync(episode.OrganisationId);
@@ -135,8 +134,8 @@ public class CreateParticipantScreeningEpisode
             OrganisationName = organisationLkp.OrganisationName,
             BatchId = episode.BatchId,
             SrcSysProcessedDatetime = episode.SrcSysProcessedDatetime,
-            RecordInsertDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.Now,
-            RecordUpdateDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.Now,
+            RecordInsertDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
+            RecordUpdateDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
             ExceptionFlag =  episode.ExceptionFlag
         };
 
