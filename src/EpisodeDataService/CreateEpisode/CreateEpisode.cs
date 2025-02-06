@@ -6,6 +6,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
+using NHS.ServiceInsights.Common;
 using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Common;
 
@@ -109,6 +110,7 @@ public class CreateEpisode
 
     private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
+        var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
         return new Episode
         {
             EpisodeId = episodeDto.EpisodeId,
@@ -126,15 +128,14 @@ public class CreateEpisode
             ReasonClosedCodeId = reasonClosedCodeId,
             FinalActionCodeId = finalActionCodeId,
             EndPoint = episodeDto.EndPoint,
-            OrganisationId = 2, // Need to get OrganisationId from Reference Management Data Store
+            OrganisationId = organisationId,
             BatchId = episodeDto.BatchId,
-            ExceptionFlag = exceptionFlag ? (short)1 : (short)0,
+            ExceptionFlag = exceptionFlag ? (short)1 : (short)0,//
             SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime,
             RecordInsertDatetime = DateTime.UtcNow,
             RecordUpdateDatetime = DateTime.UtcNow
         };
     }
-
     private async Task<T?> GetCodeObject<T>(string code, string codeName, Func<string, Task<T?>> getObjectMethod) where T : class?
     {
         if (string.IsNullOrWhiteSpace(code))
@@ -149,5 +150,19 @@ public class CreateEpisode
             throw new InvalidOperationException($"{codeName} '{code}' not found in lookup table.");
         }
         return codeObject;
+    }
+
+    private async Task<long> GetOrganisationId(string organisationCode)
+    {
+        var getOrganisationUrl = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
+        var getOrganisationResponse = await _httpRequestService.SendGet(getOrganisationUrl);
+        if (!getOrganisationResponse.IsSuccessStatusCode){
+            _logger.LogError("Failed to retrieve Organisation ID for organisation code '{organisationCode}'", organisationCode);
+            throw new Exception($"Failed to retrieve Organisation ID for organisation code '{organisationCode}'");
+        }
+
+        var getOrganisationJson = await getOrganisationResponse.Content.ReadAsStringAsync();
+        var organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
+        return organisationLkp.OrganisationId;
     }
 }

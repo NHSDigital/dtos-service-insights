@@ -77,7 +77,7 @@ public class UpdateEpisode
             ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
-            existingEpisode = await MapEpisodeDtoToEpisode(existingEpisode, episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
+            existingEpisode = await MapEpisodeDtoToEpisode( episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
 
             if (shouldUpdate)
             {
@@ -101,8 +101,8 @@ public class UpdateEpisode
             finalizedEpisodeDto.FinalActionCodeDescription = finalActionCodeLkp?.FinalActionCodeDescription;
 
             EventGridEvent eventGridEvent = new EventGridEvent(
-                subject: "EpisodeUpdate",
-                eventType: "NSP.EpisodeUpdateReceived",
+                subject: "Episode Updated",
+                eventType: "UpdateParticipantScreeningEpisode",
                 dataVersion: "1.0",
                 data: finalizedEpisodeDto
             );
@@ -124,28 +124,33 @@ public class UpdateEpisode
         }
     }
 
-    private async static Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
+    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
-        existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
-        existingEpisode.NhsNumber = episodeDto.NhsNumber;
-        existingEpisode.EpisodeTypeId = episodeTypeId;
-        existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
-        existingEpisode.AppointmentMadeFlag = episodeDto.AppointmentMadeFlag;
-        existingEpisode.FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate;
-        existingEpisode.ActualScreeningDate = episodeDto.ActualScreeningDate;
-        existingEpisode.EarlyRecallDate = episodeDto.EarlyRecallDate;
-        existingEpisode.CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy;
-        existingEpisode.EndCodeId = endCodeId;
-        existingEpisode.EndCodeLastUpdated = episodeDto.EndCodeLastUpdated;
-        existingEpisode.ReasonClosedCodeId = reasonClosedCodeId;
-        existingEpisode.FinalActionCodeId = finalActionCodeId;
-        existingEpisode.EndPoint = episodeDto.EndPoint;
-        existingEpisode.OrganisationId = 2; // Need to get OrganisationId from Reference Management Data Store
-        existingEpisode.BatchId = episodeDto.BatchId;
-        existingEpisode.ExceptionFlag = exceptionFlag ? (short)1 : (short)0;
-        existingEpisode.SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime;
-        existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
-        return existingEpisode;
+        var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
+        return new Episode
+        {
+            EpisodeId = episodeDto.EpisodeId,
+            ScreeningId = 1, // Need to get ScreeningId from ScreeningName
+            NhsNumber = episodeDto.NhsNumber,
+            EpisodeTypeId = episodeTypeId,
+            EpisodeOpenDate = episodeDto.EpisodeOpenDate,
+            AppointmentMadeFlag = episodeDto.AppointmentMadeFlag,
+            FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate,
+            ActualScreeningDate = episodeDto.ActualScreeningDate,
+            EarlyRecallDate = episodeDto.EarlyRecallDate,
+            CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy,
+            EndCodeId = endCodeId,
+            EndCodeLastUpdated = episodeDto.EndCodeLastUpdated,
+            ReasonClosedCodeId = reasonClosedCodeId,
+            FinalActionCodeId = finalActionCodeId,
+            EndPoint = episodeDto.EndPoint,
+            OrganisationId = organisationId,
+            BatchId = episodeDto.BatchId,
+            ExceptionFlag = exceptionFlag ? (short)1 : (short)0,
+            SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime,
+            RecordInsertDatetime = DateTime.UtcNow,
+            RecordUpdateDatetime = DateTime.UtcNow
+        };
     }
 
     private async Task<T?> GetCodeObject<T>(string code, string codeName, Func<string, Task<T?>> getObjectMethod) where T : class?
@@ -162,5 +167,19 @@ public class UpdateEpisode
             throw new InvalidOperationException($"{codeName} '{code}' not found in lookup table.");
         }
         return codeObject;
+    }
+
+    private async Task<long> GetOrganisationId(string organisationCode)
+    {
+        var getOrganisationUrl = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
+        var getOrganisationResponse = await _httpRequestService.SendGet(getOrganisationUrl);
+        if (!getOrganisationResponse.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to retrieve Organisation ID for organisation code '{organisationCode}'", organisationCode);
+            throw new Exception($"Failed to retrieve Organisation ID for organisation code '{organisationCode}'");
+        }
+        var getOrganisationJson = await getOrganisationResponse.Content.ReadAsStringAsync();
+        var organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
+        return organisationLkp.OrganisationId;
     }
 }
