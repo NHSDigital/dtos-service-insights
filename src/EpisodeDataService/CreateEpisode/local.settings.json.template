@@ -7,7 +7,8 @@
     "ServiceInsightsDbConnectionString": "YOUR_CONNECTION_STRING",
     "topicEndpoint": "https://sams-test-topic.uksouth-1.eventgrid.azure.net/api/events",
     "GetOrganisationIdByCodeUrl":"http://localhost:6081/api/GetOrganisationIdByCode",
-    "topicKey": "TOPIC_KEY"
+    "topicKey": "TOPIC_KEY",
+    "CheckParticipantExistsUrl": "http://localhost:6061/api/GetParticipant"
   },
   "Host": {
     "LocalHttpPort": 6007

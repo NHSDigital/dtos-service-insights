@@ -65,7 +65,8 @@ public class FinalizedEpisodeDto
             EndPoint = episode.EndPoint,
             OrganisationId = episode.OrganisationId,
             BatchId = episode.BatchId,
-            ExceptionFlag = episode.ExceptionFlag
+            ExceptionFlag = episode.ExceptionFlag,
+            SrcSysProcessedDatetime = (DateTime)episode.SrcSysProcessedDatetime
         };
     }
 }

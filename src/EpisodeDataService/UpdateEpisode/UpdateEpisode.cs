@@ -21,15 +21,16 @@ public class UpdateEpisode
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
     private readonly EventGridPublisherClient _eventGridPublisherClient;
     private readonly IHttpRequestService _httpRequestService;
+    private const long ScreeningId = 1;
 
-    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEndCodeLkpRepository endCodeLkpRepository, IEpisodeTypeLkpRepository episodeTypeLkpRepository, IFinalActionCodeLkpRepository finalActionCodeLkpRepository, IReasonClosedCodeLkpRepository reasonClosedCodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
+    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _episodeRepository = episodeRepository;
-        _endCodeLkpRepository = endCodeLkpRepository;
-        _episodeTypeLkpRepository = episodeTypeLkpRepository;
-        _finalActionCodeLkpRepository = finalActionCodeLkpRepository;
-        _reasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
+        _endCodeLkpRepository = episodeLkpRepository.EndCodeLkpRepository;
+        _episodeTypeLkpRepository = episodeLkpRepository.EpisodeTypeLkpRepository;
+        _finalActionCodeLkpRepository = episodeLkpRepository.FinalActionCodeLkpRepository;
+        _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
         _eventGridPublisherClient = eventGridPublisherClient;
         _httpRequestService = httpRequestService;
     }
@@ -64,15 +65,29 @@ public class UpdateEpisode
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 
+            bool shouldUpdate = episodeDto.SrcSysProcessedDateTime > existingEpisode.SrcSysProcessedDatetime;
+
+            var checkParticipantExistsUrl = $"{Environment.GetEnvironmentVariable("CheckParticipantExistsUrl")}?NhsNumber={episodeDto.NhsNumber}&ScreeningId={ScreeningId}";
+            var checkParticipantExistsResult = await _httpRequestService.SendGet(checkParticipantExistsUrl);
+            // If the participant does not exist then flag as an exception
+            var exceptionFlag = !checkParticipantExistsResult.IsSuccessStatusCode;
+
             EpisodeTypeLkp? episodeTypeLkp = await GetCodeObject<EpisodeTypeLkp?>(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeLkp);
             EndCodeLkp? endCodeLkp = await GetCodeObject<EndCodeLkp?>(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeLkp);
             ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
-            existingEpisode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId);
+            existingEpisode = await MapEpisodeDtoToEpisode( episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
 
-            await _episodeRepository.UpdateEpisode(existingEpisode);
-            _logger.LogInformation("Episode {episodeId} updated successfully.", episodeDto.EpisodeId);
+            if (shouldUpdate)
+            {
+                await _episodeRepository.UpdateEpisode(existingEpisode);
+                _logger.LogInformation("Episode {episodeId} updated successfully.", episodeDto.EpisodeId);
+            }
+            else
+            {
+                _logger.LogInformation("Incoming data is not newer. Skipping update for episode {episodeId}.", episodeDto.EpisodeId);
+            }
 
             var finalizedEpisodeDto = (FinalizedEpisodeDto)existingEpisode;
 
@@ -109,8 +124,7 @@ public class UpdateEpisode
         }
     }
 
-
-    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId)
+    private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
         var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
         return new Episode
@@ -132,6 +146,7 @@ public class UpdateEpisode
             EndPoint = episodeDto.EndPoint,
             OrganisationId = organisationId,
             BatchId = episodeDto.BatchId,
+            ExceptionFlag = exceptionFlag ? (short)1 : (short)0,
             SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime,
             RecordInsertDatetime = DateTime.UtcNow,
             RecordUpdateDatetime = DateTime.UtcNow

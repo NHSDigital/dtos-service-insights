@@ -73,3 +73,11 @@ ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-update-participant];
 CREATE USER [nft-uks-si-get-organisation-data] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-get-organisation-data];
 ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-get-organisation-data];
+
+CREATE USER [nft-uks-si-retrieve-episode-ref-data] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-retrieve-episode-ref-data];
+ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-retrieve-episode-ref-data];
+
+CREATE USER [nft-uks-si-get-screening-data] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-get-screening-data];
+ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-get-screening-data];

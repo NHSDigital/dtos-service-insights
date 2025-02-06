@@ -7,6 +7,7 @@
     "MeshApiBaseUrl" : "http://localhost:8700/messageexchange",
     "BSSMailBox": "X26ABC1",
     "BSSContainerName": "inbound",
+    "PoisonContainerName": "inbound-poison",
     "MeshPassword": "password",
     "MeshSharedKey": "TestKey",
     "MeshKeyPassphrase":"test123",

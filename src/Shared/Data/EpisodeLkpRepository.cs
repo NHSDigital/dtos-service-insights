@@ -15,4 +15,3 @@ public class EpisodeLkpRepository : IEpisodeLkpRepository
         ReasonClosedCodeLkpRepository = reasonClosedCodeLkpRepository;
     }
 }
-
