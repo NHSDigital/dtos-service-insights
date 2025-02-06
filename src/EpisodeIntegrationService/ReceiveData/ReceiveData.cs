@@ -20,10 +20,11 @@ public class ReceiveData
     private int participantSuccessCount = 0;
     private int participantFailureCount = 0;
     private int participantRowIndex = 0;
-
     private int episodeSuccessCount = 0;
     private int episodeFailureCount = 0;
     private int episodeRowIndex = 0;
+    private const string RowProcessedSuccessfullyMessage = "Row No.{rowIndex} processed successfully";
+    private const string RowProcessedUnsuccessfullyMessage = "Row No.{rowIndex} processed unsuccessfully";
 
     public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService, EventGridPublisherClient eventGridPublisherClient)
     {
@@ -160,10 +161,6 @@ public class ReceiveData
         return true;
     }
 
-    private const string RowProcessedSuccessfullyMessage = "Row No.{rowIndex} processed successfully";
-    private const string RowProcessedUnsuccessfullyMessage = "Row No.{rowIndex} processed unsuccessfully";
-
-
     private static (string episodeUrl, string participantUrl) GetConfigurationUrls()
     {
         return (Environment.GetEnvironmentVariable("EpisodeManagementUrl"), Environment.GetEnvironmentVariable("ParticipantManagementUrl"));
@@ -230,7 +227,6 @@ public class ReceiveData
         }
     }
 
-
     private async Task ProcessHistoricalEpisodeDataAsync(IEnumerable<BssEpisode> episodes, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
         _logger.LogInformation("Processing historical episode data.");
@@ -264,7 +260,6 @@ public class ReceiveData
         }
     }
 
-
     private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
         Utils.CheckForNullOrEmptyStrings(episode.episode_type, episode.episode_date);
@@ -291,6 +286,7 @@ public class ReceiveData
             FinalActionCode = episode.final_action_code
         };
     }
+
     private async Task<FinalizedEpisodeDto> MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
         Utils.CheckForNullOrEmptyStrings(episode.episode_type, episode.episode_date);
@@ -324,7 +320,6 @@ public class ReceiveData
         return finalizedEpisodeDto;
     }
 
-
     private async Task<EpisodeReferenceData> RetrieveReferenceDataAsync()
     {
         var url = Environment.GetEnvironmentVariable("GetEpisodeReferenceDataServiceUrl");
@@ -344,7 +339,6 @@ public class ReceiveData
         }
 
     }
-
 
     private async Task ProcessParticipantDataAsync(string name,IEnumerable<BssSubject> subjects, string participantUrl)
     {
@@ -454,7 +448,6 @@ public class ReceiveData
             GeneDescription = string.IsNullOrEmpty(subject.gene_code) ? "" : participantReferenceData.GeneCodeDescriptions[subject.gene_code]
         };
     }
-
 
     private async Task<OrganisationReferenceData> GetOrganisationIdAsync()
     {
