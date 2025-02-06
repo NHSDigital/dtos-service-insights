@@ -8,6 +8,8 @@ using NHS.ServiceInsights.TestUtils;
 using NHS.ServiceInsights.Common;
 using System.Collections.Specialized;
 using Azure.Messaging.EventGrid;
+using NHS.ServiceInsights.Model;
+using System.Text.Json;
 
 namespace NHS.ServiceInsights.BIAnalyticsServiceTests;
 
@@ -79,6 +81,80 @@ public class CreateParticipantScreeningProfileTests
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Once);
+    }
+
+    [TestMethod]
+    public async Task SendToCreateParticipantScreeningProfileAsync_ShouldSetRecordDatetimeCorrectly_ForHistoricData()
+    {
+        // Arrange
+        string participant = "{ \"NhsNumber\": 1111111112, \"ScreeningId\": 1, \"SrcSysProcessedDatetime\": \"2025-02-28T00:00:00Z\" }";
+
+        var binaryData = new BinaryData(participant);
+        var eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
+
+        var expectedDatetime = DateTime.SpecifyKind(new DateTime(2025, 02, 28).AddDays(1), DateTimeKind.Utc);
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(demographicsJson, Encoding.UTF8, "application/json")
+            });
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(screeningDataJson, Encoding.UTF8, "application/json")
+            });
+
+        // Act
+        await _function.Run(eventGridEvent);
+
+        // Assert
+        _mockHttpRequestService.Verify(service =>
+            service.SendPost(It.IsAny<string>(),
+                It.Is<string>(json =>
+                    json.Contains($"\"RecordInsertDatetime\":\"{expectedDatetime:yyyy-MM-ddTHH:mm:ssZ}\"") &&
+                    json.Contains($"\"RecordUpdateDatetime\":\"{expectedDatetime:yyyy-MM-ddTHH:mm:ssZ}\""))),
+            Times.Once);
+    }
+
+    [TestMethod]
+    public async Task SendToCreateParticipantScreeningProfileAsync_ShouldSetRecordDatetimeCorrectly_ForNonHistoricData()
+    {
+        // Arrange
+        string participant = "{ \"NhsNumber\": 1111111112, \"ScreeningId\": 1, \"SrcSysProcessedDatetime\": \"2025-03-02T00:00:00Z\" }";
+
+        var binaryData = new BinaryData(participant);
+        var eventGridEvent = new EventGridEvent("Profile Created", "CreateParticipantScreeningProfile", "1.0", binaryData);
+
+        var expectedDatetime = DateTime.UtcNow;
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(demographicsJson, Encoding.UTF8, "application/json")
+            });
+
+        _mockHttpRequestService
+            .Setup(service => service.SendGet(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(screeningDataJson, Encoding.UTF8, "application/json")
+            });
+
+        // Act
+        await _function.Run(eventGridEvent);
+
+        // Assert
+        _mockHttpRequestService.Verify(service =>
+            service.SendPost(It.IsAny<string>(),
+                It.Is<string>(json =>
+                    json.Contains($"\"RecordInsertDatetime\":\"{DateTime.Now:yyyy-MM-ddTHH:mm}") &&
+                    json.Contains($"\"RecordUpdateDatetime\":\"{DateTime.Now:yyyy-MM-ddTHH:mm}"))),
+        Times.Once);
     }
 
     [TestMethod]

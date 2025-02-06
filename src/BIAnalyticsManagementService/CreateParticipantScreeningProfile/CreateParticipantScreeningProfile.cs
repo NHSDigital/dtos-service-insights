@@ -40,7 +40,21 @@ public class CreateParticipantScreeningProfile
 
         try
         {
-            await SendToCreateParticipantScreeningProfileAsync(participant);
+            DateTime historicDataCutOffDate = new DateTime(2025, 03, 01, 0, 0, 0, DateTimeKind.Utc);
+
+            bool isHistoric = participant.SrcSysProcessedDatetime < historicDataCutOffDate;
+
+            if (isHistoric)
+            {
+                _logger.LogInformation("Data is historic.");
+            }
+
+            else
+            {
+                _logger.LogInformation("Data is not historic.");
+            }
+
+            await SendToCreateParticipantScreeningProfileAsync(participant, isHistoric);
         }
 
         catch (Exception ex)
@@ -86,7 +100,7 @@ public class CreateParticipantScreeningProfile
         return screeningLkp;
     }
 
-    private async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant)
+    private async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant, bool isHistoric)
     {
         DemographicsData demographicsData = await GetDemographicsDataAsync(participant.NhsNumber);
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(participant.ScreeningId);
@@ -111,8 +125,9 @@ public class CreateParticipantScreeningProfile
             DateIrradiated = participant.DateIrradiated,
             GeneCode = participant.GeneCode,
             GeneCodeDescription = participant.GeneDescription,
-            RecordInsertDatetime = DateTime.Now,
-            SrcSysProcessedDatetime = participant.SrcSysProcessedDatetime
+            SrcSysProcessedDatetime = participant.SrcSysProcessedDatetime,
+            RecordInsertDatetime = isHistoric ? participant.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
+            RecordUpdateDatetime = isHistoric ? participant.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
         };
 
         var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");

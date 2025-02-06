@@ -45,7 +45,21 @@ public class CreateParticipantScreeningEpisode
 
         try
         {
-            await SendToCreateParticipantScreeningEpisodeAsync(episode);
+            DateTime historicDataCutOffDate = new DateTime(2025, 03, 01, 0, 0, 0, DateTimeKind.Utc);
+
+            bool isHistoric = episode.SrcSysProcessedDatetime < historicDataCutOffDate;
+
+            if (isHistoric)
+            {
+                _logger.LogInformation("Data is historic.");
+            }
+
+            else
+            {
+                _logger.LogInformation("Data is not historic.");
+            }
+
+            await SendToCreateParticipantScreeningEpisodeAsync(episode, isHistoric);
         }
         catch (Exception ex)
         {
@@ -91,7 +105,7 @@ public class CreateParticipantScreeningEpisode
         return organisationLkp;
     }
 
-    private async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode)
+    private async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode, bool isHistoric)
     {
         ScreeningLkp screeningLkp = await GetScreeningDataAsync(episode.ScreeningId);
         OrganisationLkp organisationLkp = await GetOrganisationDataAsync(episode.OrganisationId);
@@ -119,9 +133,10 @@ public class CreateParticipantScreeningEpisode
             OrganisationCode = organisationLkp.OrganisationCode,
             OrganisationName = organisationLkp.OrganisationName,
             BatchId = episode.BatchId,
-            RecordInsertDatetime = DateTime.Now,
-            ExceptionFlag =  episode.ExceptionFlag,
-            SrcSysProcessedDatetime = episode.SrcSysProcessedDatetime
+            SrcSysProcessedDatetime = episode.SrcSysProcessedDatetime,
+            RecordInsertDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
+            RecordUpdateDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
+            ExceptionFlag =  episode.ExceptionFlag
         };
 
         var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
