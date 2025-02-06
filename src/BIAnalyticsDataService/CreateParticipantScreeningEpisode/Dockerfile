@@ -16,5 +16,3 @@ FROM localhost:5000/service-insights-base-image:latest
 
 # Copy the compiled output from the installer-env stage
 COPY --from=installer-env /home/site/wwwroot /home/site/wwwroot
-
-

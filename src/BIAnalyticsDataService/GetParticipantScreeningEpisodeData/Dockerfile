@@ -9,7 +9,7 @@ RUN cd /src/dotnet-function-app && \
 # To enable ssh & remote debugging on app service change the base image to the one below
 # # FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated8.0-appservice
 FROM localhost:5000/service-insights-base-image:latest
-FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated8.0
+#FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated8.0
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true
 
