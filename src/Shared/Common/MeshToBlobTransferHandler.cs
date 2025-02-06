@@ -19,8 +19,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
     private string _destinationContainer;
     private string _poisonContainer;
 
-    private Func<MessageMetaData, string> _fileNameFunction;
-
     public MeshToBlobTransferHandler(ILogger<MeshToBlobTransferHandler> logger, IBlobStorageHelper blobStorageHelper, IMeshInboxService meshInboxService, IMeshOperationService meshOperationService)
     {
         _logger = logger;
@@ -35,7 +33,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         _mailboxId = mailboxId;
         _destinationContainer = destinationContainer;
         _poisonContainer = poisonContainer;
-        _fileNameFunction = fileNameFunction;
 
         int messageCount;
         if (executeHandshake)
@@ -55,7 +52,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             if (!checkForMessages.IsSuccessful)
             {
                 _logger.LogCritical("Error while connecting getting Messages from MESH. ErrorCode: {ErrorCode}, ErrorDescription: {ErrorDescription}", checkForMessages.Error?.ErrorCode, checkForMessages.Error?.ErrorDescription);
-                // Log Exception
                 return false;
             }
 
@@ -170,18 +166,46 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         var result = await _meshInboxService.GetMessageByIdAsync(_mailboxId, messageId);
         if (!result.IsSuccessful)
         {
-            _logger.LogError("Failed to download chunked message from MESH MessageId: {messageId}", messageId);
+            _logger.LogError("Failed to download single message from MESH MessageId: {messageId}", messageId);
             return null;
         }
 
         string fileName = result.Response.FileAttachment.FileName;
 
-        if (result.Response.MessageMetaData.ContentEncoding == "GZIP")
-        {
-            var decompressedFileContent = GZIPHelpers.DeCompressBuffer(result.Response.FileAttachment.Content);
-            return new BlobFile(decompressedFileContent, fileName);
-        }
+        // Check for GZIP magic bytes (1F 8B)
+        bool isGzip = result.Response.FileAttachment.Content.Length > 2 &&
+                  result.Response.FileAttachment.Content[0] == 0x1F &&
+                  result.Response.FileAttachment.Content[1] == 0x8B;
 
+        if (isGzip)
+        {
+            try
+            {
+                _logger.LogInformation("Detected GZIP file by magic bytes, decompressing: {fileName}", fileName);
+                var decompressedFileContent = GZIPHelpers.DeCompressBuffer(result.Response.FileAttachment.Content);
+                if (decompressedFileContent != null && decompressedFileContent.Length > 0)
+                {
+                    _logger.LogInformation("Decompression successful for file: {fileName}", fileName);
+                    string originalFileName = GZIPHelpers.GetOriginalFileName(result.Response.FileAttachment.Content) ?? fileName;
+                    // Return the decompressed file with the original file name from within the GZIP
+                    return new BlobFile(decompressedFileContent, originalFileName);
+                }
+                else
+                {
+                    _logger.LogWarning("Decompression returned empty content for file: {fileName}", fileName);
+                    // Failed decompression
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to decompress GZIP file: {fileName}", fileName);
+                // Return the file with a prefix of the message id so it goes to the poison container
+                return new BlobFile(result.Response.FileAttachment.Content, $"{messageId}_{fileName}");
+            }
+        }
+        // Return the file as is
         return new BlobFile(result.Response.FileAttachment.Content, fileName);
     }
+
 }
