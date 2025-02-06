@@ -56,7 +56,7 @@ public class ReceiveData
                 return;
             }
 
-            if (name.StartsWith("bss_episodes") || name.EndsWith("_historic.csv"))
+            if (name.StartsWith("bss_episodes"))
             {
                 if (!CheckCsvFileHeaders(myBlob, FileType.Episodes))
                 {
@@ -103,8 +103,17 @@ public class ReceiveData
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var participantsEnumerator = csv.GetRecords<BssSubject>();
+                    if (name.EndsWith("_historic.csv"))
+                    {
+                        var participantReferenceData = await GetParticipantReferenceDataAsync();
+                        await ProcessHistoricalParticipantDataAsync(participantsEnumerator, participantReferenceData);
+                    }
+                    else
+                    {
+                        await ProcessParticipantDataAsync(name,participantsEnumerator, participantUrl);
+                    }
 
-                    await ProcessParticipantDataAsync(name,participantsEnumerator, participantUrl);
+
                 }
 
                 DateTime processingEnd = DateTime.UtcNow;
@@ -343,6 +352,41 @@ public class ReceiveData
             await ProcessParticipantDataAsync(name,subjects, participantUrl);
         }
     }
+
+    private async Task ProcessHistoricalParticipantDataAsync(IEnumerable<BssSubject> subjects, ParticipantReferenceData participantReferenceData)
+    {
+        _logger.LogInformation("Processing historical participant data.");
+
+        foreach (var subject in subjects)
+        {
+            try
+            {
+                var modifiedParticipant = MapHistoricalParticipantToParticipantDto(subject, participantReferenceData);
+                EventGridEvent eventGridEvent = new EventGridEvent(
+                    subject: "Participant Created",
+                    eventType: "CreateParticipantScreeningProfile",
+                    dataVersion: "1.0",
+                    data: modifiedParticipant
+                );
+
+                _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
+                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+                participantSuccessCount++;
+                participantRowIndex++;
+                _logger.LogInformation("Row No.{rowIndex} processed successfully", participantRowIndex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in ProcessHistoricalParticipantDataAsync: {Message}", ex.Message);
+                participantFailureCount++;
+                participantRowIndex++;
+                _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully", participantRowIndex);
+            }
+        }
+    }
+
+
+
     private InitialParticipantDto MapParticipantToParticipantDto(BssSubject subject)
     {
         return new InitialParticipantDto
@@ -363,6 +407,30 @@ public class ReceiveData
         };
     }
 
+    private async Task<FinalizedParticipantDto> MapHistoricalParticipantToParticipantDto(BssSubject subject, ParticipantReferenceData participantReferenceData)
+    {
+        return new FinalizedParticipantDto
+        {
+            NhsNumber = subject.nhs_number,
+            ScreeningId = 1, // Hardcoded to 1 for now because we only have one screening type (Breast Screening)
+            ReasonForRemoval = subject.removal_reason,
+            ReasonForRemovalDt = Utils.ParseNullableDate(subject.removal_date),
+            NextTestDueDate = Utils.ParseNullableDate(subject.next_test_due_date),
+            NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
+            ParticipantScreeningStatus = subject.subject_status_code,
+            ScreeningCeasedReason = subject.reason_for_ceasing_code,
+            IsHigherRisk = Utils.ParseBooleanStringToShort(subject.is_higher_risk),
+            IsHigherRiskActive = Utils.ParseBooleanStringToShort(subject.is_higher_risk_active),
+            SrcSysProcessedDatetime = subject.change_db_date_time,
+            HigherRiskNextTestDueDate = Utils.ParseNullableDate(subject.higher_risk_next_test_due_date),
+            HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
+            HigherRiskReasonCodeDescription = string.IsNullOrEmpty(subject.higher_risk_referral_reason_code) ? "" : participantReferenceData.HigherRiskReferralReasonCodeDescriptions[subject.higher_risk_referral_reason_code],
+            DateIrradiated = Utils.ParseNullableDate(subject.date_irradiated),
+            GeneCode = subject.gene_code,
+            GeneDescription = string.IsNullOrEmpty(subject.gene_code) ? "" : participantReferenceData.GeneCodeDescriptions[subject.gene_code]
+        };
+    }
+
 
     private async Task<OrganisationReferenceData> GetOrganisationIdAsync()
     {
@@ -375,5 +443,27 @@ public class ReceiveData
 
     }
 
+    private async Task<ParticipantReferenceData> GetParticipantReferenceDataAsync()
+    {
+        var geneCodeDescriptions = new Dictionary<string, string>
+        {
+            {"BRCA1", "BRCA1"},
+            {"BRCA2", "BRCA2"},
+        };
+
+        var higherRiskReferralReasonCodeDescriptions = new Dictionary<string, string>
+        {
+            {"BRCA_RISK", "BRCA1/BRCA2/PALB2 (8% 10-year risk)"},
+            {"BRCA_TESTED", "BRCA1/BRCA2/PALB2 Tested"},
+        };
+
+        var participantReferenceData = new ParticipantReferenceData
+        {
+            GeneCodeDescriptions = geneCodeDescriptions,
+            HigherRiskReferralReasonCodeDescriptions = higherRiskReferralReasonCodeDescriptions,
+        };
+
+        return participantReferenceData;
+    }
 }
 
