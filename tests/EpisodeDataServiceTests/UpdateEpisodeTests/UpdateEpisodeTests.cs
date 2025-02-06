@@ -60,6 +60,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -127,6 +128,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -183,6 +185,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -219,6 +222,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -261,6 +265,7 @@ public class UpdateEpisodeTests
             OrganisationCode="LAV",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -302,6 +307,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "InvalidCode",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -343,6 +349,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "InvalidCode",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -385,6 +392,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -428,6 +436,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -473,6 +482,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);

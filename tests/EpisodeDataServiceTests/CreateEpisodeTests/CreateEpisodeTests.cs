@@ -74,6 +74,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -116,6 +117,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -154,6 +156,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -186,6 +189,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -269,6 +273,7 @@ public class CreateEpisodeTests
             EndCode = "InvalidType",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -307,6 +312,7 @@ public class CreateEpisodeTests
             EndCode = "",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -351,6 +357,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "InvalidType",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -389,6 +396,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -433,6 +441,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "InvalidType",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -471,6 +480,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -515,6 +525,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -557,6 +568,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -602,6 +614,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
@@ -644,6 +657,7 @@ public class CreateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
+            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episode);
