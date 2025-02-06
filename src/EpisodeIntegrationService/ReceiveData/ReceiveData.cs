@@ -74,17 +74,11 @@ public class ReceiveData
     {
         if (name.StartsWith("bss_episodes"))
         {
-            if (!await ProcessEpisodes(myBlob, name, episodeUrl, processingStart))
-            {
-                return;
-            }
+            await ProcessEpisodes(myBlob, name, episodeUrl, processingStart);
         }
         else if (name.StartsWith("bss_subjects"))
         {
-            if (!await ProcessSubjects(myBlob, name, participantUrl, processingStart))
-            {
-                return;
-            }
+            await ProcessSubjects(myBlob, name, participantUrl, processingStart);
         }
         else
         {
@@ -166,6 +160,10 @@ public class ReceiveData
         return true;
     }
 
+    private const string RowProcessedSuccessfullyMessage = "Row No.{rowIndex} processed successfully";
+    private const string RowProcessedUnsuccessfullyMessage = "Row No.{rowIndex} processed unsuccessfully";
+
+
     private static (string episodeUrl, string participantUrl) GetConfigurationUrls()
     {
         return (Environment.GetEnvironmentVariable("EpisodeManagementUrl"), Environment.GetEnvironmentVariable("ParticipantManagementUrl"));
@@ -218,7 +216,7 @@ public class ReceiveData
 
                 episodeSuccessCount++;
                 episodeRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+                _logger.LogInformation(RowProcessedSuccessfullyMessage, episodeRowIndex);
             }
         }
         catch (Exception ex)
@@ -227,7 +225,7 @@ public class ReceiveData
 
             episodeFailureCount++;
             episodeRowIndex++;
-            _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+            _logger.LogInformation(RowProcessedUnsuccessfullyMessage, episodeRowIndex);
             await ProcessEpisodeDataAsync(name,episodes, episodeUrl);
         }
     }
@@ -252,7 +250,7 @@ public class ReceiveData
                 await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
                 episodeSuccessCount++;
                 episodeRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+                _logger.LogInformation(RowProcessedSuccessfullyMessage, episodeRowIndex);
 
             }
             catch (Exception ex)
@@ -261,7 +259,7 @@ public class ReceiveData
 
                 episodeFailureCount++;
                 episodeRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+                _logger.LogInformation(RowProcessedUnsuccessfullyMessage, episodeRowIndex);
             }
         }
     }
@@ -366,7 +364,7 @@ public class ReceiveData
 
                 participantSuccessCount++;
                 participantRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully",participantRowIndex);
+                _logger.LogInformation(RowProcessedSuccessfullyMessage,participantRowIndex);
             }
         }
 
@@ -376,7 +374,7 @@ public class ReceiveData
 
             participantFailureCount++;
             participantRowIndex++;
-            _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",participantRowIndex);
+            _logger.LogInformation(RowProcessedUnsuccessfullyMessage,participantRowIndex);
             await ProcessParticipantDataAsync(name,subjects, participantUrl);
         }
     }
@@ -401,19 +399,17 @@ public class ReceiveData
                 await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
                 participantSuccessCount++;
                 participantRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully", participantRowIndex);
+                _logger.LogInformation(RowProcessedSuccessfullyMessage, participantRowIndex);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in ProcessHistoricalParticipantDataAsync: {Message}", ex.Message);
                 participantFailureCount++;
                 participantRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully", participantRowIndex);
+                _logger.LogInformation(RowProcessedUnsuccessfullyMessage, participantRowIndex);
             }
         }
     }
-
-
 
     private InitialParticipantDto MapParticipantToParticipantDto(BssSubject subject)
     {
