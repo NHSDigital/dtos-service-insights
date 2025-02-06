@@ -4,7 +4,6 @@ using NHS.MESH.Client.Contracts.Services;
 using NHS.MESH.Client.Helpers;
 using NHS.MESH.Client.Helpers.ContentHelpers;
 using NHS.MESH.Client.Models;
-using System.Text.Json;
 
 namespace NHS.ServiceInsights.Common;
 
@@ -20,8 +19,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
     private string _destinationContainer;
     private string _poisonContainer;
 
-    private Func<MessageMetaData, string> _fileNameFunction;
-
     public MeshToBlobTransferHandler(ILogger<MeshToBlobTransferHandler> logger, IBlobStorageHelper blobStorageHelper, IMeshInboxService meshInboxService, IMeshOperationService meshOperationService)
     {
         _logger = logger;
@@ -36,7 +33,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         _mailboxId = mailboxId;
         _destinationContainer = destinationContainer;
         _poisonContainer = poisonContainer;
-        _fileNameFunction = fileNameFunction;
 
         int messageCount;
         if (executeHandshake)
@@ -56,7 +52,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             if (!checkForMessages.IsSuccessful)
             {
                 _logger.LogCritical("Error while connecting getting Messages from MESH. ErrorCode: {ErrorCode}, ErrorDescription: {ErrorDescription}", checkForMessages.Error?.ErrorCode, checkForMessages.Error?.ErrorDescription);
-                // Log Exception
                 return false;
             }
 
@@ -177,31 +172,40 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
 
         string fileName = result.Response.FileAttachment.FileName;
 
-        // Convert MessageMetaData to JSON string for detailed logging
-        string metadataJson = JsonSerializer.Serialize(result.Response.MessageMetaData, new JsonSerializerOptions { WriteIndented = true });
-        _logger.LogInformation("Metadata for file {fileName}: {Metadata}", fileName, metadataJson);
-
-
         // Check for GZIP magic bytes (1F 8B)
         bool isGzip = result.Response.FileAttachment.Content.Length > 2 &&
                   result.Response.FileAttachment.Content[0] == 0x1F &&
                   result.Response.FileAttachment.Content[1] == 0x8B;
 
-        if (result.Response.FileAttachment.Content.Length > 2)
-        {
-            _logger.LogInformation("Magic bytes for file {fileName}: {Byte1:X2} {Byte2:X2}", fileName, result.Response.FileAttachment.Content[0], result.Response.FileAttachment.Content[1]);
-            _logger.LogInformation("Reference: GZIP magic bytes are 1F 8B");
-        }
-
         if (isGzip)
         {
-            _logger.LogInformation("Detected GZIP file by magic bytes, decompressing: {fileName}", fileName);
-            var decompressedFileContent = GZIPHelpers.DeCompressBuffer(result.Response.FileAttachment.Content);
-            string originalFileName = GZIPHelpers.GetOriginalFileName(result.Response.FileAttachment.Content) ?? fileName;
-            return new BlobFile(decompressedFileContent, originalFileName);
+            try
+            {
+                _logger.LogInformation("Detected GZIP file by magic bytes, decompressing: {fileName}", fileName);
+                var decompressedFileContent = GZIPHelpers.DeCompressBuffer(result.Response.FileAttachment.Content);
+                if (decompressedFileContent != null && decompressedFileContent.Length > 0)
+                {
+                    _logger.LogInformation("Decompression successful for file: {fileName}", fileName);
+                    string originalFileName = GZIPHelpers.GetOriginalFileName(result.Response.FileAttachment.Content) ?? fileName;
+                    // Return the decompressed file
+                    return new BlobFile(decompressedFileContent, originalFileName);
+                }
+                else
+                {
+                    _logger.LogWarning("Decompression returned empty content for file: {fileName}", fileName);
+                    // Failed decompression
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to decompress GZIP file: {fileName}", fileName);
+                // return null;
+                // Return the file with a prefix of the message id so it goes to the poison container
+                return new BlobFile(result.Response.FileAttachment.Content, $"{messageId}_{fileName}");
+            }
         }
-
-        _logger.LogInformation("File {fileName} does not appear to be GZIP", fileName);
+        // Return the file as is
         return new BlobFile(result.Response.FileAttachment.Content, fileName);
     }
 
