@@ -41,8 +41,8 @@ public class UpdateEpisodeTests
 
         Environment.SetEnvironmentVariable("CheckParticipantExistsUrl", "CheckParticipantExistsUrl");
 
-         // _mockRequest = _setupRequest.Setup("");
-       // _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object,  _mockEventGridPublisherClient.Object, _mockHttpRequestService.Object);
+        // _mockRequest = _setupRequest.Setup("");
+        // _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object,  _mockEventGridPublisherClient.Object, _mockHttpRequestService.Object);
         Environment.SetEnvironmentVariable("GetOrganisationIdByCodeUrl", "GetOrganisationIdByCodeUrl");
 
     }
@@ -587,7 +587,7 @@ public class UpdateEpisodeTests
     [DataRow(HttpStatusCode.InternalServerError)]
     public async Task Run_Should_Flag_Exception_When_Participant_Check_Fails(HttpStatusCode statusCode)
     {
-       // Arrange
+        // Arrange
         var episodeDto = new InitialEpisodeDto
         {
             EpisodeId = 245395,
@@ -597,7 +597,7 @@ public class UpdateEpisodeTests
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
-              SrcSysProcessedDateTime = DateTime.UtcNow
+            SrcSysProcessedDateTime = DateTime.UtcNow
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -613,9 +613,9 @@ public class UpdateEpisodeTests
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
 
 
-         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(statusCode));
+        _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(statusCode));
 
-         var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
+        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
         _mockHttpRequestService
             .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
@@ -636,7 +636,7 @@ public class UpdateEpisodeTests
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
-       _mockEpisodeRepository.Verify(x => x.UpdateEpisode(It.Is<Episode>(e => e.ExceptionFlag == 1)), Times.Once);
+        _mockEpisodeRepository.Verify(x => x.UpdateEpisode(It.Is<Episode>(e => e.ExceptionFlag == 1)), Times.Once);
         _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.Is<EventGridEvent>(e => e.Data.ToObjectFromJson<FinalizedEpisodeDto>(null).ExceptionFlag == 1), It.IsAny<CancellationToken>()), Times.Once);
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }

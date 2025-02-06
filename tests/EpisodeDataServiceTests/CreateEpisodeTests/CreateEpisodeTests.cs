@@ -41,7 +41,7 @@ public class CreateEpisodeTests
 
         Environment.SetEnvironmentVariable("CheckParticipantExistsUrl", "CheckParticipantExistsUrl");
 
-       // _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object, _mockEventGridPublisherClient.Object, _mockHttpRequestService.Object);
+        //_function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object, _mockEventGridPublisherClient.Object, _mockHttpRequestService.Object);
         Environment.SetEnvironmentVariable("GetOrganisationIdByCodeUrl", "GetOrganisationIdByCodeUrl");
     }
 
@@ -84,17 +84,12 @@ public class CreateEpisodeTests
             .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")});
 
-        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C"))
-                                     .ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
-        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC"))
-                                 .ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
-        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST"))
-                                        .ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
-        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT"))
-                                         .ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
 
-        _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1"))
-                                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+        _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
         _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(_mockEventGridResponse.Object));
@@ -617,15 +612,10 @@ public class CreateEpisodeTests
             .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")});
 
-        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C"))
-                                     .ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
-        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC"))
-                                 .ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
-        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST"))
-                                        .ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
-        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT"))
-                                         .ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
-
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
 
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(statusCode));
 
@@ -664,14 +654,10 @@ public class CreateEpisodeTests
             .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")});
 
-        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C"))
-                                     .ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
-        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC"))
-                                 .ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
-        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST"))
-                                        .ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
-        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT"))
-                                         .ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
+        _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
+        _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
+        _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
+        _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
 
 
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
