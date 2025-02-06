@@ -187,7 +187,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
                 {
                     _logger.LogInformation("Decompression successful for file: {fileName}", fileName);
                     string originalFileName = GZIPHelpers.GetOriginalFileName(result.Response.FileAttachment.Content) ?? fileName;
-                    // Return the decompressed file
+                    // Return the decompressed file with the original file name from within the GZIP
                     return new BlobFile(decompressedFileContent, originalFileName);
                 }
                 else
@@ -200,7 +200,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to decompress GZIP file: {fileName}", fileName);
-                // return null;
                 // Return the file with a prefix of the message id so it goes to the poison container
                 return new BlobFile(result.Response.FileAttachment.Content, $"{messageId}_{fileName}");
             }
