@@ -634,7 +634,7 @@ public class CreateEpisodeTests
     [TestMethod]
     public async Task Run_Should_Not_Flag_Exception_When_Participant_Does_Exist()
     {
-           // Arrange
+        // Arrange
         var episode = new InitialEpisodeDto
         {
             EpisodeId = 245395,
