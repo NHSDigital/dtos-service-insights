@@ -20,10 +20,11 @@ public class ReceiveData
     private int participantSuccessCount = 0;
     private int participantFailureCount = 0;
     private int participantRowIndex = 0;
-
     private int episodeSuccessCount = 0;
     private int episodeFailureCount = 0;
     private int episodeRowIndex = 0;
+    private const string RowProcessedSuccessfullyMessage = "Row No.{rowIndex} processed successfully";
+    private const string RowProcessedUnsuccessfullyMessage = "Row No.{rowIndex} processed unsuccessfully";
 
     public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService, EventGridPublisherClient eventGridPublisherClient)
     {
@@ -36,16 +37,14 @@ public class ReceiveData
     [Function("ReceiveData")]
     public async Task Run([BlobTrigger("inbound/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob, string name)
     {
-
         try
         {
             DateTime processingStart = DateTime.UtcNow;
 
             _logger.LogInformation("C# HTTP trigger function ReceiveData received a request.");
 
-            if (!name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            if (!IsValidFileExtension(name))
             {
-                _logger.LogError("Invalid file extension. Only .csv files are supported.");
                 return;
             }
 
@@ -56,77 +55,110 @@ public class ReceiveData
                 return;
             }
 
-            if (name.StartsWith("bss_episodes") || name.EndsWith("_historic.csv"))
-            {
-                if (!CheckCsvFileHeaders(myBlob, FileType.Episodes))
-                {
-                    _logger.LogError("Episodes CSV file headers are invalid. file name: {Name}", name);
-                    return;
-                }
-
-                using (var reader = new StreamReader(myBlob))
-                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-                {
-                    var episodesEnumerator = csv.GetRecords<BssEpisode>();
-                    if (name.EndsWith("_historic.csv"))
-                    {
-                        var referenceData = await RetrieveReferenceDataAsync();
-                        var organisationReferenceData = await GetOrganisationIdAsync();
-                        await ProcessHistoricalEpisodeDataAsync(episodesEnumerator, referenceData, organisationReferenceData);
-
-                    }
-                    else
-                    {
-                        await ProcessEpisodeDataAsync(name, episodesEnumerator, episodeUrl);
-                    }
-                }
-
-                DateTime processingEnd = DateTime.UtcNow;
-
-                _logger.LogInformation("===============================================================================\n"
-                                +"Episode Data: File {name} processed successfully.\n"
-                                +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
-                                +"Rows Processed: {episodeRowIndex}, Success: {episodesuccessCount}, Failures: {episodefailureCount}"
-                                ,name,processingStart,processingEnd,episodeRowIndex,episodeSuccessCount, episodeFailureCount );
-
-            }
-
-            else if (name.StartsWith("bss_subjects"))
-            {
-                if (!CheckCsvFileHeaders(myBlob, FileType.Subjects))
-                {
-                    _logger.LogError("Subjects CSV file headers are invalid. file name: {Name}", name);
-                    return;
-                }
-
-                using (var reader = new StreamReader(myBlob))
-                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-                {
-                    var participantsEnumerator = csv.GetRecords<BssSubject>();
-
-                    await ProcessParticipantDataAsync(name,participantsEnumerator, participantUrl);
-                }
-
-                DateTime processingEnd = DateTime.UtcNow;
-
-                _logger.LogInformation("==================================================================\n"
-                                +"Participant Data: File {name} processed successfully.\n"
-                                +"Start Time: {processingStart}, End Time: {processingEnd}.\n"
-                                +"Rows Processed: {participantRowIndex}, Success: {participantSuccessCount}, Failures: {participantFailureCount}"
-                                ,name,processingStart,processingEnd,participantRowIndex,participantSuccessCount, participantFailureCount );
-            }
-            else
-            {
-                _logger.LogError("fileName is invalid. file name: {Name}", name);
-                return;
-            }
-
+            await ProcessFile(myBlob, name, episodeUrl, participantUrl, processingStart);
         }
-
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ReceiveData: {Message} \n StackTrace: {StackTrace}", ex.Message, ex.StackTrace);
         }
+    }
+    private bool IsValidFileExtension(string name)
+    {
+        if (!name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogError("Invalid file extension. Only .csv files are supported.");
+            return false;
+        }
+        return true;
+    }
+    private async Task ProcessFile(Stream myBlob, string name, string episodeUrl, string participantUrl, DateTime processingStart)
+    {
+        if (name.StartsWith("bss_episodes"))
+        {
+            await ProcessEpisodes(myBlob, name, episodeUrl, processingStart);
+        }
+        else if (name.StartsWith("bss_subjects"))
+        {
+            await ProcessSubjects(myBlob, name, participantUrl, processingStart);
+        }
+        else
+        {
+            _logger.LogError("fileName is invalid. file name: {Name}", name);
+        }
+    }
+
+    private async Task<bool> ProcessEpisodes(Stream myBlob, string name, string episodeUrl, DateTime processingStart)
+    {
+        if (!CheckCsvFileHeaders(myBlob, FileType.Episodes))
+        {
+            _logger.LogError("Episodes CSV file headers are invalid. file name: {Name}", name);
+            return false;
+        }
+
+        myBlob.Position = 0;
+
+        using (var reader = new StreamReader(myBlob))
+        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        {
+            var episodesEnumerator = csv.GetRecords<BssEpisode>();
+            if (name.EndsWith("_historic.csv"))
+            {
+                var referenceData = await RetrieveReferenceDataAsync();
+                var organisationReferenceData = await GetOrganisationIdAsync();
+                await ProcessHistoricalEpisodeDataAsync(episodesEnumerator, referenceData, organisationReferenceData);
+
+            }
+            else
+            {
+                await ProcessEpisodeDataAsync(name, episodesEnumerator, episodeUrl);
+            }
+        }
+
+        DateTime processingEnd = DateTime.UtcNow;
+
+        _logger.LogInformation("===============================================================================\n"
+                                + "Episode Data: File processed successfully.\n"
+                                + "Start Time: {processingStart}, End Time: {processingEnd}.\n"
+                                + "Rows Processed: {episodeRowIndex}, Success: {episodeSuccessCount}, Failures: {episodeFailureCount}"
+                                , processingStart, processingEnd, episodeRowIndex, episodeSuccessCount, episodeFailureCount);
+
+        return true;
+    }
+
+    private async Task<bool> ProcessSubjects(Stream myBlob, string name, string participantUrl, DateTime processingStart)
+    {
+        if (!CheckCsvFileHeaders(myBlob, FileType.Subjects))
+        {
+            _logger.LogError("Subjects CSV file headers are invalid. file name: {Name}", name);
+            return false;
+        }
+
+        myBlob.Position = 0;
+
+        using (var reader = new StreamReader(myBlob))
+        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        {
+            var participantsEnumerator = csv.GetRecords<BssSubject>();
+            if (name.EndsWith("_historic.csv"))
+            {
+                var participantReferenceData = await GetParticipantReferenceDataAsync();
+                await ProcessHistoricalParticipantDataAsync(participantsEnumerator, participantReferenceData);
+            }
+            else
+            {
+                await ProcessParticipantDataAsync(name, participantsEnumerator, participantUrl);
+            }
+        }
+
+        DateTime processingEnd = DateTime.UtcNow;
+
+        _logger.LogInformation("==================================================================\n"
+                                + "Participant Data: File processed successfully.\n"
+                                + "Start Time: {processingStart}, End Time: {processingEnd}.\n"
+                                + "Rows Processed: {participantRowIndex}, Success: {participantSuccessCount}, Failures: {participantFailureCount}"
+                                , processingStart, processingEnd, participantRowIndex, participantSuccessCount, participantFailureCount);
+
+        return true;
     }
 
     private static (string episodeUrl, string participantUrl) GetConfigurationUrls()
@@ -181,7 +213,7 @@ public class ReceiveData
 
                 episodeSuccessCount++;
                 episodeRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+                _logger.LogInformation(RowProcessedSuccessfullyMessage, episodeRowIndex);
             }
         }
         catch (Exception ex)
@@ -190,11 +222,10 @@ public class ReceiveData
 
             episodeFailureCount++;
             episodeRowIndex++;
-            _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+            _logger.LogInformation(RowProcessedUnsuccessfullyMessage, episodeRowIndex);
             await ProcessEpisodeDataAsync(name,episodes, episodeUrl);
         }
     }
-
 
     private async Task ProcessHistoricalEpisodeDataAsync(IEnumerable<BssEpisode> episodes, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
@@ -215,7 +246,7 @@ public class ReceiveData
                 await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
                 episodeSuccessCount++;
                 episodeRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+                _logger.LogInformation(RowProcessedSuccessfullyMessage, episodeRowIndex);
 
             }
             catch (Exception ex)
@@ -224,11 +255,10 @@ public class ReceiveData
 
                 episodeFailureCount++;
                 episodeRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+                _logger.LogInformation(RowProcessedUnsuccessfullyMessage, episodeRowIndex);
             }
         }
     }
-
 
     private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
@@ -256,6 +286,7 @@ public class ReceiveData
             FinalActionCode = episode.final_action_code
         };
     }
+
     private async Task<FinalizedEpisodeDto> MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
         Utils.CheckForNullOrEmptyStrings(episode.episode_type, episode.episode_date);
@@ -289,7 +320,6 @@ public class ReceiveData
         return finalizedEpisodeDto;
     }
 
-
     private async Task<EpisodeReferenceData> RetrieveReferenceDataAsync()
     {
         var url = Environment.GetEnvironmentVariable("GetEpisodeReferenceDataServiceUrl");
@@ -310,7 +340,6 @@ public class ReceiveData
 
     }
 
-
     private async Task ProcessParticipantDataAsync(string name,IEnumerable<BssSubject> subjects, string participantUrl)
     {
 
@@ -329,7 +358,7 @@ public class ReceiveData
 
                 participantSuccessCount++;
                 participantRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully",participantRowIndex);
+                _logger.LogInformation(RowProcessedSuccessfullyMessage,participantRowIndex);
             }
         }
 
@@ -339,10 +368,43 @@ public class ReceiveData
 
             participantFailureCount++;
             participantRowIndex++;
-            _logger.LogInformation("Row No.{rowIndex} processed unsuccessfully",participantRowIndex);
+            _logger.LogInformation(RowProcessedUnsuccessfullyMessage,participantRowIndex);
             await ProcessParticipantDataAsync(name,subjects, participantUrl);
         }
     }
+
+    private async Task ProcessHistoricalParticipantDataAsync(IEnumerable<BssSubject> subjects, ParticipantReferenceData participantReferenceData)
+    {
+        _logger.LogInformation("Processing historical participant data.");
+
+        foreach (var subject in subjects)
+        {
+            try
+            {
+                var modifiedParticipant = MapHistoricalParticipantToParticipantDto(subject, participantReferenceData);
+                EventGridEvent eventGridEvent = new EventGridEvent(
+                    subject: "Participant Created",
+                    eventType: "CreateParticipantScreeningProfile",
+                    dataVersion: "1.0",
+                    data: modifiedParticipant
+                );
+
+                _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
+                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+                participantSuccessCount++;
+                participantRowIndex++;
+                _logger.LogInformation(RowProcessedSuccessfullyMessage, participantRowIndex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in ProcessHistoricalParticipantDataAsync: {Message}", ex.Message);
+                participantFailureCount++;
+                participantRowIndex++;
+                _logger.LogInformation(RowProcessedUnsuccessfullyMessage, participantRowIndex);
+            }
+        }
+    }
+
     private InitialParticipantDto MapParticipantToParticipantDto(BssSubject subject)
     {
         return new InitialParticipantDto
@@ -363,6 +425,29 @@ public class ReceiveData
         };
     }
 
+    private async Task<FinalizedParticipantDto> MapHistoricalParticipantToParticipantDto(BssSubject subject, ParticipantReferenceData participantReferenceData)
+    {
+        return new FinalizedParticipantDto
+        {
+            NhsNumber = subject.nhs_number,
+            ScreeningId = 1, // Hardcoded to 1 for now because we only have one screening type (Breast Screening)
+            ReasonForRemoval = subject.removal_reason,
+            ReasonForRemovalDt = Utils.ParseNullableDate(subject.removal_date),
+            NextTestDueDate = Utils.ParseNullableDate(subject.next_test_due_date),
+            NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
+            ParticipantScreeningStatus = subject.subject_status_code,
+            ScreeningCeasedReason = subject.reason_for_ceasing_code,
+            IsHigherRisk = Utils.ParseBooleanStringToShort(subject.is_higher_risk),
+            IsHigherRiskActive = Utils.ParseBooleanStringToShort(subject.is_higher_risk_active),
+            SrcSysProcessedDatetime = subject.change_db_date_time,
+            HigherRiskNextTestDueDate = Utils.ParseNullableDate(subject.higher_risk_next_test_due_date),
+            HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
+            HigherRiskReasonCodeDescription = string.IsNullOrEmpty(subject.higher_risk_referral_reason_code) ? "" : participantReferenceData.HigherRiskReferralReasonCodeDescriptions[subject.higher_risk_referral_reason_code],
+            DateIrradiated = Utils.ParseNullableDate(subject.date_irradiated),
+            GeneCode = subject.gene_code,
+            GeneDescription = string.IsNullOrEmpty(subject.gene_code) ? "" : participantReferenceData.GeneCodeDescriptions[subject.gene_code]
+        };
+    }
 
     private async Task<OrganisationReferenceData> GetOrganisationIdAsync()
     {
@@ -375,5 +460,27 @@ public class ReceiveData
 
     }
 
+    private async Task<ParticipantReferenceData> GetParticipantReferenceDataAsync()
+    {
+        var geneCodeDescriptions = new Dictionary<string, string>
+        {
+            {"BRCA1", "BRCA1"},
+            {"BRCA2", "BRCA2"},
+        };
+
+        var higherRiskReferralReasonCodeDescriptions = new Dictionary<string, string>
+        {
+            {"BRCA_RISK", "BRCA1/BRCA2/PALB2 (8% 10-year risk)"},
+            {"BRCA_TESTED", "BRCA1/BRCA2/PALB2 Tested"},
+        };
+
+        var participantReferenceData = new ParticipantReferenceData
+        {
+            GeneCodeDescriptions = geneCodeDescriptions,
+            HigherRiskReferralReasonCodeDescriptions = higherRiskReferralReasonCodeDescriptions,
+        };
+
+        return participantReferenceData;
+    }
 }
 

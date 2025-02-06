@@ -713,5 +713,65 @@ public class ReceiveDataTests
             Times.Exactly(1));
     }
 
+
+    [TestMethod]
+    public async Task Run_Should_Map_Historical_Participant_To_FinalizedParticipantDto()
+    {
+        // Arrange
+        string data = "change_db_date_time,nhs_number,superseded_nhs_number,gp_practice_code,bso_organisation_code,next_test_due_date,subject_status_code,early_recall_date,latest_invitation_date,removal_reason,removal_date,reason_for_ceasing_code,is_higher_risk,higher_risk_next_test_due_date,hr_recall_due_date,higher_risk_referral_reason_code,date_irradiated,is_higher_risk_active,gene_code,ntdd_calculation_method,preferred_language\n" +
+                    "2021-11-05 13:33:46.261052+00,9000279152,,N00013,PMA,,NORMAL,,,,,,TRUE,09/06/2022,,BRCA_RISK,,FALSE,BRCA2,ROUTINE,\n" +
+                    "2023-03-10 17:35:15.630487+00,9000049841,,A00017,LAV,18/02/2022,NORMAL,,03/02/2019,,,INFORMED_SUBJECT_CHOICE,TRUE,,,BRCA_TESTED,,TRUE,BRCA1,ROUTINE,";
+
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+
+        // Act
+        await _function.Run(stream, "bss_subjects_test_data_20240930_historic.csv");
+
+        // Assert
+        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+    }
+
+
+    [TestMethod]
+    public async Task ProcessHistoricalParticipantDataAsync_ShouldLogErrorAndIncrementFailureCount_WhenExceptionOccurs()
+    {
+        // Arrange
+        string data = "change_db_date_time,nhs_number,superseded_nhs_number,gp_practice_code,bso_organisation_code,next_test_due_date,subject_status_code,early_recall_date,latest_invitation_date,removal_reason,removal_date,reason_for_ceasing_code,is_higher_risk,higher_risk_next_test_due_date,hr_recall_due_date,higher_risk_referral_reason_code,date_irradiated,is_higher_risk_active,gene_code,ntdd_calculation_method,preferred_language\n" +
+                    "2021-11-05 13:33:46.261052+00,9000279152,,N00013,PMA,,NORMAL,,,,,,TRUE,09/06/2022,,BRCA_RISK,,FALSE,BRCA2,ROUTINE,\n" +
+                    "2023-03-10 17:35:15.630487+00,9000049841,,A00017,LAV,18/02/2022,NORMAL,,03/02/2019,,,INFORMED_SUBJECT_CHOICE,TRUE,,,BRCA_TESTED,,TRUE,BRCA1,ROUTINE,";
+
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Throws<Exception>();
+
+        // Act
+        await _function.Run(stream, "bss_subjects_test_data_20240930_historic.csv");
+
+        // Assert
+        var expectedLogMessages = new List<string>
+        {
+            "Row No.1 processed unsuccessfully",
+            "Row No.2 processed unsuccessfully",
+            "Rows Processed: 2, Success: 0, Failures: 2"
+        };
+
+        foreach (var expectedMessage in expectedLogMessages)
+        {
+            _mockLogger.Verify(log =>
+                log.Log(
+                    LogLevel.Information,
+                    0,
+                    It.Is<object>(state => state.ToString().Contains(expectedMessage)),
+                    It.IsAny<Exception>(),
+                    (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Exactly(1));
+        }
+
+        // Assert
+        _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+    }
+
 }
 
