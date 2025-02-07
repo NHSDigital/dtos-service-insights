@@ -133,10 +133,16 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             return false;
         }
 
+        // Log the container and blob file name
         _logger.LogInformation("container: {container}", container);
         _logger.LogInformation("blobFile.FileName: {blobFile.FileName}", blobFile.FileName);
 
-        // Put some logic here to handle failed gzip decompression, we can can change container below to poisonContainer when gzip decompression fails
+        // Move to poisonContainer when gzip decompression fails
+        if (blobFile.FileName.StartsWith(messageHead.MessageId))
+        {
+            container = _poisonContainer;
+            _logger.LogInformation("Message: {MessageId} with fileName: {FileName} is being moved to poison container due to failed gzip decompression", messageHead.MessageId, blobFile.FileName);
+        }
 
         var uploadedToBlob = await _blobStorageHelper.UploadFileToBlobStorage(_blobConnectionString, container, blobFile);
 
