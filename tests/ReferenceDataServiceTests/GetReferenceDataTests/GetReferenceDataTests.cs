@@ -127,7 +127,7 @@ public class GetReferenceDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
     }
-  [TestMethod]
+    [TestMethod]
     public async Task Run_ShouldReturnOk_WhenEpisodeByOranisationCodeIsFound()
     {
         // Arrange
