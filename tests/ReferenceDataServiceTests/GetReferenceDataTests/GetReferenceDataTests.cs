@@ -86,7 +86,7 @@ public class GetReferenceDataTests
         };
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("invalidOrganisationCode")).ReturnsAsync((OrganisationLkp)null);
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("invalidOrganisationCode")).ReturnsAsync((long?)null);
 
         // Act
         var response = await _function.Run3(_mockRequest.Object);
@@ -148,7 +148,7 @@ public class GetReferenceDataTests
             IsActive = ""
         };
 
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(organisationLkp);
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(organisationLkp.OrganisationId);
 
         // Act
         var response = await _function.Run3(_mockRequest.Object);

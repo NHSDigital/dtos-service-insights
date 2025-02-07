@@ -97,8 +97,9 @@ public class GetReferenceData
         }
             try
             {
-                OrganisationLkp? organisationLkp = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
-                if (organisationLkp == null)
+               // OrganisationLkp? organisationLkp = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
+               long? organisationID = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
+                if (organisationID == null)
                 {
                     _logger.LogError("organisation not found.");
                     return req.CreateResponse(HttpStatusCode.NotFound);
@@ -106,7 +107,7 @@ public class GetReferenceData
                 _logger.LogInformation("organisation found successfully.");
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
-                await JsonSerializer.SerializeAsync(response.Body, organisationLkp);
+                await JsonSerializer.SerializeAsync(response.Body, organisationID);//organisationLkp.OrganisationId
                 response.Headers.Add("Content-Type", "application/json; charset=utf-8");
                 return response;
             }

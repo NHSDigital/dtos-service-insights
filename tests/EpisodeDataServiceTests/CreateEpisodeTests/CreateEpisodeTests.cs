@@ -11,7 +11,7 @@ using NHS.ServiceInsights.Common;
 using Azure.Messaging.EventGrid;
 using Azure;
 using System.Text;
-using NHS.ServiceInsights.Common;
+//using NHS.ServiceInsights.Common;
 
 namespace NHS.ServiceInsights.EpisodeDataServiceTests;
 

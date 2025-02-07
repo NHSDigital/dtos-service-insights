@@ -8,7 +8,6 @@ using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Common;
 using Azure.Messaging.EventGrid;
-using NHS.ServiceInsights.Common;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
@@ -162,7 +161,9 @@ public class CreateEpisode
         }
 
         var getOrganisationJson = await getOrganisationResponse.Content.ReadAsStringAsync();
-        var organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
-        return organisationLkp.OrganisationId;
+        //var organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
+        //return organisationLkp.OrganisationId;
+        var organisationID = JsonSerializer.Deserialize<long>(getOrganisationJson);
+        return organisationID;
     }
 }
