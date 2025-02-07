@@ -174,8 +174,8 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
 
         // Check for GZIP magic bytes (1F 8B)
         bool isGzip = result.Response.FileAttachment.Content.Length > 2 &&
-                  result.Response.FileAttachment.Content[0] == 0x1F &&
-                  result.Response.FileAttachment.Content[1] == 0x8B;
+            result.Response.FileAttachment.Content[0] == 0x1F &&
+            result.Response.FileAttachment.Content[1] == 0x8B;
 
         if (isGzip)
         {
