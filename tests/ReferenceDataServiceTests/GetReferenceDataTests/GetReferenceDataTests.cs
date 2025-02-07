@@ -127,8 +127,7 @@ public class GetReferenceDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
     }
-
-    [TestMethod]
+  [TestMethod]
     public async Task Run_ShouldReturnOk_WhenEpisodeByOranisationCodeIsFound()
     {
         // Arrange
@@ -148,7 +147,7 @@ public class GetReferenceDataTests
             IsActive = ""
         };
 
-        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(organisationLkp.OrganisationId);
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(12345);
 
         // Act
         var response = await _function.Run3(_mockRequest.Object);
@@ -156,8 +155,10 @@ public class GetReferenceDataTests
         // Assert
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         response.Body.Seek(0, SeekOrigin.Begin);
-        var organisationResponse = await JsonSerializer.DeserializeAsync<OrganisationLkp>(response.Body);
-        Assert.AreEqual<String>("LAV", organisationResponse.OrganisationCode);
+
+
+        var organisationResponse = await JsonSerializer.DeserializeAsync<long>(response.Body);
+        Assert.AreEqual<long>(12345, organisationResponse);
 
         _mockLogger.Verify(log => log.Log(
             LogLevel.Information,
@@ -167,7 +168,6 @@ public class GetReferenceDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
     }
-
     [TestMethod]
     public async Task Run_ShouldReturnOk_WhenEpisodeIsFound()
     {
