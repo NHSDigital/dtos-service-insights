@@ -77,8 +77,7 @@ public class UpdateEpisode
             ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
-            //existingEpisode = await MapEpisodeDtoToEpisode( episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
-             existingEpisode = await MapEpisodeDtoToEpisode(existingEpisode, episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
+            existingEpisode = await MapEpisodeDtoToEpisode(existingEpisode, episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
 
             if (shouldUpdate)
             {
@@ -126,7 +125,6 @@ public class UpdateEpisode
     }
 
     private async Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
-    //private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
         var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
         return new Episode
@@ -181,7 +179,7 @@ public class UpdateEpisode
             throw new Exception($"Failed to retrieve Organisation ID for organisation code '{organisationCode}'");
         }
         var getOrganisationJson = await getOrganisationResponse.Content.ReadAsStringAsync();
-        var organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
-        return organisationLkp.OrganisationId;
+        var organisationID = JsonSerializer.Deserialize<long>(getOrganisationJson);
+        return organisationID;
     }
 }

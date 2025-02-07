@@ -97,8 +97,7 @@ public class GetReferenceData
         }
             try
             {
-               // OrganisationLkp? organisationLkp = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
-               long? organisationID = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
+                long? organisationID = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
                 if (organisationID == null)
                 {
                     _logger.LogError("organisation not found.");

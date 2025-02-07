@@ -161,8 +161,6 @@ public class CreateEpisode
         }
 
         var getOrganisationJson = await getOrganisationResponse.Content.ReadAsStringAsync();
-        //var organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
-        //return organisationLkp.OrganisationId;
         var organisationID = JsonSerializer.Deserialize<long>(getOrganisationJson);
         return organisationID;
     }
