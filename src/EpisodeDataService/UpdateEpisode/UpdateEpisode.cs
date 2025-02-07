@@ -179,7 +179,7 @@ public class UpdateEpisode
             throw new Exception($"Failed to retrieve Organisation ID for organisation code '{organisationCode}'");
         }
         var getOrganisationJson = await getOrganisationResponse.Content.ReadAsStringAsync();
-        var organisationID = JsonSerializer.Deserialize<long>(getOrganisationJson);
-        return organisationID;
+        var organisation = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
+        return organisation.OrganisationId;
     }
 }
