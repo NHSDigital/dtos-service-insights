@@ -14,8 +14,8 @@ public class ReceiveData
     private readonly ILogger<ReceiveData> _logger;
     private readonly IHttpRequestService _httpRequestService;
     private readonly EventGridPublisherClient _eventGridPublisherClient;
-    private readonly string[] episodesExpectedHeaders = new[] { "nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code" };
-    private readonly string[] subjectsExpectedHeaders = new[] { "change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language" };
+    private readonly string[] episodesExpectedHeaders = ["nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code"];
+    private readonly string[] subjectsExpectedHeaders = ["change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language"];
 
     private int participantSuccessCount = 0;
     private int participantFailureCount = 0;
@@ -141,7 +141,7 @@ public class ReceiveData
             var participantsEnumerator = csv.GetRecords<BssSubject>();
             if (name.EndsWith("_historic.csv"))
             {
-                var participantReferenceData = await GetParticipantReferenceDataAsync();
+                var participantReferenceData = GetParticipantReferenceData();
                 await ProcessHistoricalParticipantDataAsync(participantsEnumerator, participantReferenceData);
             }
             else
@@ -178,31 +178,30 @@ public class ReceiveData
             expectedHeaders = subjectsExpectedHeaders;
         }
 
-        using (var reader = new StreamReader(requestBody, leaveOpen: true))
-        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        using var reader = new StreamReader(requestBody, leaveOpen: true);
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        csv.Read();
+        csv.ReadHeader();
+
+        var actualHeaders = csv.Context.Reader.HeaderRecord;
+
+        if (!actualHeaders.SequenceEqual(expectedHeaders))
         {
-            csv.Read();
-            csv.ReadHeader();
-
-            var actualHeaders = csv.Context.Reader.HeaderRecord;
-
-            if (!actualHeaders.SequenceEqual(expectedHeaders))
-            {
-                return false;
-            }
-
-            requestBody.Position = 0;
-            return true;
+            return false;
         }
+
+        requestBody.Position = 0;
+        return true;
     }
 
     private async Task ProcessEpisodeDataAsync(string name,IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
 
-        try
+        _logger.LogInformation("Processing episode data.");
+
+        foreach (var episode in episodes)
         {
-            _logger.LogInformation("Processing episode data.");
-            foreach (var episode in episodes)
+            try
             {
                 var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode);
@@ -215,15 +214,13 @@ public class ReceiveData
                 episodeRowIndex++;
                 _logger.LogInformation(RowProcessedSuccessfullyMessage, episodeRowIndex);
             }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
+            catch (Exception ex)
+            {
+                episodeFailureCount++;
+                episodeRowIndex++;
+                _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, episodeRowIndex);
+            }
 
-            episodeFailureCount++;
-            episodeRowIndex++;
-            _logger.LogInformation(RowProcessedUnsuccessfullyMessage, episodeRowIndex);
-            await ProcessEpisodeDataAsync(name,episodes, episodeUrl);
         }
     }
 
@@ -235,7 +232,7 @@ public class ReceiveData
         {
             try
             {
-                var modifiedEpisode = await MapHistoricalEpisodeToEpisodeDto(episode, referenceData, organisationReferenceData);
+                var modifiedEpisode = MapHistoricalEpisodeToEpisodeDto(episode, referenceData, organisationReferenceData);
                 EventGridEvent eventGridEvent = new EventGridEvent(
                     subject: "Episode Created",
                     eventType: "CreateParticipantScreeningEpisode",
@@ -251,26 +248,24 @@ public class ReceiveData
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
-
                 episodeFailureCount++;
                 episodeRowIndex++;
-                _logger.LogInformation(RowProcessedUnsuccessfullyMessage, episodeRowIndex);
+                _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, episodeRowIndex);
             }
         }
     }
 
-    private InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
+    private static InitialEpisodeDto MapEpisodeToEpisodeDto(BssEpisode episode)
     {
         Utils.CheckForNullOrEmptyStrings(episode.episode_type, episode.episode_date);
         Utils.ValidateDataValue(episode.appointment_made);
         return new InitialEpisodeDto
         {
-            EpisodeId = episode.episode_id,
+            EpisodeId = long.Parse(episode.episode_id),
             EpisodeType = episode.episode_type,
             ScreeningName = "Breast Screening",
-            NhsNumber = episode.nhs_number,
-            SrcSysProcessedDateTime = episode.change_db_date_time,
+            NhsNumber = long.Parse(episode.nhs_number),
+            SrcSysProcessedDateTime = DateTime.Parse(episode.change_db_date_time),
             EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
             AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
             FirstOfferedAppointmentDate = Utils.ParseNullableDate(episode.date_of_foa),
@@ -287,17 +282,17 @@ public class ReceiveData
         };
     }
 
-    private async Task<FinalizedEpisodeDto> MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
+    private static FinalizedEpisodeDto MapHistoricalEpisodeToEpisodeDto(BssEpisode episode, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
         Utils.CheckForNullOrEmptyStrings(episode.episode_type, episode.episode_date);
         Utils.ValidateDataValue(episode.appointment_made);
         var finalizedEpisodeDto = new FinalizedEpisodeDto
         {
-            EpisodeId = episode.episode_id,
-            NhsNumber = episode.nhs_number,
+            EpisodeId = long.Parse(episode.episode_id),
+            NhsNumber = long.Parse(episode.nhs_number),
             ScreeningId = 1, // Hardcoded to 1 for now because we only have one screening type (Breast Screening)
             EpisodeType = episode.episode_type,
-            EpisodeTypeDescription = string.IsNullOrEmpty(episode.episode_type) ? "" : referenceData.EpisodeTypeToIdLookup[episode.episode_type],
+            EpisodeTypeDescription = string.IsNullOrEmpty(episode.episode_type) ? "" : referenceData.EpisodeTypeDescriptions[episode.episode_type],
             EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
             AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
             FirstOfferedAppointmentDate = Utils.ParseNullableDate(episode.date_of_foa),
@@ -305,16 +300,16 @@ public class ReceiveData
             EarlyRecallDate = Utils.ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = episode.end_code,
-            EndCodeDescription = string.IsNullOrEmpty(episode.end_code) ? "" : referenceData.EndCodeToIdLookup[episode.end_code],
+            EndCodeDescription = string.IsNullOrEmpty(episode.end_code) ? "" : referenceData.EndCodeDescriptions[episode.end_code],
             EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, "yyyy-MM-dd HH:mm:ssz"),
             FinalActionCode = episode.final_action_code,
-            FinalActionCodeDescription = string.IsNullOrEmpty(episode.final_action_code) ? "" : referenceData.FinalActionCodeToIdLookup[episode.final_action_code],
+            FinalActionCodeDescription = string.IsNullOrEmpty(episode.final_action_code) ? "" : referenceData.FinalActionCodeDescriptions[episode.final_action_code],
             ReasonClosedCode = episode.reason_closed_code,
-            ReasonClosedCodeDescription = string.IsNullOrEmpty(episode.reason_closed_code) ? "" : referenceData.ReasonClosedCodeToIdLookup[episode.reason_closed_code],
+            ReasonClosedCodeDescription = string.IsNullOrEmpty(episode.reason_closed_code) ? "" : referenceData.ReasonClosedCodeDescriptions[episode.reason_closed_code],
             EndPoint = episode.end_point,
             OrganisationId = string.IsNullOrEmpty(episode.bso_organisation_code) ? null : organisationReferenceData.OrganisationCodeToIdLookup[episode.bso_organisation_code],
             BatchId = episode.bso_batch_id,
-            SrcSysProcessedDatetime = episode.change_db_date_time
+            SrcSysProcessedDatetime = DateTime.Parse(episode.change_db_date_time)
         };
 
         return finalizedEpisodeDto;
@@ -343,11 +338,11 @@ public class ReceiveData
     private async Task ProcessParticipantDataAsync(string name,IEnumerable<BssSubject> subjects, string participantUrl)
     {
 
-        try
-        {
-            _logger.LogInformation("Processing participant data.");
+        _logger.LogInformation("Processing participant data.");
 
-            foreach (var subject in subjects)
+        foreach (var subject in subjects)
+        {
+            try
             {
                 var modifiedParticipant = MapParticipantToParticipantDto(subject);
                 string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant);
@@ -360,16 +355,13 @@ public class ReceiveData
                 participantRowIndex++;
                 _logger.LogInformation(RowProcessedSuccessfullyMessage,participantRowIndex);
             }
-        }
 
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
-
-            participantFailureCount++;
-            participantRowIndex++;
-            _logger.LogInformation(RowProcessedUnsuccessfullyMessage,participantRowIndex);
-            await ProcessParticipantDataAsync(name,subjects, participantUrl);
+            catch (Exception ex)
+            {
+                participantFailureCount++;
+                participantRowIndex++;
+                _logger.LogError(ex, RowProcessedUnsuccessfullyMessage,participantRowIndex);
+            }
         }
     }
 
@@ -397,19 +389,18 @@ public class ReceiveData
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in ProcessHistoricalParticipantDataAsync: {Message}", ex.Message);
                 participantFailureCount++;
                 participantRowIndex++;
-                _logger.LogInformation(RowProcessedUnsuccessfullyMessage, participantRowIndex);
+                _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, participantRowIndex);
             }
         }
     }
 
-    private InitialParticipantDto MapParticipantToParticipantDto(BssSubject subject)
+    private static InitialParticipantDto MapParticipantToParticipantDto(BssSubject subject)
     {
         return new InitialParticipantDto
         {
-            NhsNumber = subject.nhs_number,
+            NhsNumber = long.Parse(subject.nhs_number),
             ScreeningName = "Breast Screening",
             NextTestDueDate = Utils.ParseNullableDate(subject.next_test_due_date),
             NextTestDueDateCalculationMethod = subject.ntdd_calculation_method,
@@ -417,7 +408,7 @@ public class ReceiveData
             ScreeningCeasedReason = subject.reason_for_ceasing_code,
             IsHigherRisk = Utils.ParseBooleanStringToShort(subject.is_higher_risk),
             IsHigherRiskActive = Utils.ParseBooleanStringToShort(subject.is_higher_risk_active),
-            SrcSysProcessedDateTime = subject.change_db_date_time,
+            SrcSysProcessedDateTime = DateTime.Parse(subject.change_db_date_time),
             HigherRiskNextTestDueDate = Utils.ParseNullableDate(subject.higher_risk_next_test_due_date),
             HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
             DateIrradiated = Utils.ParseNullableDate(subject.date_irradiated),
@@ -425,11 +416,11 @@ public class ReceiveData
         };
     }
 
-    private async Task<FinalizedParticipantDto> MapHistoricalParticipantToParticipantDto(BssSubject subject, ParticipantReferenceData participantReferenceData)
+    private static FinalizedParticipantDto MapHistoricalParticipantToParticipantDto(BssSubject subject, ParticipantReferenceData participantReferenceData)
     {
         return new FinalizedParticipantDto
         {
-            NhsNumber = subject.nhs_number,
+            NhsNumber = long.Parse(subject.nhs_number),
             ScreeningId = 1, // Hardcoded to 1 for now because we only have one screening type (Breast Screening)
             ReasonForRemoval = subject.removal_reason,
             ReasonForRemovalDt = Utils.ParseNullableDate(subject.removal_date),
@@ -439,7 +430,7 @@ public class ReceiveData
             ScreeningCeasedReason = subject.reason_for_ceasing_code,
             IsHigherRisk = Utils.ParseBooleanStringToShort(subject.is_higher_risk),
             IsHigherRiskActive = Utils.ParseBooleanStringToShort(subject.is_higher_risk_active),
-            SrcSysProcessedDatetime = subject.change_db_date_time,
+            SrcSysProcessedDatetime = DateTime.Parse(subject.change_db_date_time),
             HigherRiskNextTestDueDate = Utils.ParseNullableDate(subject.higher_risk_next_test_due_date),
             HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
             HigherRiskReasonCodeDescription = string.IsNullOrEmpty(subject.higher_risk_referral_reason_code) ? "" : participantReferenceData.HigherRiskReferralReasonCodeDescriptions[subject.higher_risk_referral_reason_code],
@@ -460,18 +451,32 @@ public class ReceiveData
 
     }
 
-    private async Task<ParticipantReferenceData> GetParticipantReferenceDataAsync()
+    private static ParticipantReferenceData GetParticipantReferenceData()
     {
         var geneCodeDescriptions = new Dictionary<string, string>
         {
             {"BRCA1", "BRCA1"},
             {"BRCA2", "BRCA2"},
+            {"CDH1", "CDH1 (E-Cadherin)"},
+            {"OTHER", "Other"},
+            {"PALB2", "PALB2"},
+            {"PTEN", "PTEN"},
+            {"STK11", "STK11"}
         };
 
         var higherRiskReferralReasonCodeDescriptions = new Dictionary<string, string>
         {
+            {"AT_HETEROZYGOTES", "A-T heterozygotes"},
+            {"AT_HOMOZYGOTES", "A-T homozygotes"},
             {"BRCA_RISK", "BRCA1/BRCA2/PALB2 (8% 10-year risk)"},
             {"BRCA_TESTED", "BRCA1/BRCA2/PALB2 Tested"},
+            {"HR_GENE_UNTESTED", "HR Gene untested"},
+            {"OTHER_GENE_MUTATIONS", "Other gene mutations"},
+            {"RADIOTHERAPY_BELOW_30", "Radiotherapy below aged 30"},
+            {"RADIOTHERAPY_LOWER", "Radiotherapy to breast tissue aged 10-19"},
+            {"RADIOTHERAPY_UPPER", "Radiotherapy to breast tissue aged 20-35"},
+            {"RISK_EQUIVALENT", "Risk equivalent, not tested"},
+            {"TP53", "TP53 (Li-Fraumeni) syndrome"}
         };
 
         var participantReferenceData = new ParticipantReferenceData
