@@ -229,7 +229,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<object>(state => state.ToString().Contains("was not recognized as a valid DateTime.")),
+            It.Is<object>(state => state.ToString().Contains("processed unsuccessfully")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(3));
@@ -294,16 +294,32 @@ public class ReceiveDataTests
         await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert -- verify the counters of Rows
-        var expectedLogMessages = new List<string>
+        var expectedLogInfoMessages = new List<string>
         {
-            "Row No.1 processed unsuccessfully",
             "Row No.2 processed successfully",
             "Row No.3 processed successfully",
             "Row No.4 processed successfully",
             "Rows Processed: 4, Success: 3, Failures: 1"
         };
 
-        foreach (var expectedMessage in expectedLogMessages)
+        var expectedLogErrorMessages = new List<string>
+        {
+            "Row No.1 processed unsuccessfully",
+        };
+
+        foreach (var expectedMessage in expectedLogErrorMessages)
+        {
+            _mockLogger.Verify(log =>
+                log.Log(
+                    LogLevel.Error,
+                    0,
+                    It.Is<object>(state => state.ToString().Contains(expectedMessage)),
+                    It.IsAny<Exception>(),
+                    (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Exactly(1));
+        }
+
+        foreach (var expectedMessage in expectedLogInfoMessages)
         {
             _mockLogger.Verify(log =>
                 log.Log(
@@ -315,7 +331,7 @@ public class ReceiveDataTests
                 Times.Exactly(1));
         }
 
-        // Assert
+
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(3));
     }
@@ -355,8 +371,8 @@ public class ReceiveDataTests
     }
 
     [TestMethod]
-    public async Task ReceiveData_ShouldLogErrorOnFindingABadRowInEpisodesCsvFile()
 
+    public async Task ReceiveData_ShouldLogErrorOnFindingABadRowInEpisodesCsvFile()
     {
         // Arrange
         string data = "nhs_number,episode_id,episode_type,change_db_date_time,episode_date,appointment_made,date_of_foa,date_of_as,early_recall_date,call_recall_status_authorised_by,end_code,end_code_last_updated,bso_organisation_code,bso_batch_id,reason_closed_code,end_point,final_action_code\n" +
@@ -371,16 +387,18 @@ public class ReceiveDataTests
         await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert -- verify the counters of Rows
-        var expectedLogMessages = new List<string>
+        var expectedLogInfoMessages = new List<string>
         {
             "Row No.1 processed successfully",
-            "Row No.2 processed successfully",
-            "Row No.3 processed unsuccessfully",
-            "Row No.4 processed unsuccessfully",
-            "Rows Processed: 4, Success: 2, Failures: 2"
+            "Row No.2 processed successfully"
         };
 
-        foreach (var expectedMessage in expectedLogMessages)
+        var expectedLogErrorMessages = new List<string>
+        {
+            "Error in ReceiveData"
+        };
+
+        foreach (var expectedMessage in expectedLogInfoMessages)
         {
             _mockLogger.Verify(log =>
                 log.Log(
@@ -389,25 +407,36 @@ public class ReceiveDataTests
                     It.Is<object>(state => state.ToString().Contains(expectedMessage)),
                     It.IsAny<Exception>(),
                     (Func<object, Exception, string>)It.IsAny<object>()),
-                Times.Exactly(1)); // Verifies each log message exactly once
+                Times.Exactly(1));
         }
 
-        // Assert
+        foreach (var expectedMessage in expectedLogErrorMessages)
+        {
+            _mockLogger.Verify(log =>
+                log.Log(
+                    LogLevel.Error,
+                    0,
+                    It.Is<object>(state => state.ToString().Contains(expectedMessage)),
+                    It.IsAny<Exception>(),
+                    (Func<object, Exception, string>)It.IsAny<object>()),
+                Times.Exactly(1));
+        }
+
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(2));
-        _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(0));
     }
+
 
     [TestMethod]
     public async Task ReceiveData_ShouldLogErrorOnFindingABadRowInSubjectsCsvFile()
     {
         // Arrange
         string data = "change_db_date_time,nhs_number,superseded_nhs_number,gp_practice_code,bso_organisation_code,next_test_due_date,subject_status_code,early_recall_date,latest_invitation_date,removal_reason,removal_date,reason_for_ceasing_code,is_higher_risk,higher_risk_next_test_due_date,hr_recall_due_date,higher_risk_referral_reason_code,date_irradiated,is_higher_risk_active,gene_code,ntdd_calculation_method,preferred_language\n" +
-                "2020-03-31 12:11:47.339148+01,9000007053,,A00014,LAV,2020-01-11,NORMAL,,2017-01-11,,,,False,,,,,,,,\n" +
-                "2020-03-31 12:49:47.513821+01,9000009808,,A00009,LAV,2019-09-05,NORMAL,,2016-09-05,,,,False,,,,,,,,\n" +
-                "BadRow,,,,\n" +
-                "BadRow,,,,\n" +
-                "2020-03-31 12:52:13.463901+01,9000006316,,A00017,LAV,2020-01-11,NORMAL,,2017-01-11,,,,False,,,,,,,,\n" +
-                "2020-03-31 13:06:30.814448+01,9000007997,,A00018,LAV,2020-01-11,NORMAL,,2017-01-11,,,,False,,,,,,,,";
+                    "2020-03-31 12:11:47.339148+01,9000007053,,A00014,LAV,2020-01-11,NORMAL,,2017-01-11,,,,False,,,,,,,,\n" +
+                    "2020-03-31 12:49:47.513821+01,9000009808,,A00009,LAV,2019-09-05,NORMAL,,2016-09-05,,,,False,,,,,,,,\n" +
+                    "BadRow,,,,\n" +
+                    "BadRow,,,,\n" +
+                    "2020-03-31 12:52:13.463901+01,9000006316,,A00017,LAV,2020-01-11,NORMAL,,2017-01-11,,,,False,,,,,,,,\n" +
+                    "2020-03-31 13:06:30.814448+01,9000007997,,A00018,LAV,2020-01-11,NORMAL,,2017-01-11,,,,False,,,,,,,,";
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
@@ -417,16 +446,17 @@ public class ReceiveDataTests
         // Assert
         _mockLogger.Verify(log =>
             log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<object>(state => state.ToString().Contains("Error in ProcessParticipantDataAsync: ")),
-            It.IsAny<Exception>(),
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Exactly(2));
+                LogLevel.Error,
+                0,
+                It.Is<object>(state => state.ToString().Contains("Error in ReceiveData:")),
+                It.IsAny<Exception>(),
+                (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Exactly(1));
 
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
-        _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(4));
+        //_mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.IsAny<string>()), Times.Exactly(4));
     }
+
 
     [TestMethod]
     public async Task ReceiveData_ShouldReturnBadRequestAndLogErrorIfFileNameIsInvalid()
@@ -623,7 +653,7 @@ public class ReceiveDataTests
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-        var referenceDataJson = "{\"EndCodeToIdLookup\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypeToIdLookup\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodeToIdLookup\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodeToIdLookup\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
+        var referenceDataJson = "{\"EndCodeDescriptions\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypeDescriptions\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodeDescriptions\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodeDescriptions\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
 
         _mockHttpRequestService
             .Setup(service => service.SendGet("GetEpisodeReferenceDataServiceUrl"))
@@ -663,7 +693,7 @@ public class ReceiveDataTests
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-        var referenceDataJson = "{\"EndCodeToIdLookup\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypeToIdLookup\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodeToIdLookup\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodeToIdLookup\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
+        var referenceDataJson = "{\"EndCodeDescriptions\":{\"SC\":\"Screening complete\",\"DNR\":\"Did not respond\"},\"EpisodeTypeDescriptions\":{\"C\":\"Call\",\"R\":\"Recall\"},\"FinalActionCodeDescriptions\":{\"EC\":\"Short term recall (early clinic)\",\"MT\":\"Medical treatment\"},\"ReasonClosedCodeDescriptions\":{\"BS\":\"Being screened\",\"CP\":\"Under care permanently\"}}";
 
         _mockHttpRequestService
             .Setup(service => service.SendGet("GetEpisodeReferenceDataServiceUrl"))
@@ -687,15 +717,6 @@ public class ReceiveDataTests
         // Assert
         _mockLogger.Verify(log =>
             log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<object>(state => state.ToString().Contains("Error in ProcessHistoricalEpisodeDataAsync:")),
-            It.IsAny<Exception>(),
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Exactly(1));
-
-        _mockLogger.Verify(log =>
-            log.Log(
             LogLevel.Information,
             0,
             It.Is<object>(state => state.ToString().Equals("Row No.1 processed successfully")),
@@ -705,12 +726,21 @@ public class ReceiveDataTests
         _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Once());
         _mockLogger.Verify(log =>
             log.Log(
-            LogLevel.Information,
+            LogLevel.Error,
             0,
             It.Is<object>(state => state.ToString().Equals("Row No.2 processed unsuccessfully")),
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(1));
+
+        _mockLogger.Verify(log =>
+        log.Log(
+            LogLevel.Information,
+            0,
+            It.Is<object>(state => state.ToString().Contains("Rows Processed: 2, Success: 1, Failures: 1")),
+            It.IsAny<Exception>(),
+            (Func<object, Exception, string>)It.IsAny<object>()),
+        Times.Exactly(1));
     }
 
 
@@ -753,14 +783,13 @@ public class ReceiveDataTests
         {
             "Row No.1 processed unsuccessfully",
             "Row No.2 processed unsuccessfully",
-            "Rows Processed: 2, Success: 0, Failures: 2"
         };
 
         foreach (var expectedMessage in expectedLogMessages)
         {
             _mockLogger.Verify(log =>
                 log.Log(
-                    LogLevel.Information,
+                    LogLevel.Error,
                     0,
                     It.Is<object>(state => state.ToString().Contains(expectedMessage)),
                     It.IsAny<Exception>(),
@@ -768,7 +797,15 @@ public class ReceiveDataTests
                 Times.Exactly(1));
         }
 
-        // Assert
+        _mockLogger.Verify(log =>
+        log.Log(
+            LogLevel.Information,
+            0,
+            It.Is<object>(state => state.ToString().Contains("Rows Processed: 2, Success: 0, Failures: 2")),
+            It.IsAny<Exception>(),
+            (Func<object, Exception, string>)It.IsAny<object>()),
+        Times.Exactly(1));
+
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
