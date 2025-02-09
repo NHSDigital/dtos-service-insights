@@ -110,7 +110,7 @@ public class ReceiveData
             }
             else
             {
-                await ProcessEpisodeDataAsync(name, episodesEnumerator, episodeUrl);
+                await ProcessEpisodeDataAsync(episodesEnumerator, episodeUrl);
             }
         }
 
@@ -146,7 +146,7 @@ public class ReceiveData
             }
             else
             {
-                await ProcessParticipantDataAsync(name, participantsEnumerator, participantUrl);
+                await ProcessParticipantDataAsync(participantsEnumerator, participantUrl);
             }
         }
 
@@ -194,7 +194,7 @@ public class ReceiveData
         return true;
     }
 
-    private async Task ProcessEpisodeDataAsync(string name,IEnumerable<BssEpisode> episodes, string episodeUrl)
+    private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
 
         _logger.LogInformation("Processing episode data.");
@@ -265,7 +265,7 @@ public class ReceiveData
             EpisodeType = episode.episode_type,
             ScreeningName = "Breast Screening",
             NhsNumber = long.Parse(episode.nhs_number),
-            SrcSysProcessedDateTime = DateTime.Parse(episode.change_db_date_time),
+            SrcSysProcessedDateTime = DateTime.Parse(episode.change_db_date_time, CultureInfo.InvariantCulture, DateTimeStyles.None),
             EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
             AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
             FirstOfferedAppointmentDate = Utils.ParseNullableDate(episode.date_of_foa),
@@ -309,7 +309,7 @@ public class ReceiveData
             EndPoint = episode.end_point,
             OrganisationId = string.IsNullOrEmpty(episode.bso_organisation_code) ? null : organisationReferenceData.OrganisationCodeToIdLookup[episode.bso_organisation_code],
             BatchId = episode.bso_batch_id,
-            SrcSysProcessedDatetime = DateTime.Parse(episode.change_db_date_time)
+            SrcSysProcessedDatetime = DateTime.Parse(episode.change_db_date_time, CultureInfo.InvariantCulture, DateTimeStyles.None)
         };
 
         return finalizedEpisodeDto;
@@ -335,7 +335,7 @@ public class ReceiveData
 
     }
 
-    private async Task ProcessParticipantDataAsync(string name,IEnumerable<BssSubject> subjects, string participantUrl)
+    private async Task ProcessParticipantDataAsync(IEnumerable<BssSubject> subjects, string participantUrl)
     {
 
         _logger.LogInformation("Processing participant data.");
@@ -408,7 +408,7 @@ public class ReceiveData
             ScreeningCeasedReason = subject.reason_for_ceasing_code,
             IsHigherRisk = Utils.ParseBooleanStringToShort(subject.is_higher_risk),
             IsHigherRiskActive = Utils.ParseBooleanStringToShort(subject.is_higher_risk_active),
-            SrcSysProcessedDateTime = DateTime.Parse(subject.change_db_date_time),
+            SrcSysProcessedDateTime = DateTime.Parse(subject.change_db_date_time, CultureInfo.InvariantCulture, DateTimeStyles.None),
             HigherRiskNextTestDueDate = Utils.ParseNullableDate(subject.higher_risk_next_test_due_date),
             HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
             DateIrradiated = Utils.ParseNullableDate(subject.date_irradiated),
@@ -430,7 +430,7 @@ public class ReceiveData
             ScreeningCeasedReason = subject.reason_for_ceasing_code,
             IsHigherRisk = Utils.ParseBooleanStringToShort(subject.is_higher_risk),
             IsHigherRiskActive = Utils.ParseBooleanStringToShort(subject.is_higher_risk_active),
-            SrcSysProcessedDatetime = DateTime.Parse(subject.change_db_date_time),
+            SrcSysProcessedDatetime = DateTime.Parse(subject.change_db_date_time, CultureInfo.InvariantCulture, DateTimeStyles.None),
             HigherRiskNextTestDueDate = Utils.ParseNullableDate(subject.higher_risk_next_test_due_date),
             HigherRiskReferralReasonCode = subject.higher_risk_referral_reason_code,
             HigherRiskReasonCodeDescription = string.IsNullOrEmpty(subject.higher_risk_referral_reason_code) ? "" : participantReferenceData.HigherRiskReferralReasonCodeDescriptions[subject.higher_risk_referral_reason_code],
