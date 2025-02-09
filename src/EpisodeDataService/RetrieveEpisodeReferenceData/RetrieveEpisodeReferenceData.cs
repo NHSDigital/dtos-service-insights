@@ -46,10 +46,10 @@ public class RetrieveEpisodeReferenceData
             var response = req.CreateResponse(HttpStatusCode.OK);
             await JsonSerializer.SerializeAsync(response.Body, new EpisodeReferenceData
             {
-                EndCodeToIdLookup = endCodes.ToDictionary(ec => ec.EndCode, ec => ec.EndCodeDescription),
-                EpisodeTypeToIdLookup = episodeTypes.ToDictionary(et => et.EpisodeType, et => et.EpisodeDescription),
-                FinalActionCodeToIdLookup = finalActionCodes.ToDictionary(fac => fac.FinalActionCode, fac => fac.FinalActionCodeDescription),
-                ReasonClosedCodeToIdLookup = reasonClosedCodes.ToDictionary(rcc => rcc.ReasonClosedCode, rcc => rcc.ReasonClosedCodeDescription)
+                EndCodeDescriptions = endCodes.ToDictionary(ec => ec.EndCode, ec => ec.EndCodeDescription),
+                EpisodeTypeDescriptions = episodeTypes.ToDictionary(et => et.EpisodeType, et => et.EpisodeDescription),
+                FinalActionCodeDescriptions = finalActionCodes.ToDictionary(fac => fac.FinalActionCode, fac => fac.FinalActionCodeDescription),
+                ReasonClosedCodeDescriptions = reasonClosedCodes.ToDictionary(rcc => rcc.ReasonClosedCode, rcc => rcc.ReasonClosedCodeDescription)
             });
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
             return response;
