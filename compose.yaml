@@ -33,6 +33,7 @@ services:
     environment:
       - AZURITE_CONNECTION_STRING=${AZURITE_CONNECTION_STRING}
       - AZURITE_CONTAINER_NAME=${AZURITE_CONTAINER_NAME}
+      - AZURITE_POISON_CONTAINER_NAME=${AZURITE_POISON_CONTAINER_NAME}
 
   sql-database:
     container_name: sql-database
@@ -63,29 +64,23 @@ services:
     build:
       context: ./scripts/
       dockerfile: ./database/Dockerfile
+    depends_on:
+      sql-database:
+        condition: service_healthy
     networks:
       - app-network
-
-  base-image:
-    container_name: base-image
-    restart: always
-    build:
-      context: ./src/
-      dockerfile: ./BaseImage/Dockerfile
-    networks:
-      - app-network
+    environment:
+      - PASSWORD=${PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_CONNECTION=${DB_CONNECTION}
 
   # BI Analytics Data Service
   create-ps-episode-data:
-    # image: service-insights-base-image:latest
     container_name: create-ps-episode-data
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningEpisode/Dockerfile
-    image: create-ps-episode-data:latest
     networks:
       - app-network
     ports:
@@ -99,8 +94,6 @@ services:
   create-ps-profile-data:
     container_name: create-ps-profile-data
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/CreateParticipantScreeningProfile/Dockerfile
@@ -117,8 +110,6 @@ services:
   get-ps-profile-data:
     container_name: get-ps-profile-data
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/GetParticipantScreeningProfileData/Dockerfile
@@ -135,8 +126,6 @@ services:
   get-ps-episode-data:
     container_name: get-ps-episode-data
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsDataService/GetParticipantScreeningEpisodeData/Dockerfile
@@ -154,8 +143,6 @@ services:
   create-ps-episode:
     container_name: create-ps-episode
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsManagementService/CreateParticipantScreeningEpisode/Dockerfile
@@ -175,8 +162,6 @@ services:
   create-ps-profile:
     container_name: create-ps-profile
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsManagementService/CreateParticipantScreeningProfile/Dockerfile
@@ -195,8 +180,6 @@ services:
   get-ps-profile:
     container_name: get-ps-profile
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsManagementService/GetParticipantScreeningProfile/Dockerfile
@@ -213,8 +196,6 @@ services:
   get-ps-episode:
     container_name: get-ps-episode
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./BIAnalyticsManagementService/GetParticipantScreeningEpisode/Dockerfile
@@ -232,8 +213,6 @@ services:
   get-demographics-data:
     container_name: get-demographics-data
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./DemographicsService/GetDemographicsData/Dockerfile
@@ -249,8 +228,6 @@ services:
   create-episode:
     container_name: create-episode
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/CreateEpisode/Dockerfile
@@ -264,12 +241,11 @@ services:
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
       - topicEndpoint=${EVENTGRID_URL}
       - topicKey=${EVENTGRID_KEY}
+      - CheckParticipantExistsUrl=http://get-participant:6061/api/GetParticipant
 
   get-episode:
     container_name: get-episode
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/GetEpisode/Dockerfile
@@ -286,8 +262,6 @@ services:
   retrieve-episode-ref-data:
     container_name: retrieve-episode-ref-data
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/RetrieveEpisodeReferenceData/Dockerfile
@@ -304,8 +278,6 @@ services:
   update-episode:
     container_name: update-episode
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./EpisodeDataService/UpdateEpisode/Dockerfile
@@ -320,17 +292,17 @@ services:
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
       - topicEndpoint=${EVENTGRID_URL}
       - topicKey=${EVENTGRID_KEY}
+      - CheckParticipantExistsUrl=http://get-participant:6061/api/GetParticipant
 
   # Episode Integration Service
   receive-data:
     container_name: receive-data
     restart: always
-    depends_on:
-      - azurite
-      - base-image
     build:
       context: ./src/
       dockerfile: ./EpisodeIntegrationService/ReceiveData/Dockerfile
+    depends_on:
+      - azurite
     networks:
       - app-network
     ports:
@@ -351,8 +323,6 @@ services:
   create-update-episode:
     container_name: create-update-episode
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/CreateUpdateEpisode/Dockerfile
@@ -371,8 +341,6 @@ services:
   get-episode-mgmt:
     container_name: get-episode-mgmt
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisode/Dockerfile
@@ -389,8 +357,6 @@ services:
   get-episode-ref-data:
     container_name: get-episode-ref-data
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./EpisodeManagementService/GetEpisodeReferenceData/Dockerfile
@@ -413,7 +379,6 @@ services:
       dockerfile: ./MeshIntegrationService/RetrieveMeshFile/Dockerfile
     depends_on:
       - azurite
-      - base-image
     networks:
       - app-network
     ports:
@@ -426,6 +391,7 @@ services:
       - MeshApiBaseUrl=${MESHAPIBASEURL}
       - BSSMailBox=${BSSMAILBOX}
       - BSSContainerName=${AZURITE_CONTAINER_NAME}
+      - PoisonContainerName=${AZURITE_POISON_CONTAINER_NAME}
       - MeshPassword=${MESHPASSWORD}
       - MeshSharedKey=${MESHSHAREDKEY}
       - MeshKeyPassphrase=${MESHKEYPASSPHRASE}
@@ -435,8 +401,6 @@ services:
   get-participant:
     container_name: get-participant
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/GetParticipant/Dockerfile
@@ -452,8 +416,6 @@ services:
   update-participant:
     container_name: update-participant
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./ParticipantManagementService/UpdateParticipant/Dockerfile
@@ -470,8 +432,6 @@ services:
   get-organisation-data:
     container_name: get-organisation-data
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./ReferenceDataService/GetReferenceData/Dockerfile
@@ -488,8 +448,6 @@ services:
   get-screening-data:
     container_name: get-screening-data
     restart: always
-    depends_on:
-      - base-image
     build:
       context: ./src/
       dockerfile: ./ReferenceDataService/GetScreeningData/Dockerfile
