@@ -133,11 +133,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             return false;
         }
 
-        // Log the container and blob file name
-        _logger.LogInformation("container: {container}", container);
-        _logger.LogInformation("blobFile.FileName: {blobFile.FileName}", blobFile.FileName);
-
-        // Move to poisonContainer when gzip decompression fails
         if (blobFile.FileName.StartsWith(messageHead.MessageId))
         {
             container = _poisonContainer;
@@ -192,31 +187,27 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         {
             try
             {
-                _logger.LogInformation("Detected GZIP file by magic bytes, decompressing: {fileName}", fileName);
+                _logger.LogInformation("Detected GZIP file, decompressing: {fileName}", fileName);
                 var decompressedFileContent = GZIPHelpers.DeCompressBuffer(result.Response.FileAttachment.Content);
                 if (decompressedFileContent != null && decompressedFileContent.Length > 0)
                 {
-                    _logger.LogInformation("Decompression successful for file: {fileName}", fileName);
-                    string originalFileName = GZIPHelpers.GetOriginalFileName(result.Response.FileAttachment.Content) ?? fileName;
-                    // Return the decompressed file with the original file name from within the GZIP
-                    _logger.LogInformation("Original file name extracted from GZIP: {originalFileName}", originalFileName);
+                    string originalFileName = Path.GetFileNameWithoutExtension(fileName);
+                    _logger.LogInformation("Decompression successful for GZIP file: {fileName}", originalFileName);
                     return new BlobFile(decompressedFileContent, originalFileName);
                 }
                 else
                 {
                     _logger.LogWarning("Decompression returned empty content for file: {fileName}", fileName);
-                    // Failed decompression
                     return null;
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to decompress GZIP file: {fileName}", fileName);
-                // Return the file with a prefix of the message id so it goes to the poison container
                 return new BlobFile(result.Response.FileAttachment.Content, $"{messageId}_{fileName}");
             }
         }
-        // Return the file as is
+
         return new BlobFile(result.Response.FileAttachment.Content, fileName);
     }
 
