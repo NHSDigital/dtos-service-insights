@@ -197,11 +197,10 @@ public class ReceiveData
     private async Task ProcessEpisodeDataAsync(IEnumerable<BssEpisode> episodes, string episodeUrl)
     {
 
-        _logger.LogInformation("Processing episode data.");
-
-        foreach (var episode in episodes)
+        try
         {
-            try
+            _logger.LogInformation("Processing episode data.");
+            foreach (var episode in episodes)
             {
                 var modifiedEpisode = MapEpisodeToEpisodeDto(episode);
                 string serializedEpisode = JsonSerializer.Serialize(modifiedEpisode);
@@ -212,25 +211,26 @@ public class ReceiveData
 
                 episodeSuccessCount++;
                 episodeRowIndex++;
-                _logger.LogInformation(RowProcessedSuccessfullyMessage, episodeRowIndex);
+                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
             }
-            catch (Exception ex)
-            {
-                episodeFailureCount++;
-                episodeRowIndex++;
-                _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, episodeRowIndex);
-            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
 
+            episodeFailureCount++;
+            episodeRowIndex++;
+            _logger.LogError("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+            await ProcessEpisodeDataAsync(episodes, episodeUrl);
         }
     }
 
     private async Task ProcessHistoricalEpisodeDataAsync(IEnumerable<BssEpisode> episodes, EpisodeReferenceData referenceData, OrganisationReferenceData organisationReferenceData)
     {
-        _logger.LogInformation("Processing historical episode data.");
-
-        foreach (var episode in episodes)
+        try
         {
-            try
+            _logger.LogInformation("Processing historical episode data.");
+            foreach (var episode in episodes)
             {
                 var modifiedEpisode = MapHistoricalEpisodeToEpisodeDto(episode, referenceData, organisationReferenceData);
                 EventGridEvent eventGridEvent = new EventGridEvent(
@@ -244,14 +244,15 @@ public class ReceiveData
                 episodeSuccessCount++;
                 episodeRowIndex++;
                 _logger.LogInformation(RowProcessedSuccessfullyMessage, episodeRowIndex);
-
             }
-            catch (Exception ex)
-            {
-                episodeFailureCount++;
-                episodeRowIndex++;
-                _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, episodeRowIndex);
-            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
+            episodeFailureCount++;
+            episodeRowIndex++;
+            _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, episodeRowIndex);
+            await ProcessHistoricalEpisodeDataAsync(episodes, referenceData, organisationReferenceData);
         }
     }
 
@@ -338,11 +339,11 @@ public class ReceiveData
     private async Task ProcessParticipantDataAsync(IEnumerable<BssSubject> subjects, string participantUrl)
     {
 
-        _logger.LogInformation("Processing participant data.");
-
-        foreach (var subject in subjects)
+        try
         {
-            try
+            _logger.LogInformation("Processing participant data.");
+
+            foreach (var subject in subjects)
             {
                 var modifiedParticipant = MapParticipantToParticipantDto(subject);
                 string serializedParticipant = JsonSerializer.Serialize(modifiedParticipant);
@@ -353,25 +354,29 @@ public class ReceiveData
 
                 participantSuccessCount++;
                 participantRowIndex++;
-                _logger.LogInformation(RowProcessedSuccessfullyMessage,participantRowIndex);
+                _logger.LogInformation("Row No.{rowIndex} processed successfully",participantRowIndex);
             }
+        }
 
-            catch (Exception ex)
-            {
-                participantFailureCount++;
-                participantRowIndex++;
-                _logger.LogError(ex, RowProcessedUnsuccessfullyMessage,participantRowIndex);
-            }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
+
+            participantFailureCount++;
+            participantRowIndex++;
+            _logger.LogError("Row No.{rowIndex} processed unsuccessfully",participantRowIndex);
+            await ProcessParticipantDataAsync(subjects, participantUrl);
         }
     }
 
     private async Task ProcessHistoricalParticipantDataAsync(IEnumerable<BssSubject> subjects, ParticipantReferenceData participantReferenceData)
     {
-        _logger.LogInformation("Processing historical participant data.");
 
-        foreach (var subject in subjects)
+        try
         {
-            try
+            _logger.LogInformation("Processing historical participant data.");
+
+            foreach (var subject in subjects)
             {
                 var modifiedParticipant = MapHistoricalParticipantToParticipantDto(subject, participantReferenceData);
                 EventGridEvent eventGridEvent = new EventGridEvent(
@@ -387,12 +392,15 @@ public class ReceiveData
                 participantRowIndex++;
                 _logger.LogInformation(RowProcessedSuccessfullyMessage, participantRowIndex);
             }
-            catch (Exception ex)
-            {
-                participantFailureCount++;
-                participantRowIndex++;
-                _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, participantRowIndex);
-            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in ProcessHistoricalParticipantDataAsync: {Message}", ex.Message);
+
+            participantFailureCount++;
+            participantRowIndex++;
+            _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, participantRowIndex);
+            await ProcessHistoricalParticipantDataAsync(subjects, participantReferenceData);
         }
     }
 
