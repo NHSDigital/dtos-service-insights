@@ -218,7 +218,7 @@ public class ReceiveData
         {
             episodeFailureCount++;
             episodeRowIndex++;
-            _logger.LogError("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+            _logger.LogError(ex,"Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
             await ProcessEpisodeDataAsync(episodes, episodeUrl);
         }
     }
@@ -359,7 +359,7 @@ public class ReceiveData
         {
             participantFailureCount++;
             participantRowIndex++;
-            _logger.LogError("Row No.{rowIndex} processed unsuccessfully",participantRowIndex);
+            _logger.LogError(ex,"Row No.{rowIndex} processed unsuccessfully",participantRowIndex);
             await ProcessParticipantDataAsync(subjects, participantUrl);
         }
     }
