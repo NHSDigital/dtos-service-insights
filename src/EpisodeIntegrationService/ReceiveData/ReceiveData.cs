@@ -216,8 +216,6 @@ public class ReceiveData
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in ProcessEpisodeDataAsync: {Message}", ex.Message);
-
             episodeFailureCount++;
             episodeRowIndex++;
             _logger.LogError("Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
@@ -248,7 +246,6 @@ public class ReceiveData
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in ProcessHistoricalEpisodeDataAsync: {Message}", ex.Message);
             episodeFailureCount++;
             episodeRowIndex++;
             _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, episodeRowIndex);
@@ -360,8 +357,6 @@ public class ReceiveData
 
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in ProcessParticipantDataAsync: {Message}", ex.Message);
-
             participantFailureCount++;
             participantRowIndex++;
             _logger.LogError("Row No.{rowIndex} processed unsuccessfully",participantRowIndex);
@@ -395,8 +390,6 @@ public class ReceiveData
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in ProcessHistoricalParticipantDataAsync: {Message}", ex.Message);
-
             participantFailureCount++;
             participantRowIndex++;
             _logger.LogError(ex, RowProcessedUnsuccessfullyMessage, participantRowIndex);
