@@ -106,7 +106,7 @@ public class GetReferenceData
                 _logger.LogInformation("organisation found successfully.");
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
-                await JsonSerializer.SerializeAsync(response.Body, organisationID);//organisationLkp.OrganisationId
+                await JsonSerializer.SerializeAsync(response.Body, organisationID);
                 response.Headers.Add("Content-Type", "application/json; charset=utf-8");
                 return response;
             }

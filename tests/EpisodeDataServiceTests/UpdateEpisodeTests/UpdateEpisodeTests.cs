@@ -47,6 +47,7 @@ public class UpdateEpisodeTests
 
     }
 
+
     [TestMethod]
     public async Task Run_Return_OK_When_Episode_Updated_Successfully()
     {
@@ -54,13 +55,11 @@ public class UpdateEpisodeTests
         var episodeDto = new InitialEpisodeDto
         {
             EpisodeId = 245395,
-            NhsNumber = 9990000000,
             EpisodeType = "C",
             OrganisationCode="LAV",
             EndCode = "SC",
             ReasonClosedCode = "TEST",
             FinalActionCode = "MT",
-            SrcSysProcessedDateTime = DateTime.UtcNow.AddDays(1)
         };
 
         var json = JsonSerializer.Serialize(episodeDto);
@@ -83,10 +82,10 @@ public class UpdateEpisodeTests
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
 
-        _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episodeDto.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+        var mockEventGridResponce = new Mock<Response>();
+        mockEventGridResponce.Setup(m => m.Status).Returns(200);
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(mockEventGridResponce.Object));
 
-        _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(_mockEventGridResponse.Object));
 
         // Act
         var result = await _function.Run(_mockRequest.Object);

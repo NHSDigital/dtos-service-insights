@@ -8,6 +8,7 @@ using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Common;
 using Azure.Messaging.EventGrid;
+using Google.Protobuf;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
@@ -153,15 +154,9 @@ public class CreateEpisode
 
     private async Task<long> GetOrganisationId(string organisationCode)
     {
-        var getOrganisationUrl = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
-        var getOrganisationResponse = await _httpRequestService.SendGet(getOrganisationUrl);
-        if (!getOrganisationResponse.IsSuccessStatusCode){
-            _logger.LogError("Failed to retrieve Organisation ID for organisation code '{organisationCode}'", organisationCode);
-            throw new Exception($"Failed to retrieve Organisation ID for organisation code '{organisationCode}'");
-        }
-
-        var getOrganisationJson = await getOrganisationResponse.Content.ReadAsStringAsync();
-        var organisation = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
-        return organisation.OrganisationId;
+        var url = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
+        var response = await _httpRequestService.SendGet(url);
+        response.EnsureSuccessStatusCode();
+        return await JsonSerializer.DeserializeAsync<long>(await response.Content.ReadAsStreamAsync());
     }
 }

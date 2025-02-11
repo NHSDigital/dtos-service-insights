@@ -124,33 +124,29 @@ public class UpdateEpisode
         }
     }
 
-    private async Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
+  private async Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
         var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
-        return new Episode
-        {
-            EpisodeId = episodeDto.EpisodeId,
-            ScreeningId = 1, // Need to get ScreeningId from ScreeningName
-            NhsNumber = episodeDto.NhsNumber,
-            EpisodeTypeId = episodeTypeId,
-            EpisodeOpenDate = episodeDto.EpisodeOpenDate,
-            AppointmentMadeFlag = episodeDto.AppointmentMadeFlag,
-            FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate,
-            ActualScreeningDate = episodeDto.ActualScreeningDate,
-            EarlyRecallDate = episodeDto.EarlyRecallDate,
-            CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy,
-            EndCodeId = endCodeId,
-            EndCodeLastUpdated = episodeDto.EndCodeLastUpdated,
-            ReasonClosedCodeId = reasonClosedCodeId,
-            FinalActionCodeId = finalActionCodeId,
-            EndPoint = episodeDto.EndPoint,
-            OrganisationId = organisationId,
-            BatchId = episodeDto.BatchId,
-            ExceptionFlag = exceptionFlag ? (short)1 : (short)0,
-            SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime,
-            RecordInsertDatetime = DateTime.UtcNow,
-            RecordUpdateDatetime = DateTime.UtcNow
-        };
+        existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
+        existingEpisode.NhsNumber = episodeDto.NhsNumber;
+        existingEpisode.EpisodeTypeId = episodeTypeId;
+        existingEpisode.EpisodeOpenDate = episodeDto.EpisodeOpenDate;
+        existingEpisode.AppointmentMadeFlag = episodeDto.AppointmentMadeFlag;
+        existingEpisode.FirstOfferedAppointmentDate = episodeDto.FirstOfferedAppointmentDate;
+        existingEpisode.ActualScreeningDate = episodeDto.ActualScreeningDate;
+        existingEpisode.EarlyRecallDate = episodeDto.EarlyRecallDate;
+        existingEpisode.CallRecallStatusAuthorisedBy = episodeDto.CallRecallStatusAuthorisedBy;
+        existingEpisode.EndCodeId = endCodeId;
+        existingEpisode.EndCodeLastUpdated = episodeDto.EndCodeLastUpdated;
+        existingEpisode.ReasonClosedCodeId = reasonClosedCodeId;
+        existingEpisode.FinalActionCodeId = finalActionCodeId;
+        existingEpisode.EndPoint = episodeDto.EndPoint;
+        existingEpisode.OrganisationId = organisationId; // Get OrganisationId from Reference Management Data Store
+        existingEpisode.BatchId = episodeDto.BatchId;
+        existingEpisode.ExceptionFlag = exceptionFlag ? (short)1 : (short)0;
+        existingEpisode.SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime;
+        existingEpisode.RecordUpdateDatetime = DateTime.UtcNow;
+        return existingEpisode;
     }
 
     private async Task<T?> GetCodeObject<T>(string code, string codeName, Func<string, Task<T?>> getObjectMethod) where T : class?
@@ -168,18 +164,11 @@ public class UpdateEpisode
         }
         return codeObject;
     }
-
     private async Task<long> GetOrganisationId(string organisationCode)
     {
-        var getOrganisationUrl = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
-        var getOrganisationResponse = await _httpRequestService.SendGet(getOrganisationUrl);
-        if (!getOrganisationResponse.IsSuccessStatusCode)
-        {
-            _logger.LogError("Failed to retrieve Organisation ID for organisation code '{organisationCode}'", organisationCode);
-            throw new Exception($"Failed to retrieve Organisation ID for organisation code '{organisationCode}'");
-        }
-        var getOrganisationJson = await getOrganisationResponse.Content.ReadAsStringAsync();
-        var organisation = JsonSerializer.Deserialize<OrganisationLkp>(getOrganisationJson);
-        return organisation.OrganisationId;
+        var url = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
+        var response = await _httpRequestService.SendGet(url);
+        response.EnsureSuccessStatusCode();
+        return await JsonSerializer.DeserializeAsync<long>(await response.Content.ReadAsStreamAsync());
     }
 }
