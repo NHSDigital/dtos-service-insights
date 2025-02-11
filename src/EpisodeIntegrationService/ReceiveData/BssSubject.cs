@@ -1,8 +1,8 @@
 namespace NHS.ServiceInsights.EpisodeIntegrationService;
 public class BssSubject
 {
-    public long nhs_number { get; set; }
-    public DateTime change_db_date_time { get; set; }
+    public required string nhs_number { get; set; }
+    public string change_db_date_time { get; set; }
     public long? superseded_nhs_number { get; set; }
     public string? gp_practice_code { get; set; }
     public string? bso_organisation_code { get; set; }
@@ -22,5 +22,4 @@ public class BssSubject
     public string? gene_code { get; set; }
     public string? ntdd_calculation_method { get; set; }
     public string? preferred_language { get; set; }
-
 }
