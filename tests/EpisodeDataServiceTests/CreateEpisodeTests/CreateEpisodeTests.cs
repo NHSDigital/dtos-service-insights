@@ -80,10 +80,9 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")});
+        var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -123,13 +122,10 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+        var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
+
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
@@ -161,9 +157,11 @@ public class CreateEpisodeTests
 
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=InvalidOrganisationCode"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
+
+        var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
+
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp(episode.EpisodeType)).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp(episode.EndCode)).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp(episode.ReasonClosedCode)).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
@@ -195,13 +193,9 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+        var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
 
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
         _mockReasonClosedCodeLkpRepository.Setup(x => x.GetReasonClosedLkp("TEST")).ReturnsAsync(new ReasonClosedCodeLkp { ReasonClosedCodeId = 1, ReasonClosedCode = "TEST", ReasonClosedCodeDescription = "TEST's description"});
@@ -233,13 +227,9 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+        var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp(It.IsAny<string>())).ReturnsAsync((EpisodeTypeLkp?)null);
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -279,13 +269,11 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+       var organisationId = 1;
+         _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
+
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("InvalidType")).ReturnsAsync((EndCodeLkp?)null);
@@ -318,13 +306,11 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+       var organisationId = 1;
+         _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
+
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp(It.IsAny<string>())).ReturnsAsync((EndCodeLkp?)null);
@@ -363,13 +349,11 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+      var organisationId = 1;
+         _mockHttpRequestService
+            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
+
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -402,13 +386,9 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+        var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -447,13 +427,10 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+         var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
+
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -486,13 +463,10 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+         var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
+
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -531,13 +505,10 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+        var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
+
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -574,13 +545,10 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code=LAV"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")
-            });
+        var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
+
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -620,10 +588,9 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")});
+         var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
@@ -663,10 +630,9 @@ public class CreateEpisodeTests
         var json = JsonSerializer.Serialize(episode);
         _mockRequest = _setupRequest.Setup(json);
 
-        var organisationDataJson = "{\"OrganisationId\":1,\"OrganisationCode\":\"LAV\"}";
-        _mockHttpRequestService
-            .Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationDataJson, Encoding.UTF8, "application/json")});
+         var organisationId = 1;
+        _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episode.OrganisationCode}"))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
 
         _mockEpisodeTypeLkpRepository.Setup(x => x.GetEpisodeTypeLkp("C")).ReturnsAsync(new EpisodeTypeLkp { EpisodeTypeId = 1, EpisodeType = "C", EpisodeDescription = "C's description"});
         _mockEndCodeLkpRepository.Setup(x => x.GetEndCodeLkp("SC")).ReturnsAsync(new EndCodeLkp { EndCodeId = 1, EndCode = "SC", EndCodeDescription = "SC's description"});
