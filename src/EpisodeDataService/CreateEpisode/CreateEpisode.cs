@@ -130,7 +130,7 @@ public class CreateEpisode
             EndPoint = episodeDto.EndPoint,
             OrganisationId = organisationId,
             BatchId = episodeDto.BatchId,
-            ExceptionFlag = exceptionFlag ? (short)1 : (short)0,//
+            ExceptionFlag = exceptionFlag ? (short)1 : (short)0,
             SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime,
             RecordInsertDatetime = DateTime.UtcNow,
             RecordUpdateDatetime = DateTime.UtcNow

@@ -88,7 +88,6 @@ public class GetReferenceData
     {
         _logger.LogInformation("GetReferenceData: start");
 
-        //string organisationCode ;
         string organisationCode = req.Query["organisation_code"];
         if (string.IsNullOrWhiteSpace(organisationCode))
         {
