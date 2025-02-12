@@ -6,8 +6,9 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
-using Azure.Messaging.EventGrid;
 using NHS.ServiceInsights.Common;
+using Azure.Messaging.EventGrid;
+using Google.Protobuf;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
@@ -109,6 +110,7 @@ public class CreateEpisode
 
     private async Task<Episode> MapEpisodeDtoToEpisode(InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
+        var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
         return new Episode
         {
             EpisodeId = episodeDto.EpisodeId,
@@ -126,7 +128,7 @@ public class CreateEpisode
             ReasonClosedCodeId = reasonClosedCodeId,
             FinalActionCodeId = finalActionCodeId,
             EndPoint = episodeDto.EndPoint,
-            OrganisationId = 2, // Need to get OrganisationId from Reference Management Data Store
+            OrganisationId = organisationId,
             BatchId = episodeDto.BatchId,
             ExceptionFlag = exceptionFlag ? (short)1 : (short)0,
             SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime,
@@ -134,7 +136,6 @@ public class CreateEpisode
             RecordUpdateDatetime = DateTime.UtcNow
         };
     }
-
     private async Task<T?> GetCodeObject<T>(string code, string codeName, Func<string, Task<T?>> getObjectMethod) where T : class?
     {
         if (string.IsNullOrWhiteSpace(code))
@@ -149,5 +150,13 @@ public class CreateEpisode
             throw new InvalidOperationException($"{codeName} '{code}' not found in lookup table.");
         }
         return codeObject;
+    }
+
+    private async Task<long> GetOrganisationId(string organisationCode)
+    {
+        var url = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
+        var response = await _httpRequestService.SendGet(url);
+        response.EnsureSuccessStatusCode();
+        return await JsonSerializer.DeserializeAsync<long>(await response.Content.ReadAsStreamAsync());
     }
 }

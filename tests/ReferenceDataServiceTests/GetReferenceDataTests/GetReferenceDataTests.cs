@@ -17,12 +17,38 @@ public class GetReferenceDataTests
     private Mock<ILogger<GetReferenceData>> _mockLogger = new();
     private Mock<IOrganisationLkpRepository> _mockOrganisationLkpRepository = new();
     private GetReferenceData _function;
+
+    //private GetOrganisationIdByCode _function2;
     private Mock<HttpRequestData> _mockRequest = new();
     private SetupRequest _setupRequest = new();
 
     public GetReferenceDataTests()
     {
         _function = new GetReferenceData(_mockLogger.Object, _mockOrganisationLkpRepository.Object);
+    }
+
+    [TestMethod]
+    public async Task Run_ShouldReturnBadRequest_WhenOrganisationCodeIsNotProvided()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection()
+        {
+            { "organisation_code", null }
+        };
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        // Act
+        var response = await _function.Run3(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        _mockLogger.Verify(log => log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Missing or invalid organisation code.")),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
     }
 
     [TestMethod]
@@ -50,7 +76,34 @@ public class GetReferenceDataTests
     }
 
     [TestMethod]
-    public async Task Run_ShouldReturnNotFound_WhenOrganisationIsNotFound()
+    public async Task Run_ShouldReturnNotFound_WhenOrganisationByCodeIsNotFound()
+    {
+        // Arrange
+        //String organisationCode="invalidOrganisationCode";
+        var queryParam = new NameValueCollection
+        {
+            { "organisation_code", "invalidOrganisationCode" }
+        };
+        _mockRequest = _setupRequest.SetupGet(queryParam);
+
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("invalidOrganisationCode")).ReturnsAsync((long?)null);
+
+        // Act
+        var response = await _function.Run3(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+        _mockLogger.Verify(log => log.Log(
+            LogLevel.Error,
+            0,
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("organisation not found.")),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
+    }
+
+    [TestMethod]
+    public async Task Run_ShouldReturnNotFound_WhenOrganisationByIDIsNotFound()
     {
         // Arrange
         var queryParam = new NameValueCollection
@@ -74,7 +127,47 @@ public class GetReferenceDataTests
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
     }
+    [TestMethod]
+    public async Task Run_ShouldReturnOk_WhenEpisodeByOranisationCodeIsFound()
+    {
+        // Arrange
+        var queryParam = new NameValueCollection
+        {
+            { "organisation_code", "LAV" }
+        };
+        _mockRequest = _setupRequest.SetupGet(queryParam);
 
+        var organisationLkp = new OrganisationLkp
+        {
+            OrganisationId = 12345,
+            ScreeningName = "",
+            OrganisationCode = "LAV",
+            OrganisationName = "",
+            OrganisationType = "",
+            IsActive = ""
+        };
+
+        _mockOrganisationLkpRepository.Setup(repo => repo.GetOrganisationByCodeAsync("LAV")).ReturnsAsync(12345);
+
+        // Act
+        var response = await _function.Run3(_mockRequest.Object);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        response.Body.Seek(0, SeekOrigin.Begin);
+
+
+        var organisationResponse = await JsonSerializer.DeserializeAsync<long>(response.Body);
+        Assert.AreEqual<long>(12345, organisationResponse);
+
+        _mockLogger.Verify(log => log.Log(
+            LogLevel.Information,
+            0,
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("organisation found successfully.")),
+            null,
+            (Func<object, Exception, string>)It.IsAny<object>()),
+            Times.Once);
+    }
     [TestMethod]
     public async Task Run_ShouldReturnOk_WhenEpisodeIsFound()
     {

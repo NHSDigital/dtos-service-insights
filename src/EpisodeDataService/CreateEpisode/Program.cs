@@ -19,7 +19,8 @@ var host = new HostBuilder()
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
         services.AddDbContext<ServiceInsightsDbContext>(
-            options => options.UseSqlServer(Environment.GetEnvironmentVariable("ServiceInsightsDbConnectionString")));
+        options => options.UseSqlServer(Environment.GetEnvironmentVariable("ServiceInsightsDbConnectionString")));
+        services.AddSingleton<IHttpRequestService, HttpRequestService>();
     }).AddEventGridClient()
     .Build();
 await host.RunAsync();

@@ -11,10 +11,10 @@ public class OrganisationLkpRepository : IOrganisationLkpRepository
     {
         _dbContext = dbContext;
     }
-    public async Task<OrganisationLkp?> GetOrganisationByCodeAsync(string organisationCode)
+    public async Task<long?> GetOrganisationByCodeAsync(string organisationCode)
     {
         var organisationLkp = await _dbContext.OrganisationLkps.FirstOrDefaultAsync(ol => ol.OrganisationCode == organisationCode);
-        return organisationLkp;
+        return organisationLkp?.OrganisationId;
     }
 
     public async Task<OrganisationLkp?> GetOrganisationAsync(long organisationId)

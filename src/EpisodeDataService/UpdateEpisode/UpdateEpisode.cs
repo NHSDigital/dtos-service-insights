@@ -124,8 +124,9 @@ public class UpdateEpisode
         }
     }
 
-    private async static Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
+    private async Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
+        var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
         existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
         existingEpisode.NhsNumber = episodeDto.NhsNumber;
         existingEpisode.EpisodeTypeId = episodeTypeId;
@@ -140,7 +141,7 @@ public class UpdateEpisode
         existingEpisode.ReasonClosedCodeId = reasonClosedCodeId;
         existingEpisode.FinalActionCodeId = finalActionCodeId;
         existingEpisode.EndPoint = episodeDto.EndPoint;
-        existingEpisode.OrganisationId = 2; // Need to get OrganisationId from Reference Management Data Store
+        existingEpisode.OrganisationId = organisationId; // Get OrganisationId from Reference Management Data Store
         existingEpisode.BatchId = episodeDto.BatchId;
         existingEpisode.ExceptionFlag = exceptionFlag ? (short)1 : (short)0;
         existingEpisode.SrcSysProcessedDatetime = episodeDto.SrcSysProcessedDateTime;
@@ -162,5 +163,12 @@ public class UpdateEpisode
             throw new InvalidOperationException($"{codeName} '{code}' not found in lookup table.");
         }
         return codeObject;
+    }
+    private async Task<long> GetOrganisationId(string organisationCode)
+    {
+        var url = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
+        var response = await _httpRequestService.SendGet(url);
+        response.EnsureSuccessStatusCode();
+        return await JsonSerializer.DeserializeAsync<long>(await response.Content.ReadAsStreamAsync());
     }
 }

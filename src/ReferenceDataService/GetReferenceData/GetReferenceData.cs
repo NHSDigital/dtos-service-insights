@@ -21,6 +21,7 @@ public class GetReferenceData
         _organisationLkpRepository = organisationLkpRepository;
     }
 
+
     [Function("GetReferenceData")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
@@ -81,4 +82,39 @@ public class GetReferenceData
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
+
+    [Function("GetOrganisationIdByCode")]
+    public async Task<HttpResponseData> Run3([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    {
+        _logger.LogInformation("GetReferenceData: start");
+
+        string organisationCode = req.Query["organisation_code"];
+        if (string.IsNullOrWhiteSpace(organisationCode))
+        {
+            _logger.LogError("Missing or invalid organisation code.");
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+            try
+            {
+                long? organisationID = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
+                if (organisationID == null)
+                {
+                    _logger.LogError("organisation not found.");
+                    return req.CreateResponse(HttpStatusCode.NotFound);
+                }
+                _logger.LogInformation("organisation found successfully.");
+
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                await JsonSerializer.SerializeAsync(response.Body, organisationID);
+                response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetReferenceData: Failed to get organisation from the db.\nException: {Message}", ex.Message);
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
+            }
+
+    }
+
 }
