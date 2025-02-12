@@ -314,8 +314,8 @@ services:
       - ASPNETCORE_URLS=http://*:7072
       - EpisodeManagementUrl=http://create-update-episode:6006/api/CreateUpdateEpisode
       - ParticipantManagementUrl=http://update-participant:7074/api/UpdateParticipant
-      - GetEpisodeReferenceDataServiceUrl=http://localhost:7574/api/GetEpisodeReferenceData
-      - GetAllOrganisationReferenceDataUrl=http://localhost:6081/api/GetAllOrganisationReferenceData
+      - GetEpisodeReferenceDataServiceUrl=http://get-episode-ref-data:7574/api/GetEpisodeReferenceData
+      - GetAllOrganisationReferenceDataUrl=http://get-organisation-data:6081/api/GetAllOrganisationReferenceData
       - topicEndpoint=${EVENTGRID_URL}
       - topicKey=${EVENTGRID_KEY}
 
@@ -368,7 +368,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7574
-      - RetrieveEpisodeReferenceDataServiceUrl="http://localhost:7575/api/RetrieveEpisodeReferenceData"
+      - RetrieveEpisodeReferenceDataServiceUrl=http://retrieve-episode-ref-data:7575/api/RetrieveEpisodeReferenceData
 
   # Mesh Mailbox Management Service
   retrieve-mesh-file:
