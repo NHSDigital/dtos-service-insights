@@ -420,7 +420,7 @@ public class UpdateEpisodeTests
 
         _mockEpisodeRepository.Setup(x => x.GetEpisodeAsync(It.IsAny<long>())).ReturnsAsync(episode);
 
-       var organisationId = 1;
+        var organisationId = 1;
         _mockHttpRequestService.Setup(service => service.SendGet($"GetOrganisationIdByCodeUrl?organisation_code={episodeDto.OrganisationCode}"))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK){Content = new StringContent(organisationId.ToString(), Encoding.UTF8, "application/json")});
 

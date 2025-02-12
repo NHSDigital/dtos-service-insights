@@ -124,7 +124,7 @@ public class UpdateEpisode
         }
     }
 
-  private async Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
+    private async Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
         var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
         existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
