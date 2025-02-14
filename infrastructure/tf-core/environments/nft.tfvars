@@ -302,6 +302,11 @@ function_apps = {
         {
           env_var_name     = "CheckParticipantExistsUrl"
           function_app_key = "GetParticipant"
+        },
+        {
+          env_var_name     = "GetOrganisationIdByCodeUrl"
+          function_app_key = "GetOrganisationData"
+          endpoint_name    = "GetOrganisationIdByCode"
         }
       ]
     }
@@ -323,6 +328,11 @@ function_apps = {
         {
           env_var_name     = "CheckParticipantExistsUrl"
           function_app_key = "GetParticipant"
+        },
+        {
+          env_var_name     = "GetOrganisationIdByCodeUrl"
+          function_app_key = "GetOrganisationData"
+          endpoint_name    = "GetOrganisationIdByCode"
         }
       ]
     }
