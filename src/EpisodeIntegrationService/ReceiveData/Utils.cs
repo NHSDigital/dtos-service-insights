@@ -32,7 +32,7 @@ public static class Utils
     {
         if (string.IsNullOrEmpty(dateTime)) return null;
 
-        return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None);
+        return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal);
     }
 
     public static void CheckForNullOrEmptyStrings(params string[] values)
