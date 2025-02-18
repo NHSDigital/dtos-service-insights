@@ -320,11 +320,11 @@ function_apps = {
     }
 
     CreateEpisode = {
-      name_suffix               = "create-episode"
-      function_endpoint_name    = "CreateEpisode"
-      app_service_plan_key      = "BIAnalyticsDataService"
-      db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "create-ps-episode-nft"
+      name_suffix                = "create-episode"
+      function_endpoint_name     = "CreateEpisode"
+      app_service_plan_key       = "BIAnalyticsDataService"
+      db_connection_string       = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producers = ["create-ps-episode-nft"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -346,11 +346,11 @@ function_apps = {
     }
 
     UpdateEpisode = {
-      name_suffix               = "update-episode"
-      function_endpoint_name    = "UpdateEpisode"
-      app_service_plan_key      = "BIAnalyticsDataService"
-      db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "update-ps-episode-nft"
+      name_suffix                = "update-episode"
+      function_endpoint_name     = "UpdateEpisode"
+      app_service_plan_key       = "BIAnalyticsDataService"
+      db_connection_string       = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producers = ["update-ps-episode-nft"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -365,10 +365,10 @@ function_apps = {
     }
 
     ReceiveData = {
-      name_suffix               = "receive-data"
-      function_endpoint_name    = "ReceiveData"
-      app_service_plan_key      = "BIAnalyticsDataService"
-      event_grid_topic_producer = "receive-data-nft"
+      name_suffix                = "receive-data"
+      function_endpoint_name     = "ReceiveData"
+      app_service_plan_key       = "BIAnalyticsDataService"
+      event_grid_topic_producers = ["receive-data-nft"]
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"

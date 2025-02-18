@@ -320,11 +320,19 @@ function_apps = {
     }
 
     CreateEpisode = {
+<<<<<<< HEAD
       name_suffix               = "create-episode"
       function_endpoint_name    = "CreateEpisode"
       app_service_plan_key      = "BIAnalyticsDataService"
       db_connection_string      = "ServiceInsightsDbConnectionString"
       event_grid_topic_producer = "create-ps-episode-int"
+=======
+      name_suffix                = "create-episode"
+      function_endpoint_name     = "CreateEpisode"
+      app_service_plan_key       = "BIAnalyticsDataService"
+      db_connection_string       = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producers = ["create-ps-episode-int"]
+>>>>>>> 6db078b (Add in new config for additional environments)
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -346,11 +354,19 @@ function_apps = {
     }
 
     UpdateEpisode = {
+<<<<<<< HEAD
       name_suffix               = "update-episode"
       function_endpoint_name    = "UpdateEpisode"
       app_service_plan_key      = "BIAnalyticsDataService"
       db_connection_string      = "ServiceInsightsDbConnectionString"
       event_grid_topic_producer = "update-ps-episode-int"
+=======
+      name_suffix                = "update-episode"
+      function_endpoint_name     = "UpdateEpisode"
+      app_service_plan_key       = "BIAnalyticsDataService"
+      db_connection_string       = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producers = ["update-ps-episode-int"]
+>>>>>>> 6db078b (Add in new config for additional environments)
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -365,10 +381,17 @@ function_apps = {
     }
 
     ReceiveData = {
+<<<<<<< HEAD
       name_suffix               = "receive-data"
       function_endpoint_name    = "ReceiveData"
       app_service_plan_key      = "BIAnalyticsDataService"
       event_grid_topic_producer = "receive-data-int"
+=======
+      name_suffix                = "receive-data"
+      function_endpoint_name     = "ReceiveData"
+      app_service_plan_key       = "BIAnalyticsDataService"
+      event_grid_topic_producers = ["receive-data-int"]
+>>>>>>> 6db078b (Add in new config for additional environments)
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"

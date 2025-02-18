@@ -192,9 +192,9 @@ variable "function_apps" {
           env_var_name   = string
           container_name = string
       })), [])
-      db_connection_string      = optional(string, "")
-      event_grid_topic_producer = optional(string, "")
-      key_vault_url             = optional(string, "")
+      db_connection_string       = optional(string, "")
+      event_grid_topic_producers = optional(list(string), [])
+      key_vault_url              = optional(string, "")
       app_urls = optional(list(object({
         env_var_name     = string
         function_app_key = string
