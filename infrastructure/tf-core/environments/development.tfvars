@@ -148,16 +148,34 @@ event_grid_defaults = {
 }
 
 event_grid_configs = {
-  event-grid-topic-1 = {
+  # CreateEpisode writes to this topic
+  create-ps-episode-dev = {
     identity_type                = "SystemAssigned"
-    subscription_name            = "dev1234"
+    subscription_name            = "create-ps-episode-dev"
     subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
   }
-  # event-grid-topic-2 = {
+  # UpdateEpisode writes to this topic
+  update-ps-episode-dev = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "update-ps-episode-dev"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+  #  writes to this topic
+  create-ps-profile-dev = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "create-ps-profile-dev"
+    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
+  }
+  #  writes to this topic
+  receive-data-dev = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "receive-data-dev"
+    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
+  }
+  # event-grid-topic-1 = {
   #   identity_type                = "SystemAssigned"
-  #   subscription_name            = "sub2"
-  #   subscriber_list_functionName = []
-  #   publisher_list               = []
+  #   subscription_name            = "dev1234"
+  #   subscriber_functionName_list = ["CreateParticipantScreeningEpisode", "CreateParticipantScreeningProfile"]
   # }
 }
 
@@ -284,6 +302,14 @@ function_apps = {
           function_app_key = "GetScreeningData"
         }
       ]
+      ip_restrictions = {
+        "AllowEventGrid" : {
+          name        = "AllowEventGrid"
+          priority    = 300
+          action      = "Allow"
+          service_tag = "AzureEventGrid"
+        }
+      }
     }
 
     GetParticipantScreeningEpisodeData = {
@@ -304,7 +330,7 @@ function_apps = {
       function_endpoint_name    = "CreateEpisode"
       app_service_plan_key      = "Default"
       db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "event-grid-topic-1"
+      event_grid_topic_producer = "create-ps-episode-dev"
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -330,7 +356,7 @@ function_apps = {
       function_endpoint_name    = "UpdateEpisode"
       app_service_plan_key      = "Default"
       db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "event-grid-topic-1"
+      event_grid_topic_producer = "update-ps-episode-dev"
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -348,7 +374,7 @@ function_apps = {
       name_suffix               = "receive-data"
       function_endpoint_name    = "ReceiveData"
       app_service_plan_key      = "Default"
-      event_grid_topic_producer = "event-grid-topic-1"
+      event_grid_topic_producer = "receive-data-dev"
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
