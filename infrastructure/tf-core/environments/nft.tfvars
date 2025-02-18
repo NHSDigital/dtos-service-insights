@@ -147,10 +147,29 @@ event_grid_defaults = {
 }
 
 event_grid_configs = {
-  topic-1 = {
+  # CreateEpisode writes to this topic
+  create-ps-episode-nft = {
     identity_type                = "SystemAssigned"
-    subscription_name            = "sub1"
+    subscription_name            = "create-ps-episode-nft"
     subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+  # UpdateEpisode writes to this topic
+  update-ps-episode-nft = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "update-ps-episode-nft"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+  #  writes to this topic
+  create-ps-profile-nft = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "create-ps-profile-nft"
+    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
+  }
+  #  writes to this topic
+  receive-data-nft = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "receive-data-nft"
+    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
   }
 }
 
@@ -277,6 +296,14 @@ function_apps = {
           function_app_key = "GetScreeningData"
         }
       ]
+      ip_restrictions = {
+        "AllowEventGrid" : {
+          name        = "AllowEventGrid"
+          priority    = 300
+          action      = "Allow"
+          service_tag = "AzureEventGrid"
+        }
+      }
     }
 
     GetParticipantScreeningEpisodeData = {
@@ -297,7 +324,7 @@ function_apps = {
       function_endpoint_name    = "CreateEpisode"
       app_service_plan_key      = "BIAnalyticsDataService"
       db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "topic-1"
+      event_grid_topic_producer = "create-ps-episode-nft"
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -323,7 +350,7 @@ function_apps = {
       function_endpoint_name    = "UpdateEpisode"
       app_service_plan_key      = "BIAnalyticsDataService"
       db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "topic-1"
+      event_grid_topic_producer = "update-ps-episode-nft"
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -341,7 +368,7 @@ function_apps = {
       name_suffix               = "receive-data"
       function_endpoint_name    = "ReceiveData"
       app_service_plan_key      = "BIAnalyticsDataService"
-      event_grid_topic_producer = "topic-1"
+      event_grid_topic_producer = "receive-data-nft"
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
@@ -503,7 +530,6 @@ storage_accounts = {
       config = {
         container_name = "config"
       }
-
       inbound = {
         container_name = "inbound"
       }
