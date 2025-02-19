@@ -7,8 +7,10 @@
     "ParticipantManagementUrl": "http://localhost:7074/api/UpdateParticipant",
     "GetEpisodeReferenceDataServiceUrl": "http://localhost:7574/api/GetEpisodeReferenceData",
     "GetAllOrganisationReferenceDataUrl": "http://localhost:6081/api/GetAllOrganisationReferenceData",
-    "topicEndpoint": "https://sams-test-topic.uksouth-1.eventgrid.azure.net/api/events",
-    "topicKey": "TOPIC_KEY"
+    "topicEndpoint1": "TOPIC_ENDPOINT1",
+    "topicKey1": "TOPIC_KEY1",
+    "topicEndpoint2": "TOPIC_ENDPOINT2",
+    "topicKey2": "TOPIC_KEY2"
   },
   "Host": {
     "LocalHttpPort": 7072
