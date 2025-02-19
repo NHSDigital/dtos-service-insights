@@ -19,11 +19,11 @@ public class UpdateEpisode
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
     private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
-    private readonly EventGridPublisherClient _eventGridPublisherClient;
+    private readonly IEventGridPublisherClientEpisode _eventGridPublisherClient;
     private readonly IHttpRequestService _httpRequestService;
     private const long ScreeningId = 1;
 
-    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
+    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, IEventGridPublisherClientEpisode eventGridPublisherClient, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _episodeRepository = episodeRepository;
@@ -107,11 +107,15 @@ public class UpdateEpisode
                 data: finalizedEpisodeDto
             );
 
-            var result = await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
 
-            if (result.Status != (int)HttpStatusCode.OK)
+            try
             {
-                _logger.LogError("Failed to send event to event grid");
+                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"Failed to send event to event grid");
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 

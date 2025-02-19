@@ -27,7 +27,7 @@ public class UpdateEpisodeTests
     private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
     private readonly Mock<IFinalActionCodeLkpRepository> _mockFinalActionCodeLkpRepository = new();
     private readonly Mock<IReasonClosedCodeLkpRepository> _mockReasonClosedCodeLkpRepository = new();
-    private readonly Mock<EventGridPublisherClient> _mockEventGridPublisherClient = new();
+    private readonly Mock<IEventGridPublisherClientEpisode> _mockEventGridPublisherClient = new();
     private readonly Mock<Response> _mockEventGridResponse = new();
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
 
@@ -41,8 +41,6 @@ public class UpdateEpisodeTests
 
         Environment.SetEnvironmentVariable("CheckParticipantExistsUrl", "CheckParticipantExistsUrl");
 
-        // _mockRequest = _setupRequest.Setup("");
-        // _function = new UpdateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, _mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object,  _mockEventGridPublisherClient.Object, _mockHttpRequestService.Object);
         Environment.SetEnvironmentVariable("GetOrganisationIdByCodeUrl", "GetOrganisationIdByCodeUrl");
 
     }
@@ -81,7 +79,7 @@ public class UpdateEpisodeTests
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episodeDto.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(_mockEventGridResponse.Object));
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>())).Returns(Task.FromResult(_mockEventGridResponse.Object));
         // Act
         var result = await _function.Run(_mockRequest.Object);
         //Assert
@@ -431,7 +429,7 @@ public class UpdateEpisodeTests
 
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Throws(new Exception("Error sending event"));
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>())).Throws(new Exception("Error sending event"));
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
@@ -475,7 +473,7 @@ public class UpdateEpisodeTests
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(404);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(_mockEventGridResponse.Object));
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>())).Throws(new HttpRequestException());
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
@@ -599,14 +597,14 @@ public class UpdateEpisodeTests
 
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(_mockEventGridResponse.Object));
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>())).Returns(Task.FromResult(_mockEventGridResponse.Object));
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
         _mockEpisodeRepository.Verify(x => x.UpdateEpisode(It.Is<Episode>(e => e.ExceptionFlag == 1)), Times.Once);
-        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.Is<EventGridEvent>(e => e.Data.ToObjectFromJson<FinalizedEpisodeDto>(null).ExceptionFlag == 1), It.IsAny<CancellationToken>()), Times.Once);
+        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.Is<EventGridEvent>(e => e.Data.ToObjectFromJson<FinalizedEpisodeDto>(null).ExceptionFlag == 1)), Times.Once);
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }
 
@@ -648,14 +646,14 @@ public class UpdateEpisodeTests
         _mockFinalActionCodeLkpRepository.Setup(x => x.GetFinalActionCodeLkp("MT")).ReturnsAsync(new FinalActionCodeLkp { FinalActionCodeId = 1, FinalActionCode = "MT", FinalActionCodeDescription = "MT's description"});
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(_mockEventGridResponse.Object));
+        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>()));
 
         // Act
         var result = await _function.Run(_mockRequest.Object);
 
         // Assert
         _mockEpisodeRepository.Verify(x => x.UpdateEpisode(It.Is<Episode>(e => e.ExceptionFlag == 0)), Times.Once);
-        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.Is<EventGridEvent>(e => e.Data.ToObjectFromJson<FinalizedEpisodeDto>(null).ExceptionFlag == 0), It.IsAny<CancellationToken>()), Times.Once);
+        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.Is<EventGridEvent>(e => e.Data.ToObjectFromJson<FinalizedEpisodeDto>(null).ExceptionFlag == 0)));
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }
 

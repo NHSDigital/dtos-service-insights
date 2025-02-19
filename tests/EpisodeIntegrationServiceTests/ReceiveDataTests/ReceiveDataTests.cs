@@ -17,7 +17,8 @@ public class ReceiveDataTests
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
     private readonly Mock<ILogger<EpisodeIntegrationService.ReceiveData>> _mockLogger = new();
     private readonly EpisodeIntegrationService.ReceiveData _function;
-    private readonly Mock<EventGridPublisherClient> _mockEventGridPublisherClient  = new();
+    private readonly Mock<IEventGridPublisherClientEpisode> _mockEventGridPublisherClientEpisode  = new();
+    private readonly Mock<IEventGridPublisherClientParticipant> _mockEventGridPublisherClientParticipant  = new();
 
     public ReceiveDataTests()
     {
@@ -26,7 +27,7 @@ public class ReceiveDataTests
         Environment.SetEnvironmentVariable("GetAllOrganisationReferenceDataUrl", "GetAllOrganisationReferenceDataUrl");
         Environment.SetEnvironmentVariable("GetEpisodeReferenceDataServiceUrl", "GetEpisodeReferenceDataServiceUrl");
 
-        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEventGridPublisherClient.Object);
+        _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEventGridPublisherClientEpisode.Object, _mockEventGridPublisherClientParticipant.Object);
     }
 
     [TestMethod]
@@ -709,7 +710,7 @@ public class ReceiveDataTests
         _mockHttpRequestService.Verify(x => x.SendGet("GetEpisodeReferenceDataServiceUrl"), Times.Once());
         _mockHttpRequestService.Verify(x => x.SendGet("GetAllOrganisationReferenceDataUrl"), Times.Once());
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+        _mockEventGridPublisherClientEpisode.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>()), Times.Exactly(2));
     }
 
 
@@ -753,7 +754,7 @@ public class ReceiveDataTests
             It.IsAny<Exception>(),
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Exactly(1));
-        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Once());
+        _mockEventGridPublisherClientEpisode.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>()), Times.Once());
         _mockLogger.Verify(log =>
             log.Log(
             LogLevel.Error,
@@ -789,7 +790,7 @@ public class ReceiveDataTests
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+        _mockEventGridPublisherClientParticipant.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>()), Times.Exactly(2));
     }
 
 
@@ -803,7 +804,7 @@ public class ReceiveDataTests
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>())).Throws<Exception>();
+        _mockEventGridPublisherClientParticipant.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>())).Throws<Exception>();
 
         // Act
         await _function.Run(stream, "bss_subjects_test_data_20240930_historic.csv");
@@ -837,7 +838,7 @@ public class ReceiveDataTests
         Times.Exactly(1));
 
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+        _mockEventGridPublisherClientParticipant.Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>()), Times.Exactly(2));
     }
 
 }
