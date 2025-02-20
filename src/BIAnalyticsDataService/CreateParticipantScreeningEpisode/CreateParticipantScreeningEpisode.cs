@@ -44,7 +44,7 @@ public class CreateParticipantScreeningEpisode
             bool successful = await _participantScreeningEpisodeRepository.CreateParticipantEpisode(episode);
             if (!successful)
             {
-                _logger.LogError("CreateParticipantScreeningEpisode: Could not save participant episode. Data: {Episode}", episode);
+                _logger.LogError("CreateParticipantScreeningEpisode: Could not save participant episode. data: {Episode}", episode);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
