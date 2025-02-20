@@ -20,20 +20,20 @@ public static class AddEventGridClientExtension
                         if (HostEnvironmentEnvExtensions.IsDevelopment(context.HostingEnvironment))
                         {
                             var credentials = new Azure.AzureKeyCredential(Environment.GetEnvironmentVariable("topicKey1"));
-                            return new EventGridPublisherClientEpisode(new EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint1")), credentials));
+                            return new EventGridPublisherClientEpisode(new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint1")), credentials));
                         }
 
-                        return new EventGridPublisherClientEpisode(new EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint1")), new DefaultAzureCredential()));
+                        return new EventGridPublisherClientEpisode(new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint1")), new DefaultAzureCredential()));
                     }
                     else if (topicName == "participant")
                     {
                         if (HostEnvironmentEnvExtensions.IsDevelopment(context.HostingEnvironment))
                         {
                             var credentials = new Azure.AzureKeyCredential(Environment.GetEnvironmentVariable("topicKey2"));
-                            return new EventGridPublisherClientParticipant(new EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint2")), credentials));
+                            return new EventGridPublisherClientParticipant(new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint2")), credentials));
                         }
 
-                        return new EventGridPublisherClientParticipant(new EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint2")), new DefaultAzureCredential()));
+                        return new EventGridPublisherClientParticipant(new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint2")), new DefaultAzureCredential()));
                     }
                     else
                     {

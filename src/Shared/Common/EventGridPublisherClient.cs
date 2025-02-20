@@ -1,5 +1,4 @@
 using Azure.Messaging.EventGrid;
-using NHS.ServiceInsights.Model;
 
 namespace NHS.ServiceInsights.Common;
 
@@ -8,11 +7,11 @@ public interface IEventGridPublisherClient
     Task SendEventAsync(EventGridEvent @event);
 }
 
-public class EventGridPublisherClient<T> : IEventGridPublisherClient
+public class EventGridPublisherClient : IEventGridPublisherClient
 {
-    private readonly EventGridPublisherClient _eventGridPublisherClient;
+    private readonly Azure.Messaging.EventGrid.EventGridPublisherClient _eventGridPublisherClient;
 
-    public EventGridPublisherClient(EventGridPublisherClient eventGridPublisherClient)
+    public EventGridPublisherClient(Azure.Messaging.EventGrid.EventGridPublisherClient eventGridPublisherClient)
     {
         _eventGridPublisherClient = eventGridPublisherClient;
     }
@@ -23,17 +22,17 @@ public class EventGridPublisherClient<T> : IEventGridPublisherClient
     }
 }
 
-public class EventGridPublisherClientEpisode : EventGridPublisherClient<Episode>
+public class EventGridPublisherClientEpisode : EventGridPublisherClient
 {
-    public EventGridPublisherClientEpisode(EventGridPublisherClient eventGridPublisherClient)
+    public EventGridPublisherClientEpisode(Azure.Messaging.EventGrid.EventGridPublisherClient eventGridPublisherClient)
         : base(eventGridPublisherClient)
     {
     }
 }
 
-public class EventGridPublisherClientParticipant : EventGridPublisherClient<InitialParticipantDto>
+public class EventGridPublisherClientParticipant : EventGridPublisherClient
 {
-    public EventGridPublisherClientParticipant(EventGridPublisherClient eventGridPublisherClient)
+    public EventGridPublisherClientParticipant(Azure.Messaging.EventGrid.EventGridPublisherClient eventGridPublisherClient)
         : base(eventGridPublisherClient)
     {
     }
