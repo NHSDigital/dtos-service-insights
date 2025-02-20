@@ -105,7 +105,8 @@ resource "azurerm_role_assignment" "data_sender" {
 
   principal_id         = module.functionapp["${each.value.function_key}-${each.value.event_value.region}"].function_app_sami_id
   role_definition_name = "EventGrid Data Sender"
-  scope                = module.event_grid_topic["${each.value.event_key}"].id
+  scope                = data.terraform_remote_state.hub.outputs.event_grid_topic["${each.value.event_key}"].id
+  # scope                = module.event_grid_topic["${each.value.event_key}"].id
 }
 
 /* --------------------------------------------------------------------------------------------------
@@ -174,7 +175,8 @@ locals {
             length(try(config.event_grid_topic_producers, [])) > 0 ? merge(
               {
                 for idx, producer in coalescelist(config.event_grid_topic_producers, []) :
-                "topicEndpoint${idx + 1}" => module.event_grid_topic["${producer}-${region}"].topic_endpoint
+                "topicEndpoint${idx + 1}" => data.terraform_remote_state.hub.outputs.event_grid_topic["${producer}-${region}"].topic_endpoint
+                # "topicEndpoint${idx + 1}" => module.event_grid_topic["${producer}-${region}"].topic_endpoint
               }
             ) : {},
 

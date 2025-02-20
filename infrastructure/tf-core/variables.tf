@@ -219,6 +219,16 @@ variable "function_apps" {
   })
 }
 
+variable "event_grid_subscriptions" {
+  description = "Configuration for event grid subscriptions"
+  type = object({
+    subscriber_config = map(object({
+      subscription_name       = string
+      subscriber_functionName = string
+    }))
+  })
+}
+
 variable "diagnostic_settings" {
   description = "Configuration for the diagnostic settings"
   type = object({
@@ -397,9 +407,9 @@ variable "function_app_slots" {
 #   type = map(any) # needs to be a loose type definition to allow merging of var.event_grid
 # }
 
-variable "event_grid_configs" {
-  type = map(any) # needs to be a loose type definition to allow merging of var.event_grid_configs
-}
+# variable "event_grid_configs" {
+#   type = map(any) # needs to be a loose type definition to allow merging of var.event_grid_configs
+# }
 
 variable "event_grid_defaults" {
   description = "Default configuration for the Event Grid resource"
