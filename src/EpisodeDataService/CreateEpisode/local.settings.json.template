@@ -6,8 +6,8 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "ServiceInsightsDbConnectionString": "YOUR_CONNECTION_STRING",
     "GetOrganisationIdByCodeUrl":"http://localhost:6081/api/GetOrganisationIdByCode",
-    "topicEndpoint1": "TOPIC_ENDPOINT1",
-    "topicKey1": "TOPIC_KEY1",
+    "topicEndpoint1": "PUBLISH_EPISODE_DATA_TO_THIS_ENDPOINT",
+    "topicKey1": "TOPIC_KEY_FOR_topicEndpoint1",
     "CheckParticipantExistsUrl": "http://localhost:6061/api/GetParticipant"
   },
   "Host": {
