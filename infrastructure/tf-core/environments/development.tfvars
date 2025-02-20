@@ -5,7 +5,7 @@ environment           = "DEV"
 features = {
   acr_enabled                          = false
   api_management_enabled               = false
-  event_grid_enabled                   = false
+  event_grid_enabled                   = true
   private_endpoints_enabled            = true
   private_service_connection_is_manual = false
   public_network_access_enabled        = false
@@ -375,7 +375,7 @@ function_apps = {
       name_suffix                = "receive-data"
       function_endpoint_name     = "ReceiveData"
       app_service_plan_key       = "Default"
-      event_grid_topic_producers = ["receive-data-to-episode-dev", "receive-data-to-profile-dev" ]
+      event_grid_topic_producers = ["receive-data-to-episode-dev", "receive-data-to-profile-dev"]
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"

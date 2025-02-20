@@ -5,7 +5,7 @@ environment           = "NFT"
 features = {
   acr_enabled                          = false
   api_management_enabled               = false
-  event_grid_enabled                   = false
+  event_grid_enabled                   = true
   private_endpoints_enabled            = true
   private_service_connection_is_manual = false
   public_network_access_enabled        = false
@@ -166,9 +166,15 @@ event_grid_configs = {
     subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
   }
   #  writes to this topic
-  receive-data-nft = {
+  receive-data-to-episode-nft = {
     identity_type                = "SystemAssigned"
-    subscription_name            = "receive-data-nft"
+    subscription_name            = "create-ps-episode"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+  #  writes to this topic
+  receive-data-to-profile-nft = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "create-ps-profile"
     subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
   }
 }
@@ -368,7 +374,7 @@ function_apps = {
       name_suffix                = "receive-data"
       function_endpoint_name     = "ReceiveData"
       app_service_plan_key       = "BIAnalyticsDataService"
-      event_grid_topic_producers = ["receive-data-nft"]
+      event_grid_topic_producers = ["receive-data-to-episode-nft", "receive-data-to-profile-nft"]
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
