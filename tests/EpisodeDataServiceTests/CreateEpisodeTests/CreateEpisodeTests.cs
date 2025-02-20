@@ -29,7 +29,7 @@ public class CreateEpisodeTests
     private readonly Mock<IEpisodeTypeLkpRepository> _mockEpisodeTypeLkpRepository = new();
     private readonly Mock<IFinalActionCodeLkpRepository> _mockFinalActionCodeLkpRepository = new();
     private readonly Mock<IReasonClosedCodeLkpRepository> _mockReasonClosedCodeLkpRepository = new();
-    private readonly Mock<IEventGridPublisherClientEpisode> _mockEventGridPublisherClient = new();
+    private readonly Mock<Func<string, IEventGridPublisherClient>> _mockEventGridPublisherClientFactory = new();
     private readonly Mock<Response> _mockEventGridResponse = new();
     private readonly Mock<IHttpRequestService> _mockHttpRequestService = new();
 
@@ -37,7 +37,7 @@ public class CreateEpisodeTests
     {
         var episodeTypeLkpRepository = new EpisodeLkpRepository(_mockEndCodeLkpRepository.Object, _mockEpisodeTypeLkpRepository.Object, _mockFinalActionCodeLkpRepository.Object, _mockReasonClosedCodeLkpRepository.Object);
 
-        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, episodeTypeLkpRepository, _mockEventGridPublisherClient.Object, _mockHttpRequestService.Object);
+        _function = new CreateEpisode(_mockLogger.Object, _mockEpisodeRepository.Object, episodeTypeLkpRepository, _mockEventGridPublisherClientFactory.Object, _mockHttpRequestService.Object);
 
         Environment.SetEnvironmentVariable("CheckParticipantExistsUrl", "CheckParticipantExistsUrl");
 
@@ -91,7 +91,7 @@ public class CreateEpisodeTests
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>()));
+        _mockEventGridPublisherClientFactory.Setup(factory => factory(It.IsAny<string>()).SendEventAsync(It.IsAny<EventGridEvent>()));
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
@@ -239,7 +239,7 @@ public class CreateEpisodeTests
 
         var _mockEventGridResponse = new Mock<Response>();
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>()));
+        _mockEventGridPublisherClientFactory.Setup(factory => factory(It.IsAny<string>()).SendEventAsync(It.IsAny<EventGridEvent>()));
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
@@ -317,7 +317,7 @@ public class CreateEpisodeTests
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>()));
+        _mockEventGridPublisherClientFactory.Setup(factory => factory(It.IsAny<string>()).SendEventAsync(It.IsAny<EventGridEvent>()));
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
@@ -393,7 +393,7 @@ public class CreateEpisodeTests
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>()));
+        _mockEventGridPublisherClientFactory.Setup(factory => factory(It.IsAny<string>()).SendEventAsync(It.IsAny<EventGridEvent>()));
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
@@ -471,7 +471,7 @@ public class CreateEpisodeTests
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>()));
+        _mockEventGridPublisherClientFactory.Setup(factory => factory(It.IsAny<string>()).SendEventAsync(It.IsAny<EventGridEvent>()));
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
@@ -512,7 +512,7 @@ public class CreateEpisodeTests
 
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>())).Throws(new Exception("Error sending event"));
+        _mockEventGridPublisherClientFactory.Setup(factory => factory(It.IsAny<string>()).SendEventAsync(It.IsAny<EventGridEvent>())).Throws(new Exception("Error sending event"));
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
@@ -553,7 +553,7 @@ public class CreateEpisodeTests
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(404);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>())).Throws(new HttpRequestException());
+        _mockEventGridPublisherClientFactory.Setup(factory => factory(It.IsAny<string>()).SendEventAsync(It.IsAny<EventGridEvent>())).Throws(new HttpRequestException());
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
@@ -595,14 +595,14 @@ public class CreateEpisodeTests
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(statusCode));
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>()));
+        _mockEventGridPublisherClientFactory.Setup(factory => factory(It.IsAny<string>()).SendEventAsync(It.IsAny<EventGridEvent>()));
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
         _mockEpisodeRepository.Verify(x => x.CreateEpisode(It.Is<Episode>(e => e.ExceptionFlag == 1)), Times.Once);
-        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.Is<EventGridEvent>(e => e.Data.ToObjectFromJson<FinalizedEpisodeDto>(null).ExceptionFlag == 1)));
+        _mockEventGridPublisherClientFactory.Verify(x => x(It.IsAny<string>()).SendEventAsync(It.Is<EventGridEvent>(e => e.Data.ToObjectFromJson<FinalizedEpisodeDto>(null).ExceptionFlag == 1)));
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }
 
@@ -638,14 +638,14 @@ public class CreateEpisodeTests
         _mockHttpRequestService.Setup(x => x.SendGet($"CheckParticipantExistsUrl?NhsNumber={episode.NhsNumber}&ScreeningId=1")).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         _mockEventGridResponse.Setup(m => m.Status).Returns(200);
-        _mockEventGridPublisherClient.Setup(x => x.SendEventAsync(It.IsAny<EventGridEvent>()));
+        _mockEventGridPublisherClientFactory.Setup(factory => factory(It.IsAny<string>()).SendEventAsync(It.IsAny<EventGridEvent>()));
 
         // Act
         var result = await _function.RunAsync(_mockRequest.Object);
 
         // Assert
         _mockEpisodeRepository.Verify(x => x.CreateEpisode(It.Is<Episode>(e => e.ExceptionFlag == 0)), Times.Once);
-        _mockEventGridPublisherClient.Verify(x => x.SendEventAsync(It.Is<EventGridEvent>(e => e.Data.ToObjectFromJson<FinalizedEpisodeDto>(null).ExceptionFlag == 0)));
+        _mockEventGridPublisherClientFactory.Verify(x => x(It.IsAny<string>()).SendEventAsync(It.Is<EventGridEvent>(e => e.Data.ToObjectFromJson<FinalizedEpisodeDto>(null).ExceptionFlag == 0)));
         Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
     }
 }
