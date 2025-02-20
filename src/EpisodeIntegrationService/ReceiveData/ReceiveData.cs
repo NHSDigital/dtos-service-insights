@@ -13,8 +13,7 @@ public class ReceiveData
 {
     private readonly ILogger<ReceiveData> _logger;
     private readonly IHttpRequestService _httpRequestService;
-    private readonly IEventGridPublisherClientEpisode _eventGridPublisherClientEpisode;
-    private readonly IEventGridPublisherClientParticipant _eventGridPublisherClientParticipant;
+    private readonly Func<string, IEventGridPublisherClient> _eventGridPublisherClientFactory;
     private readonly string[] episodesExpectedHeaders = ["nhs_number", "episode_id", "episode_type", "change_db_date_time", "episode_date", "appointment_made", "date_of_foa", "date_of_as", "early_recall_date", "call_recall_status_authorised_by", "end_code", "end_code_last_updated", "bso_organisation_code", "bso_batch_id", "reason_closed_code", "end_point", "final_action_code"];
     private readonly string[] subjectsExpectedHeaders = ["change_db_date_time", "nhs_number", "superseded_nhs_number", "gp_practice_code", "bso_organisation_code", "next_test_due_date", "subject_status_code", "early_recall_date", "latest_invitation_date", "removal_reason", "removal_date", "reason_for_ceasing_code", "is_higher_risk", "higher_risk_next_test_due_date", "hr_recall_due_date", "higher_risk_referral_reason_code", "date_irradiated", "is_higher_risk_active", "gene_code", "ntdd_calculation_method", "preferred_language"];
 
@@ -27,12 +26,11 @@ public class ReceiveData
     private const string RowProcessedSuccessfullyMessage = "Row No.{rowIndex} processed successfully";
     private const string RowProcessedUnsuccessfullyMessage = "Row No.{rowIndex} processed unsuccessfully";
 
-    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService, IEventGridPublisherClientEpisode eventGridPublisherClientEpisode, IEventGridPublisherClientParticipant eventGridPublisherClientParticipant)
+    public ReceiveData(ILogger<ReceiveData> logger, IHttpRequestService httpRequestService, Func<string, IEventGridPublisherClient> eventGridPublisherClientFactory)
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
-        _eventGridPublisherClientEpisode = eventGridPublisherClientEpisode;
-        _eventGridPublisherClientParticipant = eventGridPublisherClientParticipant;
+        _eventGridPublisherClientFactory = eventGridPublisherClientFactory;
     }
 
 
@@ -239,8 +237,9 @@ public class ReceiveData
                     dataVersion: "1.0",
                     data: modifiedEpisode
                 );
-                _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
-                await _eventGridPublisherClientEpisode.SendEventAsync(eventGridEvent);
+                _logger.LogInformation("Sending Episode event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
+                var episodePublisher = _eventGridPublisherClientFactory("episode");
+                await episodePublisher.SendEventAsync(eventGridEvent);
                 episodeSuccessCount++;
                 episodeRowIndex++;
                 _logger.LogInformation(RowProcessedSuccessfullyMessage, episodeRowIndex);
@@ -383,8 +382,9 @@ public class ReceiveData
                     data: modifiedParticipant
                 );
 
-                _logger.LogInformation("Sending event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
-                await _eventGridPublisherClientParticipant.SendEventAsync(eventGridEvent);
+                _logger.LogInformation("Sending Participant event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
+                var participantPublisher = _eventGridPublisherClientFactory("participant");
+                await participantPublisher.SendEventAsync(eventGridEvent);
                 participantSuccessCount++;
                 participantRowIndex++;
                 _logger.LogInformation(RowProcessedSuccessfullyMessage, participantRowIndex);

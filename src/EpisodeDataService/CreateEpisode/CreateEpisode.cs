@@ -19,11 +19,11 @@ public class CreateEpisode
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
     private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
-    private readonly IEventGridPublisherClientEpisode _eventGridPublisherClient;
+    private readonly Func<string, IEventGridPublisherClient> _eventGridPublisherClientFactory;
     private readonly IHttpRequestService _httpRequestService;
     private const long ScreeningId = 1;
 
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, IEventGridPublisherClientEpisode eventGridPublisherClient, IHttpRequestService httpRequestService)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, Func<string, IEventGridPublisherClient> eventGridPublisherClientFactory, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _episodeRepository = episodeRepository;
@@ -31,7 +31,7 @@ public class CreateEpisode
         _episodeTypeLkpRepository = episodeLkpRepository.EpisodeTypeLkpRepository;
         _finalActionCodeLkpRepository = episodeLkpRepository.FinalActionCodeLkpRepository;
         _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
-        _eventGridPublisherClient = eventGridPublisherClient;
+        _eventGridPublisherClientFactory = eventGridPublisherClientFactory;
         _httpRequestService = httpRequestService;
     }
 
@@ -90,9 +90,10 @@ public class CreateEpisode
                 data: finalizedEpisodeDto
             );
 
+            var episodePublisher = _eventGridPublisherClientFactory("episode");
             try
             {
-                await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
+                await episodePublisher.SendEventAsync(eventGridEvent);
             }
             catch (Exception ex)
             {
