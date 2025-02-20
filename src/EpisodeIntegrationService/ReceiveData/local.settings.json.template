@@ -7,10 +7,10 @@
     "ParticipantManagementUrl": "http://localhost:7074/api/UpdateParticipant",
     "GetEpisodeReferenceDataServiceUrl": "http://localhost:7574/api/GetEpisodeReferenceData",
     "GetAllOrganisationReferenceDataUrl": "http://localhost:6081/api/GetAllOrganisationReferenceData",
-    "topicEndpoint1": "PUBLISH_EPISODE_DATA_TO_THIS_ENDPOINT",
-    "topicKey1": "TOPIC_KEY_FOR_topicEndpoint1",
-    "topicEndpoint2": "PUBLISH_PARTICIPANT_DATA_TO_THIS_ENDPOINT",
-    "topicKey2": "TOPIC_KEY_FOR_topicEndpoint2"
+    "topicEndpoint1": "EPISODE_TOPIC_ENDPOINT",
+    "topicKey1": "EPISODE_TOPIC_KEY",
+    "topicEndpoint2": "PARTICIPANT_TOPIC_ENDPOINT",
+    "topicKey2": "PARTICIPANT_TOPIC_KEY"
   },
   "Host": {
     "LocalHttpPort": 7072
