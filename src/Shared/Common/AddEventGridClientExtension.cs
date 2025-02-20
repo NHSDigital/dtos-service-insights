@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Azure.Messaging.EventGrid;
 using Azure.Identity;
 
 namespace NHS.ServiceInsights.Common;
