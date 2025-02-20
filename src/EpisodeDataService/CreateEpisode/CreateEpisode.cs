@@ -152,8 +152,13 @@ public class CreateEpisode
         return codeObject;
     }
 
-    private async Task<long> GetOrganisationId(string organisationCode)
+    private async Task<long?> GetOrganisationId(string organisationCode)
     {
+        if (!string.IsNullOrWhiteSpace(organisationCode))
+        {
+            return null;
+        }
+
         var url = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
         var response = await _httpRequestService.SendGet(url);
         response.EnsureSuccessStatusCode();

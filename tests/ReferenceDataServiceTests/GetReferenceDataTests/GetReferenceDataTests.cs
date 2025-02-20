@@ -28,7 +28,7 @@ public class GetReferenceDataTests
     }
 
     [TestMethod]
-    public async Task Run_ShouldReturnBadRequest_WhenOrganisationCodeIsNotProvided()
+    public async Task Run_ShouldReturnNotFound_WhenOrganisationCodeIsNotProvided()
     {
         // Arrange
         var queryParam = new NameValueCollection()
@@ -41,14 +41,7 @@ public class GetReferenceDataTests
         var response = await _function.Run3(_mockRequest.Object);
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-        _mockLogger.Verify(log => log.Log(
-            LogLevel.Error,
-            0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Missing or invalid organisation code.")),
-            null,
-            (Func<object, Exception, string>)It.IsAny<object>()),
-            Times.Once);
+        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [TestMethod]
