@@ -5,7 +5,7 @@ environment           = "DEV"
 features = {
   acr_enabled                          = false
   api_management_enabled               = false
-  event_grid_enabled                   = false
+  event_grid_enabled                   = true
   private_endpoints_enabled            = true
   private_service_connection_is_manual = false
   public_network_access_enabled        = false
@@ -167,16 +167,17 @@ event_grid_configs = {
     subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
   }
   #  writes to this topic
-  receive-data-dev = {
+  receive-data-to-episode-dev = {
     identity_type                = "SystemAssigned"
-    subscription_name            = "receive-data-dev"
+    subscription_name            = "create-ps-episode"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+  #  writes to this topic
+  receive-data-to-profile-dev = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "create-ps-profile"
     subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
   }
-  # event-grid-topic-1 = {
-  #   identity_type                = "SystemAssigned"
-  #   subscription_name            = "dev1234"
-  #   subscriber_functionName_list = ["CreateParticipantScreeningEpisode", "CreateParticipantScreeningProfile"]
-  # }
 }
 
 function_apps = {
@@ -326,11 +327,11 @@ function_apps = {
     }
 
     CreateEpisode = {
-      name_suffix               = "create-episode"
-      function_endpoint_name    = "CreateEpisode"
-      app_service_plan_key      = "Default"
-      db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "create-ps-episode-dev"
+      name_suffix                = "create-episode"
+      function_endpoint_name     = "CreateEpisode"
+      app_service_plan_key       = "Default"
+      db_connection_string       = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producers = ["create-ps-episode-dev"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -352,11 +353,11 @@ function_apps = {
     }
 
     UpdateEpisode = {
-      name_suffix               = "update-episode"
-      function_endpoint_name    = "UpdateEpisode"
-      app_service_plan_key      = "Default"
-      db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "update-ps-episode-dev"
+      name_suffix                = "update-episode"
+      function_endpoint_name     = "UpdateEpisode"
+      app_service_plan_key       = "Default"
+      db_connection_string       = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producers = ["update-ps-episode-dev"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -371,10 +372,10 @@ function_apps = {
     }
 
     ReceiveData = {
-      name_suffix               = "receive-data"
-      function_endpoint_name    = "ReceiveData"
-      app_service_plan_key      = "Default"
-      event_grid_topic_producer = "receive-data-dev"
+      name_suffix                = "receive-data"
+      function_endpoint_name     = "ReceiveData"
+      app_service_plan_key       = "Default"
+      event_grid_topic_producers = ["receive-data-to-episode-dev", "receive-data-to-profile-dev"]
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"

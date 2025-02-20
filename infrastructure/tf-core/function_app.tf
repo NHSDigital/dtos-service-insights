@@ -72,11 +72,11 @@ module "functionapp" {
 }
 
 locals {
-  # Filter fa_config to only include those with event_grid_topic_producer
+  # Filter fa_config to only include those with event_grid_topic_producers
   event_grid_function_app_map = {
     for app_key, app_value in var.function_apps.fa_config :
     app_key => app_value
-    if contains(keys(app_value), "event_grid_topic_producer")
+    if contains(keys(app_value), "event_grid_topic_producers")
   }
 
   # There are multiple maps
@@ -87,8 +87,9 @@ locals {
         event_key    = event_key    # 1st iterator
         function_key = function_key # 2nd iterator
         event_value  = event_value
-      }, function_values)                                                                                                      # the block of key/value pairs for a specific collection
-      if contains(keys(function_values), "event_grid_topic_producer") && length(function_values.event_grid_topic_producer) > 0 # Check attribute presence and length
+      }, function_values) # the block of key/value pairs for a specific collection
+      if contains(keys(function_values), "event_grid_topic_producers")
+      && (function_values.event_grid_topic_producers != null ? length(function_values.event_grid_topic_producers) > 0 : false)
     ]
   ])
   # ...then project them into a map with unique keys (combining the iterators), for consumption by a for_each meta argument
@@ -170,9 +171,10 @@ locals {
               } : {}
             ) : {},
 
-            length(config.event_grid_topic_producer) > 0 ? merge(
+            length(try(config.event_grid_topic_producers, [])) > 0 ? merge(
               {
-                "topicEndpoint" = module.event_grid_topic["${config.event_grid_topic_producer}-${region}"].topic_endpoint
+                for idx, producer in coalescelist(config.event_grid_topic_producers, []) :
+                "topicEndpoint${idx + 1}" => module.event_grid_topic["${producer}-${region}"].topic_endpoint
               }
             ) : {},
 

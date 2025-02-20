@@ -5,7 +5,7 @@ environment           = "INT"
 features = {
   acr_enabled                          = false
   api_management_enabled               = false
-  event_grid_enabled                   = false
+  event_grid_enabled                   = true
   private_endpoints_enabled            = true
   private_service_connection_is_manual = false
   public_network_access_enabled        = false
@@ -166,9 +166,15 @@ event_grid_configs = {
     subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
   }
   #  writes to this topic
-  receive-data-int = {
+  receive-data-to-episode-int = {
     identity_type                = "SystemAssigned"
-    subscription_name            = "receive-data-int"
+    subscription_name            = "create-ps-episode"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+  #  writes to this topic
+  receive-data-to-profile-int = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "create-ps-profile"
     subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
   }
 }
@@ -320,11 +326,11 @@ function_apps = {
     }
 
     CreateEpisode = {
-      name_suffix               = "create-episode"
-      function_endpoint_name    = "CreateEpisode"
-      app_service_plan_key      = "BIAnalyticsDataService"
-      db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "create-ps-episode-int"
+      name_suffix                = "create-episode"
+      function_endpoint_name     = "CreateEpisode"
+      app_service_plan_key       = "BIAnalyticsDataService"
+      db_connection_string       = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producers = ["create-ps-episode-int"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -346,11 +352,11 @@ function_apps = {
     }
 
     UpdateEpisode = {
-      name_suffix               = "update-episode"
-      function_endpoint_name    = "UpdateEpisode"
-      app_service_plan_key      = "BIAnalyticsDataService"
-      db_connection_string      = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producer = "update-ps-episode-int"
+      name_suffix                = "update-episode"
+      function_endpoint_name     = "UpdateEpisode"
+      app_service_plan_key       = "BIAnalyticsDataService"
+      db_connection_string       = "ServiceInsightsDbConnectionString"
+      event_grid_topic_producers = ["update-ps-episode-int"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -368,7 +374,7 @@ function_apps = {
       name_suffix               = "receive-data"
       function_endpoint_name    = "ReceiveData"
       app_service_plan_key      = "BIAnalyticsDataService"
-      event_grid_topic_producer = "receive-data-int"
+      event_grid_topic_producers = ["receive-data-to-episode-int", "receive-data-to-profile-int"]
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
