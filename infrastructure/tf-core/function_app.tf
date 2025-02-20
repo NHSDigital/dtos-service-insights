@@ -88,7 +88,6 @@ locals {
         function_key = function_key # 2nd iterator
         event_value  = event_value
       }, function_values) # the block of key/value pairs for a specific collection
-      # if contains(keys(function_values), "event_grid_topic_producers") && length(function_values.event_grid_topic_producers) > 0 # Check attribute presence and length
       if contains(keys(function_values), "event_grid_topic_producers")
       && (function_values.event_grid_topic_producers != null ? length(function_values.event_grid_topic_producers) > 0 : false)
     ]
@@ -172,11 +171,6 @@ locals {
               } : {}
             ) : {},
 
-            # length(config.event_grid_topic_producers) > 0 ? merge(
-            #   {
-            #     "topicEndpoint" = module.event_grid_topic["${config.event_grid_topic_producers}-${region}"].topic_endpoint
-            #   }
-            # ) : {},
             length(try(config.event_grid_topic_producers, [])) > 0 ? merge(
               {
                 for idx, producer in coalescelist(config.event_grid_topic_producers, []) :
