@@ -146,7 +146,7 @@ event_grid_defaults = {
   public_network_access_enabled = false
 }
 
-event_grid_configs = {
+event_grid_subscriptions = {
   # CreateEpisode writes to this topic
   create-episode-hub-nft = {
     identity_type                = "SystemAssigned"
