@@ -19,39 +19,38 @@ public static class AddEventGridClientExtension
 
     private static IEventGridPublisherClient CreateEventGridPublisherClient(HostBuilderContext context, string topicName)
     {
+        string topicKey;
+        string topicEndpoint;
+
         if (topicName == "episode")
         {
-            return CreateEpisodeClient(context);
+            topicKey = Environment.GetEnvironmentVariable("topicKey1");
+            topicEndpoint = Environment.GetEnvironmentVariable("topicEndpoint1");
         }
         else if (topicName == "participant")
         {
-            return CreateParticipantClient(context);
+            topicKey = Environment.GetEnvironmentVariable("topicKey2");
+            topicEndpoint = Environment.GetEnvironmentVariable("topicEndpoint2");
         }
         else
         {
             throw new ArgumentException("Invalid topic name", nameof(topicName));
         }
+
+        return CreateClient(context, topicKey, topicEndpoint, topicName);
     }
 
-    private static IEventGridPublisherClient CreateEpisodeClient(HostBuilderContext context)
+    private static IEventGridPublisherClient CreateClient(HostBuilderContext context, string topicKey, string topicEndpoint, string topicName)
     {
-        if (HostEnvironmentEnvExtensions.IsDevelopment(context.HostingEnvironment))
+        var eventGridClient = HostEnvironmentEnvExtensions.IsDevelopment(context.HostingEnvironment)
+            ? new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(topicEndpoint), new Azure.AzureKeyCredential(topicKey))
+            : new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(topicEndpoint), new DefaultAzureCredential());
+
+        return topicName switch
         {
-            var credentials = new Azure.AzureKeyCredential(Environment.GetEnvironmentVariable("topicKey1"));
-            return new EventGridPublisherClientEpisode(new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint1")), credentials));
-        }
-
-        return new EventGridPublisherClientEpisode(new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint1")), new DefaultAzureCredential()));
-    }
-
-    private static IEventGridPublisherClient CreateParticipantClient(HostBuilderContext context)
-    {
-        if (HostEnvironmentEnvExtensions.IsDevelopment(context.HostingEnvironment))
-        {
-            var credentials = new Azure.AzureKeyCredential(Environment.GetEnvironmentVariable("topicKey2"));
-            return new EventGridPublisherClientParticipant(new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint2")), credentials));
-        }
-
-        return new EventGridPublisherClientParticipant(new Azure.Messaging.EventGrid.EventGridPublisherClient(new Uri(Environment.GetEnvironmentVariable("topicEndpoint2")), new DefaultAzureCredential()));
+            "episode" => new EventGridPublisherClientEpisode(eventGridClient),
+            "participant" => new EventGridPublisherClientParticipant(eventGridClient),
+            _ => throw new ArgumentException("Invalid topic name", nameof(topicName))
+        };
     }
 }
