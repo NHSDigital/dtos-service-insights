@@ -28,7 +28,7 @@ module "event_grid_subscription" {
 
   subscription_name    = each.value.event_grid_subscription_key
   resource_group_name  = azurerm_resource_group.core[each.value.region].name
-  azurerm_eventgrid_id = module.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].id
+  azurerm_eventgrid_id = data.terraform_remote_state.hub.outputs.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].id
 
   subscriber_function_details = flatten([
     for functionName in each.value.subscriber_functionName : {
@@ -38,7 +38,8 @@ module "event_grid_subscription" {
   ])
 
   dead_letter_storage_account_container_name = "deadletterqueue"
-  dead_letter_storage_account_id             = module.storage["eventgrid-${each.value.region}"].storage_account_id
+  dead_letter_storage_account_id             = data.terraform_remote_state.hub.outputs.storage["eventgrid-uksouth"].storage_account_id
+  # dead_letter_storage_account_id             = module.storage["eventgrid-${each.value.region}"].storage_account_id
 
   tags = var.tags
 }

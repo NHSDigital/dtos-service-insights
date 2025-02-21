@@ -146,65 +146,36 @@ event_grid_defaults = {
   public_network_access_enabled = false
 }
 
-# event_grid_configs = {
-#   # CreateEpisode writes to this topic
-#   create-ps-episode-nft = {
-#     identity_type                = "SystemAssigned"
-#     subscription_name            = "create-ps-episode-nft"
-#     subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
-#   }
-#   # UpdateEpisode writes to this topic
-#   update-ps-episode-nft = {
-#     identity_type                = "SystemAssigned"
-#     subscription_name            = "update-ps-episode-nft"
-#     subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
-#   }
-#   #  writes to this topic
-#   create-ps-profile-nft = {
-#     identity_type                = "SystemAssigned"
-#     subscription_name            = "create-ps-profile-nft"
-#     subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
-#   }
-#   #  writes to this topic
-#   receive-data-to-episode-nft = {
-#     identity_type                = "SystemAssigned"
-#     subscription_name            = "create-ps-episode"
-#     subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
-#   }
-#   #  writes to this topic
-#   receive-data-to-profile-nft = {
-#     identity_type                = "SystemAssigned"
-#     subscription_name            = "create-ps-profile"
-#     subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
-#   }
-# }
-
-event_grid_subscriptions = {
-  subscriber_config = {
-    create-ps-episode-nft = {
-      event_grid_topic_name   = "create-ps-episode-hub"
-      subscriber_functionName = "CreateParticipantScreeningEpisode"
-    }
-
-    create-ps-episode-nft = {
-      event_grid_topic_name   = "create-ps-profile-hub"
-      subscriber_functionName = "CreateParticipantScreeningEpisode"
-    }
-
-    create-ps-profile-nft = {
-      event_grid_topic_name   = "receive-data-to-episode-hub"
-      subscriber_functionName = "CreateParticipantScreeningProfile"
-    }
-
-    create-ps-episode = {
-      event_grid_topic_name  = "receive-data-to-profile-hub"
-      subscriber_functionNam = "CreateParticipantScreeningEpisode"
-    }
-
-    create-ps-profile = {
-      event_grid_topic_name        = "update-ps-episode-hub"
-      subscriber_functionName_list = "CreateParticipantScreeningProfile"
-    }
+event_grid_configs = {
+  # CreateEpisode writes to this topic
+  create-episode-hub-nft = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "create-ps-episode-nft"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+  # UpdateEpisode writes to this topic
+  update-episode-hub-nft = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "update-ps-episode-nft"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+  #  writes to this topic
+  # create-ps-profile-nft = {
+  #   identity_type                = "SystemAssigned"
+  #   subscription_name            = "create-ps-profile-nft"
+  #   subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
+  # }
+  #  writes to this topic
+  receive-data-to-episode-hub-nft = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "create-ps-episode"
+    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+  }
+  #  writes to this topic
+  receive-data-to-profile-hub-nft = {
+    identity_type                = "SystemAssigned"
+    subscription_name            = "create-ps-profile"
+    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
   }
 }
 
