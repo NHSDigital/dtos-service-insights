@@ -34,7 +34,7 @@ public class GetParticipantScreeningEpisodeData
         {
             EpisodesDataPage result = await _participantScreeningEpisodeRepository.GetParticipantScreeningEpisode(page, pageSize, startDate, endDate, numberOfRowsToSkip);
 
-            _logger.LogInformation("GetParticipantScreeningEpisode: Participant episodes found successfully");
+            _logger.LogInformation("GetParticipantScreeningEpisodes: Participant episodes found successfully");
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json");
