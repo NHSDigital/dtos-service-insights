@@ -407,9 +407,9 @@ variable "function_app_slots" {
 #   type = map(any) # needs to be a loose type definition to allow merging of var.event_grid
 # }
 
-variable "event_grid_configs" {
-  type = map(any) # needs to be a loose type definition to allow merging of var.event_grid_configs
-}
+# variable "event_grid_configs" {
+#   type = map(any) # needs to be a loose type definition to allow merging of var.event_grid_configs
+# }
 
 variable "event_grid_defaults" {
   description = "Default configuration for the Event Grid resource"
