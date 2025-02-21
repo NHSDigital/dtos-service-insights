@@ -8,7 +8,6 @@ using NHS.ServiceInsights.Data;
 using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Common;
 using Azure.Messaging.EventGrid;
-using Google.Protobuf;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
@@ -20,11 +19,11 @@ public class CreateEpisode
     private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
     private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
     private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
-    private readonly EventGridPublisherClient _eventGridPublisherClient;
+    private readonly Func<string, IEventGridPublisherClient> _eventGridPublisherClientFactory;
     private readonly IHttpRequestService _httpRequestService;
     private const long ScreeningId = 1;
 
-    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
+    public CreateEpisode(ILogger<CreateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, Func<string, IEventGridPublisherClient> eventGridPublisherClientFactory, IHttpRequestService httpRequestService)
     {
         _logger = logger;
         _episodeRepository = episodeRepository;
@@ -32,7 +31,7 @@ public class CreateEpisode
         _episodeTypeLkpRepository = episodeLkpRepository.EpisodeTypeLkpRepository;
         _finalActionCodeLkpRepository = episodeLkpRepository.FinalActionCodeLkpRepository;
         _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
-        _eventGridPublisherClient = eventGridPublisherClient;
+        _eventGridPublisherClientFactory = eventGridPublisherClientFactory;
         _httpRequestService = httpRequestService;
     }
 
@@ -91,11 +90,14 @@ public class CreateEpisode
                 data: finalizedEpisodeDto
             );
 
-            var result = await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
-
-            if (result.Status != (int)HttpStatusCode.OK)
+            var episodePublisher = _eventGridPublisherClientFactory("episode");
+            try
             {
-                _logger.LogError("Failed to send event to event grid");
+                await episodePublisher.SendEventAsync(eventGridEvent);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"Failed to send event to event grid");
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 

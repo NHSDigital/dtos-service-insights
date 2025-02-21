@@ -11,29 +11,17 @@ using NHS.ServiceInsights.Common;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
 
-public class UpdateEpisode
+public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, Func<string, IEventGridPublisherClient> eventGridPublisherClientFactory, IHttpRequestService httpRequestService)
 {
-    private readonly ILogger<UpdateEpisode> _logger;
-    private readonly IEpisodeRepository _episodeRepository;
-    private readonly IEndCodeLkpRepository _endCodeLkpRepository;
-    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
-    private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
-    private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
-    private readonly EventGridPublisherClient _eventGridPublisherClient;
-    private readonly IHttpRequestService _httpRequestService;
+    private readonly ILogger<UpdateEpisode> _logger = logger;
+    private readonly IEpisodeRepository _episodeRepository = episodeRepository;
+    private readonly IEndCodeLkpRepository _endCodeLkpRepository = episodeLkpRepository.EndCodeLkpRepository;
+    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository = episodeLkpRepository.EpisodeTypeLkpRepository;
+    private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository = episodeLkpRepository.FinalActionCodeLkpRepository;
+    private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
+    private readonly Func<string, IEventGridPublisherClient> _eventGridPublisherClientFactory = eventGridPublisherClientFactory;
+    private readonly IHttpRequestService _httpRequestService = httpRequestService;
     private const long ScreeningId = 1;
-
-    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, EventGridPublisherClient eventGridPublisherClient, IHttpRequestService httpRequestService)
-    {
-        _logger = logger;
-        _episodeRepository = episodeRepository;
-        _endCodeLkpRepository = episodeLkpRepository.EndCodeLkpRepository;
-        _episodeTypeLkpRepository = episodeLkpRepository.EpisodeTypeLkpRepository;
-        _finalActionCodeLkpRepository = episodeLkpRepository.FinalActionCodeLkpRepository;
-        _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
-        _eventGridPublisherClient = eventGridPublisherClient;
-        _httpRequestService = httpRequestService;
-    }
 
     [Function("UpdateEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put")] HttpRequestData req)
@@ -107,11 +95,15 @@ public class UpdateEpisode
                 data: finalizedEpisodeDto
             );
 
-            var result = await _eventGridPublisherClient.SendEventAsync(eventGridEvent);
-
-            if (result.Status != (int)HttpStatusCode.OK)
+            var episodePublisher = _eventGridPublisherClientFactory("episode");
+            try
             {
-                _logger.LogError("Failed to send event to event grid");
+                await episodePublisher.SendEventAsync(eventGridEvent);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"Failed to send event to event grid");
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 

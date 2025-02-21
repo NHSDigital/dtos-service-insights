@@ -5,9 +5,9 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "ServiceInsightsDbConnectionString": "YOUR_CONNECTION_STRING",
-    "topicEndpoint": "https://sams-test-topic.uksouth-1.eventgrid.azure.net/api/events",
     "GetOrganisationIdByCodeUrl":"http://localhost:6081/api/GetOrganisationIdByCode",
-    "topicKey": "TOPIC_KEY",
+    "topicEndpoint1": "EPISODE_TOPIC_ENDPOINT",
+    "topicKey1": "EPISODE_TOPIC_KEY",
     "CheckParticipantExistsUrl": "http://localhost:6061/api/GetParticipant"
   },
   "Host": {
