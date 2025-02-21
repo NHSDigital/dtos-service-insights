@@ -88,32 +88,27 @@ public class GetReferenceData
     {
         _logger.LogInformation("GetReferenceData: start");
 
-        string organisationCode = req.Query["organisation_code"];
-        if (string.IsNullOrWhiteSpace(organisationCode))
+        try
         {
-            _logger.LogError("Missing or invalid organisation code.");
-            return req.CreateResponse(HttpStatusCode.BadRequest);
-        }
-            try
+            string organisationCode = req.Query["organisation_code"];
+            long? organisationID = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
+            if (organisationID == null)
             {
-                long? organisationID = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
-                if (organisationID == null)
-                {
-                    _logger.LogError("organisation not found.");
-                    return req.CreateResponse(HttpStatusCode.NotFound);
-                }
-                _logger.LogInformation("organisation found successfully.");
+                _logger.LogError("organisation not found.");
+                return req.CreateResponse(HttpStatusCode.NotFound);
+            }
+            _logger.LogInformation("organisation found successfully.");
 
-                var response = req.CreateResponse(HttpStatusCode.OK);
-                await JsonSerializer.SerializeAsync(response.Body, organisationID);
-                response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                return response;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "GetReferenceData: Failed to get organisation from the db.\nException: {Message}", ex.Message);
-                return req.CreateResponse(HttpStatusCode.InternalServerError);
-            }
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await JsonSerializer.SerializeAsync(response.Body, organisationID);
+            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetReferenceData: Failed to get organisation from the db.\nException: {Message}", ex.Message);
+            return req.CreateResponse(HttpStatusCode.InternalServerError);
+        }
 
     }
 
