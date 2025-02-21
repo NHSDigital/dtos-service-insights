@@ -30,12 +30,19 @@ module "event_grid_subscription" {
   resource_group_name  = azurerm_resource_group.core[each.value.region].name
   azurerm_eventgrid_id = data.terraform_remote_state.hub.outputs.event_grid_topic["${each.value.event_grid_key}-${each.value.region}"].id
 
-  subscriber_function_details = flatten([
-    for functionName in each.value.subscriber_functionName : {
-      function_endpoint = format("%s/functions/%s", module.functionapp["${functionName}-${each.value.region}"].id, functionName)
-      principal_id      = module.functionapp["${functionName}-${each.value.region}"].function_app_sami_id
-    }
-  ])
+
+  subscriber_function_details = {
+    function_endpoint = format("%s/functions/%s", module.functionapp["${subscriber_functionName}-${each.value.region}"].id, each.value.subscriber_functionName)
+    principal_id      = module.functionapp["${each.value.subscriber_functionName}-${each.value.region}"].function_app_sami_id
+
+  }
+
+  # flatten([
+  #   for functionName in each.value.subscriber_functionName : {
+  #     function_endpoint = format("%s/functions/%s", module.functionapp["${functionName}-${each.value.region}"].id, functionName)
+  #     principal_id      = module.functionapp["${functionName}-${each.value.region}"].function_app_sami_id
+  #   }
+  # ])
 
   dead_letter_storage_account_container_name = "deadletterqueue"
   dead_letter_storage_account_id             = data.terraform_remote_state.hub.outputs.storage["eventgrid-uksouth"].storage_account_id

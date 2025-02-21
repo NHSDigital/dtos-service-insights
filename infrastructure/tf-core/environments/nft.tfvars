@@ -149,15 +149,13 @@ event_grid_defaults = {
 event_grid_subscriptions = {
   # CreateEpisode writes to this topic
   create-episode-hub-nft = {
-    identity_type                = "SystemAssigned"
     subscription_name            = "create-ps-episode-nft"
-    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+    subscriber_functionName      = "CreateParticipantScreeningEpisode"
   }
   # UpdateEpisode writes to this topic
   update-episode-hub-nft = {
-    identity_type                = "SystemAssigned"
     subscription_name            = "update-ps-episode-nft"
-    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+    subscriber_functionName      = "CreateParticipantScreeningEpisode"
   }
   #  writes to this topic
   # create-ps-profile-nft = {
@@ -167,15 +165,13 @@ event_grid_subscriptions = {
   # }
   #  writes to this topic
   receive-data-to-episode-hub-nft = {
-    identity_type                = "SystemAssigned"
     subscription_name            = "create-ps-episode"
-    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
+    subscriber_functionName      = "CreateParticipantScreeningEpisode"
   }
   #  writes to this topic
   receive-data-to-profile-hub-nft = {
-    identity_type                = "SystemAssigned"
     subscription_name            = "create-ps-profile"
-    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
+    subscriber_functionName      = "CreateParticipantScreeningProfile"
   }
 }
 
