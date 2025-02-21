@@ -219,6 +219,16 @@ variable "function_apps" {
   })
 }
 
+variable "event_grid_subscriptions" {
+  description = "Configuration for event grid subscriptions"
+  type = object({
+    subscriber_config = map(object({
+      event_grid_topic_name   = string
+      subscriber_functionName = string
+    }))
+  })
+}
+
 variable "diagnostic_settings" {
   description = "Configuration for the diagnostic settings"
   type = object({
