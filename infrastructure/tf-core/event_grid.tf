@@ -32,7 +32,7 @@ module "event_grid_subscription" {
 
 
   subscriber_function_details = {
-    function_endpoint = format("%s/functions/%s", module.functionapp["${subscriber_functionName}-${each.value.region}"].id, each.value.subscriber_functionName)
+    function_endpoint = format("%s/functions/%s", module.functionapp["${each.value.subscriber_functionName}-${each.value.region}"].id, each.value.subscriber_functionName)
     principal_id      = module.functionapp["${each.value.subscriber_functionName}-${each.value.region}"].function_app_sami_id
 
   }
