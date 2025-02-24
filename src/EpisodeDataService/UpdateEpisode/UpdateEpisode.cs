@@ -168,7 +168,7 @@ public class UpdateEpisode
     {
         if (string.IsNullOrWhiteSpace(organisationCode))
         {
-            _logger.LogError("Organisation id is null");
+            _logger.LogInformation("Organisation id is null");
             return null;
         }
 

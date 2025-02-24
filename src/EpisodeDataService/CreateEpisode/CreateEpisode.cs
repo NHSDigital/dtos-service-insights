@@ -156,7 +156,7 @@ public class CreateEpisode
     {
         if (string.IsNullOrWhiteSpace(organisationCode))
         {
-            _logger.LogError("Organisation code is null");
+            _logger.LogInformation("Organisation code is null");
             return null;
         }
 
