@@ -97,7 +97,7 @@ public class GetReferenceData
                 _logger.LogError("organisation not found.");
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
-            _logger.LogInformation("organisation found successfully.");
+            _logger.LogInformation("organisation with ID: {organisationID} found successfully.", organisationID);
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             await JsonSerializer.SerializeAsync(response.Body, organisationID);

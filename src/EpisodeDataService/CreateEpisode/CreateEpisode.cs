@@ -154,8 +154,9 @@ public class CreateEpisode
 
     private async Task<long?> GetOrganisationId(string organisationCode)
     {
-        if (!string.IsNullOrWhiteSpace(organisationCode))
+        if (string.IsNullOrWhiteSpace(organisationCode))
         {
+            _logger.LogError("Organisation code is null");
             return null;
         }
 

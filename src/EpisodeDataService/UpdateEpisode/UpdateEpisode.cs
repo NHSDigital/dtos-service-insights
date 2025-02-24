@@ -166,8 +166,9 @@ public class UpdateEpisode
     }
     private async Task<long?> GetOrganisationId(string organisationCode)
     {
-        if (!string.IsNullOrWhiteSpace(organisationCode))
+        if (string.IsNullOrWhiteSpace(organisationCode))
         {
+            _logger.LogError("Organisation id is null");
             return null;
         }
 
