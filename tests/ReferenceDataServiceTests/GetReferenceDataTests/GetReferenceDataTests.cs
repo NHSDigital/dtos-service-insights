@@ -156,7 +156,7 @@ public class GetReferenceDataTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Information,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("organisation found successfully.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("organisation with ID: 12345 found successfully.")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
