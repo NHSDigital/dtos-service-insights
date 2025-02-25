@@ -121,7 +121,7 @@ app_service_plan = {
   }
 
   instances = {
-    Default = {}
+    DefaultServicePlan = {}
     # BIAnalyticsDataService       = {}
     # BIAnalyticsService           = {}
     # DemographicsService          = {}
@@ -211,21 +211,21 @@ function_apps = {
     CreateParticipantScreeningEpisodeData = {
       name_suffix            = "create-ps-episode-data"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningProfileData = {
       name_suffix            = "create-ps-profile-data"
       function_endpoint_name = "CreateParticipantScreeningProfile"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningProfile = {
       name_suffix            = "get-ps-profile"
       function_endpoint_name = "GetParticipantScreeningProfile"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
       app_urls = [
         {
@@ -238,28 +238,28 @@ function_apps = {
     GetParticipantScreeningProfileData = {
       name_suffix            = "get-ps-profile-data"
       function_endpoint_name = "GetParticipantScreeningProfileData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisode = {
       name_suffix            = "get-ps-episode"
       function_endpoint_name = "GetParticipantScreeningEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisodeData = {
       name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningEpisode = {
       name_suffix            = "create-ps-episode"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "CreateParticipantScreeningEpisodeUrl"
@@ -288,7 +288,7 @@ function_apps = {
     CreateParticipantScreeningProfile = {
       name_suffix            = "create-ps-profile"
       function_endpoint_name = "CreateParticipantScreeningProfile"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "CreateParticipantScreeningProfileUrl"
@@ -316,20 +316,20 @@ function_apps = {
     GetParticipantScreeningEpisodeData = {
       name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetDemographicsData = {
       name_suffix            = "get-demographics-data"
       function_endpoint_name = "GetDemographicsData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
     }
 
     CreateEpisode = {
       name_suffix                = "create-episode"
       function_endpoint_name     = "CreateEpisode"
-      app_service_plan_key       = "Default"
+      app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
       event_grid_topic_producers = ["create-ps-episode-dev"]
       app_urls = [
@@ -348,14 +348,14 @@ function_apps = {
     GetEpisode = {
       name_suffix            = "get-episode"
       function_endpoint_name = "GetEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     UpdateEpisode = {
       name_suffix                = "update-episode"
       function_endpoint_name     = "UpdateEpisode"
-      app_service_plan_key       = "Default"
+      app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
       event_grid_topic_producers = ["update-ps-episode-dev"]
       app_urls = [
@@ -374,7 +374,7 @@ function_apps = {
     ReceiveData = {
       name_suffix                = "receive-data"
       function_endpoint_name     = "ReceiveData"
-      app_service_plan_key       = "Default"
+      app_service_plan_key       = "DefaultServicePlan"
       event_grid_topic_producers = ["receive-data-to-episode-dev", "receive-data-to-profile-dev"]
       app_urls = [
         {
@@ -400,7 +400,7 @@ function_apps = {
     CreateUpdateEpisode = {
       name_suffix            = "create-update-episode"
       function_endpoint_name = "CreateUpdateEpisode"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "CreateEpisodeUrl"
@@ -420,7 +420,7 @@ function_apps = {
     GetEpisodeMgmt = {
       name_suffix            = "get-episode-mgmt"
       function_endpoint_name = "GetEpisodeMgmt"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "GetEpisodeUrl"
@@ -432,7 +432,7 @@ function_apps = {
     RetrieveMeshFile = {
       name_suffix            = "retrieve-mesh-file"
       function_endpoint_name = "RetrieveMeshFile"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       key_vault_url          = "KeyVaultConnectionString"
       env_vars_static = {
         TimerExpression     = "*/5 * * * *"
@@ -444,33 +444,33 @@ function_apps = {
     GetParticipant = {
       name_suffix            = "get-participant"
       function_endpoint_name = "GetParticipant"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
     }
 
     UpdateParticipant = {
       name_suffix            = "update-participant"
       function_endpoint_name = "UpdateParticipant"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
     }
 
     GetOrganisationData = {
       name_suffix            = "get-organisation-data"
       function_endpoint_name = "GetOrganisationData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetScreeningData = {
       name_suffix            = "get-screening-data"
       function_endpoint_name = "GetScreeningData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetEpisodeReferenceData = {
       name_suffix            = "get-episode-ref-data"
       function_endpoint_name = "GetEpisodeReferenceData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "RetrieveEpisodeReferenceDataServiceUrl"
@@ -483,7 +483,7 @@ function_apps = {
     RetrieveEpisodeRefData = {
       name_suffix            = "retrieve-episode-ref-data"
       function_endpoint_name = "RetrieveEpisodeRefData"
-      app_service_plan_key   = "Default"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
   }
