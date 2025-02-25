@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Model;
 using NHS.MESH.Client.Contracts.Services;
@@ -25,6 +26,21 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         _meshInboxService = meshInboxService;
         _blobStorageHelper = blobStorageHelper;
         _meshOperationService = meshOperationService;
+
+        // Display version of GzipHelper assembly
+        LogGzipHelperVersion();
+    }
+
+    private void LogGzipHelperVersion()
+    {
+        var gzipHelperAssembly = Assembly.GetAssembly(typeof(GZIPHelpers));
+        var version = gzipHelperAssembly?.GetName().Version?.ToString() ?? "Unknown";
+        if (gzipHelperAssembly == null)
+        {
+            _logger.LogWarning("GZIPHelper assembly could not be loaded.");
+            return;
+        }
+        _logger.LogInformation("GZIPHelper assembly version: {Version}", version);
     }
 
     public async Task<bool> MoveFilesFromMeshToBlob(Func<MessageMetaData, bool> predicate, Func<MessageMetaData, string> fileNameFunction, string mailboxId, string blobConnectionString, string destinationContainer, string poisonContainer, bool executeHandshake = false)
@@ -177,38 +193,57 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         }
 
         string fileName = result.Response.FileAttachment.FileName;
+        byte[] fileContent = result.Response.FileAttachment.Content;
+
+        // Log file size before decompression
+        _logger.LogInformation("File size before decompression: {Size} bytes", fileContent.Length);
 
         // Check for GZIP magic bytes (1F 8B)
-        bool isGzip = result.Response.FileAttachment.Content.Length > 2 &&
-            result.Response.FileAttachment.Content[0] == 0x1F &&
-            result.Response.FileAttachment.Content[1] == 0x8B;
+        bool isGzip = fileContent.Length > 2 && fileContent[0] == 0x1F && fileContent[1] == 0x8B;
 
         if (isGzip)
         {
             try
             {
                 _logger.LogInformation("Detected GZIP file, decompressing: {fileName}", fileName);
-                var decompressedFileContent = GZIPHelpers.DeCompressBuffer(result.Response.FileAttachment.Content);
-                if (decompressedFileContent != null && decompressedFileContent.Length > 0)
+
+                // Log the first few bytes of the file content for debugging
+                _logger.LogInformation("First 10 bytes of file content: {Bytes}", BitConverter.ToString(fileContent.Take(10).ToArray()));
+
+                var decompressedFileContent = GZIPHelpers.DeCompressBuffer(fileContent);
+
+                // Log the result of the decompression
+                if (decompressedFileContent != null)
                 {
-                    string originalFileName = Path.GetFileNameWithoutExtension(fileName);
-                    _logger.LogInformation("Decompression successful for GZIP file: {fileName}", originalFileName);
-                    return new BlobFile(decompressedFileContent, originalFileName);
+                    _logger.LogInformation("Decompressed file size: {Size} bytes", decompressedFileContent.Length);
                 }
                 else
+                {
+                    _logger.LogWarning("Decompression returned null for file: {fileName}", fileName);
+                }
+
+                // Check if decompression returned null or empty content
+                if (decompressedFileContent == null || decompressedFileContent.Length == 0)
                 {
                     _logger.LogWarning("Decompression returned empty content for file: {fileName}", fileName);
                     return null;
                 }
+
+                string originalFileName = Path.GetFileNameWithoutExtension(fileName);
+                _logger.LogInformation("Decompression successful for GZIP file: {fileName}", originalFileName);
+
+                // Log file size after decompression
+                _logger.LogInformation("File size after decompression: {Size} bytes", decompressedFileContent.Length);
+
+                return new BlobFile(decompressedFileContent, originalFileName);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to decompress GZIP file: {fileName}", fileName);
-                return new BlobFile(result.Response.FileAttachment.Content, $"{messageId}_{fileName}");
+                return new BlobFile(fileContent, $"{messageId}_{fileName}");
             }
         }
 
-        return new BlobFile(result.Response.FileAttachment.Content, fileName);
+        return new BlobFile(fileContent, fileName);
     }
-
 }
