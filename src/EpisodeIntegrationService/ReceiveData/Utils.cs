@@ -32,9 +32,11 @@ public static class Utils
     {
         if (string.IsNullOrEmpty(dateTime)) return null;
         foreach (var format in formats)
-        if (DateTimeOffset.TryParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTimeOffset dto))
         {
-            return dto.UtcDateTime;
+            if (DateTimeOffset.TryParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTimeOffset dto))
+            {
+                return dto.UtcDateTime;
+            }
         }
         return null;
     }
