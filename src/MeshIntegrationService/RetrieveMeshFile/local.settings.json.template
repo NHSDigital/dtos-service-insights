@@ -9,6 +9,7 @@
     "BSSContainerName": "inbound",
     "PoisonContainerName": "inbound-poison",
     "MeshPassword": "password",
+    "MeshKeyName": "meshpfx.pfx",
     "MeshSharedKey": "TestKey",
     "MeshKeyPassphrase":"test123",
     "TimerExpression":"*/5 * * * *"

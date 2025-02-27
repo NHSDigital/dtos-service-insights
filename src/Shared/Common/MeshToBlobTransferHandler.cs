@@ -196,7 +196,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         byte[] fileContent = result.Response.FileAttachment.Content;
 
         // Log file size before decompression
-        _logger.LogInformation("File size before decompression: {Size} bytes", fileContent.Length);
+        _logger.LogInformation("File attachment size: {Size} bytes for MessageId: {MessageId}, FileName: {FileName}", fileContent.Length, messageId, fileName);
 
         // Check for GZIP magic bytes (1F 8B)
         bool isGzip = fileContent.Length > 2 && fileContent[0] == 0x1F && fileContent[1] == 0x8B;
@@ -226,7 +226,9 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
                 if (decompressedFileContent == null || decompressedFileContent.Length == 0)
                 {
                     _logger.LogWarning("Decompression returned empty content for file: {fileName}", fileName);
-                    return null;
+
+                    // Move the original file to the poison container for further analysis
+                    return new BlobFile(fileContent, $"{messageId}_{fileName}");
                 }
 
                 string originalFileName = Path.GetFileNameWithoutExtension(fileName);
@@ -240,10 +242,13 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to decompress GZIP file: {fileName}", fileName);
+
+                // Move the original file to the poison container for further analysis
                 return new BlobFile(fileContent, $"{messageId}_{fileName}");
             }
         }
 
         return new BlobFile(fileContent, fileName);
     }
+
 }
