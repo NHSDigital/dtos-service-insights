@@ -101,7 +101,7 @@ public class ReceiveDataTests
             EarlyRecallDate = DateOnly.Parse("2018-03-14"),
             CallRecallStatusAuthorisedBy = "SCREENING_OFFICE",
             EndCode = "SC",
-            EndCodeLastUpdated = DateTime.Parse("2020-03-31 00:00:00").ToUniversalTime(),
+            EndCodeLastUpdated = DateTime.Parse("2020-03-31 00:00:00+01").ToUniversalTime(),
             OrganisationCode = "LAV",
             BatchId = "LAV121798J",
             EndPoint = "S+",
@@ -849,18 +849,13 @@ public class ReceiveDataTests
 
     [TestMethod]
     [DataRow("", null, DisplayName = "ParseNullableDateTime_ShouldReturnNull_WhenGivenNullOrEmptyString")]
-    [DataRow("2024-02-26 14:30:00+01", "2024-02-26 13:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenGivenTimezoneFormat")]
-    [DataRow("2024-02-26 14:30:00", "2024-02-26 14:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenNoTimezoneProvided")]
-    [DataRow("2024-02-26 14:30:00 BadFormat", null, DisplayName = "ParseNullableDateTime_ShouldReturnNullForBadInput")]
+    [DataRow("2024-02-26 14:30:00+01", "2024-02-26 13:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenGivenTimezone")]
+    [DataRow("2024-02-26 14:30:00", "2024-02-26 14:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenGivenNoTimezone")]
+    [DataRow("2024-02-26 14:30:00 BadFormat", null, DisplayName = "ParseNullableDateTime_ShouldReturnNullForBadFormat")]
     public async Task ParseNullableDateTime_ShouldParseDatesCorrectly(string inputData, string expectedOutput)
     {
-        Console.WriteLine($"Raw Input: ");
-        Console.WriteLine($"Read Input: ");
-        Console.WriteLine($"Expected Output: ");
-
         // Arrange
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(inputData));
-        stream.Position = 0;
         string[] formats = new[] { "yyyy-MM-dd HH:mm:ssz", "yyyy-MM-dd HH:mm:ss" };
         string dateTimeString;
 
@@ -869,14 +864,8 @@ public class ReceiveDataTests
             dateTimeString = await reader.ReadToEndAsync();
         }
 
-        // Debugging Logs
-        Console.WriteLine($"Raw Input: '{inputData}'");
-        Console.WriteLine($"Read Input: '{dateTimeString}'");
-        Console.WriteLine($"Expected Output: '{expectedOutput}'");
-
         // Act
         var result = await Task.Run(() => Utils.ParseNullableDateTime(dateTimeString, formats));
-        Console.WriteLine($"Actual Output: '{result}'");
 
         // Assert
         if (expectedOutput == null)
