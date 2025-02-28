@@ -88,6 +88,12 @@ public class CreateParticipantScreeningEpisode
 
     private async Task<OrganisationLkp> GetOrganisationDataAsync(long? organisationId)
     {
+        if (organisationId == null)
+        {
+            _logger.LogInformation("Organisation id is null... Setting Organisation Name and Code to null");
+            return null;
+        }
+
         var baseReferenceServiceUrl = Environment.GetEnvironmentVariable("GetReferenceDataUrl");
         var getReferenceDataUrl = $"{baseReferenceServiceUrl}?organisation_id={organisationId}";
         _logger.LogInformation("Requesting organisation data from {Url}", getReferenceDataUrl);
@@ -130,8 +136,8 @@ public class CreateParticipantScreeningEpisode
             ReasonClosedCodeDescription = episode.ReasonClosedCodeDescription,
             FinalActionCode =  episode.FinalActionCode,
             FinalActionCodeDescription = episode.FinalActionCodeDescription,
-            OrganisationCode = organisationLkp.OrganisationCode,
-            OrganisationName = organisationLkp.OrganisationName,
+            OrganisationCode = organisationLkp?.OrganisationCode,
+            OrganisationName = organisationLkp?.OrganisationName,
             BatchId = episode.BatchId,
             SrcSysProcessedDatetime = episode.SrcSysProcessedDatetime,
             RecordInsertDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
