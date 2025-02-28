@@ -854,6 +854,10 @@ public class ReceiveDataTests
     [DataRow("2024-02-26 14:30:00 BadFormat", null, DisplayName = "ParseNullableDateTime_ShouldReturnNullForBadInput")]
     public async Task ParseNullableDateTime_ShouldParseDatesCorrectly(string inputData, string expectedOutput)
     {
+        Console.WriteLine($"Raw Input: ");
+        Console.WriteLine($"Read Input: ");
+        Console.WriteLine($"Expected Output: ");
+
         // Arrange
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(inputData));
         stream.Position = 0;
