@@ -852,7 +852,7 @@ public class ReceiveDataTests
     [DataRow("2024-02-26 14:30:00+01", "2024-02-26 13:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenGivenTimezoneFormat")]
     [DataRow("2024-02-26 14:30:00", "2024-02-26 14:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenNoTimezoneProvided")]
     [DataRow("2024-02-26 14:30:00 BadFormat", null, DisplayName = "ParseNullableDateTime_ShouldReturnNullForBadInput")]
-    public async Task ParseNullableDateTime_ShouldParseCorrectly(string inputData, string expectedOutput)
+    public async Task ParseNullableDateTime_ShouldParseDatesCorrectly(string inputData, string expectedOutput)
     {
         // Arrange
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(inputData));
