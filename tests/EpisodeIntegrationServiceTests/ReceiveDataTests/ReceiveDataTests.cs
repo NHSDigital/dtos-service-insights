@@ -101,7 +101,7 @@ public class ReceiveDataTests
             EarlyRecallDate = DateOnly.Parse("2018-03-14"),
             CallRecallStatusAuthorisedBy = "SCREENING_OFFICE",
             EndCode = "SC",
-            EndCodeLastUpdated = DateTime.Parse("2020-03-31 00:00:00+01").ToUniversalTime(),
+            EndCodeLastUpdated = DateTime.Parse("2020-03-31 00:00:00").ToUniversalTime(),
             OrganisationCode = "LAV",
             BatchId = "LAV121798J",
             EndPoint = "S+",
@@ -851,11 +851,12 @@ public class ReceiveDataTests
     [DataRow("", null, DisplayName = "ParseNullableDateTime_ShouldReturnNull_WhenGivenNullOrEmptyString")]
     [DataRow("2024-02-26 14:30:00+01", "2024-02-26 13:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenGivenTimezoneFormat")]
     [DataRow("2024-02-26 14:30:00", "2024-02-26 14:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenNoTimezoneProvided")]
+    [DataRow("2024-02-26 14:30:00 BadFormat", null, DisplayName = "ParseNullableDateTime_ShouldReturnNullForBadInput")]
     public async Task ParseNullableDateTime_ShouldParseCorrectly(string inputData, string expectedOutput)
     {
         // Arrange
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(inputData));
-        string[] formats = new[] { "yyyy-MM-dd H:mm:ssz", "yyyy-MM-dd H:mm:ss" };
+        string[] formats = new[] { "yyyy-MM-dd HH:mm:ssz", "yyyy-MM-dd HH:mm:ss" };
         string dateTimeString;
 
         using (var reader = new StreamReader(stream))
@@ -874,7 +875,7 @@ public class ReceiveDataTests
         else
         {
             Assert.IsNotNull(result);
-            DateTime expectedDateTime = DateTime.ParseExact(expectedOutput, "yyyy-MM-dd H:mm:ss", CultureInfo.InvariantCulture);
+            DateTime expectedDateTime = DateTime.ParseExact(expectedOutput, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             Assert.AreEqual(expectedDateTime, result);
         }
     }
