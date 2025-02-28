@@ -856,6 +856,7 @@ public class ReceiveDataTests
     {
         // Arrange
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(inputData));
+        stream.Position = 0;
         string[] formats = new[] { "yyyy-MM-dd HH:mm:ssz", "yyyy-MM-dd HH:mm:ss" };
         string dateTimeString;
 
@@ -864,8 +865,14 @@ public class ReceiveDataTests
             dateTimeString = await reader.ReadToEndAsync();
         }
 
+        // Debugging Logs
+        Console.WriteLine($"Raw Input: '{inputData}'");
+        Console.WriteLine($"Read Input: '{dateTimeString}'");
+        Console.WriteLine($"Expected Output: '{expectedOutput}'");
+
         // Act
         var result = await Task.Run(() => Utils.ParseNullableDateTime(dateTimeString, formats));
+        Console.WriteLine($"Actual Output: '{result}'");
 
         // Assert
         if (expectedOutput == null)
