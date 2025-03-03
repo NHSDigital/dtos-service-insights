@@ -234,9 +234,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
                 string originalFileName = Path.GetFileNameWithoutExtension(fileName);
                 _logger.LogInformation("Decompression successful for GZIP file: {fileName}", originalFileName);
 
-                // Log file size after decompression
-                _logger.LogInformation("File size after decompression: {Size} bytes", decompressedFileContent.Length);
-
+                // Move the decompressed file to the inbound container
                 return new BlobFile(decompressedFileContent, originalFileName);
             }
             catch (Exception ex)
