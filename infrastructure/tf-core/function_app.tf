@@ -176,7 +176,6 @@ locals {
               {
                 for idx, producer in coalescelist(config.event_grid_topic_producers, []) :
                 "topicEndpoint${idx + 1}" => data.terraform_remote_state.hub.outputs.event_grid_topic["${producer}-${region}"].topic_endpoint
-                # "topicEndpoint${idx + 1}" => module.event_grid_topic["${producer}-${region}"].topic_endpoint
               }
             ) : {},
 
