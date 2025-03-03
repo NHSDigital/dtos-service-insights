@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using NHS.ServiceInsights.Model;
 using NHS.MESH.Client.Contracts.Services;
