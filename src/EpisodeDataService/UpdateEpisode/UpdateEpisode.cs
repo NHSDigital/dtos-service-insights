@@ -160,7 +160,7 @@ public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository epi
     {
         if (string.IsNullOrWhiteSpace(organisationCode))
         {
-            _logger.LogInformation("Organisation id is null");
+            _logger.LogInformation("Organisation code is null");
             return null;
         }
 
