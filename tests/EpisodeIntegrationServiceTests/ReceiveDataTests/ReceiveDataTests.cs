@@ -8,6 +8,7 @@ using Azure.Messaging.EventGrid;
 using Azure;
 using System.Net;
 using NHS.ServiceInsights.EpisodeIntegrationService;
+using System.Globalization;
 
 namespace NHS.ServiceInsights.EpisodeIntegrationServiceTests;
 
@@ -100,7 +101,7 @@ public class ReceiveDataTests
             EarlyRecallDate = DateOnly.Parse("2018-03-14"),
             CallRecallStatusAuthorisedBy = "SCREENING_OFFICE",
             EndCode = "SC",
-            EndCodeLastUpdated = DateTime.Parse("2020-03-31 00:00:00+01"),
+            EndCodeLastUpdated = DateTime.Parse("2020-03-31 00:00:00+01").ToUniversalTime(),
             OrganisationCode = "LAV",
             BatchId = "LAV121798J",
             EndPoint = "S+",
@@ -846,5 +847,37 @@ public class ReceiveDataTests
         Mock.Get(_mockEventGridPublisherClientFactory.Object("participant")).Verify(x => x.SendEventAsync(It.IsAny<EventGridEvent>()), Times.Exactly(2));
     }
 
+    [TestMethod]
+    [DataRow("", null, DisplayName = "ParseNullableDateTime_ShouldReturnNull_WhenGivenNullOrEmptyString")]
+    [DataRow("2024-02-26 14:30:00+01", "2024-02-26 13:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenGivenTimezone")]
+    [DataRow("2024-02-26 14:30:00", "2024-02-26 14:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenGivenNoTimezone")]
+    [DataRow("2024-02-26 14:30:00 BadFormat", null, DisplayName = "ParseNullableDateTime_ShouldReturnNullForBadFormat")]
+    public async Task ParseNullableDateTime_ShouldParseDatesCorrectly(string inputData, string expectedOutput)
+    {
+        // Arrange
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(inputData));
+        string[] formats = new[] { "yyyy-MM-dd HH:mm:ssz", "yyyy-MM-dd HH:mm:ss" };
+        string dateTimeString;
+
+        using (var reader = new StreamReader(stream))
+        {
+            dateTimeString = await reader.ReadToEndAsync();
+        }
+
+        // Act
+        var result = await Task.Run(() => Utils.ParseNullableDateTime(dateTimeString, formats));
+
+        // Assert
+        if (expectedOutput == null)
+        {
+            Assert.IsNull(result);
+        }
+        else
+        {
+            Assert.IsNotNull(result);
+            DateTime expectedDateTime = DateTime.ParseExact(expectedOutput, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+            Assert.AreEqual(expectedDateTime, result);
+        }
+    }
 }
 

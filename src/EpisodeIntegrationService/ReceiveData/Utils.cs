@@ -28,11 +28,17 @@ public static class Utils
         return DateOnly.FromDateTime(dateTime);
     }
 
-    public static DateTime? ParseNullableDateTime(string? dateTime, string format)
+    public static DateTime? ParseNullableDateTime(string? dateTime, string[] formats)
     {
         if (string.IsNullOrEmpty(dateTime)) return null;
-
-        return DateTime.ParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal);
+        foreach (var format in formats)
+        {
+            if (DateTimeOffset.TryParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTimeOffset dto))
+            {
+                return dto.UtcDateTime;
+            }
+        }
+        return null;
     }
 
     public static void CheckForNullOrEmptyStrings(params string[] values)
