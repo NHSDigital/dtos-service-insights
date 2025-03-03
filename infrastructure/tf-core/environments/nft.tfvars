@@ -320,15 +320,9 @@ function_apps = {
     CreateEpisode = {
       name_suffix                = "create-episode"
       function_endpoint_name     = "CreateEpisode"
-<<<<<<< HEAD
-      app_service_plan_key       = "BIAnalyticsDataService"
-      db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["create-ps-episode-nft"]
-=======
       app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
       event_grid_topic_producers = ["evgt-nft-si-create-episode-ep"]
->>>>>>> fe38188 (fix: dtoss 7514 create participant screening profile endpoint not configured in event grid (#150))
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -352,15 +346,9 @@ function_apps = {
     UpdateEpisode = {
       name_suffix                = "update-episode"
       function_endpoint_name     = "UpdateEpisode"
-<<<<<<< HEAD
-      app_service_plan_key       = "BIAnalyticsDataService"
-      db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["update-ps-episode-nft"]
-=======
       app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
       event_grid_topic_producers = ["evgt-nft-si-update-episode-ep"]
->>>>>>> fe38188 (fix: dtoss 7514 create participant screening profile endpoint not configured in event grid (#150))
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -377,13 +365,8 @@ function_apps = {
     ReceiveData = {
       name_suffix                = "receive-data"
       function_endpoint_name     = "ReceiveData"
-<<<<<<< HEAD
-      app_service_plan_key       = "BIAnalyticsDataService"
-      event_grid_topic_producers = ["receive-data-to-episode-nft", "receive-data-to-profile-nft"]
-=======
       app_service_plan_key       = "DefaultServicePlan"
       event_grid_topic_producers = ["evgt-nft-si-receive-data-ep", "evgt-nft-si-receive-data-pr"]
->>>>>>> fe38188 (fix: dtoss 7514 create participant screening profile endpoint not configured in event grid (#150))
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"

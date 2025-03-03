@@ -320,15 +320,9 @@ function_apps = {
     CreateEpisode = {
       name_suffix                = "create-episode"
       function_endpoint_name     = "CreateEpisode"
-<<<<<<< HEAD
-      app_service_plan_key       = "Default"
-      db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["create-ps-episode-dev"]
-=======
       app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
       event_grid_topic_producers = ["evgt-dev-si-create-episode-ep"]
->>>>>>> fe38188 (fix: dtoss 7514 create participant screening profile endpoint not configured in event grid (#150))
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -352,15 +346,9 @@ function_apps = {
     UpdateEpisode = {
       name_suffix                = "update-episode"
       function_endpoint_name     = "UpdateEpisode"
-<<<<<<< HEAD
-      app_service_plan_key       = "Default"
-      db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["update-ps-episode-dev"]
-=======
       app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
       event_grid_topic_producers = ["evgt-dev-si-update-episode-ep"]
->>>>>>> fe38188 (fix: dtoss 7514 create participant screening profile endpoint not configured in event grid (#150))
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -377,13 +365,8 @@ function_apps = {
     ReceiveData = {
       name_suffix                = "receive-data"
       function_endpoint_name     = "ReceiveData"
-<<<<<<< HEAD
-      app_service_plan_key       = "Default"
-      event_grid_topic_producers = ["receive-data-to-episode-dev", "receive-data-to-profile-dev"]
-=======
       app_service_plan_key       = "DefaultServicePlan"
       event_grid_topic_producers = ["evgt-dev-si-receive-data-ep", "evgt-dev-si-receive-data-pr"]
->>>>>>> fe38188 (fix: dtoss 7514 create participant screening profile endpoint not configured in event grid (#150))
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
