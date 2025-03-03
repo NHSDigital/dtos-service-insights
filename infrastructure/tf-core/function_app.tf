@@ -106,7 +106,6 @@ resource "azurerm_role_assignment" "data_sender" {
   principal_id         = module.functionapp["${each.value.function_key}-${each.value.event_value.region}"].function_app_sami_id
   role_definition_name = "EventGrid Data Sender"
   scope                = data.terraform_remote_state.hub.outputs.event_grid_topic["${each.value.event_key}"].id
-  # scope                = module.event_grid_topic["${each.value.event_key}"].id
 }
 
 /* --------------------------------------------------------------------------------------------------
