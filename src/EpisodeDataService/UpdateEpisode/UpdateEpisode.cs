@@ -103,7 +103,7 @@ public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository epi
 
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send event to event grid");
+                _logger.LogError(ex,"Failed to send event to event grid");
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
@@ -156,7 +156,7 @@ public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository epi
         }
         return codeObject;
     }
-    private async Task<long> GetOrganisationId(string organisationCode)
+    private async Task<long?> GetOrganisationId(string organisationCode)
     {
         if (string.IsNullOrWhiteSpace(organisationCode))
         {
