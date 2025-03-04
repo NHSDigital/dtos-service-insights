@@ -146,36 +146,28 @@ event_grid_defaults = {
   public_network_access_enabled = false
 }
 
-event_grid_configs = {
-  # CreateEpisode writes to this topic
-  create-ps-episode-int = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "create-ps-episode-int"
-    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
-  }
-  # UpdateEpisode writes to this topic
-  update-ps-episode-int = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "update-ps-episode-int"
-    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
-  }
-  #  writes to this topic
-  create-ps-profile-int = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "create-ps-profile-int"
-    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
-  }
-  #  writes to this topic
-  receive-data-to-episode-int = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "create-ps-episode"
-    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
-  }
-  #  writes to this topic
-  receive-data-to-profile-int = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "create-ps-profile"
-    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
+event_grid_subscriptions = {
+  subscriber_config = {
+    # CreateEpisode writes to this topic
+    evgt-int-si-create-episode-ep = {
+      subscription_name       = "create-ps-episode-sub"
+      subscriber_functionName = "CreateParticipantScreeningEpisode"
+    }
+    # UpdateEpisode writes to this topic
+    evgt-int-si-update-episode-ep = {
+      subscription_name       = "create-ps-episode-sub"
+      subscriber_functionName = "CreateParticipantScreeningEpisode"
+    }
+    #  writes to this topic
+    evgt-int-si-receive-data-ep = {
+      subscription_name       = "create-ps-episode-sub"
+      subscriber_functionName = "CreateParticipantScreeningEpisode"
+    }
+    #  writes to this topic
+    evgt-int-si-receive-data-pr = {
+      subscription_name       = "create-ps-profile-sub"
+      subscriber_functionName = "CreateParticipantScreeningProfile"
+    }
   }
 }
 
@@ -210,21 +202,21 @@ function_apps = {
     CreateParticipantScreeningEpisodeData = {
       name_suffix            = "create-ps-episode-data"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningProfileData = {
       name_suffix            = "create-ps-profile-data"
       function_endpoint_name = "CreateParticipantScreeningProfile"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningProfile = {
       name_suffix            = "get-ps-profile"
       function_endpoint_name = "GetParticipantScreeningProfile"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
       app_urls = [
         {
@@ -237,28 +229,28 @@ function_apps = {
     GetParticipantScreeningProfileData = {
       name_suffix            = "get-ps-profile-data"
       function_endpoint_name = "GetParticipantScreeningProfileData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisode = {
       name_suffix            = "get-ps-episode"
       function_endpoint_name = "GetParticipantScreeningEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisodeData = {
       name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningEpisode = {
       name_suffix            = "create-ps-episode"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "CreateParticipantScreeningEpisodeUrl"
@@ -274,20 +266,20 @@ function_apps = {
           endpoint_name    = "GetReferenceData"
         }
       ]
-      ip_restrictions = {
-        "AllowEventGrid" : {
-          name        = "AllowEventGrid"
-          priority    = 300
-          action      = "Allow"
-          service_tag = "AzureEventGrid"
-        }
-      }
+      # ip_restrictions = {
+      #   "AllowEventGrid" : {
+      #     name        = "AllowEventGrid"
+      #     priority    = 300
+      #     action      = "Allow"
+      #     service_tag = "AzureEventGrid"
+      #   }
+      # }
     }
 
     CreateParticipantScreeningProfile = {
       name_suffix            = "create-ps-profile"
       function_endpoint_name = "CreateParticipantScreeningProfile"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "CreateParticipantScreeningProfileUrl"
@@ -302,35 +294,35 @@ function_apps = {
           function_app_key = "GetScreeningData"
         }
       ]
-      ip_restrictions = {
-        "AllowEventGrid" : {
-          name        = "AllowEventGrid"
-          priority    = 300
-          action      = "Allow"
-          service_tag = "AzureEventGrid"
-        }
-      }
+      # ip_restrictions = {
+      #   "AllowEventGrid" : {
+      #     name        = "AllowEventGrid"
+      #     priority    = 300
+      #     action      = "Allow"
+      #     service_tag = "AzureEventGrid"
+      #   }
+      # }
     }
 
     GetParticipantScreeningEpisodeData = {
       name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetDemographicsData = {
       name_suffix            = "get-demographics-data"
       function_endpoint_name = "GetDemographicsData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
     }
 
     CreateEpisode = {
       name_suffix                = "create-episode"
       function_endpoint_name     = "CreateEpisode"
-      app_service_plan_key       = "BIAnalyticsDataService"
+      app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["create-ps-episode-int"]
+      event_grid_topic_producers = ["evgt-int-si-create-episode-ep"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
