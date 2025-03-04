@@ -345,8 +345,11 @@ services:
       - PoisonContainerName=${AZURITE_POISON_CONTAINER_NAME}
       - MeshPassword=${MESHPASSWORD}
       - MeshSharedKey=${MESHSHAREDKEY}
+      - MeshKeyName=${MESHKEYNAME}
       - MeshKeyPassphrase=${MESHKEYPASSPHRASE}
       - TimerExpression=*/5 * * * *
+    volumes:
+      - ./meshpfx.pfx:/meshpfx.pfx # Add the .pfx file to the container
 
   # Participant Management Service
   get-participant:
