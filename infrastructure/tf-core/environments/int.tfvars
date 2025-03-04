@@ -266,14 +266,14 @@ function_apps = {
           endpoint_name    = "GetReferenceData"
         }
       ]
-      # ip_restrictions = {
-      #   "AllowEventGrid" : {
-      #     name        = "AllowEventGrid"
-      #     priority    = 300
-      #     action      = "Allow"
-      #     service_tag = "AzureEventGrid"
-      #   }
-      # }
+      ip_restrictions = {
+        "AllowEventGrid" : {
+          name        = "AllowEventGrid"
+          priority    = 300
+          action      = "Allow"
+          service_tag = "AzureEventGrid"
+        }
+      }
     }
 
     CreateParticipantScreeningProfile = {
@@ -294,14 +294,14 @@ function_apps = {
           function_app_key = "GetScreeningData"
         }
       ]
-      # ip_restrictions = {
-      #   "AllowEventGrid" : {
-      #     name        = "AllowEventGrid"
-      #     priority    = 300
-      #     action      = "Allow"
-      #     service_tag = "AzureEventGrid"
-      #   }
-      # }
+      ip_restrictions = {
+        "AllowEventGrid" : {
+          name        = "AllowEventGrid"
+          priority    = 300
+          action      = "Allow"
+          service_tag = "AzureEventGrid"
+        }
+      }
     }
 
     GetParticipantScreeningEpisodeData = {
