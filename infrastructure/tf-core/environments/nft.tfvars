@@ -121,7 +121,7 @@ app_service_plan = {
   }
 
   instances = {
-    BIAnalyticsDataService = {}
+    DefaultServicePlan = {}
     # BIAnalyticsService           = {}
     # DemographicsService          = {}
     # EpisodeDataService           = {}
@@ -146,36 +146,28 @@ event_grid_defaults = {
   public_network_access_enabled = false
 }
 
-event_grid_configs = {
-  # CreateEpisode writes to this topic
-  create-ps-episode-nft = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "create-ps-episode-nft"
-    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
-  }
-  # UpdateEpisode writes to this topic
-  update-ps-episode-nft = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "update-ps-episode-nft"
-    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
-  }
-  #  writes to this topic
-  create-ps-profile-nft = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "create-ps-profile-nft"
-    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
-  }
-  #  writes to this topic
-  receive-data-to-episode-nft = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "create-ps-episode"
-    subscriber_functionName_list = ["CreateParticipantScreeningEpisode"]
-  }
-  #  writes to this topic
-  receive-data-to-profile-nft = {
-    identity_type                = "SystemAssigned"
-    subscription_name            = "create-ps-profile"
-    subscriber_functionName_list = ["CreateParticipantScreeningProfile"]
+event_grid_subscriptions = {
+  subscriber_config = {
+    # CreateEpisode writes to this topic
+    evgt-nft-si-create-episode-ep = {
+      subscription_name       = "create-ps-episode-sub"
+      subscriber_functionName = "CreateParticipantScreeningEpisode"
+    }
+    # UpdateEpisode writes to this topic
+    evgt-nft-si-update-episode-ep = {
+      subscription_name       = "create-ps-episode-sub"
+      subscriber_functionName = "CreateParticipantScreeningEpisode"
+    }
+    #  writes to this topic
+    evgt-nft-si-receive-data-ep = {
+      subscription_name       = "create-ps-episode-sub"
+      subscriber_functionName = "CreateParticipantScreeningEpisode"
+    }
+    #  writes to this topic
+    evgt-nft-si-receive-data-pr = {
+      subscription_name       = "create-ps-profile-sub"
+      subscriber_functionName = "CreateParticipantScreeningProfile"
+    }
   }
 }
 
@@ -210,21 +202,21 @@ function_apps = {
     CreateParticipantScreeningEpisodeData = {
       name_suffix            = "create-ps-episode-data"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningProfileData = {
       name_suffix            = "create-ps-profile-data"
       function_endpoint_name = "CreateParticipantScreeningProfile"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningProfile = {
       name_suffix            = "get-ps-profile"
       function_endpoint_name = "GetParticipantScreeningProfile"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
       app_urls = [
         {
@@ -237,28 +229,28 @@ function_apps = {
     GetParticipantScreeningProfileData = {
       name_suffix            = "get-ps-profile-data"
       function_endpoint_name = "GetParticipantScreeningProfileData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisode = {
       name_suffix            = "get-ps-episode"
       function_endpoint_name = "GetParticipantScreeningEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetParticipantScreeningEpisodeData = {
       name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     CreateParticipantScreeningEpisode = {
       name_suffix            = "create-ps-episode"
       function_endpoint_name = "CreateParticipantScreeningEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "CreateParticipantScreeningEpisodeUrl"
@@ -274,20 +266,20 @@ function_apps = {
           endpoint_name    = "GetReferenceData"
         }
       ]
-      ip_restrictions = {
-        "AllowEventGrid" : {
-          name        = "AllowEventGrid"
-          priority    = 300
-          action      = "Allow"
-          service_tag = "AzureEventGrid"
-        }
-      }
+      # ip_restrictions = {
+      #   "AllowEventGrid" : {
+      #     name        = "AllowEventGrid"
+      #     priority    = 300
+      #     action      = "Allow"
+      #     service_tag = "AzureEventGrid"
+      #   }
+      # }
     }
 
     CreateParticipantScreeningProfile = {
       name_suffix            = "create-ps-profile"
       function_endpoint_name = "CreateParticipantScreeningProfile"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "CreateParticipantScreeningProfileUrl"
@@ -302,35 +294,35 @@ function_apps = {
           function_app_key = "GetScreeningData"
         }
       ]
-      ip_restrictions = {
-        "AllowEventGrid" : {
-          name        = "AllowEventGrid"
-          priority    = 300
-          action      = "Allow"
-          service_tag = "AzureEventGrid"
-        }
-      }
+      # ip_restrictions = {
+      #   "AllowEventGrid" : {
+      #     name        = "AllowEventGrid"
+      #     priority    = 300
+      #     action      = "Allow"
+      #     service_tag = "AzureEventGrid"
+      #   }
+      # }
     }
 
     GetParticipantScreeningEpisodeData = {
       name_suffix            = "get-ps-episode-data"
       function_endpoint_name = "GetParticipantScreeningEpisodeData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetDemographicsData = {
       name_suffix            = "get-demographics-data"
       function_endpoint_name = "GetDemographicsData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
     }
 
     CreateEpisode = {
       name_suffix                = "create-episode"
       function_endpoint_name     = "CreateEpisode"
-      app_service_plan_key       = "BIAnalyticsDataService"
+      app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["create-ps-episode-nft"]
+      event_grid_topic_producers = ["evgt-nft-si-create-episode-ep"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -347,16 +339,16 @@ function_apps = {
     GetEpisode = {
       name_suffix            = "get-episode"
       function_endpoint_name = "GetEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     UpdateEpisode = {
       name_suffix                = "update-episode"
       function_endpoint_name     = "UpdateEpisode"
-      app_service_plan_key       = "BIAnalyticsDataService"
+      app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["update-ps-episode-nft"]
+      event_grid_topic_producers = ["evgt-nft-si-update-episode-ep"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -373,8 +365,8 @@ function_apps = {
     ReceiveData = {
       name_suffix                = "receive-data"
       function_endpoint_name     = "ReceiveData"
-      app_service_plan_key       = "BIAnalyticsDataService"
-      event_grid_topic_producers = ["receive-data-to-episode-nft", "receive-data-to-profile-nft"]
+      app_service_plan_key       = "DefaultServicePlan"
+      event_grid_topic_producers = ["evgt-nft-si-receive-data-ep", "evgt-nft-si-receive-data-pr"]
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
@@ -399,7 +391,7 @@ function_apps = {
     CreateUpdateEpisode = {
       name_suffix            = "create-update-episode"
       function_endpoint_name = "CreateUpdateEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "CreateEpisodeUrl"
@@ -419,7 +411,7 @@ function_apps = {
     GetEpisodeMgmt = {
       name_suffix            = "get-episode-mgmt"
       function_endpoint_name = "GetEpisodeMgmt"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "GetEpisodeUrl"
@@ -431,7 +423,7 @@ function_apps = {
     RetrieveMeshFile = {
       name_suffix            = "retrieve-mesh-file"
       function_endpoint_name = "RetrieveMeshFile"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       key_vault_url          = "KeyVaultConnectionString"
       env_vars_static = {
         TimerExpression     = "*/5 * * * *"
@@ -443,33 +435,33 @@ function_apps = {
     GetParticipant = {
       name_suffix            = "get-participant"
       function_endpoint_name = "GetParticipant"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
     }
 
     UpdateParticipant = {
       name_suffix            = "update-participant"
       function_endpoint_name = "UpdateParticipant"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
     }
 
     GetOrganisationData = {
       name_suffix            = "get-organisation-data"
       function_endpoint_name = "GetOrganisationData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetScreeningData = {
       name_suffix            = "get-screening-data"
       function_endpoint_name = "GetScreeningData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetEpisodeReferenceData = {
       name_suffix            = "get-episode-ref-data"
       function_endpoint_name = "GetEpisodeReferenceData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "RetrieveEpisodeReferenceDataServiceUrl"
@@ -482,7 +474,7 @@ function_apps = {
     RetrieveEpisodeRefData = {
       name_suffix            = "retrieve-episode-ref-data"
       function_endpoint_name = "RetrieveEpisodeRefData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
   }
