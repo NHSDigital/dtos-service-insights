@@ -339,16 +339,16 @@ function_apps = {
     GetEpisode = {
       name_suffix            = "get-episode"
       function_endpoint_name = "GetEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     UpdateEpisode = {
       name_suffix                = "update-episode"
       function_endpoint_name     = "UpdateEpisode"
-      app_service_plan_key       = "BIAnalyticsDataService"
+      app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["update-ps-episode-int"]
+      event_grid_topic_producers = ["evgt-int-si-update-episode-ep"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -365,8 +365,8 @@ function_apps = {
     ReceiveData = {
       name_suffix                = "receive-data"
       function_endpoint_name     = "ReceiveData"
-      app_service_plan_key       = "BIAnalyticsDataService"
-      event_grid_topic_producers = ["receive-data-to-episode-int", "receive-data-to-profile-int"]
+      app_service_plan_key       = "DefaultServicePlan"
+      event_grid_topic_producers = ["evgt-int-si-receive-data-ep", "evgt-int-si-receive-data-pr"]
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
@@ -391,7 +391,7 @@ function_apps = {
     CreateUpdateEpisode = {
       name_suffix            = "create-update-episode"
       function_endpoint_name = "CreateUpdateEpisode"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "CreateEpisodeUrl"
@@ -411,7 +411,7 @@ function_apps = {
     GetEpisodeMgmt = {
       name_suffix            = "get-episode-mgmt"
       function_endpoint_name = "GetEpisodeMgmt"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "GetEpisodeUrl"
@@ -423,7 +423,7 @@ function_apps = {
     RetrieveMeshFile = {
       name_suffix            = "retrieve-mesh-file"
       function_endpoint_name = "RetrieveMeshFile"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       key_vault_url          = "KeyVaultConnectionString"
       env_vars_static = {
         TimerExpression     = "*/5 * * * *"
@@ -435,33 +435,33 @@ function_apps = {
     GetParticipant = {
       name_suffix            = "get-participant"
       function_endpoint_name = "GetParticipant"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
     }
 
     UpdateParticipant = {
       name_suffix            = "update-participant"
       function_endpoint_name = "UpdateParticipant"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
     }
 
     GetOrganisationData = {
       name_suffix            = "get-organisation-data"
       function_endpoint_name = "GetOrganisationData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetScreeningData = {
       name_suffix            = "get-screening-data"
       function_endpoint_name = "GetScreeningData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
 
     GetEpisodeReferenceData = {
       name_suffix            = "get-episode-ref-data"
       function_endpoint_name = "GetEpisodeReferenceData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       app_urls = [
         {
           env_var_name     = "RetrieveEpisodeReferenceDataServiceUrl"
@@ -474,7 +474,7 @@ function_apps = {
     RetrieveEpisodeRefData = {
       name_suffix            = "retrieve-episode-ref-data"
       function_endpoint_name = "RetrieveEpisodeRefData"
-      app_service_plan_key   = "BIAnalyticsDataService"
+      app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
     }
   }
