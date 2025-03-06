@@ -34,16 +34,6 @@ public class CreateEpisode
         _eventGridPublisherClientFactory = eventGridPublisherClientFactory;
         _httpRequestService = httpRequestService;
 
-        // Check for required environment variables
-        if (string.IsNullOrEmpty(_checkParticipantExistsUrl))
-        {
-            throw new InvalidOperationException("Environment variable 'CheckParticipantExistsUrl' is missing.");
-        }
-
-        if (string.IsNullOrEmpty(_eventGridTopicEndpoint))
-        {
-            throw new InvalidOperationException("Environment variable 'EventGridTopicEndpoint' is missing.");
-        }
     }
 
     [Function("CreateEpisode")]
