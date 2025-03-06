@@ -33,6 +33,17 @@ public class CreateEpisode
         _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
         _eventGridPublisherClientFactory = eventGridPublisherClientFactory;
         _httpRequestService = httpRequestService;
+
+        // Check for required environment variables
+        if (string.IsNullOrEmpty(_checkParticipantExistsUrl))
+        {
+            throw new InvalidOperationException("Environment variable 'CheckParticipantExistsUrl' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(_eventGridTopicEndpoint))
+        {
+            throw new InvalidOperationException("Environment variable 'EventGridTopicEndpoint' is missing.");
+        }
     }
 
     [Function("CreateEpisode")]
@@ -42,6 +53,7 @@ public class CreateEpisode
 
         try
         {
+            // Read and deserialize the request body
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = await reader.ReadToEndAsync();
@@ -50,30 +62,46 @@ public class CreateEpisode
         }
         catch (Exception ex)
         {
+            // Log error and return BadRequest if deserialization fails
             _logger.LogError(ex, "Episode could not be read");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
         try
         {
+            // Check if the participant exists
             var checkParticipantExistsUrl = $"{Environment.GetEnvironmentVariable("CheckParticipantExistsUrl")}?NhsNumber={episodeDto.NhsNumber}&ScreeningId={ScreeningId}";
             var checkParticipantExistsResult = await _httpRequestService.SendGet(checkParticipantExistsUrl);
             // If the participant does not exist then flag as an exception
             var exceptionFlag = !checkParticipantExistsResult.IsSuccessStatusCode;
 
+            // Retrieve lookup data
             EpisodeTypeLkp? episodeTypeLkp = await GetCodeObject<EpisodeTypeLkp?>(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeLkp);
             EndCodeLkp? endCodeLkp = await GetCodeObject<EndCodeLkp?>(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeLkp);
             ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
+            // Map DTO to Episode
             var episode = await MapEpisodeDtoToEpisode(episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
 
-            _logger.LogInformation("Calling CreateEpisode method...");
-            _episodeRepository.CreateEpisode(episode);
-            _logger.LogInformation("Episode created successfully.");
+            try
+            {
+                // Write to database
+                _logger.LogInformation("Calling CreateEpisode method...");
+                _episodeRepository.CreateEpisode(episode);
+                _logger.LogInformation("Episode created successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Log error and return InternalServerError if database write fails
+                _logger.LogError(ex, "Failed to create episode in database.");
+                return req.CreateResponse(HttpStatusCode.InternalServerError);
+            }
 
+            // Cast the episode object to FinalizedEpisodeDto
             var finalizedEpisodeDto = (FinalizedEpisodeDto)episode;
 
+            // Set additional properties on the finalizedEpisodeDto
             finalizedEpisodeDto.EpisodeType = episodeTypeLkp?.EpisodeType;
             finalizedEpisodeDto.EpisodeTypeDescription = episodeTypeLkp?.EpisodeDescription;
             finalizedEpisodeDto.EndCode = endCodeLkp?.EndCode;
@@ -83,6 +111,7 @@ public class CreateEpisode
             finalizedEpisodeDto.FinalActionCode = finalActionCodeLkp?.FinalActionCode;
             finalizedEpisodeDto.FinalActionCodeDescription = finalActionCodeLkp?.FinalActionCodeDescription;
 
+            // Create an EventGridEvent with the finalized episode data
             EventGridEvent eventGridEvent = new EventGridEvent(
                 subject: "Episode Created",
                 eventType: "CreateParticipantScreeningEpisode",
@@ -90,22 +119,27 @@ public class CreateEpisode
                 data: finalizedEpisodeDto
             );
 
+            // Send the event to Event Grid
             var episodePublisher = _eventGridPublisherClientFactory("episode");
             try
             {
                 await episodePublisher.SendEventAsync(eventGridEvent);
+                _logger.LogInformation("Event sent to Event Grid successfully.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,"Failed to send event to event grid");
+                // Log error and return InternalServerError if event grid publishing fails
+                _logger.LogError(ex, "Failed to send event to event grid");
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
+            // Return OK response if everything is successful
             return req.CreateResponse(HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create episode in database.");
+            // Log error and return InternalServerError if any other error occurs
+            _logger.LogError(ex, "An error occurred while processing the request.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
@@ -138,6 +172,7 @@ public class CreateEpisode
             RecordUpdateDatetime = DateTime.UtcNow
         };
     }
+
     private async Task<T?> GetCodeObject<T>(string code, string codeName, Func<string, Task<T?>> getObjectMethod) where T : class?
     {
         if (string.IsNullOrWhiteSpace(code))
