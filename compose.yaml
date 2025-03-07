@@ -239,8 +239,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://*:6007
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
-      - topicEndpoint1=${EVENTGRID_URL}
-      - topicKey1=${EVENTGRID_KEY}
+      - topicEndpoint1=${EPISODE_TOPIC_ENDPOINT}
+      - topicKey1=${PISODE_TOPIC_KEY}
       - CheckParticipantExistsUrl=http://get-participant:6061/api/GetParticipant
       - GetOrganisationIdByCodeUrl=http://get-organisation-data:6081/api/GetOrganisationIdByCode
 
@@ -291,9 +291,11 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7777
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
-      - topicEndpoint=${EVENTGRID_URL}
-      - topicKey=${EVENTGRID_KEY}
+      - topicEndpoint1=${EPISODE_TOPIC_ENDPOINT}
+      - topicKey1=${EPISODE_TOPIC_KEY}
       - CheckParticipantExistsUrl=http://get-participant:6061/api/GetParticipant
+      - GetOrganisationIdByCodeUrl=http://get-organisation-data:6081/api/GetOrganisationIdByCode
+
 
   # Episode Integration Service
   receive-data:
@@ -317,8 +319,10 @@ services:
       - ParticipantManagementUrl=http://update-participant:7074/api/UpdateParticipant
       - GetEpisodeReferenceDataServiceUrl=http://get-episode-ref-data:7574/api/GetEpisodeReferenceData
       - GetAllOrganisationReferenceDataUrl=http://get-organisation-data:6081/api/GetAllOrganisationReferenceData
-      - topicEndpoint=${EVENTGRID_URL}
-      - topicKey=${EVENTGRID_KEY}
+      - topicEndpoint1=${EPISODE_TOPIC_ENDPOINT}
+      - topicKey1=${EPISODE_TOPIC_KEY}
+      - topicEndpoint2=${PARTICIPANT_TOPIC_ENDPOINT}
+      - topicKey2=${PARTICIPANT_TOPIC_KEY}
 
   # Episode Management Service
   create-update-episode:
