@@ -48,6 +48,7 @@ public class CreateEpisode
             {
                 var postData = await reader.ReadToEndAsync();
                 episodeDto = JsonSerializer.Deserialize<InitialEpisodeDto>(postData);
+                _logger.LogInformation("Received payload: {Payload}", postData);
             }
         }
         catch (Exception ex)
@@ -79,7 +80,9 @@ public class CreateEpisode
                 // Write to database
                 _logger.LogInformation("Calling CreateEpisode method...");
                 _episodeRepository.CreateEpisode(episode);
-                _logger.LogInformation("Episode created successfully.");
+                _logger.LogInformation("Episode created successfully in database.");
+                _logger.LogInformation("Episode {episodeId} updated successfully in database.", episodeDto.EpisodeId);
+
             }
             catch (Exception ex)
             {
