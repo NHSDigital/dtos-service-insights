@@ -537,15 +537,4 @@ storage_accounts = {
     }
   }
 
-  eventgrid = {
-    name_suffix                   = "eventgrid"
-    account_tier                  = "Standard"
-    replication_type              = "LRS"
-    public_network_access_enabled = false
-    containers = {
-      config = {
-        container_name = "deadletterqueue"
-      }
-    }
-  }
 }

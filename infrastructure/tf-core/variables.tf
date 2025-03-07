@@ -59,6 +59,18 @@ variable "application" {
   default     = "DToS"
 }
 
+# Populate the following variables to create a project-specific ACR
+variable "acr" {
+  description = "Configuration for the Azure Container Registry"
+  type = object({
+    admin_enabled = bool
+    sku           = string
+    uai_name      = string
+  })
+  default = null
+}
+
+
 variable "application_full_name" {
   description = "Full name of the Project/Application code for deployment"
   type        = string
@@ -348,6 +360,7 @@ variable "sqlserver" {
     sql_admin_group_name                 = optional(string)
     ad_auth_only                         = optional(bool)
     auditing_policy_retention_in_days    = optional(number)
+    public_network_access_enabled        = optional(bool, false)
     security_alert_policy_retention_days = optional(number)
 
     # Server Instance

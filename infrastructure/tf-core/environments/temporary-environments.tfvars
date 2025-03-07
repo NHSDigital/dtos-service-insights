@@ -1,12 +1,11 @@
 application           = "serins"
 application_full_name = "service-insights"
-environment           = "NFT"
 
 features = {
-  acr_enabled                          = false
+  acr_enabled                          = true
   api_management_enabled               = false
   event_grid_enabled                   = true
-  private_endpoints_enabled            = true
+  private_endpoints_enabled            = false
   private_service_connection_is_manual = false
   public_network_access_enabled        = false
 }
@@ -18,72 +17,16 @@ tags = {
 regions = {
   uksouth = {
     is_primary_region = true
-    address_space     = "10.115.0.0/16"
-    connect_peering   = true
-    subnets = {
-      apps = {
-        cidr_newbits               = 8
-        cidr_offset                = 2
-        delegation_name            = "Microsoft.Web/serverFarms"
-        service_delegation_name    = "Microsoft.Web/serverFarms"
-        service_delegation_actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-      }
-      pep = {
-        cidr_newbits = 8
-        cidr_offset  = 1
-      }
-      sql = {
-        cidr_newbits = 8
-        cidr_offset  = 3
-      }
-    }
+    address_space     = "10.255.0.0/16"
+    connect_peering   = false
+    subnets = {}
   }
 }
 
-routes = {
-  uksouth = {
-    firewall_policy_priority = 100
-    application_rules        = []
-    nat_rules                = []
-    network_rules = [
-      {
-        name                  = "AllowSerinsToAudit"
-        priority              = 801
-        action                = "Allow"
-        rule_name             = "SerinsToAudit"
-        source_addresses      = ["10.115.0.0/16"] # will be populated with the serins manager subnet address space
-        destination_addresses = ["10.116.0.0/16"] # will be populated with the audit subnet address space
-        protocols             = ["TCP", "UDP"]
-        destination_ports     = ["443"]
-      },
-      {
-        name                  = "AllowAuditToSerins"
-        priority              = 811
-        action                = "Allow"
-        rule_name             = "AuditToSerins"
-        source_addresses      = ["10.116.0.0/16"]
-        destination_addresses = ["10.115.0.0/16"]
-        protocols             = ["TCP", "UDP"]
-        destination_ports     = ["443"]
-      }
-    ]
-    route_table_routes_to_audit = [
-      {
-        name                   = "SerinsToAudit"
-        address_prefix         = "10.116.0.0/16"
-        next_hop_type          = "VirtualAppliance"
-        next_hop_in_ip_address = "" # will be populated with the Firewall Private IP address
-      }
-    ]
-    route_table_routes_from_audit = [
-      {
-        name                   = "AuditToSerins"
-        address_prefix         = "10.115.0.0/16"
-        next_hop_type          = "VirtualAppliance"
-        next_hop_in_ip_address = "" # will be populated with the Firewall Private IP address
-      }
-    ]
-  }
+acr = {
+  admin_enabled = false
+  sku           = "Standard"
+  uai_name      = "dtos-service-insights-acr-push"
 }
 
 app_service_plan = {
@@ -122,19 +65,36 @@ app_service_plan = {
 
   instances = {
     DefaultServicePlan = {}
-    # BIAnalyticsService           = {}
-    # DemographicsService          = {}
-    # EpisodeDataService           = {}
-    # EpisodeIntegrationService    = {}
-    # EpisodeManagementService     = {}
-    # MeshIntegrationService       = {}
-    # ParticipantManagementService = {}
-    # ReferenceDataService         = {}
   }
 }
 
 diagnostic_settings = {
   metric_enabled = true
+}
+
+event_grid_configs = {
+  # evgt-<env_name>-<project_id_source>-<api_name>-<theme>
+
+  # CreateEpisode writes to this topic
+  evgt-temp-si-create-episode-ep = {
+    identity_type = "SystemAssigned"
+    environment   = "temp"
+  }
+  # UpdateEpisode writes to this topic
+  evgt-temp-si-update-episode-ep = {
+    identity_type = "SystemAssigned"
+    environment   = "temp"
+  }
+  # ReceiveData writes to this topic
+  evgt-temp-si-receive-data-ep = {
+    identity_type = "SystemAssigned"
+    environment   = "temp"
+  }
+  # ReceiveData writes to this topic
+  evgt-temp-si-receive-data-pr = {
+    identity_type = "SystemAssigned"
+    environment   = "temp"
+  }
 }
 
 event_grid_defaults = {
@@ -149,22 +109,22 @@ event_grid_defaults = {
 event_grid_subscriptions = {
   subscriber_config = {
     # CreateEpisode writes to this topic
-    evgt-nft-si-create-episode-ep = {
+    evgt-temp-si-create-episode-ep = {
       subscription_name       = "create-ps-episode-sub"
       subscriber_functionName = "CreateParticipantScreeningEpisode"
     }
     # UpdateEpisode writes to this topic
-    evgt-nft-si-update-episode-ep = {
+    evgt-temp-si-update-episode-ep = {
       subscription_name       = "create-ps-episode-sub"
       subscriber_functionName = "CreateParticipantScreeningEpisode"
     }
     #  writes to this topic
-    evgt-nft-si-receive-data-ep = {
+    evgt-temp-si-receive-data-ep = {
       subscription_name       = "create-ps-episode-sub"
       subscriber_functionName = "CreateParticipantScreeningEpisode"
     }
     #  writes to this topic
-    evgt-nft-si-receive-data-pr = {
+    evgt-temp-si-receive-data-pr = {
       subscription_name       = "create-ps-profile-sub"
       subscriber_functionName = "CreateParticipantScreeningProfile"
     }
@@ -173,11 +133,11 @@ event_grid_subscriptions = {
 
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"
-  acr_name    = "acrukshubdevserins"
-  acr_rg_name = "rg-hub-dev-uks-serins"
+  acr_name    = "acrukshubtempserins"
+  acr_rg_name = "rg-hub-temp-uks-serins"
 
-  app_insights_name                      = "appi-nft-uks-serins"
-  app_insights_rg_name                   = "rg-serins-nft-uks-audit"
+  app_insights_name                      = "appi-temp-uks-serins"
+  app_insights_rg_name                   = "rg-serins-temp-uks-audit"
   app_service_logs_disk_quota_mb         = 35
   app_service_logs_retention_period_days = 7
 
@@ -186,7 +146,7 @@ function_apps = {
   cont_registry_use_mi = true
 
   docker_CI_enable  = "true"
-  docker_env_tag    = "nft"
+  docker_env_tag    = "temp"
   docker_img_prefix = "service-insights"
 
   enable_appsrv_storage         = "false"
@@ -322,7 +282,7 @@ function_apps = {
       function_endpoint_name     = "CreateEpisode"
       app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["evgt-nft-si-create-episode-ep"]
+      event_grid_topic_producers = ["evgt-temp-si-create-episode-ep"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -348,7 +308,7 @@ function_apps = {
       function_endpoint_name     = "UpdateEpisode"
       app_service_plan_key       = "DefaultServicePlan"
       db_connection_string       = "ServiceInsightsDbConnectionString"
-      event_grid_topic_producers = ["evgt-nft-si-update-episode-ep"]
+      event_grid_topic_producers = ["evgt-temp-si-update-episode-ep"]
       app_urls = [
         {
           env_var_name     = "CheckParticipantExistsUrl"
@@ -366,7 +326,7 @@ function_apps = {
       name_suffix                = "receive-data"
       function_endpoint_name     = "ReceiveData"
       app_service_plan_key       = "DefaultServicePlan"
-      event_grid_topic_producers = ["evgt-nft-si-receive-data-ep", "evgt-nft-si-receive-data-pr"]
+      event_grid_topic_producers = ["evgt-temp-si-receive-data-ep", "evgt-temp-si-receive-data-pr"]
       app_urls = [
         {
           env_var_name     = "EpisodeManagementUrl"
@@ -492,7 +452,7 @@ key_vault = {
 
 sqlserver = {
   sql_uai_name                         = "dtos-service-insight-sql-adm"
-  sql_admin_group_name                 = "sqlsvr_serins_nft_uks_admin"
+  sql_admin_group_name                 = "sqlsvr_serins_temp_uks_admin"
   ad_auth_only                         = true
   auditing_policy_retention_in_days    = 30
   security_alert_policy_retention_days = 30
@@ -537,4 +497,15 @@ storage_accounts = {
     }
   }
 
+  eventgrid = {
+    name_suffix                   = "eventgrid"
+    account_tier                  = "Standard"
+    replication_type              = "LRS"
+    public_network_access_enabled = false
+    containers = {
+      config = {
+        container_name = "deadletterqueue"
+      }
+    }
+  }
 }

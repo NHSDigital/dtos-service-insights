@@ -123,4 +123,5 @@ variable "storage_accounts" {
       container_access_type = optional(string, "private")
     })), {})
   }))
+  default = {}
 }

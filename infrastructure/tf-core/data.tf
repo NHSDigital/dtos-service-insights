@@ -33,7 +33,8 @@ data "azurerm_subnet" "subnet_audit_pep" {
 }
 
 data "azuread_group" "sql_admin_group" {
-  display_name = var.sqlserver.sql_admin_group_name
+  # display_name = var.sqlserver.sql_admin_group_name
+  display_name = local.sql_admin_group_name
 }
 
 data "azurerm_container_registry" "acr" {

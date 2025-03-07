@@ -10,7 +10,7 @@ module "event_grid_subscription" {
   principal_id         = module.functionapp["${each.value.subscriber_functionName}-${each.value.region}"].function_app_sami_id
 
   dead_letter_storage_account_container_name = "deadletterqueue"
-  dead_letter_storage_account_id             = data.terraform_remote_state.hub.outputs.storage["eventgrid-uksouth"].storage_account_id
+  dead_letter_storage_account_id             = data.terraform_remote_state.hub.outputs.storage["eventgrid-nft-${each.value.region}"].storage_account_id
 
   tags = var.tags
 }
