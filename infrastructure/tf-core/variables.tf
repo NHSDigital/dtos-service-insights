@@ -344,7 +344,7 @@ variable "sqlserver" {
   description = "Configuration for the Azure MSSQL server instance and a default database "
   type = object({
 
-    sql_uai_name                         = optional(string)
+    sql_uai_name                         = (string)
     sql_admin_group_name                 = optional(string)
     ad_auth_only                         = optional(bool)
     auditing_policy_retention_in_days    = optional(number)
