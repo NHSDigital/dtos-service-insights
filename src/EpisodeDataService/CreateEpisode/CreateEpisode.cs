@@ -33,7 +33,6 @@ public class CreateEpisode
         _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
         _eventGridPublisherClientFactory = eventGridPublisherClientFactory;
         _httpRequestService = httpRequestService;
-
     }
 
     [Function("CreateEpisode")]
@@ -48,6 +47,7 @@ public class CreateEpisode
             {
                 var postData = await reader.ReadToEndAsync();
                 episodeDto = JsonSerializer.Deserialize<InitialEpisodeDto>(postData);
+                // Log the payload received
                 _logger.LogInformation("Received payload: {Payload}", postData);
             }
         }

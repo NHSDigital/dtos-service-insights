@@ -47,6 +47,7 @@ public class UpdateEpisode
             {
                 var postData = await reader.ReadToEndAsync();
                 episodeDto = JsonSerializer.Deserialize<InitialEpisodeDto>(postData);
+                // Log the payload received
                 _logger.LogInformation("Received payload: {Payload}", postData);
             }
         }
