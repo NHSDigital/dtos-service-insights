@@ -122,7 +122,7 @@ stages:
             fi
             # Check if the SQL Server admin group exists and if not, create it:
             # Use generic group as a workaround as we cannot create groups via the pipeline:
-            # sql_server_admin_group_name="sqlsvr_serins_$(temp_environment_name)_uks_admin"
+            # sql_server_admin_group_name=" $(temp_environment_name)_uks_admin"
             sql_server_admin_group_name="sqlsvr_serins_temp_uks_admin"
             sql_server_admin_group_exists=$(az ad group show --group ${sql_server_admin_group_name} --output tsv)
             # CHANGE the following as the "show" command will return an error if the group does not exist, so the comparison string is never empty:
