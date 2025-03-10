@@ -48,6 +48,7 @@ parameters:
 stages:
 - stage: terraform_setup
   variables:
+  - group: TEMP_ENVIRONMENTS_audit_backend_remote_state
   - group: TEMP_ENVIRONMENTS_core_backend
   displayName: Terraform Setup
   jobs:
