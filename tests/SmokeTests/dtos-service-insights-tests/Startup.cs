@@ -24,10 +24,12 @@ internal static class Startup
 
     private static void ConfigureServices(IServiceCollection services)
     {
+        string workingDirectory = Environment.CurrentDirectory;
+        string path = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
         // Load configuration from appsettings.json
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("/Users/nageswarundapalli/Documents/GitHub/DTOS_app_insights_reqn/Config/appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile(path + "/Config/appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
 
@@ -41,7 +43,7 @@ internal static class Startup
         // Register Azure Blob Storage helper
         services.AddSingleton(sp =>
         {
-            var connectionString = configuration["AppSettings:caasFileStorage"];
+            var connectionString = configuration["AppSettings:BlobStorageConnectionString"];
             return new Azure.Storage.Blobs.BlobServiceClient(connectionString);
         });
         services.AddSingleton<BlobStorageHelper>();

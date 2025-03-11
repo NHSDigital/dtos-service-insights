@@ -4,10 +4,8 @@ using dtos_service_insights_tests.Config;
 using dtos_service_insights_tests.Helpers;
 using Microsoft.Extensions.Options;
 using FluentAssertions;
-//using TechTalk.SpecFlow;
 using Reqnroll;
 using System;
-//using TechTalk.SpecFlow;
 
 namespace dtos_service_insights_tests.Hook
 {
@@ -46,7 +44,7 @@ namespace dtos_service_insights_tests.Hook
         private void AssertAllConfigurations()
         {
             AppSettings.Should().NotBeNull("AppSettings configuration is not set.");
-            //_ = (AppSettings.ConnectionStrings?.ServiceInsightsDatabaseConnectionString.Should().NotBeNull("Database connection string is not set in AppSettings."));
+            _ = (AppSettings.ConnectionStrings?.ServiceInsightsDatabaseConnectionString.Should().NotBeNull("Database connection string is not set in AppSettings."));
             AppSettings.FilePaths?.Add.Should().NotBeNull("Local file path is not set in AppSettings.");
             AppSettings.BlobContainerName.Should().NotBeNull("Blob container name is not set in AppSettings.");
             BlobStorageHelper.Should().NotBeNull("BlobStorageHelper is not initialized. Ensure it is registered in the DI container.");
