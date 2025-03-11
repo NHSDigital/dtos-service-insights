@@ -1,16 +1,15 @@
 using System.Net;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using System.Text;
-using System.Text.Json;
-using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
-using Azure.Messaging.EventGrid;
+using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Common;
+using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
-
 public class UpdateEpisode
 {
     private readonly ILogger<UpdateEpisode> _logger;
@@ -93,6 +92,7 @@ public class UpdateEpisode
                 try
                 {
                     // Update the episode in the repository
+                    _logger.LogInformation("Calling UpdateEpisode method...");
                     await _episodeRepository.UpdateEpisode(existingEpisode);
                     _logger.LogInformation("Episode {episodeId} updated successfully in database.", episodeDto.EpisodeId);
                 }

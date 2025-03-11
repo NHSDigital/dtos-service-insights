@@ -10,7 +10,6 @@ using NHS.ServiceInsights.Common;
 using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
-
 public class CreateEpisode
 {
     private readonly ILogger<CreateEpisode> _logger;
@@ -54,7 +53,7 @@ public class CreateEpisode
         catch (Exception ex)
         {
             // Log error and return BadRequest if deserialization fails
-            _logger.LogError(ex, "Episode could not be read");
+            _logger.LogError(ex, "Could not read episode data");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
@@ -80,8 +79,7 @@ public class CreateEpisode
                 // Write to database
                 _logger.LogInformation("Calling CreateEpisode method...");
                 _episodeRepository.CreateEpisode(episode);
-                _logger.LogInformation("Episode created successfully in database.");
-                _logger.LogInformation("Episode {episodeId} updated successfully in database.", episodeDto.EpisodeId);
+                _logger.LogInformation("Episode {episodeId} created successfully in database.", episodeDto.EpisodeId);
 
             }
             catch (Exception ex)
@@ -132,7 +130,7 @@ public class CreateEpisode
         catch (Exception ex)
         {
             // Log error and return InternalServerError if any other error occurs
-            _logger.LogError(ex, "An error occurred while processing the request.");
+            _logger.LogError(ex, "Error creating episode.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
     }
