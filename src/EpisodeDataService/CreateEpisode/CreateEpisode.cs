@@ -117,7 +117,7 @@ public class CreateEpisode
             try
             {
                 await episodePublisher.SendEventAsync(eventGridEvent);
-                _logger.LogInformation("Event sent to Event Grid successfully.");
+                _logger.LogInformation("Sending Episode event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
             }
             catch (Exception ex)
             {
