@@ -240,7 +240,7 @@ services:
       - ASPNETCORE_URLS=http://*:6007
       - ServiceInsightsDbConnectionString=Server=${DB_CONNECTION},1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
       - topicEndpoint1=${EPISODE_TOPIC_ENDPOINT}
-      - topicKey1=${PISODE_TOPIC_KEY}
+      - topicKey1=${EPISODE_TOPIC_KEY}
       - CheckParticipantExistsUrl=http://get-participant:6061/api/GetParticipant
       - GetOrganisationIdByCodeUrl=http://get-organisation-data:6081/api/GetOrganisationIdByCode
 
