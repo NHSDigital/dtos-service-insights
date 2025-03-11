@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-//using SolidToken.SpecFlow.DependencyInjection;
 using dtos_service_insights_tests.Config;
 using dtos_service_insights_tests.Helpers;
 using dtos_service_insights_tests.Contexts;
@@ -30,8 +29,8 @@ internal static class Startup
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("/Users/nageswarundapalli/Documents/GitHub/DTOS_app_insights_reqn/Config/appsettings.json", optional: false, reloadOnChange: true)
             .Build();
-            
-        
+
+
 
         // Bind AppSettings section to POCO
         services.Configure<AppSettings>(configuration.GetSection("AppSettings"));

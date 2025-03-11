@@ -15,16 +15,9 @@ namespace dtos_service_insights_tests.Hook
  [Binding]
     public class IntegrationTestHooks(ScenarioContext scenarioContext)
     {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         protected ILogger<IntegrationTestHooks>? Logger { get; private set; }
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         protected AppSettings? AppSettings { get; private set; }
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         protected BlobStorageHelper? BlobStorageHelper { get; private set; }
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-
         private readonly ScenarioContext _scenarioContext = scenarioContext;
 
         [BeforeScenario]
@@ -53,8 +46,8 @@ namespace dtos_service_insights_tests.Hook
         private void AssertAllConfigurations()
         {
             AppSettings.Should().NotBeNull("AppSettings configuration is not set.");
-            _ = (AppSettings.ConnectionStrings?.DtOsDatabaseConnectionString.Should().NotBeNull("Database connection string is not set in AppSettings."));
-            //AppSettings.FilePaths?.Add.Should().NotBeNull("Local file path is not set in AppSettings.");
+            //_ = (AppSettings.ConnectionStrings?.ServiceInsightsDatabaseConnectionString.Should().NotBeNull("Database connection string is not set in AppSettings."));
+            AppSettings.FilePaths?.Add.Should().NotBeNull("Local file path is not set in AppSettings.");
             AppSettings.BlobContainerName.Should().NotBeNull("Blob container name is not set in AppSettings.");
             BlobStorageHelper.Should().NotBeNull("BlobStorageHelper is not initialized. Ensure it is registered in the DI container.");
 

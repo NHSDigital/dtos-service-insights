@@ -28,20 +28,21 @@ public class DatabaseValidationHelper
         // Add other allowed fields here
     ];
 
-    private static readonly Hashtable CsvTableFieldMap = new Hashtable(){
-{"nhs_number","NHS_NUMBER"},
-{"episode_id","EPISODE_ID"},
-{"episode_date","EPISODE_OPEN_DATE"},
-{"date_of_foa","FIRST_OFFERED_APPOINTMENT_DATE"},
-{"date_of_as","ACTUAL_SCREENING_DATE"},
-{"early_recall_date","EARLY_RECALL_DATE"},
-{"call_recall_status_authorised_by","CALL_RECALL_STATUS_AUTHORISED_BY"},
-{"bso_batch_id","BATCH_ID"},
-{"reason_closed_code","REASON_CLOSED_CODE_ID"},
-{"end_point","END_POINT"}
-		};
+    private static readonly Hashtable CsvTableFieldMap = new Hashtable()
+    {
+     {"nhs_number","NHS_NUMBER"},
+     {"episode_id","EPISODE_ID"},
+     {"episode_date","EPISODE_OPEN_DATE"},
+     {"date_of_foa","FIRST_OFFERED_APPOINTMENT_DATE"},
+     {"date_of_as","ACTUAL_SCREENING_DATE"},
+     {"early_recall_date","EARLY_RECALL_DATE"},
+     {"call_recall_status_authorised_by","CALL_RECALL_STATUS_AUTHORISED_BY"},
+     {"bso_batch_id","BATCH_ID"},
+     {"reason_closed_code","REASON_CLOSED_CODE_ID"},
+     {"end_point","END_POINT"}
+	};
 
- 
+
     private static void ValidateTableName(string tableName)
     {
         if (!AllowedTables.Contains(tableName.ToUpper()))
@@ -118,13 +119,13 @@ public class DatabaseValidationHelper
                             // Handle conversion based on the actual type of the column
                             if (value is int intValue)
                                 fieldValues.Add(intValue.ToString());
-                            else if(value is DateTime dateTimeValue) 
+                            else if(value is DateTime dateTimeValue)
                             {
-                               DateTime date = System.Convert.ToDateTime(reader.GetValue(0)); 
+                               DateTime date = System.Convert.ToDateTime(reader.GetValue(0));
                                fieldValues.Add(date.ToString("dd/MM/yyyy"));
-                            }               
+                            }
                             else
-                                fieldValues.Add(value.ToString()!); 
+                                fieldValues.Add(value.ToString()!);
                         }
                     }
                 }

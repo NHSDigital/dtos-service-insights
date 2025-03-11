@@ -1,6 +1,5 @@
 using System;
 using dtos_service_insights_tests.TestServices;
-//
 using Reqnroll;
 using Microsoft.Extensions.DependencyInjection;
 using FluentAssertions;
@@ -10,7 +9,6 @@ using dtos_service_insights_tests.Models;
 using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
-//using TechTalk.SpecFlow;
 
 namespace dtos_service_insights_tests.StepDefinitions;
 
@@ -48,17 +46,12 @@ public sealed class FileUploadSteps
     public void GivenFileExistsAtConfiguredPath(string fileName, string? recordType, string nhsNumbersData)
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
-        //var folderPath1=_appSettings.FilePaths.ToString();
-        //var folderPath = typeof(FilePaths).GetProperty(recordType!)?.GetValue(_appSettings.FilePaths)?.ToString();
-        //dtos-service-insights-tests/TestFiles/add/bss_episodes_add_one_row.csv
-        ///Users/nageswarundapalli/Documents/GitHub/dtos-service-insights-tests/dtos-service-insights-tests/TestFiles/add/bss_episodes_add_one_row.csv
         string workingDirectory = Environment.CurrentDirectory;
         string path = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
 
         var folderPath=path + "/TestFiles/" + recordType +"/";
-        //Console.WriteLine("Path is " + folderPath);
             var filePath = Path.Combine(folderPath!, fileName);
-            //Console.WriteLine("File Path is " + filePath);
+
 
             _smokeTestsContext.FilePath = filePath;
            _smokeTestsContext.RecordType = (RecordTypesEnum)Enum.Parse(typeof(RecordTypesEnum), recordType, ignoreCase: true);
@@ -84,7 +77,6 @@ public sealed class FileUploadSteps
     [Then(@"the matching episode data from csv is inserted into DB")]
      public async Task ThenTheMatchingEpisodeDataFromCsvIsInsertedIntoDB()
     {
-       // await _fileUploadService.VerifyNhsNumbersAsync("EPISODE", _smokeTestsContext.NhsNumbers!);
         await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.NhsNumbers.FirstOrDefault(),_smokeTestsContext.FilePath);
     }
 
@@ -98,5 +90,11 @@ public sealed class FileUploadSteps
     public async Task ThenTheDatabaseShouldMatchTheAmendedForTheNHSNumber(string expectedGivenName)
     {
         await _fileUploadService.VerifyFieldUpdateAsync("EPISODE", _smokeTestsContext.NhsNumbers.FirstOrDefault(), "EPISODE_OPEN_DATE", expectedGivenName);
+    }
+
+     [Then("the episode data from file should be inserted or updated in the database")]
+    public async Task ThenTheEpisodeDataFromFileShouldBeInsertedOrUpdatedInTheDatabase()
+    {
+        await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.NhsNumbers.FirstOrDefault(),_smokeTestsContext.FilePath);
     }
 }

@@ -24,7 +24,7 @@ public class EndToEndFileUploadService
         _logger = logger;
         _appSettings = appSettings;
         _blobStorageHelper = blobStorageHelper;
-       // _connectionString = _appSettings.ConnectionStrings.DtOsDatabaseConnectionString;
+        _connectionString = _appSettings.ConnectionStrings.ServiceInsightsDatabaseConnectionString;
        _connectionString = "Server=localhost,1433;Database=ServiceInsightsDB;User Id=SA;Password=Password123;TrustServerCertificate=True";
         _managedIdentityClientId = _appSettings.ManagedIdentityClientId;
     }
@@ -51,15 +51,6 @@ public class EndToEndFileUploadService
             throw; // Re-throw the exception to be handled elsewhere
         }
     }
-
-
-    //public List<string> ExtractNhsNumbers()
-    //{
-    //    _logger.LogInformation("Extracting NHS numbers from file: {FilePath}", LocalFilePath);
-    //    var nhsNumbers = CsvHelperService.ExtractNhsNumbersFromCsv(LocalFilePath);
-    //    _logger.LogInformation("Extracted {Count} NHS numbers from the file.", nhsNumbers.Count);
-    //    return nhsNumbers;
-    //}
 
     public async Task UploadFileAsync(string filePath)
     {
@@ -161,7 +152,6 @@ public class EndToEndFileUploadService
     {
         Func<Task> act = async () =>
         {
-            //var result = await DatabaseValidationHelper.VerifyFieldUpdateAsync(_connectionString, tableName, nhsNumber,fieldName,_managedIdentityClientId, expectedValue, _logger);
             var result= await DatabaseValidationHelper.VerifyCsvWithDatabaseAsync(_connectionString,tableName,nhsNumber,csvFilePath,_logger);
             result.Should().BeTrue();
         };
