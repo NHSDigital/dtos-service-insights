@@ -24,6 +24,8 @@ public static class DatabaseHelper
                 ManagedIdentityClientId = managedIdentityClientId
             });
 
+        Console.WriteLine("Connection String is " + connectionString) ;
+
         using var connection = new SqlConnection(connectionString);
        // connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" })).ConfigureAwait(false)).Token;
 

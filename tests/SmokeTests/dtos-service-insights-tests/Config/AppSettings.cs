@@ -10,3 +10,5 @@ public ConnectionStrings ConnectionStrings { get; set; }
     public string AzureWebJobsStorage { get; set; }
     public string ManagedIdentityClientId { get; set; }
 }
+
+
