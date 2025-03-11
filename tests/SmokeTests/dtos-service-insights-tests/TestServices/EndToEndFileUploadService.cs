@@ -25,7 +25,6 @@ public class EndToEndFileUploadService
         _appSettings = appSettings;
         _blobStorageHelper = blobStorageHelper;
         _connectionString = _appSettings.ConnectionStrings.ServiceInsightsDatabaseConnectionString;
-       _connectionString = "Server=localhost,1433;Database=ServiceInsightsDB;User Id=SA;Password=Password123;TrustServerCertificate=True";
         _managedIdentityClientId = _appSettings.ManagedIdentityClientId;
     }
 
