@@ -27,7 +27,7 @@ public static class DatabaseHelper
         Console.WriteLine("Connection String is " + connectionString) ;
 
         using var connection = new SqlConnection(connectionString);
-       // connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" })).ConfigureAwait(false)).Token;
+        // connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" })).ConfigureAwait(false)).Token;
 
         await connection.OpenAsync();
         using (var command = new SqlCommand(query, connection))

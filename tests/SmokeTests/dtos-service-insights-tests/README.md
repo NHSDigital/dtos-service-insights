@@ -2,7 +2,7 @@
 
 ## Overview
 
-This test automation framework utilizes Reqnroll, a behavior-driven development (BDD) tool, to create and execute smoke tests for the Service Insights. SpecFlow allows defining test scenarios using a natural language syntax, making tests more readable and maintainable.
+This test automation framework utilizes Reqnroll, a behavior-driven development (BDD) tool, to create and execute smoke tests for the Service Insights. Reqnroll allows defining test scenarios using a natural language syntax, making tests more readable and maintainable.
 
 ## Table of Contents
 

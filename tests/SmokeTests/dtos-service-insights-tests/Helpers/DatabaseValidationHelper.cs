@@ -30,16 +30,16 @@ public class DatabaseValidationHelper
 
     private static readonly Hashtable CsvTableFieldMap = new Hashtable()
     {
-     {"nhs_number","NHS_NUMBER"},
-     {"episode_id","EPISODE_ID"},
-     {"episode_date","EPISODE_OPEN_DATE"},
-     {"date_of_foa","FIRST_OFFERED_APPOINTMENT_DATE"},
-     {"date_of_as","ACTUAL_SCREENING_DATE"},
-     {"early_recall_date","EARLY_RECALL_DATE"},
-     {"call_recall_status_authorised_by","CALL_RECALL_STATUS_AUTHORISED_BY"},
-     {"bso_batch_id","BATCH_ID"},
-     {"reason_closed_code","REASON_CLOSED_CODE_ID"},
-     {"end_point","END_POINT"}
+        {"nhs_number","NHS_NUMBER"},
+        {"episode_id","EPISODE_ID"},
+        {"episode_date","EPISODE_OPEN_DATE"},
+        {"date_of_foa","FIRST_OFFERED_APPOINTMENT_DATE"},
+        {"date_of_as","ACTUAL_SCREENING_DATE"},
+        {"early_recall_date","EARLY_RECALL_DATE"},
+        {"call_recall_status_authorised_by","CALL_RECALL_STATUS_AUTHORISED_BY"},
+        {"bso_batch_id","BATCH_ID"},
+        {"reason_closed_code","REASON_CLOSED_CODE_ID"},
+        {"end_point","END_POINT"}
 	};
 
 
@@ -61,16 +61,16 @@ public class DatabaseValidationHelper
 
     public static async Task VerifyNhsNumbersAsync(string connectionString, string tableName, List<string> nhsNumbers, ILogger logger, string managedIdentityClientId)
     {
-      ValidateTableName(tableName);
+        ValidateTableName(tableName);
 
-      var credential = new DefaultAzureCredential(
+        var credential = new DefaultAzureCredential(
         new DefaultAzureCredentialOptions
         {
             ManagedIdentityClientId = managedIdentityClientId
         });
 
-      using (var connection = new SqlConnection(connectionString))
-       {
+        using (var connection = new SqlConnection(connectionString))
+        {
         //connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" }))).Token;
         await connection.OpenAsync();
 
@@ -93,7 +93,7 @@ public class DatabaseValidationHelper
         ValidateTableName(tableName);
         ValidateFieldName(fieldName);
 
-       /*  var credential = new DefaultAzureCredential(
+        /*  var credential = new DefaultAzureCredential(
         new DefaultAzureCredentialOptions
         {
             ManagedIdentityClientId = managedIdentityClientId
@@ -121,8 +121,8 @@ public class DatabaseValidationHelper
                                 fieldValues.Add(intValue.ToString());
                             else if(value is DateTime dateTimeValue)
                             {
-                               DateTime date = System.Convert.ToDateTime(reader.GetValue(0));
-                               fieldValues.Add(date.ToString("dd/MM/yyyy"));
+                                DateTime date = System.Convert.ToDateTime(reader.GetValue(0));
+                                fieldValues.Add(date.ToString("dd/MM/yyyy"));
                             }
                             else
                                 fieldValues.Add(value.ToString()!);
@@ -302,19 +302,19 @@ public class DatabaseValidationHelper
                                 actualValue=date.ToString("dd/MM/yyyy");
                             }
 
-                           if(!String.IsNullOrEmpty(expectedValue) )
-                           {
+                            if(!String.IsNullOrEmpty(expectedValue) )
+                            {
                             if (expectedValue != actualValue.ToString())
                             {
                                 logger.LogError($"Inside Mismatch in {e.Key.ToString()} for NHS number {nhsNumber}: expected '{expectedValue}', found '{actualValue}'.");
                                 return false;
-                             }
-                           }
-                           else if ( !String.IsNullOrEmpty(actualValue.ToString()))
-                           {
-                             logger.LogError($"Mismatch in {e.Key.ToString()} for NHS number {nhsNumber}: expected '{expectedValue}', found '{actualValue}'.");
+                            }
+                            }
+                            else if ( !String.IsNullOrEmpty(actualValue.ToString()))
+                            {
+                                logger.LogError($"Mismatch in {e.Key.ToString()} for NHS number {nhsNumber}: expected '{expectedValue}', found '{actualValue}'.");
                                 return false;
-                           }
+                            }
                         }
                     }
                 }
@@ -324,12 +324,12 @@ public class DatabaseValidationHelper
         return true;
     }
 
-   public static async Task<int> GetNhsNumberCount(string connectionString, string tableName, string nhsNumber, ILogger logger, string managedIdentityClientId)
+    public static async Task<int> GetNhsNumberCount(string connectionString, string tableName, string nhsNumber, ILogger logger, string managedIdentityClientId)
     {
     Console.WriteLine("Inside NHS nUmber count function ");
     var nhsNumberCount = 0;
 
-   /* var credential = new DefaultAzureCredential(
+    /* var credential = new DefaultAzureCredential(
         new DefaultAzureCredentialOptions
         {
             ManagedIdentityClientId = managedIdentityClientId
