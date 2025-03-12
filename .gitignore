@@ -20,6 +20,7 @@ __queuestorage__
 
 # Tests
 TestResults
+*.feature.cs
 
 # Builds
 bin
