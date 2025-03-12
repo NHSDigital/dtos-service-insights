@@ -1,12 +1,12 @@
-# Reqnroll Test Automation Framework
+# Test Automation Framework
 
 ## Overview
 
-This test automation framework utilizes Reqnroll, a behavior-driven development (BDD) tool, to create and execute smoke tests for the Service Insights. Reqnroll allows defining test scenarios using a natural language syntax, making tests more readable and maintainable.
+This test automation framework utilizes Requirement Roll(Reqnroll), a behavior-driven development (BDD) tool, to create and execute smoke tests for the Service Insights. It allows defining test scenarios using a natural language syntax, making tests more readable and maintainable.
 
 ## Table of Contents
 
-- [Reqnroll Test Automation Framework](#reqnroll-test-automation-framework)
+- [Test Automation Framework](#test-automation-framework)
   - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
@@ -23,13 +23,13 @@ To set up and run this test automation framework, ensure you have the following 
 
 - . NET Core SDK (version X. X or higher)
 - Visual Studio 2022 or Visual Studio Code
-- Reqnroll Visual Studio Extension
+- Requirements Roll(Reqnroll) Visual Studio Extension
 - SQL Server (for database testing)
 - Azure Storage Explorer (for blob storage tests)
 
 ## Configuration
 
-Create a new file named `appsettings-local.json` in the Config directory of the smoke tests project
+Create a new file named `appsettings-local.json` in the Configuration(Config) directory of the smoke tests project
 Copy the template below into the file:
 
 ```json
