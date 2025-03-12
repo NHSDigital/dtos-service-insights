@@ -2,16 +2,16 @@ Feature: DTOS Application Insights Smoke tests
 
 Smoke tests to check the framework
 
-Background:
+    Background:
         Given the database is cleaned of all records for NHS Numbers: 9990007068
-		      And the application is properly configured
+		    And the application is properly configured
 
 @smoketest
 Scenario: 01. Verify new episode is created
-	   Given file <FileName> exists in the configured location for "Add" with NHS numbers : <NhsNumbers>
-	   When the file is uploaded to the Blob Storage container
-	   Then the NHS numbers in the database should match the file data
-     And the episode data from file should be inserted or updated in the database
+	Given file <FileName> exists in the configured location for "Add" with NHS numbers : <NhsNumbers>
+	When the file is uploaded to the Blob Storage container
+	Then the NHS numbers in the database should match the file data
+  And the episode data from file should be inserted or updated in the database
 
       Examples:
         | FileName                     | RecordType | NhsNumbers |
