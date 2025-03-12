@@ -26,9 +26,6 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         _meshInboxService = meshInboxService;
         _blobStorageHelper = blobStorageHelper;
         _meshOperationService = meshOperationService;
-
-        // Display version of GzipHelper assembly
-        LogGzipHelperVersion();
     }
 
     private void LogGzipHelperVersion()
@@ -203,9 +200,13 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
 
         if (isGzip)
         {
+
             try
             {
                 _logger.LogInformation("Detected GZIP file, decompressing: {fileName}", fileName);
+
+                // Display version of GzipHelper assembly
+                LogGzipHelperVersion();
 
                 // Log the first few bytes of the file content for debugging
                 _logger.LogInformation("First 10 bytes of file content: {Bytes}", BitConverter.ToString(fileContent.Take(10).ToArray()));
@@ -247,11 +248,12 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
         }
         else if (fileName.EndsWith(".gz") && !isGzip)
         {
-            // If the file is a .gz file but does not have the GZIP magic bytes, move it to the poison container
+            // If the filename ends with .gz but does not have the GZIP magic bytes, move it to the poison container
             _logger.LogWarning("File: {fileName} is named as .gz file but does not have GZIP magic bytes, moving to poison container", fileName);
             return new BlobFile(fileContent, $"{messageId}_{fileName}");
         }
 
+        // Return the file content as is
         return new BlobFile(fileContent, fileName);
     }
 }

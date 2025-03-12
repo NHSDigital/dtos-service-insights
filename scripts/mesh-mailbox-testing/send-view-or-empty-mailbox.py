@@ -100,7 +100,12 @@ def send_to_outbox():
     print(f"\nExecuting curl command: {' '.join(curl_command_outbox)}")
 
     result_outbox = subprocess.run(curl_command_outbox, capture_output=True, text=True)
-    print(f"\nResult from sending to Mesh Mailbox {MAILBOX_ID_FROM} (Outbox): {result_outbox.stdout.strip()}")
+
+    # Check if the curl command was successful
+    if result_outbox.returncode == 0:
+        print(f"\nResult from sending to Mesh Mailbox {MAILBOX_ID_FROM} (Outbox): {result_outbox.stdout.strip()}")
+    else:
+        print(f"\nError sending to Mesh Mailbox {MAILBOX_ID_FROM} (Outbox): {result_outbox.stderr.strip()}")
 
 def view_inbox():
     # Generate a new authentication token for the inbox
