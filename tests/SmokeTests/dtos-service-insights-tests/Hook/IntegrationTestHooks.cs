@@ -10,7 +10,7 @@ using System;
 namespace dtos_service_insights_tests.Hook
 {
 
- [Binding]
+    [Binding]
     public class IntegrationTestHooks(ScenarioContext scenarioContext)
     {
         protected ILogger<IntegrationTestHooks>? Logger { get; private set; }
@@ -21,10 +21,9 @@ namespace dtos_service_insights_tests.Hook
         [BeforeScenario]
         public void BeforeScenario(IServiceProvider services)
         {
-
             // Retrieve configured services
             Logger = services.GetService<ILogger<IntegrationTestHooks>>();
-           AppSettings = services.GetService<IOptions<AppSettings>>()?.Value;
+            AppSettings = services.GetService<IOptions<AppSettings>>()?.Value;
             BlobStorageHelper = services.GetService<BlobStorageHelper>();
 
             // Validate the configuration
