@@ -29,7 +29,7 @@ To set up and run this test automation framework, ensure you have the following 
 
 ## Configuration
 
-Create a new file named `appsettings-local.json` in the config directory of the smoke tests project
+Create a new file named `appsettings-local.json` in the Config directory of the smoke tests project
 Copy the template below into the file:
 
 ```json

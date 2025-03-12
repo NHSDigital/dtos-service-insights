@@ -8,9 +8,9 @@ Smoke tests to check the framework
 
 @smoketest
 Scenario: 01. Verify new episode is created
-	Given file <FileName> exists in the configured location for "Add" with NHS numbers : <NhsNumbers>
-	When the file is uploaded to the Blob Storage container
-	Then the NHS numbers in the database should match the file data
+	 Given file <FileName> exists in the configured location for "Add" with NHS numbers : <NhsNumbers>
+  When the file is uploaded to the Blob Storage container
+	 Then the NHS numbers in the database should match the file data
   And the episode data from file should be inserted or updated in the database
 
       Examples:
