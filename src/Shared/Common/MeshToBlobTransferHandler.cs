@@ -245,6 +245,12 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
                 return new BlobFile(fileContent, $"{messageId}_{fileName}");
             }
         }
+        else if (fileName.EndsWith(".gz") && !isGzip)
+        {
+            // If the file is a .gz file but does not have the GZIP magic bytes, move it to the poison container
+            _logger.LogWarning("File: {fileName} is named as .gz file but does not have GZIP magic bytes, moving to poison container", fileName);
+            return new BlobFile(fileContent, $"{messageId}_{fileName}");
+        }
 
         return new BlobFile(fileContent, fileName);
     }
