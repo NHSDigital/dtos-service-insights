@@ -9,7 +9,7 @@
     <NoWarn>CS8618;CS8604;CS8605;CS8601;CS8604;CS8602;CS8632</NoWarn>
   </PropertyGroup>
 
-   <ItemGroup>
+  <ItemGroup>
     <PackageReference Include="AllOverIt.Csv" Version="8.0.0" />
     <PackageReference Include="Allure.Reqnroll" Version="2.12.1" />
     <PackageReference Include="Azure.Identity" Version="1.13.2" />
@@ -25,14 +25,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="NUnit.Console" Version="3.19.2" />
-  <!--  <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageReference Include="FluentAssertions" Version="6.12.0" />
-    <PackageReference Include="Pickles" Version="4.0.3" />-->
- <!--   <PackageReference Include="SpecFlow" Version="3.9.74" />
-    <PackageReference Include="SpecFlow.NUnit" Version="3.9.74" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.74" />
-    <PackageReference Include="SolidToken.SpecFlow.DependencyInjection" Version="3.9.3" /> -->
-        <!-- test project dependencies (MsTest) -->
     <PackageReference Include="MSTest.TestAdapter" Version="3.2.0" />
     <PackageReference Include="MSTest.TestFramework" Version="3.2.0" />
     <PackageReference Include="Reqnroll.Microsoft.Extensions.DependencyInjection" Version="2.4.0" />
@@ -48,9 +40,7 @@
     <PackageReference Include="Reqnroll.SpecFlowCompatibility" Version="2.4.0" />
   </ItemGroup>
 
-   <ItemGroup>
-     <Folder Include="Features/" />
-   </ItemGroup>
-
-
+  <ItemGroup>
+    <Folder Include="Features/" />
+  </ItemGroup>
 </Project>

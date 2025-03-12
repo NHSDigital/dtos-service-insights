@@ -53,36 +53,36 @@ public class EndToEndFileUploadService
 
     public async Task UploadFileAsync(string filePath)
     {
-     if (!File.Exists(filePath))
-     {
-         _logger.LogError("File not found at {FilePath}", filePath);
-         throw new FileNotFoundException($"File not found at {filePath}");
-     }
+      if (!File.Exists(filePath))
+      {
+        _logger.LogError("File not found at {FilePath}", filePath);
+        throw new FileNotFoundException($"File not found at {filePath}");
+      }
 
-     int retryCount = 0;
-     const int maxRetries = 5;
-     TimeSpan delay = TimeSpan.FromSeconds(1);
+      int retryCount = 0;
+      const int maxRetries = 5;
+      TimeSpan delay = TimeSpan.FromSeconds(1);
 
-     while (retryCount < maxRetries)
-     {
-         try
-         {
-             _logger.LogInformation("Uploading file {FilePath} to Blob Storage (Attempt {AttemptNumber}).", filePath, retryCount + 1);
-             await _blobStorageHelper.UploadFileToBlobStorageAsync(filePath, _appSettings.BlobContainerName);
-             _logger.LogInformation("File uploaded successfully.");
-             return; // Exit the loop if successful
-         }
-         catch (Exception ex)
-         {
-             _logger.LogError(ex, "Error uploading file {FilePath} to Blob Storage (Attempt {AttemptNumber}).", filePath, retryCount + 1);
-             retryCount++;
-             await Task.Delay(delay);
-             delay = delay * 2; // Exponential backoff
-         }
-     }
+        while (retryCount < maxRetries)
+        {
+            try
+            {
+                _logger.LogInformation("Uploading file {FilePath} to Blob Storage (Attempt {AttemptNumber}).", filePath, retryCount + 1);
+                await _blobStorageHelper.UploadFileToBlobStorageAsync(filePath, _appSettings.BlobContainerName);
+                _logger.LogInformation("File uploaded successfully.");
+                return; // Exit the loop if successful
+            }
+            catch (Exception ex)
+            {
+                 _logger.LogError(ex, "Error uploading file {FilePath} to Blob Storage (Attempt {AttemptNumber}).", filePath, retryCount + 1);
+                 retryCount++;
+                 await Task.Delay(delay);
+                 delay = delay * 2; // Exponential backoff
+            }
+        }
 
-     _logger.LogError("Failed to upload file {FilePath} to Blob Storage after {MaxRetries} retries.", filePath, maxRetries);
-     throw new Exception($"Failed to upload file {filePath} to Blob Storage after {maxRetries} retries.");
+        _logger.LogError("Failed to upload file {FilePath} to Blob Storage after {MaxRetries} retries.", filePath, maxRetries);
+        throw new Exception($"Failed to upload file {filePath} to Blob Storage after {maxRetries} retries.");
     }
 
     public async Task<bool> VerifyRecordCountAsync(string tableName, int originalCount, int expectedIncrement, int retries = 10, int delay = 1000)
@@ -113,7 +113,7 @@ public class EndToEndFileUploadService
         _logger.LogInformation("Validation of NHS numbers completed successfully.");
     }
 
-     public async Task VerifyCsvDataAsync(string tableName, List<string> nhsNumbers)
+    public async Task VerifyCsvDataAsync(string tableName, List<string> nhsNumbers)
     {
         _logger.LogInformation("Validating csv data in table {TableName}.", tableName);
         await DatabaseValidationHelper.VerifyNhsNumbersAsync(_connectionString, tableName, nhsNumbers, _logger,_managedIdentityClientId);
@@ -122,7 +122,7 @@ public class EndToEndFileUploadService
 
     public async Task VerifyNhsNumbersCountAsync(string tableName, string nhsNumber, int expectedCount)
     {
-       Console.WriteLine("Inside Verifynhs");
+        Console.WriteLine("Inside Verifynhs");
         _logger.LogInformation("Validating NHS number count in table {TableName}.", tableName);
         Func<Task> act = async () =>
         {
