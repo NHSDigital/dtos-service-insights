@@ -8,12 +8,12 @@ Background:
 
 @smoketest
 Scenario: 01. Verify new episode is created
-	  Given file <FileName> exists in the configured location for "Add" with NHS numbers : <NhsNumbers>
-	  When the file is uploaded to the Blob Storage container
-	  Then the NHS numbers in the database should match the file data
-    And the episode data from file should be inserted or updated in the database
+	   Given file <FileName> exists in the configured location for "Add" with NHS numbers : <NhsNumbers>
+	   When the file is uploaded to the Blob Storage container
+	   Then the NHS numbers in the database should match the file data
+     And the episode data from file should be inserted or updated in the database
 
-    Examples:
+     Examples:
         | FileName                     | RecordType | NhsNumbers |
         | bss_episodes_add_one_row.csv | Add        | 9990007068 |
 

@@ -40,7 +40,7 @@ public class DatabaseValidationHelper
         {"bso_batch_id","BATCH_ID"},
         {"reason_closed_code","REASON_CLOSED_CODE_ID"},
         {"end_point","END_POINT"}
-	};
+    };
 
 
     private static void ValidateTableName(string tableName)
