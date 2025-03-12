@@ -54,9 +54,9 @@ public sealed class FileUploadSteps
 
 
             _smokeTestsContext.FilePath = filePath;
-           _smokeTestsContext.RecordType = (RecordTypesEnum)Enum.Parse(typeof(RecordTypesEnum), recordType, ignoreCase: true);
+            _smokeTestsContext.RecordType = (RecordTypesEnum)Enum.Parse(typeof(RecordTypesEnum), recordType, ignoreCase: true);
 
-           _smokeTestsContext.NhsNumbers = nhsNumbersData.Split(',', StringSplitOptions.TrimEntries).ToList();
+            _smokeTestsContext.NhsNumbers = nhsNumbersData.Split(',', StringSplitOptions.TrimEntries).ToList();
     }
 
     [Given(@"the file is uploaded to the Blob Storage container")]
@@ -75,7 +75,7 @@ public sealed class FileUploadSteps
     }
 
     [Then(@"the matching episode data from csv is inserted into DB")]
-     public async Task ThenTheMatchingEpisodeDataFromCsvIsInsertedIntoDB()
+    public async Task ThenTheMatchingEpisodeDataFromCsvIsInsertedIntoDB()
     {
         await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.NhsNumbers.FirstOrDefault(),_smokeTestsContext.FilePath);
     }
@@ -92,7 +92,7 @@ public sealed class FileUploadSteps
         await _fileUploadService.VerifyFieldUpdateAsync("EPISODE", _smokeTestsContext.NhsNumbers.FirstOrDefault(), "EPISODE_OPEN_DATE", expectedGivenName);
     }
 
-     [Then("the episode data from file should be inserted or updated in the database")]
+    [Then("the episode data from file should be inserted or updated in the database")]
     public async Task ThenTheEpisodeDataFromFileShouldBeInsertedOrUpdatedInTheDatabase()
     {
         await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.NhsNumbers.FirstOrDefault(),_smokeTestsContext.FilePath);

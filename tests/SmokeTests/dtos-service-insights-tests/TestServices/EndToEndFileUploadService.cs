@@ -53,15 +53,15 @@ public class EndToEndFileUploadService
 
     public async Task UploadFileAsync(string filePath)
     {
-      if (!File.Exists(filePath))
-      {
+        if (!File.Exists(filePath))
+        {
         _logger.LogError("File not found at {FilePath}", filePath);
         throw new FileNotFoundException($"File not found at {filePath}");
-      }
+        }
 
-      int retryCount = 0;
-      const int maxRetries = 5;
-      TimeSpan delay = TimeSpan.FromSeconds(1);
+        int retryCount = 0;
+        const int maxRetries = 5;
+        TimeSpan delay = TimeSpan.FromSeconds(1);
 
         while (retryCount < maxRetries)
         {
@@ -74,10 +74,10 @@ public class EndToEndFileUploadService
             }
             catch (Exception ex)
             {
-                 _logger.LogError(ex, "Error uploading file {FilePath} to Blob Storage (Attempt {AttemptNumber}).", filePath, retryCount + 1);
-                 retryCount++;
-                 await Task.Delay(delay);
-                 delay = delay * 2; // Exponential backoff
+                _logger.LogError(ex, "Error uploading file {FilePath} to Blob Storage (Attempt {AttemptNumber}).", filePath, retryCount + 1);
+                retryCount++;
+                await Task.Delay(delay);
+                delay = delay * 2; // Exponential backoff
             }
         }
 

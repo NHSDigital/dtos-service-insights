@@ -4,7 +4,7 @@ Smoke tests to check the framework
 
 Background:
         Given the database is cleaned of all records for NHS Numbers: 9990007068
-		    And the application is properly configured
+		      And the application is properly configured
 
 @smoketest
 Scenario: 01. Verify new episode is created
@@ -13,7 +13,7 @@ Scenario: 01. Verify new episode is created
 	   Then the NHS numbers in the database should match the file data
      And the episode data from file should be inserted or updated in the database
 
-     Examples:
+      Examples:
         | FileName                     | RecordType | NhsNumbers |
         | bss_episodes_add_one_row.csv | Add        | 9990007068 |
 
