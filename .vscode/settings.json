@@ -10,5 +10,8 @@
   "azureFunctions.projectRuntime": "~4",
   "debug.internalConsoleOptions": "neverOpen",
   "azureFunctions.preDeployTask": "publish (functions)",
-  "dotnet-test-explorer.testProjectPath": "tests/**/*.csproj"
+  "dotnet-test-explorer.testProjectPath": "tests/**/*.csproj",
+  "cSpell.words": [
+    "Reqnroll"
+  ]
 }
