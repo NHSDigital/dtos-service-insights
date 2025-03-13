@@ -1,11 +1,11 @@
 using System.Net;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using System.Text;
-using System.Text.Json;
-using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
+using NHS.ServiceInsights.Common;
 
 namespace NHS.ServiceInsights.EpisodeManagementService;
 
