@@ -1,27 +1,38 @@
 using System.Net;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using System.Text;
-using System.Text.Json;
-using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Data;
-using Azure.Messaging.EventGrid;
+using NHS.ServiceInsights.Model;
 using NHS.ServiceInsights.Common;
+using Azure.Messaging.EventGrid;
 
 namespace NHS.ServiceInsights.EpisodeDataService;
-
-public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, Func<string, IEventGridPublisherClient> eventGridPublisherClientFactory, IHttpRequestService httpRequestService)
+public class UpdateEpisode
 {
-    private readonly ILogger<UpdateEpisode> _logger = logger;
-    private readonly IEpisodeRepository _episodeRepository = episodeRepository;
-    private readonly IEndCodeLkpRepository _endCodeLkpRepository = episodeLkpRepository.EndCodeLkpRepository;
-    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository = episodeLkpRepository.EpisodeTypeLkpRepository;
-    private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository = episodeLkpRepository.FinalActionCodeLkpRepository;
-    private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
-    private readonly Func<string, IEventGridPublisherClient> _eventGridPublisherClientFactory = eventGridPublisherClientFactory;
-    private readonly IHttpRequestService _httpRequestService = httpRequestService;
+    private readonly ILogger<UpdateEpisode> _logger;
+    private readonly IEpisodeRepository _episodeRepository;
+    private readonly IEndCodeLkpRepository _endCodeLkpRepository;
+    private readonly IEpisodeTypeLkpRepository _episodeTypeLkpRepository;
+    private readonly IFinalActionCodeLkpRepository _finalActionCodeLkpRepository;
+    private readonly IReasonClosedCodeLkpRepository _reasonClosedCodeLkpRepository;
+    private readonly Func<string, IEventGridPublisherClient> _eventGridPublisherClientFactory;
+    private readonly IHttpRequestService _httpRequestService;
     private const long ScreeningId = 1;
+
+    public UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository episodeRepository, IEpisodeLkpRepository episodeLkpRepository, Func<string, IEventGridPublisherClient> eventGridPublisherClientFactory, IHttpRequestService httpRequestService)
+    {
+        _logger = logger;
+        _episodeRepository = episodeRepository;
+        _endCodeLkpRepository = episodeLkpRepository.EndCodeLkpRepository;
+        _episodeTypeLkpRepository = episodeLkpRepository.EpisodeTypeLkpRepository;
+        _finalActionCodeLkpRepository = episodeLkpRepository.FinalActionCodeLkpRepository;
+        _reasonClosedCodeLkpRepository = episodeLkpRepository.ReasonClosedCodeLkpRepository;
+        _eventGridPublisherClientFactory = eventGridPublisherClientFactory;
+        _httpRequestService = httpRequestService;
+    }
 
     [Function("UpdateEpisode")]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put")] HttpRequestData req)
@@ -30,14 +41,18 @@ public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository epi
 
         try
         {
+            // Read and deserialize the request body
             using (StreamReader reader = new StreamReader(req.Body, Encoding.UTF8))
             {
                 var postData = await reader.ReadToEndAsync();
                 episodeDto = JsonSerializer.Deserialize<InitialEpisodeDto>(postData);
+                // Log the payload received
+                _logger.LogInformation("Received payload: {Payload}", postData);
             }
         }
         catch (Exception ex)
         {
+            // Log error and return BadRequest if deserialization fails
             _logger.LogError(ex, "Could not read episode data");
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
@@ -46,6 +61,7 @@ public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository epi
         {
             _logger.LogInformation("Request to update episode {episodeId} received.", episodeDto.EpisodeId);
 
+            // Retrieve the existing episode from the repository
             var existingEpisode = await _episodeRepository.GetEpisodeAsync(episodeDto.EpisodeId);
             if (existingEpisode == null)
             {
@@ -53,32 +69,49 @@ public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository epi
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
 
+            // Determine if the incoming data is newer than the existing data
             bool shouldUpdate = episodeDto.SrcSysProcessedDateTime > existingEpisode.SrcSysProcessedDatetime;
 
+            // Check if the participant exists
             var checkParticipantExistsUrl = $"{Environment.GetEnvironmentVariable("CheckParticipantExistsUrl")}?NhsNumber={episodeDto.NhsNumber}&ScreeningId={ScreeningId}";
             var checkParticipantExistsResult = await _httpRequestService.SendGet(checkParticipantExistsUrl);
             // If the participant does not exist then flag as an exception
             var exceptionFlag = !checkParticipantExistsResult.IsSuccessStatusCode;
 
+            // Retrieve lookup data
             EpisodeTypeLkp? episodeTypeLkp = await GetCodeObject<EpisodeTypeLkp?>(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeLkp);
             EndCodeLkp? endCodeLkp = await GetCodeObject<EndCodeLkp?>(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeLkp);
             ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
             FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
 
+            // Map DTO to existing episode
             existingEpisode = await MapEpisodeDtoToEpisode(existingEpisode, episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
 
             if (shouldUpdate)
             {
-                await _episodeRepository.UpdateEpisode(existingEpisode);
-                _logger.LogInformation("Episode {episodeId} updated successfully.", episodeDto.EpisodeId);
+                try
+                {
+                    // Update the episode in the repository
+                    _logger.LogInformation("Calling UpdateEpisode method...");
+                    await _episodeRepository.UpdateEpisode(existingEpisode);
+                    _logger.LogInformation("Episode {episodeId} updated successfully in database.", episodeDto.EpisodeId);
+                }
+                catch (Exception ex)
+                {
+                    // Log error and return InternalServerError if database update fails
+                    _logger.LogError(ex, "Failed to update episode in database.");
+                    return req.CreateResponse(HttpStatusCode.InternalServerError);
+                }
             }
             else
             {
                 _logger.LogInformation("Incoming data is not newer. Skipping update for episode {episodeId}.", episodeDto.EpisodeId);
             }
 
+            // Cast the episode object to FinalizedEpisodeDto
             var finalizedEpisodeDto = (FinalizedEpisodeDto)existingEpisode;
 
+            // Set additional properties on the finalizedEpisodeDto
             finalizedEpisodeDto.EpisodeType = episodeTypeLkp?.EpisodeType;
             finalizedEpisodeDto.EpisodeTypeDescription = episodeTypeLkp?.EpisodeDescription;
             finalizedEpisodeDto.EndCode = endCodeLkp?.EndCode;
@@ -88,6 +121,7 @@ public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository epi
             finalizedEpisodeDto.FinalActionCode = finalActionCodeLkp?.FinalActionCode;
             finalizedEpisodeDto.FinalActionCodeDescription = finalActionCodeLkp?.FinalActionCodeDescription;
 
+            // Create an EventGridEvent with the finalized episode data
             EventGridEvent eventGridEvent = new EventGridEvent(
                 subject: "EpisodeUpdate",
                 eventType: "NSP.EpisodeUpdateReceived",
@@ -95,22 +129,26 @@ public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository epi
                 data: finalizedEpisodeDto
             );
 
+            // Send the event to Event Grid
             var episodePublisher = _eventGridPublisherClientFactory("episode");
             try
             {
                 await episodePublisher.SendEventAsync(eventGridEvent);
+                _logger.LogInformation("Sending Episode event to Event Grid: {EventGridEvent}", JsonSerializer.Serialize(eventGridEvent));
             }
-
             catch (Exception ex)
             {
-                _logger.LogError(ex,"Failed to send event to event grid");
+                // Log error and return InternalServerError if event grid publishing fails
+                _logger.LogError(ex, "Failed to send event to event grid");
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
 
+            // Return OK response if everything is successful
             return req.CreateResponse(HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
+            // Log error and return InternalServerError if any other error occurs
             _logger.LogError(ex, "Error updating episode.");
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
@@ -156,6 +194,7 @@ public class UpdateEpisode(ILogger<UpdateEpisode> logger, IEpisodeRepository epi
         }
         return codeObject;
     }
+
     private async Task<long?> GetOrganisationId(string organisationCode)
     {
         if (string.IsNullOrWhiteSpace(organisationCode))
