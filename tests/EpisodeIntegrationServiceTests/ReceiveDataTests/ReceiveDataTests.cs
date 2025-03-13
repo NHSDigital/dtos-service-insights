@@ -93,7 +93,7 @@ public class ReceiveDataTests
             EpisodeType = "R",
             ScreeningName = "Breast Screening",
             NhsNumber = 9000007053,
-            SrcSysProcessedDateTime = DateTime.Parse("2020-03-31 12:11:47.339148+01"),
+            SrcSysProcessedDateTime = DateTime.Parse("2020-03-31 12:11:47.339148+01").ToUniversalTime(),
             EpisodeOpenDate = DateOnly.Parse("2017-01-11"),
             AppointmentMadeFlag = 1,
             FirstOfferedAppointmentDate = DateOnly.Parse("2017-03-14"),
