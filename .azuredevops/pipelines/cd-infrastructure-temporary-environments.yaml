@@ -61,7 +61,7 @@ stages:
         name: set_variables
         displayName: Set Terraform Variables
         inputs:
-          azureSubscription: sc-service-insights-dev
+          azureSubscription: $(SERVICE_CONNECTION)
           scriptLocation: inlineScript
           scriptType: bash
           workingDirectory: $(tfExecutionDir)
@@ -100,7 +100,7 @@ stages:
       - task: AzureCLI@2
         displayName: Configure Backend
         inputs:
-          azureSubscription: sc-service-insights-dev
+          azureSubscription: $(SERVICE_CONNECTION)
           scriptLocation: inlineScript
           scriptType: bash
           workingDirectory: $(tfExecutionDir)
@@ -274,7 +274,7 @@ stages:
         name: check_image_import_required
         displayName: Check Image Import Required
         inputs:
-          azureSubscription: sc-service-insights-dev
+          azureSubscription: $(SERVICE_CONNECTION)
           scriptLocation: inlineScript
           scriptType: bash
           workingDirectory: $(tfExecutionDir)
@@ -320,7 +320,7 @@ stages:
       - task: AzureCLI@2
         displayName: Update Database
         inputs:
-          azureSubscription: sc-service-insights-dev
+          azureSubscription: $(SERVICE_CONNECTION)
           scriptLocation: inlineScript
           scriptType: bash
           workingDirectory: $(tfExecutionDir)
@@ -366,7 +366,7 @@ stages:
               - task: AzureCLI@2
                 displayName: Clean-up Backend - Core
                 inputs:
-                  azureSubscription: sc-service-insights-dev
+                  azureSubscription: $(SERVICE_CONNECTION)
                   scriptLocation: inlineScript
                   scriptType: bash
                   workingDirectory: $(tfExecutionDir)
@@ -413,7 +413,7 @@ stages:
               - task: AzureCLI@2
                 displayName: Clean-up Backend - Audit
                 inputs:
-                  azureSubscription: sc-service-insights-dev
+                  azureSubscription: $(SERVICE_CONNECTION)
                   scriptLocation: inlineScript
                   scriptType: bash
                   workingDirectory: $(tfExecutionDir)
