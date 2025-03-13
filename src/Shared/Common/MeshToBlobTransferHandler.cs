@@ -253,7 +253,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             return new BlobFile(fileContent, $"{messageId}_{fileName}");
         }
 
-        // Return the file content as unmodified
+        // Return the file content as unmodified if it is not a GZIP file
         return new BlobFile(fileContent, fileName);
     }
 }
