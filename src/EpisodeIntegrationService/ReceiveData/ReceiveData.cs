@@ -264,7 +264,7 @@ public class ReceiveData
             EpisodeType = episode.episode_type,
             ScreeningName = "Breast Screening",
             NhsNumber = long.Parse(episode.nhs_number),
-            SrcSysProcessedDateTime = DateTime.Parse(episode.change_db_date_time, CultureInfo.InvariantCulture, DateTimeStyles.None),
+            SrcSysProcessedDateTime = DateTime.Parse(episode.change_db_date_time, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal),
             EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
             AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
             FirstOfferedAppointmentDate = Utils.ParseNullableDate(episode.date_of_foa),
@@ -308,7 +308,7 @@ public class ReceiveData
             EndPoint = episode.end_point,
             OrganisationId = string.IsNullOrEmpty(episode.bso_organisation_code) ? null : organisationReferenceData.OrganisationCodeToIdLookup[episode.bso_organisation_code],
             BatchId = episode.bso_batch_id,
-            SrcSysProcessedDatetime = DateTime.Parse(episode.change_db_date_time, CultureInfo.InvariantCulture, DateTimeStyles.None)
+            SrcSysProcessedDatetime = DateTime.Parse(episode.change_db_date_time, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal)
         };
 
         return finalizedEpisodeDto;
