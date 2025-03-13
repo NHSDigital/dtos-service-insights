@@ -253,7 +253,7 @@ public class MeshToBlobTransferHandler : IMeshToBlobTransferHandler
             return new BlobFile(fileContent, $"{messageId}_{fileName}");
         }
 
-        // Return the file content as is
+        // Return the file content as unmodified
         return new BlobFile(fileContent, fileName);
     }
 }
