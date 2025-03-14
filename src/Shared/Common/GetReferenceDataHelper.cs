@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 
 
 namespace NHS.ServiceInsights.Common;
+
 public static class GetReferenceDataHelper
 {
     public static async Task<T?> GetCodeObject<T>(string code, string codeName, Func<string, Task<T?>> getObjectMethod, ILogger logger) where T : class?
