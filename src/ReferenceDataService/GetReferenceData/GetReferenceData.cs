@@ -94,10 +94,10 @@ public class GetReferenceData
             long? organisationID = await _organisationLkpRepository.GetOrganisationByCodeAsync(organisationCode);
             if (organisationID == null)
             {
-                _logger.LogError("organisation not found.");
+                _logger.LogError("Organisation ID with code '{organisationCode}' not found.", organisationCode);
                 return req.CreateResponse(HttpStatusCode.NotFound);
             }
-            _logger.LogInformation("organisation with ID: {organisationID} found successfully.", organisationID);
+            _logger.LogInformation("Organisation ID with code '{organisationCode}' found successfully.", organisationCode);
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             await JsonSerializer.SerializeAsync(response.Body, organisationID);
@@ -106,7 +106,7 @@ public class GetReferenceData
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "GetReferenceData: Failed to get organisation from the db.\nException: {Message}", ex.Message);
+            _logger.LogError(ex, "GetReferenceData: Failed to get Organisation ID from the db.\nException: {Message}", ex.Message);
             return req.CreateResponse(HttpStatusCode.InternalServerError);
         }
 

@@ -190,7 +190,15 @@ public class CreateEpisode
 
         var url = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
         var response = await _httpRequestService.SendGet(url);
-        response.EnsureSuccessStatusCode();
-        return await JsonSerializer.DeserializeAsync<long>(await response.Content.ReadAsStreamAsync());
+        if (response.IsSuccessStatusCode)
+        {
+            _logger.LogInformation("Organisation ID with code '{organisationCode}' found successfully.", organisationCode);
+            return await JsonSerializer.DeserializeAsync<long>(await response.Content.ReadAsStreamAsync());
+        }
+        else
+        {
+            _logger.LogError("Organisation ID with code '{organisationCode}' not found in lookup table.", organisationCode);
+            throw new InvalidOperationException($"Organisation with code '{organisationCode}' not found in lookup table.");
+        }
     }
 }
