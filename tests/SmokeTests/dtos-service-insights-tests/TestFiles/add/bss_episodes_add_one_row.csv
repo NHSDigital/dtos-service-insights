@@ -1,0 +1,2 @@
+nhs_number,episode_id,episode_type,change_db_date_time,episode_date,appointment_made,date_of_foa,date_of_as,early_recall_date,call_recall_status_authorised_by,end_code,end_code_last_updated,bso_organisation_code,bso_batch_id,reason_closed_code,end_point,final_action_code
+9990007068,837413,S,2020-04-09 09:05:47.866033+01,01/03/2020,TRUE,05/03/2020,20/03/2020,,SCREENING_OFFICE,SC,2020-04-09 00:00:00+01,LAV,LAV953520F,,,
