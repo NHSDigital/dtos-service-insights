@@ -89,7 +89,7 @@ public class GetReferenceDataTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Error,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("organisation not found.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Organisation ID with code 'invalidOrganisationCode' not found.")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
@@ -121,7 +121,7 @@ public class GetReferenceDataTests
             Times.Once);
     }
     [TestMethod]
-    public async Task Run_ShouldReturnOk_WhenEpisodeByOranisationCodeIsFound()
+    public async Task Run_ShouldReturnOk_WhenEpisodeByOrganisationCodeIsFound()
     {
         // Arrange
         var queryParam = new NameValueCollection
@@ -156,7 +156,7 @@ public class GetReferenceDataTests
         _mockLogger.Verify(log => log.Log(
             LogLevel.Information,
             0,
-            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("organisation with ID: 12345 found successfully.")),
+            It.Is<It.IsAnyType>((state, type) => state.ToString().Contains("Organisation ID with code 'LAV' found successfully.")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
