@@ -79,10 +79,10 @@ public class UpdateEpisode
             var exceptionFlag = !checkParticipantExistsResult.IsSuccessStatusCode;
 
             // Retrieve lookup data
-            EpisodeTypeLkp? episodeTypeLkp = await GetCodeObject<EpisodeTypeLkp?>(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeLkp);
-            EndCodeLkp? endCodeLkp = await GetCodeObject<EndCodeLkp?>(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeLkp);
-            ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp);
-            FinalActionCodeLkp? finalActionCodeLkp = await GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp);
+            EpisodeTypeLkp? episodeTypeLkp = await GetReferenceDataHelper.GetCodeObject<EpisodeTypeLkp?>(episodeDto.EpisodeType, "Episode type", _episodeTypeLkpRepository.GetEpisodeTypeLkp, _logger);
+            EndCodeLkp? endCodeLkp = await GetReferenceDataHelper.GetCodeObject<EndCodeLkp?>(episodeDto.EndCode, "End code", _endCodeLkpRepository.GetEndCodeLkp, _logger);
+            ReasonClosedCodeLkp? reasonClosedCodeLkp = await GetReferenceDataHelper.GetCodeObject<ReasonClosedCodeLkp?>(episodeDto.ReasonClosedCode, "Reason closed code", _reasonClosedCodeLkpRepository.GetReasonClosedLkp, _logger);
+            FinalActionCodeLkp? finalActionCodeLkp = await GetReferenceDataHelper.GetCodeObject<FinalActionCodeLkp?>(episodeDto.FinalActionCode, "Final action code", _finalActionCodeLkpRepository.GetFinalActionCodeLkp, _logger);
 
             // Map DTO to existing episode
             existingEpisode = await MapEpisodeDtoToEpisode(existingEpisode, episodeDto, episodeTypeLkp?.EpisodeTypeId, endCodeLkp?.EndCodeId, reasonClosedCodeLkp?.ReasonClosedCodeId, finalActionCodeLkp?.FinalActionCodeId, exceptionFlag);
@@ -156,7 +156,7 @@ public class UpdateEpisode
 
     private async Task<Episode> MapEpisodeDtoToEpisode(Episode existingEpisode, InitialEpisodeDto episodeDto, long? episodeTypeId, long? endCodeId, long? reasonClosedCodeId, long? finalActionCodeId, bool exceptionFlag)
     {
-        var organisationId = await GetOrganisationId(episodeDto.OrganisationCode);
+        var organisationId = await GetReferenceDataHelper.GetOrganisationId(episodeDto.OrganisationCode, _httpRequestService, _logger);
         existingEpisode.ScreeningId = 1; // Need to get ScreeningId from ScreeningName
         existingEpisode.NhsNumber = episodeDto.NhsNumber;
         existingEpisode.EpisodeTypeId = episodeTypeId;
@@ -179,41 +179,4 @@ public class UpdateEpisode
         return existingEpisode;
     }
 
-    private async Task<T?> GetCodeObject<T>(string code, string codeName, Func<string, Task<T?>> getObjectMethod) where T : class?
-    {
-        if (string.IsNullOrWhiteSpace(code))
-        {
-            return null;
-        }
-
-        var codeObject = await getObjectMethod(code);
-        if (codeObject == null)
-        {
-            _logger.LogError("{codeName} '{code}' not found in lookup table.", codeName, code);
-            throw new InvalidOperationException($"{codeName} '{code}' not found in lookup table.");
-        }
-        return codeObject;
-    }
-
-    private async Task<long?> GetOrganisationId(string organisationCode)
-    {
-        if (string.IsNullOrWhiteSpace(organisationCode))
-        {
-            _logger.LogInformation("Organisation code is null");
-            return null;
-        }
-
-        var url = $"{Environment.GetEnvironmentVariable("GetOrganisationIdByCodeUrl")}?organisation_code={organisationCode}";
-        var response = await _httpRequestService.SendGet(url);
-        if (response.IsSuccessStatusCode)
-        {
-            _logger.LogInformation("Organisation ID with code '{organisationCode}' found successfully.", organisationCode);
-            return await JsonSerializer.DeserializeAsync<long>(await response.Content.ReadAsStreamAsync());
-        }
-        else
-        {
-            _logger.LogError("Organisation ID with code '{organisationCode}' not found in lookup table.", organisationCode);
-            throw new InvalidOperationException($"Organisation with code '{organisationCode}' not found in lookup table.");
-        }
-    }
 }
