@@ -210,8 +210,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://*:6007
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
-      - topicEndpoint1=${EPISODE_TOPIC_ENDPOINT}
-      - topicKey1=${EPISODE_TOPIC_KEY}
+      - topicEndpoint1=${CREATE_EPISODE_TOPIC_ENDPOINT}
+      - topicKey1=${CREATE_EPISODE_TOPIC_KEY}
       - CheckParticipantExistsUrl=http://127.0.0.1:6061/api/GetParticipant
       - GetOrganisationIdByCodeUrl=http://localhost:6081/api/GetOrganisationIdByCode
 
@@ -256,8 +256,8 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:7777
       - ServiceInsightsDbConnectionString=Server=127.0.0.1,1433;Database=${DB_NAME};User Id=SA;Password=${PASSWORD};TrustServerCertificate=True
-      - topicEndpoint1=${EPISODE_TOPIC_ENDPOINT}
-      - topicKey1=${EPISODE_TOPIC_KEY}
+      - topicEndpoint1=${UPDATE_EPISODE_TOPIC_ENDPOINT}
+      - topicKey1=${UPDATE_EPISODE_TOPIC_KEY}
       - CheckParticipantExistsUrl=http://127.0.0.1:6061/api/GetParticipant
       - GetOrganisationIdByCodeUrl=http://127.0.0.1:6081/api/GetOrganisationIdByCode
 
