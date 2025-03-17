@@ -101,7 +101,7 @@ jobs:
       version: "${{ needs.metadata.outputs.version }}"
     secrets: inherit
   build-image-stage: # Recommended maximum execution time is 3 minutes
-    name: Image build stage
+    name: Image build stages
     # needs: [metadata, commit-stage, test-stage]
     needs: [metadata]
     uses: NHSDigital/dtos-devops-templates/.github/workflows/stage-3-build-images.yaml@fix/DTOSS-7928-remove-compromised-GH-Action
