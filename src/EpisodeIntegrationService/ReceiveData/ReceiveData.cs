@@ -3,6 +3,7 @@ using NHS.ServiceInsights.Common;
 using NHS.ServiceInsights.Model;
 using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using CsvHelper;
 using System.Globalization;
 using Azure.Messaging.EventGrid;
@@ -73,21 +74,40 @@ public class ReceiveData
     }
     private async Task ProcessFile(Stream myBlob, string name, string episodeUrl, string participantUrl, DateTime processingStart)
     {
-        if (name.StartsWith("bss_episodes"))
+        string regexPattern = Environment.GetEnvironmentVariable("FileNameRegexPattern");
+        if (string.IsNullOrEmpty(regexPattern))
         {
-            await ProcessEpisodes(myBlob, name, episodeUrl, processingStart);
+            _logger.LogError("File name regex pattern is not configured.");
+            return;
         }
-        else if (name.StartsWith("bss_subjects"))
+
+        _logger.LogInformation("Using regex pattern: {RegexPattern} to validate file name: {FileName}", regexPattern, name);
+
+        var match = Regex.Match(name, regexPattern);
+        if (!match.Success)
         {
-            await ProcessSubjects(myBlob, name, participantUrl, processingStart);
+            _logger.LogError("File name does not match the expected pattern. file name: {Name}", name);
+            return;
+        }
+
+        string fileType = match.Groups["type"].Value; // Extract 'episodes' or 'participants'
+        string fileScope = match.Groups["scope"].Value; // Extract 'current' or 'historic'
+
+        if (fileType == "episodes")
+        {
+            await ProcessEpisodes(myBlob, name, episodeUrl, processingStart, fileScope);
+        }
+        else if (fileType == "participants")
+        {
+            await ProcessSubjects(myBlob, name, participantUrl, processingStart, fileScope);
         }
         else
         {
-            _logger.LogError("fileName is invalid. file name: {Name}", name);
+            _logger.LogError("Invalid file type in file name: {Name}", name);
         }
     }
 
-    private async Task<bool> ProcessEpisodes(Stream myBlob, string name, string episodeUrl, DateTime processingStart)
+    private async Task<bool> ProcessEpisodes(Stream myBlob, string name, string episodeUrl, DateTime processingStart, string fileScope)
     {
         if (!CheckCsvFileHeaders(myBlob, FileType.Episodes))
         {
@@ -101,12 +121,11 @@ public class ReceiveData
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
         {
             var episodesEnumerator = csv.GetRecords<BssEpisode>();
-            if (name.EndsWith("_historic.csv"))
+            if (fileScope == "historic")
             {
                 var referenceData = await RetrieveReferenceDataAsync();
                 var organisationReferenceData = await GetOrganisationIdAsync();
                 await ProcessHistoricalEpisodeDataAsync(episodesEnumerator, referenceData, organisationReferenceData);
-
             }
             else
             {
@@ -125,7 +144,7 @@ public class ReceiveData
         return true;
     }
 
-    private async Task<bool> ProcessSubjects(Stream myBlob, string name, string participantUrl, DateTime processingStart)
+    private async Task<bool> ProcessSubjects(Stream myBlob, string name, string participantUrl, DateTime processingStart, string fileScope)
     {
         if (!CheckCsvFileHeaders(myBlob, FileType.Subjects))
         {
@@ -139,7 +158,7 @@ public class ReceiveData
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
         {
             var participantsEnumerator = csv.GetRecords<BssSubject>();
-            if (name.EndsWith("_historic.csv"))
+            if (fileScope == "historic")
             {
                 var participantReferenceData = GetParticipantReferenceData();
                 await ProcessHistoricalParticipantDataAsync(participantsEnumerator, participantReferenceData);
@@ -211,14 +230,14 @@ public class ReceiveData
 
                 episodeSuccessCount++;
                 episodeRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully",episodeRowIndex);
+                _logger.LogInformation("Row No.{rowIndex} processed successfully", episodeRowIndex);
             }
         }
         catch (Exception ex)
         {
             episodeFailureCount++;
             episodeRowIndex++;
-            _logger.LogError(ex,"Row No.{rowIndex} processed unsuccessfully",episodeRowIndex);
+            _logger.LogError(ex, "Row No.{rowIndex} processed unsuccessfully", episodeRowIndex);
             await ProcessEpisodeDataAsync(episodes, episodeUrl);
         }
     }
@@ -272,7 +291,7 @@ public class ReceiveData
             EarlyRecallDate = Utils.ParseNullableDate(episode.early_recall_date),
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = episode.end_code,
-            EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, new[] {"yyyy-MM-dd HH:mm:ssz", "yyyy-MM-dd HH:mm:ss"}),
+            EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, new[] { "yyyy-MM-dd HH:mm:ssz", "yyyy-MM-dd HH:mm:ss" }),
             OrganisationCode = episode.bso_organisation_code,
             BatchId = episode.bso_batch_id,
             EndPoint = episode.end_point,
@@ -300,7 +319,7 @@ public class ReceiveData
             CallRecallStatusAuthorisedBy = episode.call_recall_status_authorised_by,
             EndCode = episode.end_code,
             EndCodeDescription = string.IsNullOrEmpty(episode.end_code) ? "" : referenceData.EndCodeDescriptions[episode.end_code],
-            EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, new[] {"yyyy-MM-dd HH:mm:ssz", "yyyy-MM-dd HH:mm:ss"}),
+            EndCodeLastUpdated = Utils.ParseNullableDateTime(episode.end_code_last_updated, new[] { "yyyy-MM-dd HH:mm:ssz", "yyyy-MM-dd HH:mm:ss" }),
             FinalActionCode = episode.final_action_code,
             FinalActionCodeDescription = string.IsNullOrEmpty(episode.final_action_code) ? "" : referenceData.FinalActionCodeDescriptions[episode.final_action_code],
             ReasonClosedCode = episode.reason_closed_code,
@@ -352,7 +371,7 @@ public class ReceiveData
 
                 participantSuccessCount++;
                 participantRowIndex++;
-                _logger.LogInformation("Row No.{rowIndex} processed successfully",participantRowIndex);
+                _logger.LogInformation("Row No.{rowIndex} processed successfully", participantRowIndex);
             }
         }
 
@@ -360,7 +379,7 @@ public class ReceiveData
         {
             participantFailureCount++;
             participantRowIndex++;
-            _logger.LogError(ex,"Row No.{rowIndex} processed unsuccessfully",participantRowIndex);
+            _logger.LogError(ex, "Row No.{rowIndex} processed unsuccessfully", participantRowIndex);
             await ProcessParticipantDataAsync(subjects, participantUrl);
         }
     }
@@ -491,4 +510,3 @@ public class ReceiveData
         return participantReferenceData;
     }
 }
-
