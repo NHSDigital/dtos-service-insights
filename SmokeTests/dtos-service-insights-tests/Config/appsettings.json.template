@@ -1,0 +1,15 @@
+{
+  "AppSettings": {
+    "ConnectionStrings": {
+      "ServiceInsightsDatabaseConnectionString": ""
+    },
+  "FilePaths": {
+  "Add": "TestData/add/",
+  "Amended": "TestData/amended/",
+  "Remove": "TestData/remove/"
+},
+    "BlobStorageConnectionString": "",
+    "BlobContainerName": "inbound",
+    "ManagedIdentityClientId": ""
+  }
+}

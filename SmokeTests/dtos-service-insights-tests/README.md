@@ -29,8 +29,8 @@ To set up and run this test automation framework, ensure you have the following 
 
 ## Configuration
 
-Create a new file named `appsettings-local.json` in the Configuration(Config) directory of the smoke tests project
-Copy the template below into the file:
+Create a new file named `appsettings.json` in the `Config` directory of the smoke tests project
+Copy below content from `Config\appsettings.json.template` into the file:
 
 ```json
 "AppSettings": {
@@ -55,7 +55,6 @@ Replace the placeholders:
 
 `ApplicationInsightsDatabaseConnectionString` : Your local SQL Server connection string
 `BlobStorageConnectionString` : For local development, use Azure Storage Emulator (UseDevelopmentStorage=true) or a connection string to your development storage account
-For local testing, keep IsCloudEnvironment set to false to avoid managed identity authentication
 
 ## Running Tests
 

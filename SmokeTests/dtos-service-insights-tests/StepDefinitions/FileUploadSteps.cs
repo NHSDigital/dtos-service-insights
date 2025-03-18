@@ -47,9 +47,9 @@ public sealed class FileUploadSteps
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         string workingDirectory = Environment.CurrentDirectory;
-        string path = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+        string path = Directory.GetParent(workingDirectory).Parent.Parent.Parent.Parent.FullName;
 
-        var folderPath=path + "/TestFiles/" + recordType +"/";
+        var folderPath=path + "/TestData/" + recordType +"/";
             var filePath = Path.Combine(folderPath!, fileName);
 
 
