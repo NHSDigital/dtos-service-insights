@@ -31,4 +31,24 @@ Scenario: 02. Verify episode is updated in the database
 
     Examples:
         | AddFileName                  |  AmendedFileName                | NhsNumbers | AmendedEpisodeDateValue |
-        | bss_episodes_add_one_row.csv | bss_episodes_update_one_row.csv | 9990007068 | 01/03/2021    |
+        | bss_episodes_add_one_row.csv | bss_episodes_update_one_row.csv | 9990007068 | 01/03/2021              |
+
+@smoketest
+Scenario: 03. Episode record with invalid header is processed
+  Given file <FileName> exists in the configured location for "Add" with NHS numbers : <NhsNumbers>
+  When the file is uploaded to the Blob Storage container
+  Then there should be 0 records for the NHS Number in the database
+
+      Examples:
+        | FileName                               | RecordType | NhsNumbers |
+        | bss_episodes_invalidheader_one_row.csv | Add        | 9990007068 |
+
+@smoketest
+Scenario: 04. Episode record with invalid episode type is processed
+  Given file <FileName> exists in the configured location for "Add" with NHS numbers : <NhsNumbers>
+  When the file is uploaded to the Blob Storage container
+  Then there should be 0 records for the NHS Number in the database
+
+      Examples:
+        | FileName                                    | RecordType | NhsNumbers |
+        | bss_episodes_invalidepisodetype_one_row.csv | Add        | 9990007068 |
