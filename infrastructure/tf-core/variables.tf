@@ -363,7 +363,6 @@ variable "sqlserver" {
     public_network_access_enabled            = optional(bool, false)
     security_alert_policy_retention_days     = optional(number)
     public_network_access_enabled            = optional(bool, false)
-    event_grid_topic_enabled_in_project_vnet = optional(bool, false)
 
     # Server Instance
     server = optional(object({
