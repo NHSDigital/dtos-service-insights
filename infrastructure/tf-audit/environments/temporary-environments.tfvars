@@ -19,7 +19,7 @@ regions = {
     is_primary_region = true
     address_space     = "10.255.0.0/16"
     connect_peering   = true
-    subnets = {}
+    subnets           = {}
   }
 }
 

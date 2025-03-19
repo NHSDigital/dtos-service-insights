@@ -35,8 +35,8 @@ module "azure_sql_server" {
 
   sql_server_alert_policy_state = "Enabled"
 
-  sql_uai_name                         = var.sqlserver.sql_uai_name
-  sql_admin_group_name                 = local.sql_admin_group_name
+  sql_uai_name         = var.sqlserver.sql_uai_name
+  sql_admin_group_name = local.sql_admin_group_name
 
   sql_admin_object_id                  = data.azuread_group.sql_admin_group.object_id
   ad_auth_only                         = var.sqlserver.ad_auth_only

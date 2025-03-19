@@ -356,12 +356,14 @@ variable "sqlserver" {
   description = "Configuration for the Azure MSSQL server instance and a default database "
   type = object({
 
-    sql_uai_name                         = optional(string)
-    sql_admin_group_name                 = optional(string)
-    ad_auth_only                         = optional(bool)
-    auditing_policy_retention_in_days    = optional(number)
-    public_network_access_enabled        = optional(bool, false)
-    security_alert_policy_retention_days = optional(number)
+    sql_uai_name                             = optional(string)
+    sql_admin_group_name                     = optional(string)
+    ad_auth_only                             = optional(bool)
+    auditing_policy_retention_in_days        = optional(number)
+    public_network_access_enabled            = optional(bool, false)
+    security_alert_policy_retention_days     = optional(number)
+    public_network_access_enabled            = optional(bool, false)
+    event_grid_topic_enabled_in_project_vnet = optional(bool, false)
 
     # Server Instance
     server = optional(object({

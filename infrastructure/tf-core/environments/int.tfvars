@@ -3,12 +3,13 @@ application_full_name = "service-insights"
 environment           = "INT"
 
 features = {
-  acr_enabled                          = false
-  api_management_enabled               = false
-  event_grid_enabled                   = true
-  private_endpoints_enabled            = true
-  private_service_connection_is_manual = false
-  public_network_access_enabled        = false
+  acr_enabled                              = false
+  api_management_enabled                   = false
+  event_grid_enabled                       = true
+  private_endpoints_enabled                = true
+  private_service_connection_is_manual     = false
+  public_network_access_enabled            = false
+  event_grid_topic_enabled_in_project_vnet = false
 }
 
 tags = {

@@ -2,12 +2,13 @@ application           = "serins"
 application_full_name = "service-insights"
 
 features = {
-  acr_enabled                          = true
-  api_management_enabled               = false
-  event_grid_enabled                   = true
-  private_endpoints_enabled            = false
-  private_service_connection_is_manual = false
-  public_network_access_enabled        = false
+  acr_enabled                              = true
+  api_management_enabled                   = false
+  event_grid_enabled                       = true
+  private_endpoints_enabled                = false
+  private_service_connection_is_manual     = false
+  public_network_access_enabled            = false
+  event_grid_topic_enabled_in_project_vnet = true
 }
 
 tags = {
@@ -19,7 +20,7 @@ regions = {
     is_primary_region = true
     address_space     = "10.255.0.0/16"
     connect_peering   = false
-    subnets = {}
+    subnets           = {}
   }
 }
 
