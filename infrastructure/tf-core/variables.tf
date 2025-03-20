@@ -70,6 +70,23 @@ variable "acr" {
   default = null
 }
 
+variable "rbac_principal_name_key_vault" {
+  description = "The user group to assign RBAC roles to (TODO: Convert to list of groups)"
+  type        = string
+  default     = ""
+}
+
+variable "rbac_principal_name_resource_group" {
+  description = "The user group to assign RBAC roles to (TODO: Convert to list of groups)"
+  type        = string
+  default     = ""
+}
+
+variable "rbac_principal_name_storage" {
+  description = "The user group to assign RBAC roles to (TODO: Convert to list of groups)"
+  type        = string
+  default     = ""
+}
 
 variable "application_full_name" {
   description = "Full name of the Project/Application code for deployment"
