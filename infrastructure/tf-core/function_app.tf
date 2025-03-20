@@ -16,7 +16,9 @@ module "functionapp" {
 
   public_network_access_enabled = length(keys(each.value.ip_restrictions)) > 0 ? true : var.features.public_network_access_enabled
 
-  vnet_integration_subnet_id = module.subnets["${module.regions_config[each.value.region].names.subnet}-apps"].id
+  # vnet_integration_subnet_id = module.subnets["${module.regions_config[each.value.region].names.subnet}-apps"].id
+  public_network_access_enabled = var.features.public_network_access_enabled
+  vnet_integration_subnet_id    = var.features.private_endpoints_enabled ? module.subnets["${module.regions_config[each.value.region].names.subnet}-apps"].id : null
 
   # rbac_role_assignments = local.rbac_role_assignments[each.value.region]
   rbac_role_assignments = each.value.rbac_role_assignments
