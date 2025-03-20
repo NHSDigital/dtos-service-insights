@@ -177,7 +177,7 @@ locals {
             length(try(config.event_grid_topic_producers, [])) > 0 ? merge(
               {
                 for idx, producer in coalescelist(config.event_grid_topic_producers, []) :
-                "topicEndpoint${idx + 1}" => data.terraform_remote_state.hub.outputs.event_grid_topic["${producer}-${region}"].topic_endpoint
+                "topicEndpoint${idx + 1}" => var.features.event_grid_topic_enabled_in_project_vnet == true ? module.event_grid_topic["${producer}-${region}"].topic_endpoint : data.terraform_remote_state.hub.outputs.event_grid_topic["${producer}-${region}"].topic_endpoint
               }
             ) : {},
 
