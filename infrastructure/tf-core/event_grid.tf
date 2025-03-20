@@ -6,7 +6,8 @@ module "event_grid_topic" {
   topic_name          = each.value.event_grid_subscription_key
   resource_group_name = azurerm_resource_group.core[each.value.region].name
   location            = each.value.region
-  identity_type       = each.value.identity_type
+  # identity_type       = each.value.identity_type
+  identity_type       = "SystemAssigned"
   inbound_ip_rules    = each.value.inbound_ip_rules
 
   # Private Endpoint Configuration if enabled
@@ -42,6 +43,7 @@ locals {
         {
           region                      = region                      # 1st iterator
           event_grid_subscription_key = event_grid_subscription_key # 2nd iterator
+          inbound_ip_rules            = []
         },
         event_grid_subscription_details # the rest of the key/value pairs for a specific event_grids
       )

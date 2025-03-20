@@ -9,6 +9,7 @@ features = {
   private_endpoints_enabled            = true
   private_service_connection_is_manual = false
   public_network_access_enabled        = false
+  event_grid_topic_enabled_in_project_vnet = false
 }
 
 tags = {
