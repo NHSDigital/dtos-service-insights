@@ -7,7 +7,7 @@ features = {
   event_grid_enabled                       = true
   private_endpoints_enabled                = false
   private_service_connection_is_manual     = false
-  public_network_access_enabled            = false
+  public_network_access_enabled            = true
   event_grid_topic_enabled_in_project_vnet = true
 }
 
