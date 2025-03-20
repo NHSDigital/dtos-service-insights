@@ -7,8 +7,8 @@ module "event_grid_topic" {
   resource_group_name = azurerm_resource_group.core[each.value.region].name
   location            = each.value.region
   # identity_type       = each.value.identity_type
-  identity_type       = "SystemAssigned"
-  inbound_ip_rules    = each.value.inbound_ip_rules
+  identity_type    = "SystemAssigned"
+  inbound_ip_rules = each.value.inbound_ip_rules
 
   # Private Endpoint Configuration if enabled
   private_endpoint_properties = null

@@ -9,10 +9,13 @@ module "acr" {
   resource_group_name = azurerm_resource_group.core[local.primary_region].name
   location            = local.primary_region
 
-  admin_enabled                 = var.acr.admin_enabled
-  uai_name                      = var.acr.uai_name
-  sku                           = var.acr.sku
-  public_network_access_enabled = var.features.public_network_access_enabled
+  admin_enabled                               = var.acr.admin_enabled
+  uai_name                                    = var.acr.uai_name
+  sku                                         = var.acr.sku
+  public_network_access_enabled               = var.features.public_network_access_enabled
+  monitor_diagnostic_setting_acr_metrics      = local.monitor_diagnostic_setting_acr_metrics
+  log_analytics_workspace_id                  = module.log_analytics_workspace_hub[local.primary_region].id
+  monitor_diagnostic_setting_acr_enabled_logs = local.monitor_diagnostic_setting_acr_enabled_logs
 
   # Private Endpoint Configuration if enabled
   private_endpoint_properties = var.features.private_endpoints_enabled ? {
