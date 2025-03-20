@@ -83,7 +83,9 @@ public class ReceiveData
 
         _logger.LogInformation("Using regex pattern: {RegexPattern} to validate file name: {FileName}", regexPattern, name);
 
-        var match = Regex.Match(name, regexPattern);
+        // Limit regex execution to a maximum of two seconds to prevent potential performance issues.
+        var match = Regex.Match(name, regexPattern, RegexOptions.None, TimeSpan.FromSeconds(2));
+
         if (!match.Success)
         {
             _logger.LogError("File name does not match the expected pattern. file name: {Name}", name);
