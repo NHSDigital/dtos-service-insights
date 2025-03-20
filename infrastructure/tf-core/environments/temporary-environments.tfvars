@@ -12,9 +12,9 @@ features = {
 }
 
 # # TODO: merge into the map definition below
-# rbac_principal_name_key_vault      = "dtos_team_serins_temp_environments"
-# rbac_principal_name_resource_group = "dtos_team_serins_temp_environments"
-# rbac_principal_name_storage        = "dtos_team_serins_temp_environments"
+rbac_principal_name_key_vault      = "dtos_team_analyse_temp_environments"
+rbac_principal_name_resource_group = "dtos_team_analyse_temp_environments"
+rbac_principal_name_storage        = "dtos_team_analyse_temp_environments"
 
 tags = {
   Project = "Service-Insights"
