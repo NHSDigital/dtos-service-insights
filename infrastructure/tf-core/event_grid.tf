@@ -3,7 +3,7 @@ module "event_grid_topic" {
 
   source = "../../../dtos-devops-templates/infrastructure/modules/event-grid-topic"
 
-  topic_name          = each.value.event_topic_name
+  topic_name          = each.value.event_grid_subscription_key
   resource_group_name = azurerm_resource_group.core[each.value.region].name
   location            = each.value.region
   identity_type       = each.value.identity_type

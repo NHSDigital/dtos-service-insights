@@ -29,11 +29,11 @@ regions = {
   }
 }
 
-acr = {
-  admin_enabled = false
-  sku           = "Standard"
-  uai_name      = "dtos-service-insights-acr-push"
-}
+# acr = {
+#   admin_enabled = false
+#   sku           = "Standard"
+#   uai_name      = "dtos-service-insights-acr-push"
+# }
 
 app_service_plan = {
   os_type                  = "Linux"

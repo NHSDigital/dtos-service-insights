@@ -23,7 +23,7 @@ data "azurerm_virtual_network" "vnet_audit" {
 }
 
 data "azurerm_subnet" "subnet_audit_pep" {
-  for_each = var.regions
+  for_each = var.features.private_endpoints_enabled ? var.regions : {}
 
   provider = azurerm.audit
 
