@@ -140,10 +140,10 @@ event_grid_subscriptions = {
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"
   acr_name    = "acrukshubtempserins"
-  acr_rg_name = "rg-hub-temp-uks-serins"
+  acr_rg_name = "rg-hub-temp7048-uks-serins"
 
-  app_insights_name                      = "appi-temp-uks-serins"
-  app_insights_rg_name                   = "rg-serins-temp-uks-audit"
+  app_insights_name                      = "appi-temp7048-uks-serins"
+  app_insights_rg_name                   = "rg-serins-temp7048-uks-audit"
   app_service_logs_disk_quota_mb         = 35
   app_service_logs_retention_period_days = 7
 
