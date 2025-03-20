@@ -14,7 +14,7 @@ module "acr" {
   sku                                         = var.acr.sku
   public_network_access_enabled               = var.features.public_network_access_enabled
   monitor_diagnostic_setting_acr_metrics      = local.monitor_diagnostic_setting_acr_metrics
-  log_analytics_workspace_id                  = module.log_analytics_workspace_hub[local.primary_region].id
+  log_analytics_workspace_id                  = module.log_analytics_workspace_audit[local.primary_region].id
   monitor_diagnostic_setting_acr_enabled_logs = local.monitor_diagnostic_setting_acr_enabled_logs
 
   # Private Endpoint Configuration if enabled
