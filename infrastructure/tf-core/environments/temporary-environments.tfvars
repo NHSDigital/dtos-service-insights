@@ -139,8 +139,8 @@ event_grid_subscriptions = {
 
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"
-  acr_name    = "acrukshubtempserins"
-  acr_rg_name = "rg-hub-temp7048-uks-serins"
+  acr_name    = "acrukshubdevserins"      # Need to leave dev defaults in to avoid changing the data lookups
+  acr_rg_name = "rg-hub-dev-uks-serins"    # Need to leave dev defaults in to avoid changing the data lookups
 
   app_insights_name                      = "appi-temp7048-uks-serins"
   app_insights_rg_name                   = "rg-serins-temp7048-uks-audit"
