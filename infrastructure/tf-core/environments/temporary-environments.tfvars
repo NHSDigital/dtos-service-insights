@@ -490,17 +490,17 @@ storage_accounts = {
     account_tier                  = "Standard"
     replication_type              = "LRS"
     public_network_access_enabled = false
-    # containers = {
-    #   config = {
-    #     container_name = "config"
-    #   }
-    #   inbound = {
-    #     container_name = "inbound"
-    #   }
-    #   inbound-poison = {
-    #     container_name = "inbound-poison"
-    #   }
-    # }
+    containers = {
+      config = {
+        container_name = "config"
+      }
+      inbound = {
+        container_name = "inbound"
+      }
+      inbound-poison = {
+        container_name = "inbound-poison"
+      }
+    }
   }
 
   eventgrid = {
