@@ -66,4 +66,6 @@ module "azure_sql_server" {
   } : null
 
   tags = var.tags
+
+  depends_on = values(module.storage)[*].storage_account_id
 }
