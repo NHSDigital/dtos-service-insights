@@ -67,5 +67,5 @@ module "azure_sql_server" {
 
   tags = var.tags
 
-  depends_on = values(module.storage)[*].storage_account_id
+  depends_on = tolist([for s in values(module.storage) : s.storage_account_id])
 }
