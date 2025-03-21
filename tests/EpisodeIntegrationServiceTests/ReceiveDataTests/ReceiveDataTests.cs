@@ -367,7 +367,7 @@ public class ReceiveDataTests
         var expectedJson = JsonSerializer.Serialize(expectedParticipantDto);
 
         // Act
-        await _function.Run(stream, "bss_subjects_1_row_20240930.csv");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("ParticipantManagementUrl", It.Is<string>(x => x == expectedJson)), Times.Once);
@@ -614,7 +614,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_4_rows_20240930.csv");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -791,7 +791,7 @@ public class ReceiveDataTests
         _mockEventGridPublisherClientFactory.Setup(f => f("participant")).Returns(_mockEventGridPublisherClient.Object);
 
         // Act
-        await _function.Run(stream, "bss_subjects_historic_2_rows_20240930.csv");
+        await _function.Run(stream, "bss_subjects_historic_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -814,7 +814,7 @@ public class ReceiveDataTests
         _mockEventGridPublisherClientFactory.Setup(f => f(It.IsAny<string>())).Returns(_mockEventGridPublisherClient.Object);
 
         // Act
-        await _function.Run(stream, "bss_subjects_historic_2_rows_20240930.csv");
+        await _function.Run(stream, "bss_subjects_historic_test_data_20240930.csv");
 
         // Assert
         var expectedLogMessages = new List<string>
