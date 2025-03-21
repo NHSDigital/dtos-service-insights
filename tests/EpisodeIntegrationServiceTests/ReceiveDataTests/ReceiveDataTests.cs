@@ -251,7 +251,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_4_rows_20240930.csv");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert -- verify the counters of Rows
         var expectedLogMessages = new List<string>
@@ -294,7 +294,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_4_rows_20240930.csv");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert -- verify the counters of Rows
         var expectedLogInfoMessages = new List<string>
@@ -445,7 +445,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_6_rows_20240930.csv");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert
 
@@ -557,7 +557,7 @@ public class ReceiveDataTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
         // Act
-        await _function.Run(stream, "bss_subjects_4_rows_20240930.csv");
+        await _function.Run(stream, "bss_subjects_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.IsAny<string>()), Times.Exactly(0));
@@ -566,7 +566,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<object>(state => state.ToString() == "Subjects CSV file headers are invalid. file name: bss_subjects_4_rows_20240930.csv"),
+            It.Is<object>(state => state.ToString() == "Subjects CSV file headers are invalid. file name: bss_subjects_test_data_20240930.csv"),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
