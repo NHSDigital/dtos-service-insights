@@ -27,7 +27,7 @@ public class ReceiveDataTests
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
         Environment.SetEnvironmentVariable("GetAllOrganisationReferenceDataUrl", "GetAllOrganisationReferenceDataUrl");
         Environment.SetEnvironmentVariable("GetEpisodeReferenceDataServiceUrl", "GetEpisodeReferenceDataServiceUrl");
-        Environment.SetEnvironmentVariable("FileNameRegexPattern", "^(?<prefix>bss)_(?<type>episodes|subjects)(?:_(?<scope>current|historic))?(?:_.+)?\\.csv$");
+        Environment.SetEnvironmentVariable("FileNameRegexPattern", "^(?<prefix>bss)_(?<type>episodes|subjects)(?:_(?<scope>current|latest|historic))?(?:_.+)?\\.csv$");
 
         _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEventGridPublisherClientFactory.Object);
     }
