@@ -384,6 +384,10 @@ function_apps = {
           env_var_name     = "GetAllOrganisationReferenceDataUrl"
           function_app_key = "GetOrganisationData"
           endpoint_name    = "GetAllOrganisationReferenceData"
+        },
+        {
+          env_var_name = "FileNameRegexPattern"
+          value        = "^(?<prefix>bss)_(?<type>episodes|subjects)_(?<scope>latest|historic)(?:_.+)?\\.csv$"
         }
       ]
     }
