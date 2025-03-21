@@ -387,7 +387,7 @@ function_apps = {
         },
         {
           env_var_name = "FileNameRegexPattern"
-          value        = "^(?<prefix>bss)_(?<type>episodes|participants)(?:_(?<rows>\\d+)_row[s]?)?(?:_(?<date>\\d{8}))?(?:_(?<scope>current|historic))?\\.csv$"
+          value        = "^(?<prefix>bss)_(?<type>episodes|subjects)_(?<scope>current|historic)(?:_.+)?\\.csv$"
         }
       ]
     }

@@ -92,14 +92,14 @@ public class ReceiveData
             return;
         }
 
-        string fileType = match.Groups["type"].Value; // Extract 'episodes' or 'participants'
+        string fileType = match.Groups["type"].Value; // Extract 'episodes' or 'subjects'
         string fileScope = match.Groups["scope"].Value; // Extract 'current' or 'historic'
 
         if (fileType == "episodes")
         {
             await ProcessEpisodes(myBlob, name, episodeUrl, processingStart, fileScope);
         }
-        else if (fileType == "participants")
+        else if (fileType == "subjects")
         {
             await ProcessSubjects(myBlob, name, participantUrl, processingStart, fileScope);
         }
