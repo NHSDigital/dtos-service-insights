@@ -76,7 +76,8 @@ module "functionapp" {
 
   tags = var.tags
 
-  depends_on = tolist([for s in values(module.storage) : s.storage_account_id])
+  # depends_on = [module.storage[*].storage_account_id]
+  depends_on = [module.storage]
 
 }
 
