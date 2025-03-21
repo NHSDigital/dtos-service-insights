@@ -29,7 +29,6 @@ public class ReceiveDataTests
         Environment.SetEnvironmentVariable("GetEpisodeReferenceDataServiceUrl", "GetEpisodeReferenceDataServiceUrl");
         Environment.SetEnvironmentVariable("FileNameRegexPattern", "^(?<prefix>bss)_(?<type>episodes|subjects)(?:_(?<scope>current|historic))?(?:_.+)?\\.csv$");
 
-
         _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEventGridPublisherClientFactory.Object);
     }
 
