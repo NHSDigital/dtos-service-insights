@@ -263,7 +263,7 @@ public class ReceiveData
             EpisodeId = long.Parse(episode.episode_id),
             EpisodeType = episode.episode_type,
             ScreeningName = "Breast Screening",
-             NhsNumber = long.Parse(episode.nhs_number),
+            NhsNumber = long.Parse(episode.nhs_number),
             SrcSysProcessedDateTime = DateTime.Parse(episode.change_db_date_time, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal),
             EpisodeOpenDate = Utils.ParseNullableDate(episode.episode_date),
             AppointmentMadeFlag = Utils.ParseBooleanStringToShort(episode.appointment_made),
