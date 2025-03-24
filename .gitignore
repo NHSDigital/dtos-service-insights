@@ -44,4 +44,5 @@ appsettings.json
 .keystore
 .p12
 .pem
+.pfx
 

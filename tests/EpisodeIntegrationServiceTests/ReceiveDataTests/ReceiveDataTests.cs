@@ -27,6 +27,7 @@ public class ReceiveDataTests
         Environment.SetEnvironmentVariable("ParticipantManagementUrl", "ParticipantManagementUrl");
         Environment.SetEnvironmentVariable("GetAllOrganisationReferenceDataUrl", "GetAllOrganisationReferenceDataUrl");
         Environment.SetEnvironmentVariable("GetEpisodeReferenceDataServiceUrl", "GetEpisodeReferenceDataServiceUrl");
+        Environment.SetEnvironmentVariable("FileNameRegexPattern", "^(?<prefix>bss)_(?<type>episodes|subjects)(?:_(?<scope>latest|historic))?(?:_.+)?\\.csv$");
 
         _function = new EpisodeIntegrationService.ReceiveData(_mockLogger.Object, _mockHttpRequestService.Object, _mockEventGridPublisherClientFactory.Object);
     }
@@ -510,7 +511,7 @@ public class ReceiveDataTests
             log.Log(
             LogLevel.Error,
             0,
-            It.Is<object>(state => state.ToString().Contains("fileName is invalid. file name: invalid_file_name")),
+            It.Is<object>(state => state.ToString().Contains("File name does not match the expected pattern. file name: invalid_file_name.csv")),
             null,
             (Func<object, Exception, string>)It.IsAny<object>()),
             Times.Once);
@@ -706,7 +707,7 @@ public class ReceiveDataTests
         _mockEventGridPublisherClientFactory.Setup(f => f(It.IsAny<string>())).Returns(_mockEventGridPublisherClient.Object);
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930_historic.csv");
+        await _function.Run(stream, "bss_episodes_historic_test_data_20240930.csv");
 
         // Assert
 
@@ -746,7 +747,7 @@ public class ReceiveDataTests
             });
 
         // Act
-        await _function.Run(stream, "bss_episodes_test_data_20240930_historic.csv");
+        await _function.Run(stream, "bss_episodes_historic_test_data_20240930.csv");
 
         // Assert
         _mockLogger.Verify(log =>
@@ -790,7 +791,7 @@ public class ReceiveDataTests
         _mockEventGridPublisherClientFactory.Setup(f => f("participant")).Returns(_mockEventGridPublisherClient.Object);
 
         // Act
-        await _function.Run(stream, "bss_subjects_test_data_20240930_historic.csv");
+        await _function.Run(stream, "bss_subjects_historic_test_data_20240930.csv");
 
         // Assert
         _mockHttpRequestService.Verify(x => x.SendPost(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -813,7 +814,7 @@ public class ReceiveDataTests
         _mockEventGridPublisherClientFactory.Setup(f => f(It.IsAny<string>())).Returns(_mockEventGridPublisherClient.Object);
 
         // Act
-        await _function.Run(stream, "bss_subjects_test_data_20240930_historic.csv");
+        await _function.Run(stream, "bss_subjects_historic_test_data_20240930.csv");
 
         // Assert
         var expectedLogMessages = new List<string>

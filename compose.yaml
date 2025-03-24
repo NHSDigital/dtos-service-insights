@@ -296,7 +296,6 @@ services:
       - CheckParticipantExistsUrl=http://get-participant:6061/api/GetParticipant
       - GetOrganisationIdByCodeUrl=http://get-organisation-data:6081/api/GetOrganisationIdByCode
 
-
   # Episode Integration Service
   receive-data:
     container_name: receive-data
@@ -323,6 +322,7 @@ services:
       - topicKey1=${EPISODE_TOPIC_KEY}
       - topicEndpoint2=${PARTICIPANT_TOPIC_ENDPOINT}
       - topicKey2=${PARTICIPANT_TOPIC_KEY}
+      - FileNameRegexPattern=${FileNameRegexPattern}
 
   # Episode Management Service
   create-update-episode:
