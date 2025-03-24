@@ -56,4 +56,9 @@ public static class Utils
             throw new ArgumentException($"Invalid value: {dataValue}. Expected 'true', 'false', null, or an empty string");
         }
     }
+
+    internal static DateOnly? ParseNullableDate(object latest_invitation_date)
+    {
+        throw new NotImplementedException();
+    }
 }

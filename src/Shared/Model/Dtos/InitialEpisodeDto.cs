@@ -2,6 +2,9 @@
 
 public class InitialEpisodeDto
 {
+    public DateOnly? LatestInvitationDate;
+    public DateOnly? HrRecallDueDate;
+
     public long EpisodeId { get; set; }
 
     public long? EpisodeIdSystem { get; set; }
