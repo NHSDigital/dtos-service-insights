@@ -33,6 +33,9 @@ module "event_grid_subscription" {
   dead_letter_storage_account_id             = module.storage["eventgrid-${each.value.region}"].storage_account_id
 
   tags = var.tags
+
+  depends_on = [module.functionapp]
+
 }
 
 locals {
