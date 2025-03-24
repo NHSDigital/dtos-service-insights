@@ -30,6 +30,7 @@ module "storage" {
   } : null
 
   tags = var.tags
+
 }
 
 locals {
