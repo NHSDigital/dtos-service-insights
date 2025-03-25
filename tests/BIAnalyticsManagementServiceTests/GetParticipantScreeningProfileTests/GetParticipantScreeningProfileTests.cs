@@ -48,7 +48,7 @@ public class GetParticipantScreeningProfileTests
 
     public GetParticipantScreeningProfileTests()
     {
-        Environment.SetEnvironmentVariable("GetProfilesUrl", "http://localhost:6062/api/GetParticipantScreeningProfileData");
+        Environment.SetEnvironmentVariable("GetParticipantScreeningProfileDataUrl", "http://localhost:6062/api/GetParticipantScreeningProfileData");
         _function = new GetParticipantScreeningProfile(_mockLogger.Object, _httpRequestService.Object);
     }
 
@@ -199,7 +199,7 @@ public class GetParticipantScreeningProfileTests
         }
     }
 
-        [TestMethod]
+    [TestMethod]
     public async Task Run_Should_Return_Bad_Request_When_Page_Is_Invalid()
     {
         // Arrange
