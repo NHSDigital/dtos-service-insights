@@ -1,20 +1,7 @@
-# module "managed_identity" {
-#   for_each = var.regions
-
-#   source = "../../../dtos-devops-templates/infrastructure/modules/managed-identity"
-
-#   uai_name                   = module.regions_config[each.key].names.managed-identity
-#   location                   = each.key
-#   resource_group_name        = azurerm_resource_group.core[each.key].name
-#   enable_rbac_authorization  = true
-#   rbac_roles                 = local.rbac_roles_storage
-
-# }
-
 resource "azurerm_user_assigned_identity" "mi" {
-  for_each = var.regions
+  for_each = var.features.smoke_test_managed_identity_created ? var.regions : {}
 
-  name                = module.regions_config[each.key].names.managed-identity
+  name                = "${module.regions_config[each.key].names.managed-identity}-smoke-tests"
   resource_group_name = azurerm_resource_group.core[each.key].name
   location            = each.key
 
@@ -22,7 +9,7 @@ resource "azurerm_user_assigned_identity" "mi" {
 }
 
 module "rbac_assignments" {
-  for_each = local.rbac_map
+  for_each = var.features.smoke_test_managed_identity_created ? local.rbac_map : {}
 
   source = "../../../dtos-devops-templates/infrastructure/modules/rbac-assignment"
 
@@ -37,8 +24,8 @@ locals {
     for region in keys(var.regions) : [
       for rbac_role in local.rbac_roles_storage : merge(
         {
-        region    = region
-        rbac_role = rbac_role
+          region    = region
+          rbac_role = rbac_role
         },
       )
     ]
