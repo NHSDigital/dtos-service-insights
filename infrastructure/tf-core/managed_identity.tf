@@ -1,7 +1,7 @@
 resource "azurerm_user_assigned_identity" "mi" {
   for_each = var.features.smoke_test_managed_identity_created ? var.regions : {}
 
-  name                = "${module.regions_config[each.key].names.managed-identity}-serins-smoke-tests"
+  name                = "${module.regions_config[each.key].names.managed-identity}-smoke-tests"
   resource_group_name = azurerm_resource_group.core[each.key].name
   location            = each.key
 
