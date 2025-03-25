@@ -19,6 +19,8 @@ public class EndToEndFileUploadService
     //public string LocalFilePath => _appSettings.FilePaths.Local;
     private readonly string _managedIdentityClientId;
 
+    private readonly SqlConnectionWithAuthentication _sqlConnectionWithAuthentication;
+
     public EndToEndFileUploadService(ILogger<EndToEndFileUploadService> logger, AppSettings appSettings, BlobStorageHelper blobStorageHelper)
     {
         _logger = logger;
@@ -26,20 +28,25 @@ public class EndToEndFileUploadService
         _blobStorageHelper = blobStorageHelper;
         _connectionString = _appSettings.ConnectionStrings.ServiceInsightsDatabaseConnectionString;
         _managedIdentityClientId = _appSettings.ManagedIdentityClientId;
+        bool isCloudEnvironment = _appSettings.AzureSettings.IsCloudEnvironment; // Instead of hardcoded AZURE_ENVIRONMENT
+
+        // Pass to SqlConnectionWithAuthentication
+        _sqlConnectionWithAuthentication = new SqlConnectionWithAuthentication(_connectionString, _managedIdentityClientId, isCloudEnvironment);
+
     }
 
-    public async Task CleanDatabaseAsync(IEnumerable<string> nhsNumbers)
+    public async Task CleanDatabaseAsync(IEnumerable<string> episodeIds)
     {
         _logger.LogInformation("Starting database cleanup.");
 
         try
         {
-            foreach (var nhsNumber in nhsNumbers)
+            foreach (var episodeId in episodeIds)
             {
                 //  parameterized queries to prevent SQL injection
-                await DatabaseHelper.ExecuteNonQueryAsync(_connectionString, _managedIdentityClientId,
-                    "DELETE FROM dbo.EPISODE WHERE NHS_Number = @nhsNumber",
-                    new SqlParameter("@nhsNumber", nhsNumber));
+                await DatabaseHelper.ExecuteNonQueryAsync(_sqlConnectionWithAuthentication,
+                    "DELETE FROM dbo.EPISODE WHERE Episode_Id = @episodeId",
+                    new SqlParameter("@episodeId", episodeId));
             }
 
             _logger.LogInformation("Database cleanup completed successfully.");
@@ -91,7 +98,7 @@ public class EndToEndFileUploadService
 
         for (int i = 0; i < retries; i++)
         {
-            var newCount = await DatabaseHelper.GetRecordCountAsync(_connectionString, tableName);
+            var newCount = await DatabaseHelper.GetRecordCountAsync(_sqlConnectionWithAuthentication, tableName);
             if (newCount == originalCount + expectedIncrement)
             {
                 _logger.LogInformation("Record count verified: Expected = {Expected}, Actual = {Actual}.", originalCount + expectedIncrement, newCount);
@@ -109,14 +116,14 @@ public class EndToEndFileUploadService
     public async Task VerifyNhsNumbersAsync(string tableName, List<string> nhsNumbers)
     {
         _logger.LogInformation("Validating NHS numbers in table {TableName}.", tableName);
-        await DatabaseValidationHelper.VerifyNhsNumbersAsync(_connectionString, tableName, nhsNumbers, _logger,_managedIdentityClientId);
+        await DatabaseValidationHelper.VerifyNhsNumbersAsync(_sqlConnectionWithAuthentication, tableName, nhsNumbers, _logger,_managedIdentityClientId);
         _logger.LogInformation("Validation of NHS numbers completed successfully.");
     }
 
     public async Task VerifyCsvDataAsync(string tableName, List<string> nhsNumbers)
     {
         _logger.LogInformation("Validating csv data in table {TableName}.", tableName);
-        await DatabaseValidationHelper.VerifyNhsNumbersAsync(_connectionString, tableName, nhsNumbers, _logger,_managedIdentityClientId);
+        await DatabaseValidationHelper.VerifyNhsNumbersAsync(_sqlConnectionWithAuthentication, tableName, nhsNumbers, _logger,_managedIdentityClientId);
         _logger.LogInformation("Validation of NHS numbers completed successfully.");
     }
 
@@ -125,7 +132,7 @@ public class EndToEndFileUploadService
         _logger.LogInformation("Validating NHS number count in table {TableName}.", tableName);
         Func<Task> act = async () =>
         {
-            var nhsNumberCount = await DatabaseValidationHelper.GetNhsNumberCount(_connectionString, tableName, nhsNumber, _logger, _managedIdentityClientId);
+            var nhsNumberCount = await DatabaseValidationHelper.GetNhsNumberCount(_sqlConnectionWithAuthentication, tableName, nhsNumber, _logger, _managedIdentityClientId);
             nhsNumberCount.Should().Be(expectedCount);
         };
 
@@ -138,7 +145,7 @@ public class EndToEndFileUploadService
     {
         Func<Task> act = async () =>
         {
-            var result = await DatabaseValidationHelper.VerifyFieldUpdateAsync(_connectionString, tableName, nhsNumber,fieldName,_managedIdentityClientId, expectedValue, _logger);
+            var result = await DatabaseValidationHelper.VerifyFieldUpdateAsync(_sqlConnectionWithAuthentication, tableName, nhsNumber,fieldName,_managedIdentityClientId, expectedValue, _logger);
             result.Should().BeTrue();
         };
 
