@@ -28,7 +28,7 @@ public class GetParticipantScreeningProfile
             return errorResponse;
         }
 
-        string baseUrl = Environment.GetEnvironmentVariable("GetProfilesUrl");
+        string baseUrl = Environment.GetEnvironmentVariable("GetParticipantScreeningProfileDataUrl");
         string url = PaginationHelper.BuildUrl(baseUrl, page, pageSize, startDate, endDate);
         _logger.LogInformation("Requesting URL: {Url}", url);
 

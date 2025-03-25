@@ -191,7 +191,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6063
-      - GetProfilesUrl=http://get-ps-profile-data:6062/api/GetParticipantScreeningProfileData
+      - GetParticipantScreeningProfileDataUrl=http://get-ps-profile-data:6062/api/GetParticipantScreeningProfileData
 
   get-ps-episode:
     container_name: get-ps-episode
