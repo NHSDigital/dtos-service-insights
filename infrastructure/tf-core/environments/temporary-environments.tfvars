@@ -152,7 +152,7 @@ function_apps = {
   cont_registry_use_mi = true
 
   docker_CI_enable  = "true"
-  docker_env_tag    = "temp"
+  docker_env_tag    = "development"
   docker_img_prefix = "service-insights"
 
   enable_appsrv_storage         = "false"
