@@ -84,7 +84,7 @@ public class ReceiveDataTests
     {
         // Arrange
         string data = "nhs_number,episode_id,episode_type,change_db_date_time,episode_date,appointment_made,date_of_foa,date_of_as,early_recall_date,latest_invitation_date,hr_recall_due_date,call_recall_status_authorised_by,end_code,end_code_last_updated,bso_organisation_code,bso_batch_id,reason_closed_code,end_point,final_action_code\n" +
-                    "9000007053,571645,R,2020-03-31 12:11:47.339148+01,2017-01-11,True,2017-03-14,2017-03-14,2017-03-14,2018-03-14,2018-03-14,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV121798J,BS,S+,RR\n";
+                    "9000007053,571645,R,2020-03-31 12:11:47.339148+01,2017-01-11,True,2017-03-14,2017-03-14,2018-03-14,2018-03-14,2019-03-14,SCREENING_OFFICE,SC,2020-03-31 00:00:00+01,LAV,LAV121798J,BS,S,RR\n";
 
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
         var expectedEpisodeDto = new InitialEpisodeDto
@@ -99,14 +99,14 @@ public class ReceiveDataTests
             FirstOfferedAppointmentDate = DateOnly.Parse("2017-03-14"),
             ActualScreeningDate = DateOnly.Parse("2017-03-14"),
             EarlyRecallDate = DateOnly.Parse("2018-03-14"),
-            LatestInvitationDate = DateOnly.Parse("2017-03-14"),
-            HrRecallDueDate = DateOnly.Parse("2018-03-14"),
+            LatestInvitationDate = DateOnly.Parse("2018-03-14"),
+            HrRecallDueDate = DateOnly.Parse("2019-03-14"),
             CallRecallStatusAuthorisedBy = "SCREENING_OFFICE",
             EndCode = "SC",
             EndCodeLastUpdated = DateTime.Parse("2020-03-31 00:00:00+01").ToUniversalTime(),
             OrganisationCode = "LAV",
             BatchId = "LAV121798J",
-            EndPoint = "S+",
+            EndPoint = "S",
             ReasonClosedCode = "BS",
             FinalActionCode = "RR"
         };
@@ -116,8 +116,7 @@ public class ReceiveDataTests
         await _function.Run(stream, "bss_episodes_test_data_20240930.csv");
 
         // Assert
-       // _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.Is<string>(x => x == expectedJson)), Times.Once);
- _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.Is<string>(x => x == expectedJson)), Times.Exactly(0));
+        _mockHttpRequestService.Verify(x => x.SendPost("EpisodeManagementUrl", It.Is<string>(x => x == expectedJson)), Times.Once);
     }
 
     [TestMethod]
