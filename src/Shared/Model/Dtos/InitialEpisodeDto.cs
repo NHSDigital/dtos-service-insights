@@ -2,9 +2,6 @@
 
 public class InitialEpisodeDto
 {
-    public DateOnly? LatestInvitationDate;
-    public DateOnly? HrRecallDueDate;
-
     public long EpisodeId { get; set; }
 
     public long? EpisodeIdSystem { get; set; }
@@ -26,6 +23,9 @@ public class InitialEpisodeDto
     public DateOnly? ActualScreeningDate { get; set; }
 
     public DateOnly? EarlyRecallDate { get; set; }
+
+    public DateOnly? LatestInvitationDate { get; set; }
+    public DateOnly? HrRecallDueDate{ get; set; }
 
     public string? CallRecallStatusAuthorisedBy { get; set; }
 
