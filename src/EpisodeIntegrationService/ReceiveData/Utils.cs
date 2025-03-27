@@ -57,8 +57,4 @@ public static class Utils
         }
     }
 
-    internal static DateOnly? ParseNullableDate(object latest_invitation_date)
-    {
-        throw new NotImplementedException();
-    }
 }
