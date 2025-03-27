@@ -221,7 +221,7 @@ function_apps = {
       db_connection_string   = "ServiceInsightsDbConnectionString"
       app_urls = [
         {
-          env_var_name     = "GetProfilesUrl"
+          env_var_name     = "GetParticipantScreeningProfileDataUrl"
           function_app_key = "GetParticipantScreeningProfileData"
         }
       ]
@@ -239,6 +239,12 @@ function_apps = {
       function_endpoint_name = "GetParticipantScreeningEpisode"
       app_service_plan_key   = "DefaultServicePlan"
       db_connection_string   = "ServiceInsightsDbConnectionString"
+      app_urls = [
+        {
+          env_var_name     = "GetParticipantScreeningEpisodeDataUrl"
+          function_app_key = "GetParticipantScreeningEpisodeData"
+        }
+      ]
     }
 
     GetParticipantScreeningEpisodeData = {
