@@ -56,4 +56,5 @@ public static class Utils
             throw new ArgumentException($"Invalid value: {dataValue}. Expected 'true', 'false', null, or an empty string");
         }
     }
+
 }
