@@ -849,15 +849,24 @@ public class ReceiveDataTests
 
 
     [TestMethod]
-
-    [DynamicData(nameof(GetParseNullableDateTimeTestData), DynamicDataSourceType.Method)]
+    [DataRow("", null, DisplayName = "ParseNullableDateTime_ShouldReturnNull_WhenGivenNullOrEmptyString")]
+    [DataRow("2024-02-26 14:30:00+01", "2024-02-26 13:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenGivenTimezone")]
+    [DataRow("2024-02-26 14:30:00", "2024-02-26 14:30:00", DisplayName = "ParseNullableDateTime_ShouldParseCorrectly_WhenGivenNoTimezone")]
+    [DataRow("2024-02-26 14:30:00 BadFormat", null, DisplayName = "ParseNullableDateTime_ShouldReturnNullForBadFormat")]
     public async Task ParseNullableDateTime_ShouldParseDatesCorrectly(string inputData, string expectedOutput)
     {
         // Arrange
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(inputData));
         string[] formats = new[] { "yyyy-MM-dd HH:mm:ssz", "yyyy-MM-dd HH:mm:ss" };
+        string dateTimeString;
+
+        using (var reader = new StreamReader(stream))
+        {
+            dateTimeString = await reader.ReadToEndAsync();
+        }
 
         // Act
-        var result = await Task.Run(() => Utils.ParseNullableDateTime(inputData, formats));
+        var result = await Task.Run(() => Utils.ParseNullableDateTime(dateTimeString, formats));
 
         // Assert
         if (expectedOutput == null)
@@ -870,14 +879,6 @@ public class ReceiveDataTests
             DateTime expectedDateTime = DateTime.ParseExact(expectedOutput, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             Assert.AreEqual(expectedDateTime, result);
         }
-    }
-
-    public static IEnumerable<object[]> GetParseNullableDateTimeTestData()
-    {
-        yield return new object[] { "", null }; // Null or empty string
-        yield return new object[] { "2024-02-26 14:30:00+01", "2024-02-26 13:30:00" }; // With timezone
-        yield return new object[] { "2024-02-26 14:30:00", "2024-02-26 14:30:00" }; // Without timezone
-        yield return new object[] { "2024-02-26 14:30:00 BadFormat", null }; // Bad format
     }
 }
 
