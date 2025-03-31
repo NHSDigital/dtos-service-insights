@@ -100,8 +100,6 @@ public class ReceiveDataTests
             FirstOfferedAppointmentDate = DateOnly.Parse("2017-03-14"),
             ActualScreeningDate = DateOnly.Parse("2017-03-14"),
             EarlyRecallDate = DateOnly.Parse("2018-03-14"),
-            LatestInvitationDate = DateOnly.Parse("2018-03-14"),
-            HrRecallDueDate = DateOnly.Parse("2019-03-14"),
             CallRecallStatusAuthorisedBy = "SCREENING_OFFICE",
             EndCode = "SC",
             EndCodeLastUpdated = DateTime.Parse("2020-03-31 00:00:00+01").ToUniversalTime(),

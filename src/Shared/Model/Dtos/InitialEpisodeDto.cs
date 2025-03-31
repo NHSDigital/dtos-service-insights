@@ -24,9 +24,6 @@ public class InitialEpisodeDto
 
     public DateOnly? EarlyRecallDate { get; set; }
 
-    public DateOnly? LatestInvitationDate { get; set; }
-    public DateOnly? HrRecallDueDate{ get; set; }
-
     public string? CallRecallStatusAuthorisedBy { get; set; }
 
     public string? EndCode { get; set; }
