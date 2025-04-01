@@ -46,5 +46,5 @@ stages:
     - template: .azuredevops/templates/steps/run-post-deployment-tests.yaml@dtos-devops-templates
       parameters:
         serviceConnection: sc-service-insights-nft
-        testProjectDirectory: 'tests/SmokeTests/dtos-service-insights-tests'
+        testProjectDirectory: 'SmokeTests/dtos-service-insights-tests'
         testProjectName: 'dtos-service-insights-tests'
