@@ -271,7 +271,7 @@ public class DatabaseValidationHelper
             return false;
         }
 
-         var credential = new DefaultAzureCredential(
+        var credential = new DefaultAzureCredential(
         new DefaultAzureCredentialOptions
         {
             ManagedIdentityClientId = managedIdentityClientId
