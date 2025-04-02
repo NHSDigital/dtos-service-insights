@@ -258,7 +258,7 @@ public class DatabaseValidationHelper
         return true;
     }
 
-    public static async Task<bool> VerifyCsvWithDatabaseAsync(string connectionString, string tableName, string nhsNumber, string csvFilePath, ILogger logger)
+    public static async Task<bool> VerifyCsvWithDatabaseAsync(string connectionString, string tableName, string nhsNumber, string csvFilePath, ILogger logger,string managedIdentityClientId)
     {
         ValidateTableName(tableName);
 
@@ -271,8 +271,15 @@ public class DatabaseValidationHelper
             return false;
         }
 
+         var credential = new DefaultAzureCredential(
+        new DefaultAzureCredentialOptions
+        {
+            ManagedIdentityClientId = managedIdentityClientId
+        });
+
         using (var connection = new SqlConnection(connectionString))
         {
+            connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" }))).Token;
             await connection.OpenAsync();
             var query = $"SELECT * FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
             using (var command = new SqlCommand(query, connection))
