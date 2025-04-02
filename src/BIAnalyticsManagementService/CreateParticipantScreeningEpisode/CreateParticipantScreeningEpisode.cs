@@ -16,6 +16,32 @@ public class CreateParticipantScreeningEpisode
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
+
+        // Retrieve and validate required environment variables
+        // var getEpisodeUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
+        var createScreeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
+        var screeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
+        var referenceDataServiceUrl = Environment.GetEnvironmentVariable("GetReferenceDataUrl");
+
+        if (string.IsNullOrEmpty(screeningDataServiceUrl))
+        {
+            throw new InvalidOperationException("Environment variable 'GetScreeningDataUrl' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(referenceDataServiceUrl))
+        {
+            throw new InvalidOperationException("Environment variable 'GetReferenceDataUrl' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(createScreeningEpisodeUrl))
+        {
+            throw new InvalidOperationException("Environment variable 'CreateParticipantScreeningEpisodeUrl' is missing.");
+        }
+
+        // if (string.IsNullOrEmpty(getEpisodeUrl))
+        // {
+        //     throw new InvalidOperationException("Environment variable 'GetEpisodeUrl' is missing.");
+        // }
     }
 
     [Function(nameof(CreateParticipantScreeningEpisode))]
@@ -71,19 +97,25 @@ public class CreateParticipantScreeningEpisode
     {
         var baseScreeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
         var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screeningId}";
-        _logger.LogInformation("Requesting screening data from {Url}", getScreeningDataUrl);
+        _logger.LogInformation("Requesting screening data from {Url} for Screening ID: {ScreeningId}", getScreeningDataUrl, screeningId);
 
-        ScreeningLkp screeningLkp;
+        try
+        {
+            var response = await _httpRequestService.SendGet(getScreeningDataUrl);
+            response.EnsureSuccessStatusCode();
 
-        var response = await _httpRequestService.SendGet(getScreeningDataUrl);
-        response.EnsureSuccessStatusCode();
+            var screeningDataJson = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Screening data retrieved successfully: {ScreeningDataJson}", screeningDataJson);
 
-        var screeningDataJson = await response.Content.ReadAsStringAsync();
-        _logger.LogInformation("Screening data retrieved successfully.");
+            return JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve screening data. Screening ID: {ScreeningId}, Service: GetScreeningDataUrl, Timestamp: {Timestamp}",
+                screeningId, DateTime.UtcNow);
 
-        screeningLkp = JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
-
-        return screeningLkp;
+            throw new HttpRequestException($"Failed to retrieve screening data from {baseScreeningDataServiceUrl}", ex);
+        }
     }
 
     private async Task<OrganisationLkp> GetOrganisationDataAsync(long? organisationId)
@@ -98,17 +130,23 @@ public class CreateParticipantScreeningEpisode
         var getReferenceDataUrl = $"{baseReferenceServiceUrl}?organisation_id={organisationId}";
         _logger.LogInformation("Requesting organisation data from {Url}", getReferenceDataUrl);
 
-        OrganisationLkp organisationLkp;
+        try
+        {
+            var response = await _httpRequestService.SendGet(getReferenceDataUrl);
+            response.EnsureSuccessStatusCode();
 
-        var response = await _httpRequestService.SendGet(getReferenceDataUrl);
-        response.EnsureSuccessStatusCode();
+            var organisationDataJson = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Organisation data retrieved successfully: {OrganisationDataJson}", organisationDataJson);
 
-        var organisationDataJson = await response.Content.ReadAsStringAsync();
-        _logger.LogInformation("Organisation data retrieved successfully.");
+            return JsonSerializer.Deserialize<OrganisationLkp>(organisationDataJson);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve organisation data. Organisation ID: {OrganisationId}, Service: GetReferenceDataUrl, Timestamp: {Timestamp}",
+                organisationId, DateTime.UtcNow);
 
-        organisationLkp = JsonSerializer.Deserialize<OrganisationLkp>(organisationDataJson);
-
-        return organisationLkp;
+            throw new HttpRequestException($"Failed to retrieve organisation data from {baseReferenceServiceUrl}", ex);
+        }
     }
 
     private async Task SendToCreateParticipantScreeningEpisodeAsync(FinalizedEpisodeDto episode, bool isHistoric)
@@ -134,7 +172,7 @@ public class CreateParticipantScreeningEpisode
             EndCodeLastUpdated = episode.EndCodeLastUpdated,
             ReasonClosedCode = episode.ReasonClosedCode,
             ReasonClosedCodeDescription = episode.ReasonClosedCodeDescription,
-            FinalActionCode =  episode.FinalActionCode,
+            FinalActionCode = episode.FinalActionCode,
             FinalActionCodeDescription = episode.FinalActionCodeDescription,
             OrganisationCode = organisationLkp?.OrganisationCode,
             OrganisationName = organisationLkp?.OrganisationName,
@@ -142,7 +180,7 @@ public class CreateParticipantScreeningEpisode
             SrcSysProcessedDatetime = episode.SrcSysProcessedDatetime,
             RecordInsertDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
             RecordUpdateDatetime = isHistoric ? episode.SrcSysProcessedDatetime.AddDays(1) : DateTime.UtcNow,
-            ExceptionFlag =  episode.ExceptionFlag
+            ExceptionFlag = episode.ExceptionFlag
         };
 
         var screeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
