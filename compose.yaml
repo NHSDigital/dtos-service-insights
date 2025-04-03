@@ -154,7 +154,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
       - ASPNETCORE_URLS=http://*:6008
-      - GetEpisodeUrl=http://get-episode-mgmt:6060/api/GetEpisode
       - CreateParticipantScreeningEpisodeUrl=http://create-ps-episode-data:6010/api/CreateParticipantScreeningEpisode
       - GetScreeningDataUrl=http://get-screening-data:6082/api/GetScreeningData
       - GetReferenceDataUrl=http://get-organisation-data:6081/api/GetReferenceData
