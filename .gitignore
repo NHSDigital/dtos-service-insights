@@ -45,4 +45,9 @@ appsettings.json
 .p12
 .pem
 .pfx
+.idea
 
+# But not ignore these files...
+!.gitignore
+!SmokeTests/dtos-service-insights-tests/Config/appsettings.json
+# etc...

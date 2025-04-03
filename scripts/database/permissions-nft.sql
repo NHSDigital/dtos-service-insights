@@ -81,3 +81,7 @@ ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-retrieve-episode-ref-data];
 CREATE USER [nft-uks-si-get-screening-data] FROM EXTERNAL PROVIDER;
 ALTER ROLE [db_datareader] ADD MEMBER [nft-uks-si-get-screening-data];
 ALTER ROLE [db_datawriter] ADD MEMBER [nft-uks-si-get-screening-data];
+
+CREATE USER [MI-SERVICE-INSIGHTS-NFT-UKS] FROM EXTERNAL PROVIDER;
+ALTER ROLE [db_datareader] ADD MEMBER [MI-SERVICE-INSIGHTS-NFT-UKS];
+ALTER ROLE [db_datawriter] ADD MEMBER [MI-SERVICE-INSIGHTS-NFT-UKS];
