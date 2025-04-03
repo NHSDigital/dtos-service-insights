@@ -11,7 +11,7 @@
     "topicKey1": "EPISODE_TOPIC_KEY",
     "topicEndpoint2": "PARTICIPANT_TOPIC_ENDPOINT",
     "topicKey2": "PARTICIPANT_TOPIC_KEY",
-    "FileNameRegexPattern": "^(?<prefix>bss)_(?<type>episodes|subjects)_(?<scope>latest|historic)(?:_.+)?\\.csv$"  },
+    "FileNameRegexPattern": "^(?<prefix>bss)_(?<type>episodes|subjects)(?:_(?<scope>latest|historic))?(?:_.+)?\\.csv$"},
   "Host": {
     "LocalHttpPort": 7072
   }
