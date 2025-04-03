@@ -150,7 +150,7 @@ public class EndToEndFileUploadService
     {
         Func<Task> act = async () =>
         {
-            var result= await DatabaseValidationHelper.VerifyCsvWithDatabaseAsync(_connectionString,tableName,nhsNumber,csvFilePath,_logger);
+            var result= await DatabaseValidationHelper.VerifyCsvWithDatabaseAsync(_connectionString,tableName,nhsNumber,csvFilePath,_logger,_managedIdentityClientId);
             result.Should().BeTrue();
         };
 
