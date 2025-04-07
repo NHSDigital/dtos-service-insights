@@ -11,6 +11,8 @@ public class AppSettings
     public string ManagedIdentityClientId { get; set; }
 
     public AzureSettings AzureSettings { get; set; }
+
+    public EndPoints EndPoints { get; set; }
     public string IsCloudEnvironment { get; set; }
 }
 

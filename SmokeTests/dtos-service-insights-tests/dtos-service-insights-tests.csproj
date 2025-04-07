@@ -33,6 +33,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     <PackageReference Include="Reqnroll.Nunit" Version="2.4.0" />
+    <PackageReference Include="RestSharp" Version="112.1.0" />
   </ItemGroup>
 
   <ItemGroup>
