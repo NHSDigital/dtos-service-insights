@@ -56,8 +56,7 @@ public sealed class FileUploadSteps
             _smokeTestsContext.FilePath = filePath;
             _smokeTestsContext.RecordType = (RecordTypesEnum)Enum.Parse(typeof(RecordTypesEnum), recordType, ignoreCase: true);
 
-           _smokeTestsContext.EpisodeIds = episodeIdsData.Split(',', StringSplitOptions.TrimEntries).ToList();
-           //_smokeTestsContext.NhsNumbers = nhsNumbersData.ToList();
+            _smokeTestsContext.EpisodeIds = episodeIdsData.Split(',', StringSplitOptions.TrimEntries).ToList();
     }
 
     [Given(@"the file is uploaded to the Blob Storage container")]
@@ -75,8 +74,6 @@ public sealed class FileUploadSteps
         await _fileUploadService.VerifyEpisodeIdsAsync("EPISODE", _smokeTestsContext.EpisodeIds!);
     }
 
-    [Given("restapi client exists and executed")]
-   // [When("GET Episodes API is invoked with episode ID : {int}")]
     [When("the GET Participant Screening Episode API request is made")]
         public async Task WhenGETEpisodesAPIIsInvokedWithEpisodeID()
         {
@@ -103,7 +100,7 @@ public sealed class FileUploadSteps
     }
 
     [Then("there should be {int} records for the Episode Id {string} in the database")]
-     public async Task ThenThereShouldBeRecordsForTheEpisodeIdInTheDatabase(int count, string episodeId)
+    public async Task ThenThereShouldBeRecordsForTheEpisodeIdInTheDatabase(int count, string episodeId)
     {
         await _fileUploadService.VerifyEpisodeIdsCountAsync("EPISODE", episodeId,count);
     }
@@ -160,7 +157,7 @@ public sealed class FileUploadSteps
     [Then("there should be {int} records in BI and Analytics data store")]
     public async Task ThenThereShouldBeRecordsInBIAndAnalyticsDataStore(int expectedCount)
     {
-     await _fileUploadService.VerifyEpisodeIdsCountInAnalyticsDataStoreAsync("PARTICIPANT_SCREENING_EPISODE", _smokeTestsContext.EpisodeIds.FirstOrDefault(),expectedCount);
+        await _fileUploadService.VerifyEpisodeIdsCountInAnalyticsDataStoreAsync("PARTICIPANT_SCREENING_EPISODE", _smokeTestsContext.EpisodeIds.FirstOrDefault(),expectedCount);
     }
 
 }

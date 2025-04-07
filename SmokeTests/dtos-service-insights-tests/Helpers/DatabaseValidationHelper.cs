@@ -205,7 +205,7 @@ public class DatabaseValidationHelper
                 return true;
         }
 
-   }
+    }
 
     public static async Task<bool> VerifyEpisodeTypeReferenceDataAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string episodeId, string fieldName,string managedIdentityClientId,string csvFilePath, ILogger logger)
     {
@@ -267,7 +267,7 @@ public class DatabaseValidationHelper
                 }
                 return true;
         }
-   }
+    }
 
 
     public static async Task<bool> VerifyRecordCountAsync(string connectionString, string tableName, int expectedCount, ILogger logger, int maxRetries = 10, int delay = 1000)

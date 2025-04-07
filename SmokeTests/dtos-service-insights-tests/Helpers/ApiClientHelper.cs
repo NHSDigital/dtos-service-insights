@@ -27,10 +27,10 @@ public class ApiClientHelper
         {"end_point","EndPoint"}
 };
 
-   public async Task<RestResponse> GetApiResponseAsync(string endPoint)
+    public async Task<RestResponse> GetApiResponseAsync(string endPoint)
         {
-           RestClient restClient = new RestClient();
-           RestRequest request = new RestRequest(endPoint)
+            RestClient restClient = new RestClient();
+            RestRequest request = new RestRequest(endPoint)
             {
                 Method = Method.Get
             };
@@ -61,11 +61,10 @@ public class ApiClientHelper
         for (int i=0; i < episodeArray.Count; i ++)
         {
 
-          if(episodeArray[i]["EpisodeId"].ToString().Equals(episodeId))
-          {
-        foreach( KeyValuePair<string, string> kvp in CsvApiFieldMap )
-
-        {
+            if(episodeArray[i]["EpisodeId"].ToString().Equals(episodeId))
+            {
+                foreach( KeyValuePair<string, string> kvp in CsvApiFieldMap )
+                {
                             var expectedValue = expectedRecord[kvp.Key.ToString()];
                             var actualValue = episodeArray[0][kvp.Value.ToString()];
                             if(kvp.Value.ToString().Contains("Date") && !actualValue.IsNullOrEmpty())
@@ -75,7 +74,7 @@ public class ApiClientHelper
                                 DateTime date = System.Convert.ToDateTime(actualValue);
                                 actualValue=date.ToString("yyyy-MM-dd");
                             }
-                           }
+                            }
 
                             if(!String.IsNullOrEmpty(expectedValue) )
                             {
@@ -92,9 +91,9 @@ public class ApiClientHelper
                             }
 
 
-          }
+                }
 
-        }
+            }
         }
         return true;
     }

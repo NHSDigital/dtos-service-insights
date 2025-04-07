@@ -103,13 +103,10 @@ Scenario: 08. Successful Retrieval of Participant Data from API
 
 @smoketest9
 Scenario: 09. Populate Reference Data Successfully for Episode & Participant
-   Given file <FileName> exists in the configured location for "Add" with Episode Ids : <EpisodeIds>
-   #Given an episode file containing valid codes based on the R0 MVP data model
-   #And the required tables for episode and participant exist
-   When the file is uploaded to the Blob Storage container
-   #When the system processes the episode file
-   #Then description for "end_code" in "PARTICIPANT_SCREENING_PROFILE" table is populated
-   Then codes for "EPISODE_TYPE_ID" in "EPISODE" table is populated from reference data
+    Given file <FileName> exists in the configured location for "Add" with Episode Ids : <EpisodeIds>
+    When the file is uploaded to the Blob Storage container
+    Then description for "end_code" in "PARTICIPANT_SCREENING_PROFILE" table is populated
+    Then codes for "EPISODE_TYPE_ID" in "EPISODE" table is populated from reference data
 
       Examples:
         | FileName                     | RecordType | EpisodeIds |
@@ -118,11 +115,10 @@ Scenario: 09. Populate Reference Data Successfully for Episode & Participant
 
 @smoketest10
 Scenario: 10. Handling Multiple Record Changes for a Single Episode
-   #Given a file from BSSelect contains multiple records for a single episode with different updates
-   Given file <FileName> exists in the configured location for "Add" with Episode Ids : <EpisodeIds>
-   When the file is uploaded to the Blob Storage container
-   Then latest changes to the episode are loaded into the Episode Manager
-   And there should be 2 records in BI and Analytics data store
+    Given file <FileName> exists in the configured location for "Add" with Episode Ids : <EpisodeIds>
+    When the file is uploaded to the Blob Storage container
+    Then latest changes to the episode are loaded into the Episode Manager
+    And there should be 2 records in BI and Analytics data store
 
       Examples:
         | FileName                                        | RecordType | EpisodeIds    |
