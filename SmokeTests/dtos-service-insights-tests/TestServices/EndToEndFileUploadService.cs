@@ -171,7 +171,7 @@ public class EndToEndFileUploadService
 
     }
 
-      public async Task VerifyEndCodeReferenceDataAsync(string tableName, string episodeId, string fieldName,string csvFilePath)
+    public async Task VerifyEndCodeReferenceDataAsync(string tableName, string episodeId, string fieldName,string csvFilePath)
     {
         Func<Task> act = async () =>
         {
@@ -183,7 +183,7 @@ public class EndToEndFileUploadService
 
     }
 
-        public async Task VerifyEpisodeTypeReferenceDataAsync(string tableName, string episodeId, string fieldName,string csvFilePath)
+    public async Task VerifyEpisodeTypeReferenceDataAsync(string tableName, string episodeId, string fieldName,string csvFilePath)
     {
         Func<Task> act = async () =>
         {
@@ -228,13 +228,7 @@ public class EndToEndFileUploadService
 
     public void VerifyCsvWithApiResponseAsync(RestResponse restResponse, string episodeId, string csvFilePath)
     {
-       // Func<Task> act = async () =>
-       // {
             var result= _apiClientHelper.VerifyCsvWithApiResponseAsync(restResponse,episodeId,csvFilePath,_logger);
             result.Should().BeTrue();
-       // };
-
-       // await act.Should().NotThrowAfterAsync(TimeSpan.FromMinutes(2), TimeSpan.FromSeconds(5));
-
     }
 }

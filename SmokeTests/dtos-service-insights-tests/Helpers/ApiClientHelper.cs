@@ -105,18 +105,15 @@ public class ApiClientHelper
         JArray episodeArray = (JArray)jsonObject["episodes"]!;
         for (int i=0; i < episodeArray.Count; i ++)
         {
-
-          if(episodeArray[i]["EpisodeId"].ToString()==episodeId)
-          {
+            if(episodeArray[i]["EpisodeId"].ToString()==episodeId)
+            {
             indexMatchCount++;
 
-          }
+            }
         }
         if( expectedCount == indexMatchCount )
         return true;
-
-      return false;
-
+        return false;
     }
 
     public bool VerifyParticipantsRecordCountInAPIResponse(RestResponse restResponse, string episodeId,string csvFilePath, ILogger logger, int expectedCount)
@@ -128,17 +125,14 @@ public class ApiClientHelper
         JArray nhsNumberArray = (JArray)jsonObject["Profiles"]!;
         for (int i=0; i < nhsNumberArray.Count; i ++)
         {
-
-          if(nhsNumberArray[i]["NhsNumber"].ToString()==expectedRecord["nhs_number"])
-          {
+            if(nhsNumberArray[i]["NhsNumber"].ToString()==expectedRecord["nhs_number"])
+            {
             indexMatchCount++;
-
-          }
+            }
         }
         if( expectedCount == indexMatchCount )
         return true;
-
-      return false;
+        return false;
 
     }
 
