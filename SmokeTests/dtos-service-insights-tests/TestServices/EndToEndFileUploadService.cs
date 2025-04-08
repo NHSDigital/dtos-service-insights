@@ -195,11 +195,11 @@ public class EndToEndFileUploadService
 
     }
 
-        public async Task VerifyFullDatabaseRecordAsync(string tableName, string episodeId, string csvFilePath)
+        public async Task VerifyFullDatabaseRecordAsync(string tableName, string nhsNumber, string csvFilePath)
     {
         Func<Task> act = async () =>
         {
-            var result= await DatabaseValidationHelper.VerifyCsvWithDatabaseAsync(_connectionString,tableName,episodeId,csvFilePath,_logger);
+            var result= await DatabaseValidationHelper.VerifyCsvWithDatabaseAsync(_connectionString,tableName,nhsNumber,csvFilePath,_logger,_managedIdentityClientId);
             result.Should().BeTrue();
         };
 

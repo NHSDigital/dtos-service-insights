@@ -383,33 +383,41 @@ public class DatabaseValidationHelper
         return true;
     }
 
-    public static async Task<bool> VerifyCsvWithDatabaseAsync(string connectionString, string tableName, string episodeId, string csvFilePath, ILogger logger)
+    public static async Task<bool> VerifyCsvWithDatabaseAsync(string connectionString, string tableName, string nhsNumber, string csvFilePath, ILogger logger,string managedIdentityClientId)
     {
         ValidateTableName(tableName);
 
-        var csvRecords = CsvHelperService.ReadLastRecordOfCsv(csvFilePath);
-        var expectedRecord = csvRecords.FirstOrDefault(record => record["episode_id"] == episodeId);
-        int retryCount = 0;
-        const int maxRetries = 2;
-        TimeSpan delay = TimeSpan.FromSeconds(3); // Initial delay
+        var csvRecords = CsvHelperService.ReadCsv(csvFilePath);
+        var expectedRecord = csvRecords.FirstOrDefault(record => record["nhs_number"] == nhsNumber);
+
         if (expectedRecord == null)
         {
-            logger.LogError($"Episode ID {episodeId} not found in the CSV file.");
+            logger.LogError($"NHS number {nhsNumber} not found in the CSV file.");
             return false;
         }
-        while (retryCount < maxRetries)
+
+        var credential = new DefaultAzureCredential(
+        new DefaultAzureCredentialOptions
         {
-        try
-        {
+            ManagedIdentityClientId = managedIdentityClientId
+        });
+
         using (var connection = new SqlConnection(connectionString))
         {
+            connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" }))).Token;
             await connection.OpenAsync();
-            var query = $"SELECT * FROM {tableName} WHERE [episode_id] = @EpisodeId";
+            var query = $"SELECT * FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
             using (var command = new SqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@EpisodeId", episodeId);
+                command.Parameters.AddWithValue("@NhsNumber", nhsNumber);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
+                    if (!reader.HasRows)
+                    {
+                        logger.LogError($"No record found in {tableName} for NHS number {nhsNumber}.");
+                        return false;
+                    }
+
                     while (await reader.ReadAsync())
                     {
                         foreach(DictionaryEntry e in CsvTableFieldMap)
@@ -427,13 +435,13 @@ public class DatabaseValidationHelper
                             {
                             if (expectedValue != actualValue.ToString())
                             {
-                                logger.LogError($"Inside Mismatch in {e.Key.ToString()} for Episode Id {episodeId}: expected '{expectedValue}', found '{actualValue}'.");
+                                logger.LogError($"Inside Mismatch in {e.Key.ToString()} for NHS number {nhsNumber}: expected '{expectedValue}', found '{actualValue}'.");
                                 return false;
                             }
                             }
                             else if ( !String.IsNullOrEmpty(actualValue.ToString()))
                             {
-                                logger.LogError($"Mismatch in {e.Key.ToString()} for Episode Id {episodeId}: expected '{expectedValue}', found '{actualValue}'.");
+                                logger.LogError($"Mismatch in {e.Key.ToString()} for NHS number {nhsNumber}: expected '{expectedValue}', found '{actualValue}'.");
                                 return false;
                             }
                         }
@@ -441,18 +449,9 @@ public class DatabaseValidationHelper
                 }
             }
         }
-        }
-        catch(Exception ex)
-        {
-            logger.LogError(ex, $"Error verifying Episode Id {episodeId} in table {tableName} (Attempt {retryCount + 1})");
-        }
-            retryCount++;
-            await Task.Delay(delay);
-            delay = delay * 2; // Exponential backoff (double the delay on each retry)
-        }
+
         return true;
     }
-
     public static async Task<int> GetEpisodeIdCount(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string episodeId, ILogger logger, string managedIdentityClientId)
     {
     var episodeIdCount = 0;
