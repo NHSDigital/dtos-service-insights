@@ -59,21 +59,11 @@ public class DatabaseValidationHelper
         }
     }
 
-    public static async Task VerifyNhsNumbersAsync(string connectionString, string tableName, List<string> nhsNumbers, ILogger logger, string managedIdentityClientId)
+    public static async Task VerifyNhsNumbersAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, List<string> nhsNumbers, ILogger logger, string managedIdentityClientId)
     {
         ValidateTableName(tableName);
-
-        var credential = new DefaultAzureCredential(
-        new DefaultAzureCredentialOptions
+        using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
         {
-            ManagedIdentityClientId = managedIdentityClientId
-        });
-
-        using (var connection = new SqlConnection(connectionString))
-        {
-        connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" }))).Token;
-        await connection.OpenAsync();
-
         foreach (var nhsNumber in nhsNumbers)
         {
             var isVerified = await VerifyNhsNumberAsync(connection, tableName, nhsNumber, logger);
@@ -86,22 +76,13 @@ public class DatabaseValidationHelper
         }
     }
 
-    public static async Task<bool> VerifyFieldUpdateAsync(string connectionString, string tableName, string nhsNumber, string fieldName,string managedIdentityClientId, string expectedValue, ILogger logger)
+    public static async Task<bool> VerifyFieldUpdateAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string nhsNumber, string fieldName,string managedIdentityClientId, string expectedValue, ILogger logger)
     {
         List<string> fieldValues  = new List<string>();
         ValidateTableName(tableName);
         ValidateFieldName(fieldName);
-
-        //Comment lines 96 to 97 for executing tests against local environment
-        var credential = new DefaultAzureCredential(
-        new DefaultAzureCredentialOptions
+        using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
         {
-            ManagedIdentityClientId = managedIdentityClientId
-        });
-        using (var connection = new SqlConnection(connectionString))
-        {
-            connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" }))).Token;
-            await connection.OpenAsync();
             var query = $"SELECT {fieldName} FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
             using (var command = new SqlCommand(query, connection))
             {
@@ -146,15 +127,14 @@ public class DatabaseValidationHelper
         }
     }
 
-    public static async Task<bool> VerifyRecordCountAsync(string connectionString, string tableName, int expectedCount, ILogger logger, int maxRetries = 10, int delay = 1000)
+    public static async Task<bool> VerifyRecordCountAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, int expectedCount, ILogger logger, int maxRetries = 10, int delay = 1000)
     {
         ValidateTableName(tableName);
 
         for (int i = 0; i < maxRetries; i++)
         {
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
             {
-                await connection.OpenAsync();
                 var query = $"SELECT COUNT(*) FROM {tableName}";
                 using (var command = new SqlCommand(query, connection))
                 {
@@ -209,7 +189,7 @@ public class DatabaseValidationHelper
         return false; // NHS number not found after retries
     }
 
-    public static async Task<bool> VerifyFieldsMatchCsvAsync(string connectionString, string tableName, string nhsNumber, string csvFilePath, ILogger logger)
+    public static async Task<bool> VerifyFieldsMatchCsvAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string nhsNumber, string csvFilePath, ILogger logger)
     {
         ValidateTableName(tableName);
 
@@ -222,9 +202,8 @@ public class DatabaseValidationHelper
             return false;
         }
 
-        using (var connection = new SqlConnection(connectionString))
+        using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
         {
-            await connection.OpenAsync();
             var query = $"SELECT * FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
             using (var command = new SqlCommand(query, connection))
             {
@@ -258,7 +237,7 @@ public class DatabaseValidationHelper
         return true;
     }
 
-    public static async Task<bool> VerifyCsvWithDatabaseAsync(string connectionString, string tableName, string nhsNumber, string csvFilePath, ILogger logger,string managedIdentityClientId)
+    public static async Task<bool> VerifyCsvWithDatabaseAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string nhsNumber, string csvFilePath, ILogger logger,string managedIdentityClientId)
     {
         ValidateTableName(tableName);
 
@@ -270,17 +249,8 @@ public class DatabaseValidationHelper
             logger.LogError($"NHS number {nhsNumber} not found in the CSV file.");
             return false;
         }
-
-        var credential = new DefaultAzureCredential(
-        new DefaultAzureCredentialOptions
+        using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
         {
-            ManagedIdentityClientId = managedIdentityClientId
-        });
-
-        using (var connection = new SqlConnection(connectionString))
-        {
-            connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" }))).Token;
-            await connection.OpenAsync();
             var query = $"SELECT * FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
             using (var command = new SqlCommand(query, connection))
             {
@@ -328,21 +298,11 @@ public class DatabaseValidationHelper
         return true;
     }
 
-    public static async Task<int> GetNhsNumberCount(string connectionString, string tableName, string nhsNumber, ILogger logger, string managedIdentityClientId)
+    public static async Task<int> GetNhsNumberCount(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string nhsNumber, ILogger logger, string managedIdentityClientId)
     {
     var nhsNumberCount = 0;
-
-        var credential = new DefaultAzureCredential(
-        new DefaultAzureCredentialOptions
-        {
-            ManagedIdentityClientId = managedIdentityClientId
-        });
-
-    using (var connection = new SqlConnection(connectionString))
+    using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
     {
-        connection.AccessToken = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://database.windows.net/.default" }))).Token;
-        await connection.OpenAsync();
-
         var query = $"SELECT COUNT(*) FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
         using (var command = new SqlCommand(query, connection))
         {
