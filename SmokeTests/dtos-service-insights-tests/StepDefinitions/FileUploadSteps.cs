@@ -9,6 +9,8 @@ using dtos_service_insights_tests.Models;
 using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
+using RestSharp;
+using NUnit.Framework;
 
 namespace dtos_service_insights_tests.StepDefinitions;
 
@@ -72,11 +74,29 @@ public sealed class FileUploadSteps
         await _fileUploadService.VerifyEpisodeIdsAsync("EPISODE", _smokeTestsContext.EpisodeIds!);
     }
 
+    [When("the GET Participant Screening Episode API request is made")]
+        public async Task WhenGETEpisodesAPIIsInvokedWithEpisodeID()
+        {
+            _smokeTestsContext.restResponse= await _fileUploadService.GetApiResponse(_appSettings.EndPoints.GetEpisodeUrl);
+        }
+
     [Then(@"the matching episode data from csv is inserted into DB")]
     [Then(@"latest changes to the episode are loaded into the Episode Manager")]
     public async Task ThenTheMatchingEpisodeDataFromCsvIsInsertedIntoDB()
     {
         await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.EpisodeIds.FirstOrDefault(),_smokeTestsContext.FilePath);
+    }
+
+    [Then(@"the correct episode data is returned")]
+    public void ThenTheCorrectEpisodeDataIsReturned()
+    {
+        _fileUploadService.VerifyCsvWithApiResponseAsync(_smokeTestsContext.restResponse,_smokeTestsContext.EpisodeIds.FirstOrDefault(),_smokeTestsContext.FilePath);
+    }
+
+    [Then("there should be (.*) records for the Episode Id in the database")]
+    public async Task ThenThereShouldBeRecordsForThe(int count)
+    {
+        await _fileUploadService.VerifyEpisodeIdsCountAsync("EPISODE", _smokeTestsContext.EpisodeIds.FirstOrDefault(),count);
     }
 
     [Then("there should be {int} records for the Episode Id {string} in the database")]
@@ -96,4 +116,48 @@ public sealed class FileUploadSteps
     {
         await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.EpisodeIds.FirstOrDefault(),_smokeTestsContext.FilePath);
     }
+
+    [Then("the response status is {int}")]
+    public void ThenTheResponseStatusIs(int p0)
+    {
+        System.Net.HttpStatusCode statusCode = _smokeTestsContext.restResponse.StatusCode;
+        Assert.That(p0, Is.EqualTo((int)(statusCode)));
+    }
+
+    [Then("GET Participant Screening Episode API returns {int} records for the Episode Id {string}") ]
+    public void ThenGETParticipantScreeningEpisodeAPIReturnsRecordsForTheEpisodeId(int expectedCount, string episodeId)
+    {
+        _fileUploadService.VerifyEpisodeRecordCountInAPIResponse(_smokeTestsContext.restResponse,episodeId,_smokeTestsContext.FilePath,expectedCount);
+    }
+
+    [When("the GET Participant Screening Profile API request is made")]
+    public async Task WhenTheGETParticipantScreeningProfileAPIRequestIsMade()
+    {
+        _smokeTestsContext.restResponse= await _fileUploadService.GetApiResponse(_appSettings.EndPoints.GetParticipantScreeningProfileUrl);
+    }
+
+    [Then("description for {string} in {string} table is populated")]
+    public async Task ThenDescriptionForInTableIsPopulated(string fieldName, string tableName)
+    {
+        await _fileUploadService.VerifyEndCodeReferenceDataAsync(tableName, _smokeTestsContext.EpisodeIds.FirstOrDefault(), fieldName,_smokeTestsContext.FilePath);
+    }
+
+    [Then("codes for {string} in {string} table is populated from reference data")]
+    public async Task ThenCodesForInTableIsPopulatedFromReferenceData(string fieldName, string tableName)
+    {
+        await _fileUploadService.VerifyEpisodeTypeReferenceDataAsync(tableName, _smokeTestsContext.EpisodeIds.FirstOrDefault(), fieldName,_smokeTestsContext.FilePath);
+    }
+
+    [Then("there should be {int} records for the participant in the API response")]
+    public void ThenThereShouldBeRecordsForTheParticipantInTheAPIResponse(int expectedCount)
+    {
+    _fileUploadService.VerifyParticipantsRecordCountInAPIResponse(_smokeTestsContext.restResponse,_smokeTestsContext.EpisodeIds.FirstOrDefault(),_smokeTestsContext.FilePath,expectedCount);
+    }
+
+    [Then("there should be {int} records in BI and Analytics data store")]
+    public async Task ThenThereShouldBeRecordsInBIAndAnalyticsDataStore(int expectedCount)
+    {
+        await _fileUploadService.VerifyEpisodeIdsCountInAnalyticsDataStoreAsync("PARTICIPANT_SCREENING_EPISODE", _smokeTestsContext.EpisodeIds.FirstOrDefault(),expectedCount);
+    }
+
 }

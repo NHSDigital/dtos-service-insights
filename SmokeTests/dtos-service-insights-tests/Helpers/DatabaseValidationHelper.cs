@@ -127,6 +127,134 @@ public class DatabaseValidationHelper
         }
     }
 
+    public static async Task<bool> VerifyEndCodeReferenceDataAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string episodeId, string fieldName,string managedIdentityClientId,string csvFilePath, ILogger logger)
+    {
+        var csvRecords = CsvHelperService.ReadCsv(csvFilePath);
+        var expectedRecord = csvRecords.FirstOrDefault(record => record["episode_id"] == episodeId);
+        var csvInputValue=expectedRecord["end_code"];
+        Console.WriteLine(csvInputValue);
+        string expectedValues="";
+        string actualValues="";
+        using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
+        {
+            var query = $"SELECT END_CODE_DESCRIPTION FROM END_CODE_LKP WHERE END_CODE = @endCodeId";
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@endCodeId", csvInputValue);
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var value = reader.IsDBNull(0) ? null : reader.GetValue(0);
+                        if (value != null)
+                        {
+                                expectedValues=value.ToString()!;
+                        }
+                    }
+                }
+                if (String.IsNullOrEmpty(expectedValues))
+                {
+                    logger.LogError($"Field END_CODE_DESCRIPTION is null for Episode Id {episodeId} in END_CODE_LKP table.");
+                    return false;
+                }
+            }
+            query = $"SELECT END_CODE_DESCRIPTION FROM PARTICIPANT_SCREENING_EPISODE WHERE episode_id = @episodeId";
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@episodeId", episodeId);
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var value = reader.IsDBNull(0) ? null : reader.GetValue(0);
+                        if (value != null)
+                        {
+                                actualValues=value.ToString()!;
+                        }
+                    }
+                }
+
+                if (String.IsNullOrEmpty(actualValues))
+                {
+                    logger.LogError($"Field {fieldName} is null for Episode Id {episodeId} in {tableName} table.");
+                    return false;
+                }
+
+            }
+
+                if (expectedValues!=actualValues)
+                {
+                    logger.LogError($"Field {fieldName} for Episode Id {episodeId} does not match the expected value. Expected: {expectedValues}, Actual: {actualValues}");
+                    return false;
+                }
+
+                return true;
+        }
+
+    }
+
+    public static async Task<bool> VerifyEpisodeTypeReferenceDataAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string episodeId, string fieldName,string managedIdentityClientId,string csvFilePath, ILogger logger)
+    {
+        var csvRecords = CsvHelperService.ReadCsv(csvFilePath);
+        var expectedRecord = csvRecords.FirstOrDefault(record => record["episode_id"] == episodeId);
+        var csvInputValue=expectedRecord["episode_type"];
+        string expectedValues="";
+        string actualValues="";
+        using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
+        {
+            var query = $"SELECT EPISODE_TYPE_ID FROM EPISODE_TYPE_LKP WHERE EPISODE_TYPE = @episodeType";
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@episodeType", csvInputValue);
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var value = reader.IsDBNull(0) ? null : reader.GetValue(0);
+                        Console.WriteLine(value);
+                        if (value != null)
+                        {
+                                expectedValues=value.ToString()!;
+                        }
+                    }
+                }
+
+                if (String.IsNullOrEmpty(expectedValues))
+                {
+                    logger.LogError($"Field {fieldName} is null for Episode Id {episodeId} in {tableName} table.");
+                    return false;
+                }
+            }
+                query = $"SELECT episode_type_id FROM episode WHERE episode_id = @episodeId";
+                using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@episodeId", episodeId);
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var value = reader.IsDBNull(0) ? null : reader.GetValue(0);
+                        if (value != null)
+                        {
+                                actualValues=value.ToString()!;
+                        }
+                    }
+                }
+                if (String.IsNullOrEmpty(actualValues))
+                {
+                    logger.LogError($"Field {fieldName} is null for Episode Id {episodeId} in {tableName} table.");
+                    return false;
+                }
+            }
+                if (expectedValues!=actualValues)
+                {
+                    logger.LogError($"Field {fieldName} for Episode Id {episodeId} does not match the expected value. Expected: {expectedValues}, Actual: {actualValues}");
+                    return false;
+                }
+                return true;
+        }
+    }
+
 
     public static async Task<bool> VerifyRecordCountAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, int expectedCount, ILogger logger, int maxRetries = 10, int delay = 1000)
     {
