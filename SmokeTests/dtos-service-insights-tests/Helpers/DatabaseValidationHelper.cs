@@ -59,34 +59,34 @@ public class DatabaseValidationHelper
         }
     }
 
-    public static async Task VerifyNhsNumbersAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, List<string> nhsNumbers, ILogger logger, string managedIdentityClientId)
+   public static async Task VerifyEpisodeIdsAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, List<string> episodeIds, ILogger logger, string managedIdentityClientId)
     {
         ValidateTableName(tableName);
         using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
         {
-        foreach (var nhsNumber in nhsNumbers)
+        foreach (var episodeId in episodeIds)
         {
-            var isVerified = await VerifyNhsNumberAsync(connection, tableName, nhsNumber, logger);
+            var isVerified = await VerifyEpisodeIdsAsync(connection, tableName, episodeId, logger);
             if (!isVerified)
             {
-                logger.LogError($"Verification failed: NHS number {nhsNumber} not found in {tableName} table.");
-                Assert.Fail($"NHS number {nhsNumber} not found in {tableName} table.");
+                logger.LogError($"Verification failed: Episode Id {episodeId} not found in {tableName} table.");
+                Assert.Fail($"Episode Id {episodeId} not found in {tableName} table.");
             }
         }
         }
     }
 
-    public static async Task<bool> VerifyFieldUpdateAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string nhsNumber, string fieldName,string managedIdentityClientId, string expectedValue, ILogger logger)
+    public static async Task<bool> VerifyFieldUpdateAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string episodeId, string fieldName,string managedIdentityClientId, string expectedValue, ILogger logger)
     {
         List<string> fieldValues  = new List<string>();
         ValidateTableName(tableName);
         ValidateFieldName(fieldName);
         using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
         {
-            var query = $"SELECT {fieldName} FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
+            var query = $"SELECT {fieldName} FROM {tableName} WHERE [episode_id] = @episodeId";
             using (var command = new SqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@NhsNumber", nhsNumber);
+                command.Parameters.AddWithValue("@EpisodeId", episodeId);
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
@@ -110,22 +110,23 @@ public class DatabaseValidationHelper
 
                 if (fieldValues.Count == 0)
                 {
-                    logger.LogError($"Field {fieldName} is null for NHS number {nhsNumber} in {tableName} table.");
+                    logger.LogError($"Field {fieldName} is null for Episode Id {episodeId} in {tableName} table.");
                     return false;
                 }
 
 
                 if (!fieldValues.Contains(expectedValue))
                 {
-                    logger.LogError($"Field {fieldName} for NHS number {nhsNumber} does not match the expected value. Expected: {expectedValue}, Actual: {expectedValue}");
+                    logger.LogError($"Field {fieldName} for Episode Id {episodeId} does not match the expected value. Expected: {expectedValue}, Actual: {expectedValue}");
                     return false;
                 }
 
-                logger.LogInformation($"Field {fieldName} for NHS number {nhsNumber} successfully updated to {expectedValue}.");
+                logger.LogInformation($"Field {fieldName} for Episode Id {episodeId} successfully updated to {expectedValue}.");
                 return true;
             }
         }
     }
+
 
     public static async Task<bool> VerifyRecordCountAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, int expectedCount, ILogger logger, int maxRetries = 10, int delay = 1000)
     {
@@ -153,7 +154,7 @@ public class DatabaseValidationHelper
         return false;
     }
 
-    private static async Task<bool> VerifyNhsNumberAsync(SqlConnection connection, string tableName, string nhsNumber, ILogger logger)
+   private static async Task<bool> VerifyEpisodeIdsAsync(SqlConnection connection, string tableName, string episodeId, ILogger logger)
     {
         ValidateTableName(tableName);
 
@@ -165,9 +166,9 @@ public class DatabaseValidationHelper
         {
             try
             {
-                using (var command = new SqlCommand($"SELECT 1 FROM {tableName} WHERE NHS_Number = @nhsNumber", connection))
+                using (var command = new SqlCommand($"SELECT 1 FROM {tableName} WHERE Episode_Id = @episodeId", connection))
                 {
-                    command.Parameters.AddWithValue("@nhsNumber", nhsNumber);
+                    command.Parameters.AddWithValue("@episodeId", episodeId);
                     var result = await command.ExecuteScalarAsync();
                     if (result != null)
                     {
@@ -177,7 +178,7 @@ public class DatabaseValidationHelper
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"Error verifying NHS number {nhsNumber} in table {tableName} (Attempt {retryCount + 1})");
+                logger.LogError(ex, $"Error verifying Episode Id {episodeId} in table {tableName} (Attempt {retryCount + 1})");
             }
 
             retryCount++;
@@ -185,34 +186,35 @@ public class DatabaseValidationHelper
             delay = delay * 2; // Exponential backoff (double the delay on each retry)
         }
 
-        logger.LogError($"Verification failed after {maxRetries} retries for NHS number {nhsNumber} in table {tableName}");
+        logger.LogError($"Verification failed after {maxRetries} retries for Episode Id {episodeId} in table {tableName}");
         return false; // NHS number not found after retries
     }
 
-    public static async Task<bool> VerifyFieldsMatchCsvAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string nhsNumber, string csvFilePath, ILogger logger)
+    public static async Task<bool> VerifyFieldsMatchCsvAsync(string connectionString, string tableName, string episodeId, string csvFilePath, ILogger logger)
     {
         ValidateTableName(tableName);
 
         var csvRecords = CsvHelperService.ReadCsv(csvFilePath);
-        var expectedRecord = csvRecords.FirstOrDefault(record => record["NHS Number"] == nhsNumber);
+        var expectedRecord = csvRecords.FirstOrDefault(record => record["Episode Id"] == episodeId);
 
         if (expectedRecord == null)
         {
-            logger.LogError($"NHS number {nhsNumber} not found in the CSV file.");
+            logger.LogError($"NHS number {episodeId} not found in the CSV file.");
             return false;
         }
 
-        using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
+        using (var connection = new SqlConnection(connectionString))
         {
-            var query = $"SELECT * FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
+            await connection.OpenAsync();
+            var query = $"SELECT * FROM {tableName} WHERE [episode_id] = @EpisodeId";
             using (var command = new SqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@NhsNumber", nhsNumber);
+                command.Parameters.AddWithValue("@EpisodeId", episodeId);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (!reader.HasRows)
                     {
-                        logger.LogError($"No record found in {tableName} for NHS number {nhsNumber}.");
+                        logger.LogError($"No record found in {tableName} for Episode Id {episodeId}.");
                         return false;
                     }
 
@@ -225,7 +227,7 @@ public class DatabaseValidationHelper
 
                             if (expectedValue != actualValue)
                             {
-                                logger.LogError($"Mismatch in {key} for NHS number {nhsNumber}: expected '{expectedValue}', found '{actualValue}'.");
+                                logger.LogError($"Mismatch in {key} for Episode Id {episodeId}: expected '{expectedValue}', found '{actualValue}'.");
                                 return false;
                             }
                         }
@@ -237,29 +239,29 @@ public class DatabaseValidationHelper
         return true;
     }
 
-    public static async Task<bool> VerifyCsvWithDatabaseAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string nhsNumber, string csvFilePath, ILogger logger,string managedIdentityClientId)
+    public static async Task<bool> VerifyCsvWithDatabaseAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string episodeId, string csvFilePath, ILogger logger,string managedIdentityClientId)
     {
         ValidateTableName(tableName);
 
         var csvRecords = CsvHelperService.ReadCsv(csvFilePath);
-        var expectedRecord = csvRecords.FirstOrDefault(record => record["nhs_number"] == nhsNumber);
+        var expectedRecord = csvRecords.FirstOrDefault(record => record["episode_id"] == episodeId);
 
         if (expectedRecord == null)
         {
-            logger.LogError($"NHS number {nhsNumber} not found in the CSV file.");
+            logger.LogError($"Episode Id {episodeId} not found in the CSV file.");
             return false;
         }
         using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
         {
-            var query = $"SELECT * FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
+            var query = $"SELECT * FROM {tableName} WHERE [EPISODE_ID] = @EpisodeId";
             using (var command = new SqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@NhsNumber", nhsNumber);
+                command.Parameters.AddWithValue("@EpisodeId", episodeId);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (!reader.HasRows)
                     {
-                        logger.LogError($"No record found in {tableName} for NHS number {nhsNumber}.");
+                        logger.LogError($"No record found in {tableName} for Episode Id {episodeId}.");
                         return false;
                     }
 
@@ -280,13 +282,13 @@ public class DatabaseValidationHelper
                             {
                             if (expectedValue != actualValue.ToString())
                             {
-                                logger.LogError($"Inside Mismatch in {e.Key.ToString()} for NHS number {nhsNumber}: expected '{expectedValue}', found '{actualValue}'.");
+                                logger.LogError($"Inside Mismatch in {e.Key.ToString()} for Episode Id {episodeId}: expected '{expectedValue}', found '{actualValue}'.");
                                 return false;
                             }
                             }
                             else if ( !String.IsNullOrEmpty(actualValue.ToString()))
                             {
-                                logger.LogError($"Mismatch in {e.Key.ToString()} for NHS number {nhsNumber}: expected '{expectedValue}', found '{actualValue}'.");
+                                logger.LogError($"Mismatch in {e.Key.ToString()} for Episode Id {episodeId}: expected '{expectedValue}', found '{actualValue}'.");
                                 return false;
                             }
                         }
@@ -298,19 +300,20 @@ public class DatabaseValidationHelper
         return true;
     }
 
-    public static async Task<int> GetNhsNumberCount(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string nhsNumber, ILogger logger, string managedIdentityClientId)
+    public static async Task<int> GetEpisodeIdCount(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, string episodeId, ILogger logger, string managedIdentityClientId)
     {
-    var nhsNumberCount = 0;
+    var episodeIdCount = 0;
+
     using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
     {
-        var query = $"SELECT COUNT(*) FROM {tableName} WHERE [NHS_NUMBER] = @NhsNumber";
+        var query = $"SELECT COUNT(*) FROM {tableName} WHERE [episode_id] in (@EpisodeId)";
         using (var command = new SqlCommand(query, connection))
         {
-            command.Parameters.AddWithValue("@NhsNumber", nhsNumber);
-            nhsNumberCount = (int)(await command.ExecuteScalarAsync() ?? 0);
+            command.Parameters.AddWithValue("@EpisodeId", episodeId);
+            episodeIdCount = (int)(await command.ExecuteScalarAsync() ?? 0);
         }
     }
-    return nhsNumberCount;
+    return episodeIdCount;
     }
 
 }

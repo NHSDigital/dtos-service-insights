@@ -26,13 +26,13 @@ public sealed class FileUploadSteps
         _fileUploadService = services.GetRequiredService<EndToEndFileUploadService>();
     }
 
-    [Given(@"the database is cleaned of all records for NHS Numbers: (.*)")]
-    public async Task GivenDatabaseIsCleaned(string nhsNumbersString)
+    [Given(@"the database is cleaned of all records for Episode Ids: (.*)")]
+    public async Task GivenDatabaseIsCleaned(string episodeIdsString)
     {
-        var nhsNumbers = nhsNumbersString.Split(',', StringSplitOptions.TrimEntries);
+        var episodeIds = episodeIdsString.Split(',', StringSplitOptions.TrimEntries);
 
         // _fileUploadService.CleanDatabaseAsync accepts a list of NHS numbers
-        await _fileUploadService.CleanDatabaseAsync(nhsNumbers);
+        await _fileUploadService.CleanDatabaseAsync(episodeIds);
     }
 
     [Given(@"the application is properly configured")]
@@ -41,10 +41,8 @@ public sealed class FileUploadSteps
         _fileUploadService.Should().NotBeNull("EndToEndFileUploadService is not initialized.");
     }
 
-    [Given(@"file (.*) exists in the configured location for ""(.*)"" with NHS numbers : (.*)")]
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-    public void GivenFileExistsAtConfiguredPath(string fileName, string? recordType, string nhsNumbersData)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+    [Given(@"file (.*) exists in the configured location for ""(.*)"" with Episode Ids : (.*)")]
+    public void GivenFileExistsAtConfiguredPath(string fileName, string? recordType, string episodeIdsData)
     {
         string workingDirectory = Environment.CurrentDirectory;
         string path = Directory.GetParent(workingDirectory).Parent.Parent.Parent.Parent.FullName;
@@ -56,7 +54,7 @@ public sealed class FileUploadSteps
             _smokeTestsContext.FilePath = filePath;
             _smokeTestsContext.RecordType = (RecordTypesEnum)Enum.Parse(typeof(RecordTypesEnum), recordType, ignoreCase: true);
 
-            _smokeTestsContext.NhsNumbers = nhsNumbersData.Split(',', StringSplitOptions.TrimEntries).ToList();
+            _smokeTestsContext.EpisodeIds = episodeIdsData.Split(',', StringSplitOptions.TrimEntries).ToList();
     }
 
     [Given(@"the file is uploaded to the Blob Storage container")]
@@ -67,34 +65,35 @@ public sealed class FileUploadSteps
         await _fileUploadService.UploadFileAsync(filePath);
     }
 
-    [Given(@"the NHS numbers in the database should match the file data")]
-    [Then(@"the NHS numbers in the database should match the file data")]
-    public async Task ThenVerifyNhsNumbersInDatabase()
+    [Given(@"the Episode Ids in the database should match the file data")]
+    [Then(@"the Episode Ids in the database should match the file data")]
+    public async Task ThenVerifyEpisodeIdsInDatabase()
     {
-        await _fileUploadService.VerifyNhsNumbersAsync("EPISODE", _smokeTestsContext.NhsNumbers!);
+        await _fileUploadService.VerifyEpisodeIdsAsync("EPISODE", _smokeTestsContext.EpisodeIds!);
     }
 
     [Then(@"the matching episode data from csv is inserted into DB")]
+    [Then(@"latest changes to the episode are loaded into the Episode Manager")]
     public async Task ThenTheMatchingEpisodeDataFromCsvIsInsertedIntoDB()
     {
-        await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.NhsNumbers.FirstOrDefault(),_smokeTestsContext.FilePath);
+        await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.EpisodeIds.FirstOrDefault(),_smokeTestsContext.FilePath);
     }
 
-    [Then("there should be (.*) records for the NHS Number in the database")]
-    public async Task ThenThereShouldBeRecordsForThe(int count)
+    [Then("there should be {int} records for the Episode Id {string} in the database")]
+    public async Task ThenThereShouldBeRecordsForTheEpisodeIdInTheDatabase(int count, string episodeId)
     {
-        await _fileUploadService.VerifyNhsNumbersCountAsync("EPISODE", _smokeTestsContext.NhsNumbers.FirstOrDefault(),count);
+        await _fileUploadService.VerifyEpisodeIdsCountAsync("EPISODE", episodeId,count);
     }
 
-    [Then("the database should match the amended (.*) for the NHS Number")]
-    public async Task ThenTheDatabaseShouldMatchTheAmendedForTheNHSNumber(string expectedGivenName)
+    [Then("the database should match the amended (.*) for the Episode Id")]
+    public async Task ThenTheDatabaseShouldMatchTheAmendedForTheEpisodeId(string expectedGivenName)
     {
-        await _fileUploadService.VerifyFieldUpdateAsync("EPISODE", _smokeTestsContext.NhsNumbers.FirstOrDefault(), "EPISODE_OPEN_DATE", expectedGivenName);
+        await _fileUploadService.VerifyFieldUpdateAsync("EPISODE", _smokeTestsContext.EpisodeIds.FirstOrDefault(), "EPISODE_OPEN_DATE", expectedGivenName);
     }
 
     [Then("the episode data from file should be inserted or updated in the database")]
     public async Task ThenTheEpisodeDataFromFileShouldBeInsertedOrUpdatedInTheDatabase()
     {
-        await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.NhsNumbers.FirstOrDefault(),_smokeTestsContext.FilePath);
+        await _fileUploadService.VerifyFullDatabaseRecordAsync("EPISODE",_smokeTestsContext.EpisodeIds.FirstOrDefault(),_smokeTestsContext.FilePath);
     }
 }

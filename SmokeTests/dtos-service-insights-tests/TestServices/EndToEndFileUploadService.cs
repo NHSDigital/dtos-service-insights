@@ -28,18 +28,18 @@ public class EndToEndFileUploadService
         _managedIdentityClientId = _appSettings.ManagedIdentityClientId;
     }
 
-    public async Task CleanDatabaseAsync(IEnumerable<string> nhsNumbers)
+    public async Task CleanDatabaseAsync(IEnumerable<string> episodeIds)
     {
         _logger.LogInformation("Starting database cleanup.");
 
         try
         {
-            foreach (var nhsNumber in nhsNumbers)
+            foreach (var episodeId in episodeIds)
             {
                 //  parameterized queries to prevent SQL injection
-                await DatabaseHelper.ExecuteNonQueryAsync(_connectionString, _managedIdentityClientId,
-                    "DELETE FROM dbo.EPISODE WHERE NHS_Number = @nhsNumber",
-                    new SqlParameter("@nhsNumber", nhsNumber));
+                await DatabaseHelper.ExecuteNonQueryAsync(_sqlConnectionWithAuthentication,
+                    "DELETE FROM dbo.EPISODE WHERE Episode_Id = @episodeId",
+                    new SqlParameter("@episodeId", episodeId));
             }
 
             _logger.LogInformation("Database cleanup completed successfully.");
@@ -106,47 +106,45 @@ public class EndToEndFileUploadService
         return false;
     }
 
-    public async Task VerifyNhsNumbersAsync(string tableName, List<string> nhsNumbers)
+   public async Task VerifyEpisodeIdsAsync(string tableName, List<string> episodeIds)
     {
-        _logger.LogInformation("Validating NHS numbers in table {TableName}.", tableName);
-        await DatabaseValidationHelper.VerifyNhsNumbersAsync(_connectionString, tableName, nhsNumbers, _logger,_managedIdentityClientId);
-        _logger.LogInformation("Validation of NHS numbers completed successfully.");
+        _logger.LogInformation("Validating Episode Ids in table {TableName}.", tableName);
+        await DatabaseValidationHelper.VerifyEpisodeIdsAsync(_sqlConnectionWithAuthentication, tableName, episodeIds, _logger,_managedIdentityClientId);
+        _logger.LogInformation("Validation of Episode Ids completed successfully.");
     }
 
-    public async Task VerifyCsvDataAsync(string tableName, List<string> nhsNumbers)
+    public async Task VerifyCsvDataAsync(string tableName, List<string> episodeIds)
     {
         _logger.LogInformation("Validating csv data in table {TableName}.", tableName);
-        await DatabaseValidationHelper.VerifyNhsNumbersAsync(_connectionString, tableName, nhsNumbers, _logger,_managedIdentityClientId);
-        _logger.LogInformation("Validation of NHS numbers completed successfully.");
+        await DatabaseValidationHelper.VerifyEpisodeIdsAsync(_sqlConnectionWithAuthentication, tableName, episodeIds, _logger,_managedIdentityClientId);
+        _logger.LogInformation("Validation of Episode Ids completed successfully.");
     }
 
-    public async Task VerifyNhsNumbersCountAsync(string tableName, string nhsNumber, int expectedCount)
+    public async Task VerifyEpisodeIdsCountAsync(string tableName, string episodeId, int expectedCount)
     {
-        _logger.LogInformation("Validating NHS number count in table {TableName}.", tableName);
+        _logger.LogInformation("Validating Episode Id count in table {TableName}.", tableName);
         Func<Task> act = async () =>
         {
-            var nhsNumberCount = await DatabaseValidationHelper.GetNhsNumberCount(_connectionString, tableName, nhsNumber, _logger, _managedIdentityClientId);
+            var nhsNumberCount = await DatabaseValidationHelper.GetEpisodeIdCount(_sqlConnectionWithAuthentication, tableName, episodeId, _logger, _managedIdentityClientId);
             nhsNumberCount.Should().Be(expectedCount);
         };
 
         await act.Should().NotThrowAfterAsync(TimeSpan.FromMinutes(2), TimeSpan.FromSeconds(5));
-        _logger.LogInformation("Validation of NHS number count completed successfully.");
+        _logger.LogInformation("Validation of Episode Id count completed successfully.");
     }
 
-
-    public async Task VerifyFieldUpdateAsync(string tableName, string nhsNumber, string fieldName, string expectedValue)
+    public async Task VerifyFieldUpdateAsync(string tableName, string episodeId, string fieldName, string expectedValue)
     {
         Func<Task> act = async () =>
         {
-            var result = await DatabaseValidationHelper.VerifyFieldUpdateAsync(_connectionString, tableName, nhsNumber,fieldName,_managedIdentityClientId, expectedValue, _logger);
+            var result = await DatabaseValidationHelper.VerifyFieldUpdateAsync(_sqlConnectionWithAuthentication, tableName, episodeId,fieldName,_managedIdentityClientId, expectedValue, _logger);
             result.Should().BeTrue();
         };
 
         await act.Should().NotThrowAfterAsync(TimeSpan.FromMinutes(2), TimeSpan.FromSeconds(5));
 
     }
-
-        public async Task VerifyFullDatabaseRecordAsync(string tableName, string nhsNumber, string csvFilePath)
+    public async Task VerifyFullDatabaseRecordAsync(string tableName, string nhsNumber, string csvFilePath)
     {
         Func<Task> act = async () =>
         {
