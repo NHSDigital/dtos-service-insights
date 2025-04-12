@@ -47,6 +47,7 @@ internal static class Startup
             return new Azure.Storage.Blobs.BlobServiceClient(connectionString);
         });
         services.AddSingleton<BlobStorageHelper>();
+        services.AddSingleton<ApiClientHelper>();
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<AppSettings>>().Value);
         services.AddTransient<EndToEndFileUploadService>();
 
