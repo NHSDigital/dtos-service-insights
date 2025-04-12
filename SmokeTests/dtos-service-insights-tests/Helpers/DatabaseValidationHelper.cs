@@ -132,7 +132,6 @@ public class DatabaseValidationHelper
         var csvRecords = CsvHelperService.ReadCsv(csvFilePath);
         var expectedRecord = csvRecords.FirstOrDefault(record => record["episode_id"] == episodeId);
         var csvInputValue=expectedRecord["end_code"];
-        Console.WriteLine(csvInputValue);
         string expectedValues="";
         string actualValues="";
         using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
@@ -211,7 +210,6 @@ public class DatabaseValidationHelper
                     while (await reader.ReadAsync())
                     {
                         var value = reader.IsDBNull(0) ? null : reader.GetValue(0);
-                        Console.WriteLine(value);
                         if (value != null)
                         {
                                 expectedValues=value.ToString()!;

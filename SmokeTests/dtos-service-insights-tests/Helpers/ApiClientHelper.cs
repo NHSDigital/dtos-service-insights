@@ -27,7 +27,7 @@ public class ApiClientHelper
         {"end_point","EndPoint"}
 };
 
-    public async Task<RestResponse> GetApiResponseAsync(string endPoint)
+    public async Task<RestResponse> GetApiResponseAsync(string endPoint,string subscriptionId)
         {
             RestClient restClient = new RestClient();
             RestRequest request = new RestRequest(endPoint)
@@ -41,7 +41,7 @@ public class ApiClientHelper
             request.AddHeaders(new Dictionary<string, string>
             {
                 { "Accept", "application/json" },
-                { "Ocp-Apim-Subscription-Key", "d8d079c53ba34c4e82dc66d86bba5b93" }
+                { "Ocp-Apim-Subscription-Key", subscriptionId}
             });
             RestResponse response = await restClient.ExecuteAsync(request);
             return await restClient.ExecuteAsync(request);

@@ -77,7 +77,7 @@ public sealed class FileUploadSteps
     [When("the GET Participant Screening Episode API request is made")]
         public async Task WhenGETEpisodesAPIIsInvokedWithEpisodeID()
         {
-            _smokeTestsContext.restResponse= await _fileUploadService.GetApiResponse(_appSettings.EndPoints.GetParticipantScreeningEpisodeUrl);
+            _smokeTestsContext.restResponse= await _fileUploadService.GetApiResponse(_appSettings.EndPoints.GetParticipantScreeningEpisodeUrl,_appSettings.SubscriptionId);
         }
 
     [Then(@"the matching episode data from csv is inserted into DB")]
@@ -133,7 +133,7 @@ public sealed class FileUploadSteps
     [When("the GET Participant Screening Profile API request is made")]
     public async Task WhenTheGETParticipantScreeningProfileAPIRequestIsMade()
     {
-        _smokeTestsContext.restResponse= await _fileUploadService.GetApiResponse(_appSettings.EndPoints.GetParticipantScreeningProfileUrl);
+        _smokeTestsContext.restResponse= await _fileUploadService.GetApiResponse(_appSettings.EndPoints.GetParticipantScreeningProfileUrl,_appSettings.SubscriptionId);
     }
 
     [Then("description for {string} in {string} table is populated")]

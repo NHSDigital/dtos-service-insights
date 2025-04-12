@@ -207,10 +207,10 @@ public class EndToEndFileUploadService
 
     }
 
-    public async Task<RestResponse> GetApiResponse(string endPoint)
+    public async Task<RestResponse> GetApiResponse(string endPoint,string subscriptionId)
     {
         RestResponse restResponse;
-        restResponse = await _apiClientHelper.GetApiResponseAsync(endPoint);
+        restResponse = await _apiClientHelper.GetApiResponseAsync(endPoint,subscriptionId);
         return restResponse;
     }
 
