@@ -59,7 +59,7 @@ public class DatabaseValidationHelper
         }
     }
 
-   public static async Task VerifyEpisodeIdsAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, List<string> episodeIds, ILogger logger, string managedIdentityClientId)
+    public static async Task VerifyEpisodeIdsAsync(SqlConnectionWithAuthentication sqlConnectionWithAuthentication, string tableName, List<string> episodeIds, ILogger logger, string managedIdentityClientId)
     {
         ValidateTableName(tableName);
         using (var connection = await sqlConnectionWithAuthentication.GetOpenConnectionAsync())
@@ -280,7 +280,7 @@ public class DatabaseValidationHelper
         return false;
     }
 
-   private static async Task<bool> VerifyEpisodeIdsAsync(SqlConnection connection, string tableName, string episodeId, ILogger logger)
+    private static async Task<bool> VerifyEpisodeIdsAsync(SqlConnection connection, string tableName, string episodeId, ILogger logger)
     {
         ValidateTableName(tableName);
 

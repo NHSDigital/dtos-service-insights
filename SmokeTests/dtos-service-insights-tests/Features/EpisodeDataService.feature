@@ -8,10 +8,10 @@ Smoke tests to check the framework
 
 @smoketest1
 Scenario: 01. Verify new episode is created
-   Given file <FileName> exists in the configured location for "Add" with Episode Ids : <EpisodeIds>
-   When the file is uploaded to the Blob Storage container
-   Then the Episode Ids in the database should match the file data
-   And the episode data from file should be inserted or updated in the database
+    Given file <FileName> exists in the configured location for "Add" with Episode Ids : <EpisodeIds>
+    When the file is uploaded to the Blob Storage container
+    Then the Episode Ids in the database should match the file data
+    And the episode data from file should be inserted or updated in the database
 
       Examples:
         | FileName                     | RecordType | EpisodeIds |
