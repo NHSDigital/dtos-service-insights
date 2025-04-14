@@ -35,7 +35,7 @@ public class ApiClientHelper
                 Method = Method.Get
             };
             request.AddParameter("page", 1);
-            request.AddParameter("pageSize", 4);
+            request.AddParameter("pageSize", 10);
             request.AddParameter("startDate", "2020-01-01");
             request.AddParameter("endDate", "2025-01-01");
             request.AddHeaders(new Dictionary<string, string>
@@ -66,7 +66,7 @@ public class ApiClientHelper
                 foreach( KeyValuePair<string, string> kvp in CsvApiFieldMap )
                 {
                             var expectedValue = expectedRecord[kvp.Key.ToString()];
-                            var actualValue = episodeArray[0][kvp.Value.ToString()];
+                            var actualValue = episodeArray[i][kvp.Value.ToString()];
                             if(kvp.Value.ToString().Contains("Date") && !actualValue.IsNullOrEmpty())
                             {
                             if ((DateTime)actualValue is DateTime dateTimeValue)

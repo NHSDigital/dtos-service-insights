@@ -3,7 +3,7 @@ Feature: DTOS Application Insights Smoke tests
 Smoke tests to check the framework
 
     Background:
-        Given the database is cleaned of all records for Episode Ids: 837413, 849095, 837864
+        Given the database is cleaned of all records for Episode Ids: 837413, 849095, 837864, 574246
         And the application is properly configured
 
 @smoketest1
@@ -97,14 +97,14 @@ Scenario: 08. Successful Retrieval of Participant Data from API
 
       Examples:
         | FileName                     | RecordType | EpisodeIds |
-        | bss_episodes_add_one_row.csv | Add        | 837413     |
+        | bss_episodes_add_ps_profile_api.csv | Add        | 574246     |
 
 
 @smoketest9
 Scenario: 09. Populate Reference Data Successfully for Episode & Participant
     Given file <FileName> exists in the configured location for "Add" with Episode Ids : <EpisodeIds>
     When the file is uploaded to the Blob Storage container
-    Then description for "end_code" in "PARTICIPANT_SCREENING_PROFILE" table is populated
+    Then description for "end_code" in "PARTICIPANT_SCREENING_EPISODE" table is populated
     Then codes for "EPISODE_TYPE_ID" in "EPISODE" table is populated from reference data
 
       Examples:
