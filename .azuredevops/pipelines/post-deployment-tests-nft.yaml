@@ -40,8 +40,11 @@ stages:
       AppSettings.ConnectionStrings.ServiceInsightsDatabaseConnectionString: $(SERINS_DATABASE_CONNECTION_STRING)
       AppSettings.BlobStorageConnectionString: $(STORAGE_CONNECTION_STRING)
       AppSettings.ManagedIdentityClientId: $(MANAGED_IDENTITY_CLIENT_ID)
-      # Not needed for the moment (will go back in later)
-      #AppSettings.IsCloudEnvironment: $(Is_CloudEnvironment)
+      AppSettings.IsCloudEnvironment: $(Is_CloudEnvironment)
+      AppSettings.SubscriptionId: $(APIM_SUBSCRIPTION_KEY)
+      AppSettings.EndPoints.GetParticipantScreeningEpisodeUrl: $(GET_PARTICIPANT_SCREENING_EPISODE_URL)
+      AppSettings.EndPoints.GetParticipantScreeningProfileUrl: $(GET_PARTICIPANT_SCREENING_PROFILE_URL)
+
     steps:
     - template: .azuredevops/templates/steps/run-post-deployment-tests.yaml@dtos-devops-templates
       parameters:

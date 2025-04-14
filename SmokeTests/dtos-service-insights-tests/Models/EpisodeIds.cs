@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dtos_service_insights_tests.Models;
 
-public class NhsNumbers
+public class EpisodeIds
 {
-    public string? NhsNumber { get; set; }
+    public string? EpisodeId { get; set; }
 }
