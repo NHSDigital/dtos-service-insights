@@ -113,7 +113,6 @@ public class GetParticipantScreeningEpisodeTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        // var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=2023-07-05 08:30:00&endDate=2023-07-05 08:30:00";
         var startDate = DateTime.Parse(queryParam["startDate"]);
         var endDate = DateTime.Parse(queryParam["endDate"]);
         var expectedUri = $"http://localhost:6007/api/GetParticipantScreeningEpisodeData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
@@ -151,7 +150,6 @@ public class GetParticipantScreeningEpisodeTests
 
         _mockRequest = _setupRequest.SetupGet(queryParam);
 
-        // var expectedUri = "http://localhost:6007/api/GetParticipantScreeningEpisodeData?page=1&pageSize=2&startDate=2023-07-05 08:30:00&endDate=2023-07-05 08:30:00";
         var startDate = DateTime.Parse(queryParam["startDate"]);
         var endDate = DateTime.Parse(queryParam["endDate"]);
         var expectedUri = $"http://localhost:6007/api/GetParticipantScreeningEpisodeData?page={queryParam["page"]}&pageSize={queryParam["pageSize"]}&startDate={startDate.ToString(CultureInfo.InvariantCulture)}&endDate={endDate.ToString(CultureInfo.InvariantCulture)}";
@@ -335,7 +333,7 @@ public class GetParticipantScreeningEpisodeTests
         using (StreamReader reader = new StreamReader(response.Body))
         {
             string result = await reader.ReadToEndAsync();
-            Assert.AreEqual( "The pageSize is invalid.", result);
+            Assert.AreEqual("The pageSize is invalid.", result);
         }
     }
 }

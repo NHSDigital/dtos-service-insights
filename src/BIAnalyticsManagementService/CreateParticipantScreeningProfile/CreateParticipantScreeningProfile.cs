@@ -102,8 +102,8 @@ public class CreateParticipantScreeningProfile
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to retrieve demographics data. NHS Number: {NhsNumber}, Service: DemographicsServiceUrl, Timestamp: {Timestamp}",
-                nhsNumber, DateTime.UtcNow);
+            _logger.LogError(ex, "Failed to retrieve demographics data. NHS Number: {NhsNumber}, Service: {demographicsServiceUrl}, Timestamp: {Timestamp}",
+                nhsNumber, demographicsServiceUrl, DateTime.UtcNow);
 
             throw new HttpRequestException($"Failed to retrieve demographics data from {baseDemographicsServiceUrl}", ex);
         }
@@ -127,8 +127,8 @@ public class CreateParticipantScreeningProfile
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to retrieve screening data. Screening ID: {ScreeningId}, Service: GetScreeningDataUrl, Timestamp: {Timestamp}",
-                screeningId, DateTime.UtcNow);
+            _logger.LogError(ex, "Failed to retrieve screening data. Screening ID: {ScreeningId}, Service: {getScreeningDataUrl}, Timestamp: {Timestamp}",
+                screeningId, getScreeningDataUrl, DateTime.UtcNow);
 
             throw new HttpRequestException($"Failed to retrieve screening data from {baseScreeningDataServiceUrl}", ex);
         }

@@ -17,8 +17,6 @@ public class CreateParticipantScreeningEpisode
         _logger = logger;
         _httpRequestService = httpRequestService;
 
-        // Retrieve and validate required environment variables
-        // var getEpisodeUrl = Environment.GetEnvironmentVariable("GetEpisodeUrl");
         var createScreeningEpisodeUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningEpisodeUrl");
         var screeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
         var referenceDataServiceUrl = Environment.GetEnvironmentVariable("GetReferenceDataUrl");
@@ -38,10 +36,6 @@ public class CreateParticipantScreeningEpisode
             throw new InvalidOperationException("Environment variable 'CreateParticipantScreeningEpisodeUrl' is missing.");
         }
 
-        // if (string.IsNullOrEmpty(getEpisodeUrl))
-        // {
-        //     throw new InvalidOperationException("Environment variable 'GetEpisodeUrl' is missing.");
-        // }
     }
 
     [Function(nameof(CreateParticipantScreeningEpisode))]
@@ -111,8 +105,8 @@ public class CreateParticipantScreeningEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to retrieve screening data. Screening ID: {ScreeningId}, Service: GetScreeningDataUrl, Timestamp: {Timestamp}",
-                screeningId, DateTime.UtcNow);
+            _logger.LogError(ex, "Failed to retrieve screening data. Screening ID: {ScreeningId}, Service: {getScreeningDataUrl}, Timestamp: {Timestamp}",
+                screeningId, getScreeningDataUrl, DateTime.UtcNow);
 
             throw new HttpRequestException($"Failed to retrieve screening data from {baseScreeningDataServiceUrl}", ex);
         }
@@ -142,8 +136,8 @@ public class CreateParticipantScreeningEpisode
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to retrieve organisation data. Organisation ID: {OrganisationId}, Service: GetReferenceDataUrl, Timestamp: {Timestamp}",
-                organisationId, DateTime.UtcNow);
+            _logger.LogError(ex, "Failed to retrieve organisation data. Organisation ID: {OrganisationId}, Service: {getReferenceDataUrl}, Timestamp: {Timestamp}",
+                organisationId, getReferenceDataUrl, DateTime.UtcNow);
 
             throw new HttpRequestException($"Failed to retrieve organisation data from {baseReferenceServiceUrl}", ex);
         }
