@@ -41,7 +41,7 @@ stages:
       AppSettings.BlobStorageConnectionString: $(STORAGE_CONNECTION_STRING)
       AppSettings.ManagedIdentityClientId: $(MANAGED_IDENTITY_CLIENT_ID)
       AppSettings.IsCloudEnvironment: $(Is_CloudEnvironment)
-      AppSettings.SubscriptionId: $(TARGET_SUBSCRIPTION_ID)
+      AppSettings.SubscriptionId: $(APIM_subscription_ID)
       AppSettings.EndPoints.GetParticipantScreeningEpisodeUrl: $(GET_PARTICIPANT_SCREENING_EPISODE_URL)
       AppSettings.EndPoints.GetParticipantScreeningProfileUrl: $(GET_PARTICIPANT_SCREENING_PROFILE_URL)
 
