@@ -104,7 +104,7 @@ Scenario: 08. Successful Retrieval of Participant Data from API
 Scenario: 09. Populate Reference Data Successfully for Episode & Participant
     Given file <FileName> exists in the configured location for "Add" with Episode Ids : <EpisodeIds>
     When the file is uploaded to the Blob Storage container
-    #Then description for "end_code" in "PARTICIPANT_SCREENING_PROFILE" table is populated
+    Then description for "end_code" in "PARTICIPANT_SCREENING_PROFILE" table is populated
     Then codes for "EPISODE_TYPE_ID" in "EPISODE" table is populated from reference data
 
       Examples:
@@ -117,7 +117,7 @@ Scenario: 10. Handling Multiple Record Changes for a Single Episode
     Given file <FileName> exists in the configured location for "Add" with Episode Ids : <EpisodeIds>
     When the file is uploaded to the Blob Storage container
     Then latest changes to the episode are loaded into the Episode Manager
-    #And there should be 2 records in BI and Analytics data store
+    And there should be 2 records in BI and Analytics data store
 
       Examples:
         | FileName                                        | RecordType | EpisodeIds    |
