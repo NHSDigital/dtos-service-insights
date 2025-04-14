@@ -83,7 +83,8 @@ Describe or link templates on how to raise an issue, feature request or make a c
 
 ## Contacts
 
-Provide a way to contact the owners of this project. It can be a team, an individual or information on the means of getting in touch via active communication channels, e.g. opening a GitHub discussion, raising an issue, etc.
+Provide a way to contact the owners of this project.
+It can be a team, an individual or information on the means of getting in touch via active communication channels, e.g. opening a GitHub discussion, raising an issue, etc.
 
 ## Licence
 
