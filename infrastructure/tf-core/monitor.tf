@@ -1,5 +1,5 @@
 module "monitor_action_group" {
-  for_each = var.monitor_action_group_map
+  for_each = local.monitor_action_group_map
 
   source = "./modules/monitor-action-group"
 
