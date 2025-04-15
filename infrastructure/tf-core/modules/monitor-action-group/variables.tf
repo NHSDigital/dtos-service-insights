@@ -18,7 +18,7 @@ variable "email_receiver" {
   type = list(object({
     name                    = string
     email_address           = string
-    use_common_alert_schema = boolean
+    use_common_alert_schema = bool
   }))
   default = []
 }
