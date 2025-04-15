@@ -506,13 +506,13 @@ monitor_action_group = {
   short_name = "test"
   email_receiver = {
     1 = {
-      name                    = "testing1"
+      name                    = "email1"
       email_address           = "testing1@testing.com"
       use_common_alert_schema = false
     }
 
     2 = {
-      name                    = "testing2"
+      name                    = "email2"
       email_address           = "testing2@testing.com"
       use_common_alert_schema = false
     }
@@ -520,19 +520,19 @@ monitor_action_group = {
 
   webhook_receiver = {
     1 = {
-      name                    = "testing1"
+      name                    = "webhook1"
       service_uri             = "http://example.com/alert1"
       use_common_alert_schema = false
     }
 
     2 = {
-      name                    = "testing2"
+      name                    = "webhook2"
       service_uri             = "http://example.com/alert2"
       use_common_alert_schema = false
     }
 
     3 = {
-      name                    = "testing3"
+      name                    = "webhook3"
       service_uri             = "http://example.com/alert3"
       use_common_alert_schema = false
     }
