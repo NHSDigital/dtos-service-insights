@@ -172,6 +172,7 @@ event_grid_subscriptions = {
     }
   }
 }
+
 function_apps = {
   acr_mi_name = "dtos-service-insights-acr-push"
   acr_name    = "acrukshubdevserins"
@@ -498,6 +499,31 @@ key_vault = {
   soft_del_ret_days = 7
   purge_prot        = false
   sku_name          = "standard"
+}
+
+monitor_action_group = {
+
+  email_receiver = {
+    email_receiver_1 = {
+      name                    = "testing1"
+      email_address           = "testing1@testing.com"
+      use_common_alert_schema = false
+    }
+
+    email_receiver_2 = {
+      name                    = "testing2"
+      email_address           = "testing2@testing.com"
+      use_common_alert_schema = false
+    }
+  }
+
+  webhook_receiver = {
+    webhook_receiver_1 = {
+      name                    = "testing"
+      service_uri             = "testing@testing.com"
+      use_common_alert_schema = false
+    }
+  }
 }
 
 sqlserver = {

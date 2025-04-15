@@ -139,12 +139,6 @@ locals {
             local.app_settings_common,
             config.env_vars_static,
 
-
-            # # Dynamic env vars which cannot be stored in tfvars file
-            # function == "example-function" ? {
-            #   EXAMPLE_API_KEY = data.azurerm_key_vault_secret.example[region].versionless_id
-            # } : {},
-
             # Dynamic references to other Function App URLs
             {
               for obj in config.app_urls : obj.env_var_name => format(

@@ -41,9 +41,9 @@ resource "azurerm_monitor_action_group" "this" {
   dynamic "email_receiver" {
     for_each = toset(var.email_receiver)
     content {
-      name                        = email_receiver.value.name
-      email_address               = email_receiver.value.email_address
-      use_common_alert_schema     = email_receiver.value.use_common_alert_schema
+      name                    = email_receiver.value.name
+      email_address           = email_receiver.value.email_address
+      use_common_alert_schema = email_receiver.value.use_common_alert_schema
     }
   }
 
@@ -93,9 +93,13 @@ resource "azurerm_monitor_action_group" "this" {
   #   phone_number = "13888888888"
   # }
 
-  # webhook_receiver {
-  #   name                    = "callmyapiaswell"
-  #   service_uri             = "http://example.com/alert"
-  #   use_common_alert_schema = true
-  # }
+  dynamic "webhook_receiver" {
+    for_each = toset(var.webhook_receiver)
+    content {
+      name                    = webhook_receiver.value.name
+      service_uri             = webhook_receiver.value.service_uri
+      use_common_alert_schema = webhook_receiver.value.use_common_alert_schema
+    }
+  }
+
 }

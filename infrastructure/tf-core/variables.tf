@@ -417,3 +417,20 @@ variable "event_grid_defaults" {
     public_network_access_enabled = bool
   })
 }
+
+variable "monitor_action_group" {
+  description = "Default configuration for the Event Grid resource"
+  type = object({
+    short_name = string
+    email_receiver = optional(map(object({
+      name                    = string
+      email_address           = string
+      use_common_alert_schema = optional(bool, false)
+    })))
+    webhook_receiver = optional(map(object({
+      name                    = string
+      service_uri             = string
+      use_common_alert_schema = optional(bool, false)
+    })))
+  })
+}

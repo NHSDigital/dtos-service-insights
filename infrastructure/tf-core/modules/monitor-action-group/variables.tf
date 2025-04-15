@@ -23,6 +23,15 @@ variable "email_receiver" {
   default = []
 }
 
+variable "webhook_receiver" {
+  description = "webhook receiver properties."
+  type = list(object({
+    name                    = string
+    service_uri             = string
+    use_common_alert_schema = bool
+  }))
+  default = []
+}
 
 variable "location" {
   description = "The location/region where the Event Hub namespace is created."
