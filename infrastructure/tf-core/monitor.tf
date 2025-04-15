@@ -8,33 +8,22 @@ module "monitor_action_group" {
   location            = each.key
   short_name          = var.monitor_action_group.short_name
 
-  email_receiver = local.email_receiver_list
-
-  # webhook_receiver = [
-  #   {
-  #     name                    = "testing"
-  #     service_uri             = "testing@testing.com"
-  #     use_common_alert_schema = false
-  #   }
-  # ]
+  email_receiver   = local.email_receiver_list
+  webhook_receiver = local.webhook_receiver_list
 }
 
 locals {
 
   email_receiver_list = flatten([
-    for email_receiver_key, email_receiver_details in var.monitor_action_group.email_receiver : merge(
-      # {
-      #   region             = region             # 1st iterator
-      #   email_receiver_key = email_receiver_key # 2nd iterator
-      # },
-      email_receiver_details # the rest of the key/value pairs for a specific event_grids
+    for _, email_receiver_details in var.monitor_action_group.email_receiver : merge(
+      email_receiver_details
     )
   ])
 
-  # ...then project the list of objects into a map with unique keys (combining the iterators), for consumption by a for_each meta argument
-  # email_receiver_map = {
-  #   for object in local.email_receiver_list : "${object.email_receiver_key}-${object.region}" => object
-  # }
-
+  webhook_receiver_list = flatten([
+    for _, webhook_receiver_details in var.monitor_action_group.webhook_receiver : merge(
+      webhook_receiver_details
+    )
+  ])
 
 }
