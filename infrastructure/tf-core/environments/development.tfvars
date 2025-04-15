@@ -505,38 +505,33 @@ monitor_action_group = {
 
   short_name = "test"
   email_receiver = {
-    1 = {
+    alert_team = {
       name                    = "email1"
-      email_address           = "testing1@testing.com"
+      email_address           = "alert_team@testing.com"
       use_common_alert_schema = false
     }
 
-    2 = {
+    devops = {
       name                    = "email2"
-      email_address           = "testing2@testing.com"
+      email_address           = "devops@testing.com"
       use_common_alert_schema = false
     }
   }
 
   webhook_receiver = {
-    1 = {
-      name                    = "webhook1"
+    slack_alerts = {
+      name                    = "slack_alerts"
       service_uri             = "http://example.com/alert1"
       use_common_alert_schema = false
     }
 
-    2 = {
+    monitoring_stack = {
       name                    = "webhook2"
-      service_uri             = "http://example.com/alert2"
-      use_common_alert_schema = false
-    }
-
-    3 = {
-      name                    = "webhook3"
-      service_uri             = "http://example.com/alert3"
+      service_uri             = "http://example.com/slack"
       use_common_alert_schema = false
     }
   }
+
 }
 
 sqlserver = {
