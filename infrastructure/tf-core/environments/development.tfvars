@@ -521,19 +521,19 @@ monitor_action_group = {
   webhook_receiver = {
     1 = {
       name                    = "testing1"
-      service_uri             = "testing1@testing.com"
+      service_uri             = "http://example.com/alert"
       use_common_alert_schema = false
     }
 
     2 = {
       name                    = "testing2"
-      service_uri             = "testing2@testing.com"
+      service_uri             = "http://example.com/alert"
       use_common_alert_schema = false
     }
 
     3 = {
       name                    = "testing3"
-      service_uri             = "testing3@testing.com"
+      service_uri             = "http://example.com/alert"
       use_common_alert_schema = false
     }
   }
