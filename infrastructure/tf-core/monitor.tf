@@ -1,7 +1,7 @@
 module "monitor_action_group" {
   for_each = var.regions
 
-  source = "./modules/monitor_action_group"
+  source = "./modules/monitor-action-group"
 
   name                = lower("example-monitor-action-group-${each.key}")
   resource_group_name = azurerm_resource_group.core[each.key].name
