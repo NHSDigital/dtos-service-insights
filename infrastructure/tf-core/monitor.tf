@@ -14,11 +14,13 @@ module "monitor_action_group" {
 
 locals {
 
-  email_receiver_list = flatten([
-    for _, email_receiver_details in var.monitor_action_group.email_receiver : merge(
-      email_receiver_details
-    )
-  ])
+  email_receiver_list = values(var.monitor_action_group.email_receiver)
+
+  # email_receiver_list = flatten([
+  #   for _, email_receiver_details in var.monitor_action_group.email_receiver : merge(
+  #     email_receiver_details
+  #   )
+  # ])
 
   webhook_receiver_list = flatten([
     for _, webhook_receiver_details in var.monitor_action_group.webhook_receiver : merge(
