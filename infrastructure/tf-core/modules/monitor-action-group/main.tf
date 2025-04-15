@@ -41,9 +41,9 @@ resource "azurerm_monitor_action_group" "this" {
   dynamic "email_receiver" {
     for_each = toset(var.email_receiver)
     content {
-      name          = email_receiver.value.name
-      email_address = email_receiver.value.email_address
-      subnet_id     = email_receiver.value.subnet_id
+      name                        = email_receiver.value.name
+      email_address               = email_receiver.value.email_address
+      use_common_alert_schema     = email_receiver.value.use_common_alert_schema
     }
   }
 
