@@ -15,6 +15,27 @@ public class CreateParticipantScreeningProfile
     {
         _logger = logger;
         _httpRequestService = httpRequestService;
+
+        // Retrieve and validate required environment variables
+        var screeningProfileUrl = Environment.GetEnvironmentVariable("CreateParticipantScreeningProfileUrl");
+        var demographicsServiceUrl = Environment.GetEnvironmentVariable("DemographicsServiceUrl");
+        var screeningDataServiceUrl = Environment.GetEnvironmentVariable("GetScreeningDataUrl");
+
+        if (string.IsNullOrEmpty(demographicsServiceUrl))
+        {
+            throw new InvalidOperationException("Environment variable 'DemographicsServiceUrl' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(screeningDataServiceUrl))
+        {
+            throw new InvalidOperationException("Environment variable 'GetScreeningDataUrl' is missing.");
+        }
+
+        if (string.IsNullOrEmpty(screeningProfileUrl))
+        {
+            throw new InvalidOperationException("Environment variable 'CreateParticipantScreeningProfileUrl' is missing.");
+        }
+
     }
 
     [Function(nameof(CreateParticipantScreeningProfile))]
@@ -69,16 +90,23 @@ public class CreateParticipantScreeningProfile
         var demographicsServiceUrl = $"{baseDemographicsServiceUrl}?nhs_number={nhsNumber}";
         _logger.LogInformation("Requesting demographic service URL: {Url}", demographicsServiceUrl);
 
-        DemographicsData demographicsData;
+        try
+        {
+            var demographicsResponse = await _httpRequestService.SendGet(demographicsServiceUrl);
+            demographicsResponse.EnsureSuccessStatusCode();
 
-        var demographicsResponse = await _httpRequestService.SendGet(demographicsServiceUrl);
-        demographicsResponse.EnsureSuccessStatusCode();
+            var demographicsJson = await demographicsResponse.Content.ReadAsStringAsync();
+            _logger.LogInformation("Demographics data retrieved successfully: {DemographicsJson}", demographicsJson);
 
-        var demographicsJson = await demographicsResponse.Content.ReadAsStringAsync();
-        _logger.LogInformation("Demographics data retrieved");
-        demographicsData = JsonSerializer.Deserialize<DemographicsData>(demographicsJson);
+            return JsonSerializer.Deserialize<DemographicsData>(demographicsJson);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve demographics data. NHS Number: {NhsNumber}, Service: {demographicsServiceUrl}, Timestamp: {Timestamp}",
+                nhsNumber, demographicsServiceUrl, DateTime.UtcNow);
 
-        return demographicsData;
+            throw new HttpRequestException($"Failed to retrieve demographics data from {baseDemographicsServiceUrl}", ex);
+        }
     }
 
     private async Task<ScreeningLkp> GetScreeningDataAsync(long screeningId)
@@ -87,17 +115,23 @@ public class CreateParticipantScreeningProfile
         var getScreeningDataUrl = $"{baseScreeningDataServiceUrl}?screening_id={screeningId}";
         _logger.LogInformation("Requesting screening data from {Url}", getScreeningDataUrl);
 
-        ScreeningLkp screeningLkp;
+        try
+        {
+            var response = await _httpRequestService.SendGet(getScreeningDataUrl);
+            response.EnsureSuccessStatusCode();
 
-        var response = await _httpRequestService.SendGet(getScreeningDataUrl);
-        response.EnsureSuccessStatusCode();
+            var screeningDataJson = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Screening data retrieved successfully: {ScreeningDataJson}", screeningDataJson);
 
-        var screeningDataJson = await response.Content.ReadAsStringAsync();
-        _logger.LogInformation("Screening data retrieved successfully.");
+            return JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve screening data. Screening ID: {ScreeningId}, Service: {getScreeningDataUrl}, Timestamp: {Timestamp}",
+                screeningId, getScreeningDataUrl, DateTime.UtcNow);
 
-        screeningLkp = JsonSerializer.Deserialize<ScreeningLkp>(screeningDataJson);
-
-        return screeningLkp;
+            throw new HttpRequestException($"Failed to retrieve screening data from {baseScreeningDataServiceUrl}", ex);
+        }
     }
 
     private async Task SendToCreateParticipantScreeningProfileAsync(FinalizedParticipantDto participant, bool isHistoric)

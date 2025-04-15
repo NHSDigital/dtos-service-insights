@@ -4,7 +4,6 @@
     "ASPNETCORE_ENVIRONMENT": "Development",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "GetEpisodeUrl": "http://localhost:6060/api/GetEpisode",
     "CreateParticipantScreeningEpisodeUrl":"http://localhost:6010/api/CreateParticipantScreeningEpisode",
     "GetScreeningDataUrl": "http://localhost:6082/api/GetScreeningData",
     "GetReferenceDataUrl": "http://localhost:6081/api/GetReferenceData"
