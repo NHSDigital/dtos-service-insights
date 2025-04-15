@@ -3,10 +3,10 @@ module "monitor_action_group" {
 
   source = "./modules/monitor-action-group"
 
-  name                = lower("example-monitor-action-group-${each.key}")
-  resource_group_name = azurerm_resource_group.core[each.key].name
-  location            = each.key
-  short_name          = "testing123"
+  name                = lower("example-monitor-action-group-${each.value.region}")
+  resource_group_name = azurerm_resource_group.core[each.value.region].name
+  location            = each.value.region
+  short_name          = each.value.short_name
 
   email_receiver = [
     {
@@ -33,6 +33,7 @@ locals {
         {
           region             = region             # 1st iterator
           email_receiver_key = email_receiver_key # 2nd iterator
+          short_name         = var.monitor_action_group.short_name
         },
         email_receiver_details # the rest of the key/value pairs for a specific event_grids
       )

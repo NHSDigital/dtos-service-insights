@@ -503,6 +503,7 @@ key_vault = {
 
 monitor_action_group = {
 
+  short_name = "test"
   email_receiver = {
     email_receiver_1 = {
       name                    = "testing1"
