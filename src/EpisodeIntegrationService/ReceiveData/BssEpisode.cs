@@ -10,8 +10,6 @@ public class BssEpisode
     public string? date_of_foa { get; set; }
     public string? date_of_as { get; set; }
     public string? early_recall_date { get; set; }
-    public string? latest_invitation_date { get; set; }
-    public string? hr_recall_due_date { get; set; }
     public string? call_recall_status_authorised_by { get; set; }
     public string? end_code { get; set; }
     public string? end_code_last_updated { get; set; }
