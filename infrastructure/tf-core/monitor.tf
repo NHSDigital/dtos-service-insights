@@ -8,7 +8,7 @@ module "monitor_action_group" {
   location            = each.value.region
   short_name          = var.monitor_action_group.short_name
 
-  email_receiver      = each.value.email_receiver
+  email_receiver = each.value.email_receiver
 
   # email_receiver   = local.email_receiver_list
   # webhook_receiver = local.webhook_receiver_list
@@ -22,9 +22,9 @@ locals {
     for region in keys(var.regions) : [
       for action_group_key, action_group_details in var.monitor_action_group.email_receiver : merge(
         {
-          region               = region
-          action_group_key     = action_group_key
-        }
+          region           = region
+          action_group_key = action_group_key
+        },
         action_group_details
       )
       # for _, email_receiver_details in var.monitor_action_group.email_receiver : merge(

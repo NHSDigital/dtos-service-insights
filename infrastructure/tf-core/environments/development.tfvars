@@ -517,6 +517,7 @@ monitor_action_group = {
         email_address           = "devops@testing.com"
         use_common_alert_schema = false
       }
+    }
   }
 
   action_group_2 = {
