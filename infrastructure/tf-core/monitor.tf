@@ -20,7 +20,7 @@ locals {
 
   monitor_action_group_object_list = flatten([
     for region in keys(var.regions) : [
-      for action_group_key, action_group_details in var.monitor_action_group.email_receiver : merge(
+      for action_group_key, action_group_details in var.monitor_action_group : merge(
         {
           region           = region
           action_group_key = action_group_key
