@@ -7,8 +7,7 @@ module "monitor_action_group" {
   resource_group_name = azurerm_resource_group.core[each.value.region].name
   location            = each.value.region
   short_name          = each.value.short_name
-
-  email_receiver = each.value.email_receiver
+  email_receiver      = each.value.email_receiver
 
   # email_receiver   = local.email_receiver_list
   # webhook_receiver = local.webhook_receiver_list
