@@ -522,7 +522,6 @@ monitor_action_group = {
 
   action_group_2 = {
     short_name = "group2"
-
     webhook_receiver = {
       slack_alerts = {
         name                    = "slack_alerts"
