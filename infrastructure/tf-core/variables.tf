@@ -421,7 +421,7 @@ variable "event_grid_defaults" {
 variable "monitor_action_group" {
   description = "Default configuration for the Event Grid resource"
   type = object({
-    short_name = string
+    short_name = optional(string, "test")
     email_receiver = optional(map(object({
       name                    = string
       email_address           = string
