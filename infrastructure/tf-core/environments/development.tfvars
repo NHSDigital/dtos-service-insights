@@ -503,32 +503,37 @@ key_vault = {
 
 monitor_action_group = {
 
-  short_name = "test"
-  email_receiver = {
-    alert_team = {
-      name                    = "email1"
-      email_address           = "alert_team@testing.com"
-      use_common_alert_schema = false
-    }
+  action_group_1 = {
+    short_name = "group1"
+    email_receiver = {
+      alert_team = {
+        name                    = "email1"
+        email_address           = "alert_team@testing.com"
+        use_common_alert_schema = false
+      }
 
-    devops = {
-      name                    = "email2"
-      email_address           = "devops@testing.com"
-      use_common_alert_schema = false
-    }
+      devops = {
+        name                    = "email2"
+        email_address           = "devops@testing.com"
+        use_common_alert_schema = false
+      }
   }
 
-  webhook_receiver = {
-    slack_alerts = {
-      name                    = "slack_alerts"
-      service_uri             = "http://example.com/alert1"
-      use_common_alert_schema = false
-    }
+  action_group_2 = {
+    short_name = "group2"
 
-    monitoring_stack = {
-      name                    = "webhook2"
-      service_uri             = "http://example.com/slack"
-      use_common_alert_schema = false
+    webhook_receiver = {
+      slack_alerts = {
+        name                    = "slack_alerts"
+        service_uri             = "http://example.com/alert1"
+        use_common_alert_schema = false
+      }
+
+      monitoring_stack = {
+        name                    = "webhook2"
+        service_uri             = "http://example.com/slack"
+        use_common_alert_schema = false
+      }
     }
   }
 
