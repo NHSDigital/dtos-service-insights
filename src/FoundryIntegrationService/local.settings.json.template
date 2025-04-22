@@ -2,8 +2,10 @@
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsServiceBus": "example",
     "FUNCTIONS_WORKER_RUNTIME": "python",
-    "FOUNDRY_API_URL": "https://your-foundry-instance.palantirfoundry.com/api/endpoint",
-    "FOUNDRY_API_TOKEN": "your-foundry-api-token"
+    "FOUNDRY_DATASET_PATH":example",
+    "FOUNDRY_API_URL": "example",
+    "FOUNDRY_API_TOKEN": "example"
   }
 }
