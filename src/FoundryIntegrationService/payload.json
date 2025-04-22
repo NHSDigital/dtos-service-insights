@@ -1,0 +1,9 @@
+{
+  "eventType": "exampleEvent",
+  "eventData": {
+    "key1": "value1",
+    "key2": "value2",
+    "key3": "value3"
+  },
+  "timestamp": "2025-04-22T15:00:00Z"
+}
