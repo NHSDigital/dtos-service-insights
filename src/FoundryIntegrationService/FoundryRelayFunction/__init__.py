@@ -1,88 +1,59 @@
 import logging
 import json
 import os
-import requests
+from datetime import datetime
+from uuid import uuid4
 import azure.functions as func
+from foundry_sdk import FoundryClient, UserTokenAuth
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('FoundryRelayFunction triggered by HTTP POST request.')
+    logging.info('Foundry file upload function triggered.')
 
     try:
-        # Parse the JSON payload from the request
         payload = req.get_json()
-        logging.info(f"Received Payload: {json.dumps(payload, indent=2)}")
-
-        # Write to Foundry bucket via Foundry API
         foundry_url = os.getenv("FOUNDRY_API_URL")
         api_token = os.getenv("FOUNDRY_API_TOKEN")
-        foundry_resource_id = os.getenv("FOUNDRY_RESOURCE_ID")
+        dataset_rid = os.getenv("FOUNDRY_RESOURCE_ID")
 
-        # Log the Foundry API URL, token, and resource ID
-        logging.info(f"FOUNDRY_API_URL: {foundry_url}")
-        logging.info(f"FOUNDRY_API_TOKEN (first 10 chars): {api_token[:10]}")
-        logging.info(f"FOUNDRY_RESOURCE_ID: {foundry_resource_id}")
+        if not foundry_url or not api_token or not dataset_rid:
+            raise EnvironmentError("Required environment variables are missing.")
 
-        if not foundry_url or not api_token or not foundry_resource_id:
-            logging.error("FOUNDRY_API_URL, FOUNDRY_API_TOKEN, or FOUNDRY_RESOURCE_ID is not set.")
-            return func.HttpResponse(
-                "FOUNDRY_API_URL, FOUNDRY_API_TOKEN, or FOUNDRY_RESOURCE_ID is not set.",
-                status_code=500
-            )
+        client = FoundryClient(
+            auth=UserTokenAuth(api_token),
+            hostname=foundry_url
+        )
 
-        headers = {
-            "Authorization": f"Bearer {api_token}",
-            "Content-Type": "application/json"
-        }
+        # Log available methods in the SDK
+        logging.info(f"Available methods in DatasetClient: {dir(client.datasets)}")
+        logging.info(f"Available methods in client.datasets.Dataset: {dir(client.datasets.Dataset)}")
+        logging.info(f"Available methods in client.datasets.Dataset.File: {dir(client.datasets.Dataset.File)}")
 
-        # Perform a basic API check
-        try:
-            logging.info("Performing API health check...")
-            logging.info(f"Health check URL: {foundry_url}")
-            logging.info(f"Health check Headers: {headers}")
+        file_name = generate_file_name()
+        content = json.dumps(payload)
 
-            health_check_response = requests.get(foundry_url, headers=headers)
-            if health_check_response.status_code != 200:
-                logging.error(f"API health check failed: {health_check_response.status_code} - {health_check_response.text}")
-                return func.HttpResponse(
-                    f"API health check failed: {health_check_response.status_code} - {health_check_response.text}",
-                    status_code=502
-                )
-            logging.info("API health check passed.")
-        except requests.exceptions.RequestException as e:
-            logging.error(f"API health check failed: {e}")
-            return func.HttpResponse(
-                f"API health check failed: {e}",
-                status_code=502
-            )
+        logging.info(f"Uploading file '{file_name}' to dataset {dataset_rid}...")
 
-        # Include the resource ID in the payload or URL
-        payload["resourceId"] = foundry_resource_id
+        client.datasets.Dataset.File.upload(
+            dataset_rid=dataset_rid,
+            file_path=file_name,
+            body=content.encode("utf-8")
+        )
 
-        # Log the details of the request
-        logging.info(f"Sending POST request to Palantir Foundry:")
-        logging.info(f"URL: {foundry_url}")
-        logging.info(f"Headers: {headers}")
-        logging.info(f"Payload: {json.dumps(payload, indent=2)}")
-
-        # The actual POST request to Foundry
-        response = requests.post(foundry_url, headers=headers, json=payload)
-        response.raise_for_status()
-        logging.info(f"Successfully wrote event to Foundry bucket: {response.status_code}")
+        logging.info(f"File '{file_name}' uploaded successfully.")
 
         return func.HttpResponse(
-            "Successfully wrote event to Foundry bucket.",
+            f"File '{file_name}' uploaded to Foundry dataset successfully.",
             status_code=200
         )
 
-    except ValueError:
-        logging.error("Invalid JSON payload.")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}", exc_info=True)
         return func.HttpResponse(
-            "Invalid JSON payload.",
-            status_code=400
-        )
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to write to Foundry bucket: {e}")
-        return func.HttpResponse(
-            f"Failed to write to Foundry bucket: {e}",
+            f"An error occurred: {str(e)}",
             status_code=500
         )
+
+def generate_file_name():
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    unique_suffix = uuid4().hex[:8]
+    return f"{current_time}_{unique_suffix}.json"
