@@ -135,6 +135,30 @@ app_service_plan = {
   }
 }
 
+service_bus = {
+  dtoss-breast-screening = {
+    capacity         = 1
+    sku_tier         = "Premium"
+    max_payload_size = "100mb"
+    topics = {
+      episode_uploaded  = {},
+      episode_created   = {},
+      episode_cancelled = {}
+    }
+  },
+  dtoss-bowel-screening = {
+    namespace_name   = "bowel-screening-for-all"
+    capacity         = 1
+    sku_tier         = "Premium"
+    max_payload_size = "100mb"
+    topics = {
+      episode_uploaded  = {},
+      episode_created   = {},
+      episode_cancelled = {}
+    }
+  }
+}
+
 diagnostic_settings = {
   metric_enabled = true
 }
