@@ -23,10 +23,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             hostname=foundry_url
         )
 
-        # Log available methods in the SDK
-        logging.info(f"Available methods in DatasetClient: {dir(client.datasets)}")
-        logging.info(f"Available methods in client.datasets.Dataset: {dir(client.datasets.Dataset)}")
-        logging.info(f"Available methods in client.datasets.Dataset.File: {dir(client.datasets.Dataset.File)}")
+        # Log available methods in the SDK, excluding those with underscores
+        logging.info(f"Available methods in client.datasets.Dataset: {[method for method in dir(client.datasets.Dataset) if not method.startswith('_')]}")
+        logging.info(f"Available methods in client.datasets.Dataset.File: {[method for method in dir(client.datasets.Dataset.File) if not method.startswith('_')]}")
 
         file_name = generate_file_name()
         content = json.dumps(payload)
