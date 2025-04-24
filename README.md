@@ -34,7 +34,7 @@ cd dtos-service-insights
 
 The following software packages, or their equivalents, are expected to be installed and configured:
 
-- [Git](https://git-scm.com/) version control system
+- [Git](https://git-scm.com/) version control
 - [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 - [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
 - [Azure Storage Explorer](https://azure.microsoft.com/en-us/products/storage/storage-explorer)
