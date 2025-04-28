@@ -7,8 +7,6 @@ WORKDIR /home/site/wwwroot
 # Copy the function app code into the container
 COPY . /home/site/wwwroot
 
-RUN ls -la
-
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 

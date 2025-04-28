@@ -3,7 +3,7 @@ name: service-insights
 # Define network
 networks:
   app-network:
-    driver: bridge
+    driver: bridge # Change to 'host' for Windows
 
 # Define services
 services:

@@ -2,12 +2,15 @@ import logging
 import json
 import os
 from datetime import datetime
+from http import HTTPStatus
 from uuid import uuid4
 import azure.functions as func
 from foundry_sdk import FoundryClient, UserTokenAuth
 
+logger = logging.getLogger(__name__)
+
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Foundry file upload function triggered.')
+    logger.info('Foundry file upload function triggered.')
 
     try:
         payload = req.get_json()
@@ -18,19 +21,21 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         if not foundry_url or not api_token or not dataset_rid:
             raise EnvironmentError("Required environment variables are missing.")
 
+        if not isinstance(payload, dict):
+                return func.HttpResponse(
+                    "Invalid payload format. Expected a JSON object.",
+                    status_code=HTTPStatus.BAD_REQUEST
+                )
+
         client = FoundryClient(
             auth=UserTokenAuth(api_token),
             hostname=foundry_url
         )
 
-        # Log available methods in the SDK, excluding those with underscores
-        logging.info(f"Available methods in client.datasets.Dataset: {[method for method in dir(client.datasets.Dataset) if not method.startswith('_')]}")
-        logging.info(f"Available methods in client.datasets.Dataset.File: {[method for method in dir(client.datasets.Dataset.File) if not method.startswith('_')]}")
-
         file_name = generate_file_name()
         content = json.dumps(payload)
 
-        logging.info(f"Uploading file '{file_name}' to dataset {dataset_rid}...")
+        logger.info(f"Uploading file '{file_name}' to Foundry dataset resource ID: {dataset_rid}...")
 
         client.datasets.Dataset.File.upload(
             dataset_rid=dataset_rid,
@@ -38,21 +43,28 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             body=content.encode("utf-8")
         )
 
-        logging.info(f"File '{file_name}' uploaded successfully.")
+        logger.info(f"File '{file_name}' uploaded successfully.")
 
         return func.HttpResponse(
-            f"File '{file_name}' uploaded to Foundry dataset successfully.",
-            status_code=200
+            f"File '{file_name}' uploaded to Foundry dataset resource ID '{dataset_rid}' successfully.",
+            status_code=HTTPStatus.OK
+        )
+
+    except EnvironmentError as env_err:
+        logger.error(f"Environment configuration error: {env_err}")
+        return func.HttpResponse(
+            str(env_err),
+            status_code=HTTPStatus.BAD_REQUEST
         )
 
     except Exception as e:
-        logging.error(f"An error occurred: {e}", exc_info=True)
+        logger.error(f"An error occurred: {e}", exc_info=True)
         return func.HttpResponse(
-            f"An error occurred: {str(e)}",
-            status_code=500
+            f"An internal server error occurred: {str(e)}",
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR
         )
 
-def generate_file_name():
+def generate_file_name() -> str:
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     unique_suffix = uuid4().hex[:8]
     return f"{current_time}_{unique_suffix}.json"
