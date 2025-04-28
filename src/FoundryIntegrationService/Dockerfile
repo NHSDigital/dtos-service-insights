@@ -7,11 +7,8 @@ WORKDIR /home/site/wwwroot
 # Copy the function app code into the container
 COPY . /home/site/wwwroot
 
-<<<<<<< HEAD
-=======
 RUN ls -la
 
->>>>>>> 16cb8ad (DTOSS-8480: add containerisation)
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
