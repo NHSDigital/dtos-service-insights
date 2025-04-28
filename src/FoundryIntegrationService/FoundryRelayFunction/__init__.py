@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 import os
 from datetime import datetime
 from http import HTTPStatus
@@ -13,7 +13,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logger.info('Foundry file upload function triggered.')
 
     try:
-        payload = req.get_json()
+        # Attempt to parse the JSON payload
+        try:
+            payload = req.get_json()
+        except json.JSONDecodeError:
+            return func.HttpResponse(
+                "Invalid JSON payload.",
+                status_code=HTTPStatus.BAD_REQUEST
+            )
+
+        # Validate environment variables
         foundry_url = os.getenv("FOUNDRY_API_URL")
         api_token = os.getenv("FOUNDRY_API_TOKEN")
         dataset_rid = os.getenv("FOUNDRY_RESOURCE_ID")
@@ -22,11 +31,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             raise EnvironmentError("Required environment variables are missing.")
 
         if not isinstance(payload, dict):
-                return func.HttpResponse(
-                    "Invalid payload format. Expected a JSON object.",
-                    status_code=HTTPStatus.BAD_REQUEST
-                )
+            return func.HttpResponse(
+                "Invalid payload format. Expected a JSON object.",
+                status_code=HTTPStatus.BAD_REQUEST
+            )
 
+        # Initialize Foundry client
         client = FoundryClient(
             auth=UserTokenAuth(api_token),
             hostname=foundry_url
@@ -56,11 +66,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             str(env_err),
             status_code=HTTPStatus.BAD_REQUEST
         )
-
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
         return func.HttpResponse(
-            f"An internal server error occurred: {str(e)}",
+            "An internal server error occurred.",
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR
         )
 
