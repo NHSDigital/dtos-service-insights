@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 import json
 from http import HTTPStatus
 import azure.functions as func
-from FoundryIntegrationService.FoundryRelayFunction.__init__ import main
+from FoundryIntegrationService.FoundryRelayFunction import main
 
 @pytest.fixture
 def mock_request():
@@ -18,7 +18,7 @@ def mock_request():
 
 @patch("FoundryIntegrationService.FoundryRelayFunction.__init__.FoundryClient")
 @patch("FoundryIntegrationService.FoundryRelayFunction.__init__.os.getenv")
-def test_main_success(mock_getenv, mock_foundry_client, mock_request):
+def test_happy_path__pass_valid_payload_to_function_over_http(mock_getenv, mock_foundry_client, mock_request):
     """Test the main function for a successful file upload."""
     # Mock environment variables
     mock_getenv.side_effect = lambda key: {
