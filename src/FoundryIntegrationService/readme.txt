@@ -50,6 +50,12 @@ curl -X POST http://localhost:7071/api/FoundryRelayFunction \
   }
   ```
 
+## 5. Run Unit Tests
+To ensure the function behaves as expected, run the unit tests using `pytest`:
+```bash
+pytest tests/FoundryIntegrationService/test_foundry_relay_function.py
+```
+
 ## Troubleshooting
 - If the function does not start, ensure all dependencies are installed and environment variables are correctly configured.
 - Check the logs for errors when running the function:
