@@ -177,8 +177,6 @@ function_apps = {
   acr_name    = "acrukshubdevserins"
   acr_rg_name = "rg-hub-dev-uks-serins"
 
-  app_insights_name                      = "appi-nft-uks-serins"
-  app_insights_rg_name                   = "rg-serins-nft-uks-audit"
   app_service_logs_disk_quota_mb         = 35
   app_service_logs_retention_period_days = 7
 

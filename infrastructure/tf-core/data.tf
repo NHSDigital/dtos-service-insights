@@ -11,6 +11,24 @@ data "terraform_remote_state" "hub" {
   }
 }
 
+data "terraform_remote_state" "audit" {
+  backend = "azurerm"
+  config = {
+    subscription_id      = var.HUB_SUBSCRIPTION_ID
+    storage_account_name = var.AUDIT_BACKEND_AZURE_STORAGE_ACCOUNT_NAME
+    container_name       = var.AUDIT_BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME
+    key                  = var.AUDIT_BACKEND_AZURE_STORAGE_ACCOUNT_KEY
+    resource_group_name  = var.AUDIT_BACKEND_AZURE_RESOURCE_GROUP_NAME
+  }
+}
+
+data "azurerm_application_insights" "ai" {
+  provider = azurerm.audit
+
+  name                = data.terraform_remote_state.audit.outputs.application_insights.name
+  resource_group_name = data.terraform_remote_state.audit.outputs.application_insights.resource_group_name
+}
+
 # Note the following two Networking data look-ups only work becasue the names for the
 # resources are effectively the same in both subscriptions (with additional name suffix for Audit RG)
 data "azurerm_virtual_network" "vnet_audit" {
@@ -48,23 +66,4 @@ data "azurerm_user_assigned_identity" "acr_mi" {
 
   name                = var.function_apps.acr_mi_name
   resource_group_name = var.function_apps.acr_rg_name
-}
-
-data "azurerm_application_insights" "ai" {
-  provider = azurerm.audit
-
-  name                = var.function_apps.app_insights_name
-  resource_group_name = var.function_apps.app_insights_rg_name
-}
-
-
-data "terraform_remote_state" "audit" {
-  backend = "azurerm"
-  config = {
-    subscription_id      = var.HUB_SUBSCRIPTION_ID
-    storage_account_name = var.AUDIT_BACKEND_AZURE_STORAGE_ACCOUNT_NAME
-    container_name       = var.AUDIT_BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME
-    key                  = var.AUDIT_BACKEND_AZURE_STORAGE_ACCOUNT_KEY
-    resource_group_name  = var.AUDIT_BACKEND_AZURE_RESOURCE_GROUP_NAME
-  }
 }

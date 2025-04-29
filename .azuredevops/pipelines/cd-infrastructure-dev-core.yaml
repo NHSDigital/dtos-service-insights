@@ -14,7 +14,7 @@ resources:
     - repository: dtos-devops-templates
       type: github
       name: NHSDigital/dtos-devops-templates
-      ref: feat/DTOSS-8565-Create-a-Terraform-module-for-Azure-Service-Bus-Components
+      ref: 43a1c11368ed94aad231342d9cbf1d6b58d187b6
       endpoint: NHSDigital
 
 variables:
