@@ -1,7 +1,7 @@
 # Foundry Relay Function - Setup and Usage Guide
 
 ## 1. Install Foundry SDK and Dependencies
-Ensure you have Python installed, then install the required dependencies:
+Ensure you have Python 3.10 installed, then install the required dependencies:
 ```bash
 pip install -r requirements.txt
 ```
