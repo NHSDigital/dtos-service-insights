@@ -16,8 +16,8 @@ def mock_request():
         headers={}
     )
 
-@patch("FoundryIntegrationService.FoundryRelayFunction.__init__.FoundryClient")
-@patch("FoundryIntegrationService.FoundryRelayFunction.__init__.os.getenv")
+@patch("FoundryIntegrationService.FoundryRelayFunction.foundryRelayFunction.FoundryClient")
+@patch("FoundryIntegrationService.FoundryRelayFunction.foundryRelayFunction.os.getenv")
 def test_happy_path__pass_valid_payload_to_function_over_http(mock_getenv, mock_foundry_client, mock_request):
     """Test the main function for a successful file upload."""
     # Mock environment variables
@@ -39,8 +39,8 @@ def test_happy_path__pass_valid_payload_to_function_over_http(mock_getenv, mock_
     assert "uploaded to Foundry dataset resource ID" in response.get_body().decode("utf-8")
     mock_client_instance.datasets.Dataset.File.upload.assert_called_once()
 
-@patch("FoundryIntegrationService.FoundryRelayFunction.__init__.FoundryClient")
-@patch("FoundryIntegrationService.FoundryRelayFunction.__init__.os.getenv")
+@patch("FoundryIntegrationService.FoundryRelayFunction.foundryRelayFunction.FoundryClient")
+@patch("FoundryIntegrationService.FoundryRelayFunction.foundryRelayFunction.os.getenv")
 def test_main_missing_env_vars(mock_getenv, mock_foundry_client, mock_request):
     """Test the main function when environment variables are missing."""
     # Mock environment variables to return None
@@ -53,8 +53,8 @@ def test_main_missing_env_vars(mock_getenv, mock_foundry_client, mock_request):
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert "Required environment variables are missing" in response.get_body().decode("utf-8")
 
-@patch("FoundryIntegrationService.FoundryRelayFunction.__init__.FoundryClient")
-@patch("FoundryIntegrationService.FoundryRelayFunction.__init__.os.getenv")
+@patch("FoundryIntegrationService.FoundryRelayFunction.foundryRelayFunction.FoundryClient")
+@patch("FoundryIntegrationService.FoundryRelayFunction.foundryRelayFunction.os.getenv")
 def test_main_invalid_payload(mock_getenv, mock_foundry_client):
     """Test the main function with an invalid payload."""
     # Mock environment variables
@@ -80,8 +80,8 @@ def test_main_invalid_payload(mock_getenv, mock_foundry_client):
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert "Invalid JSON payload" in response.get_body().decode("utf-8")
 
-@patch("FoundryIntegrationService.FoundryRelayFunction.__init__.FoundryClient")
-@patch("FoundryIntegrationService.FoundryRelayFunction.__init__.os.getenv")
+@patch("FoundryIntegrationService.FoundryRelayFunction.foundryRelayFunction.FoundryClient")
+@patch("FoundryIntegrationService.FoundryRelayFunction.foundryRelayFunction.os.getenv")
 def test_main_upload_failure(mock_getenv, mock_foundry_client, mock_request):
     """Test the main function when the file upload fails."""
     # Mock environment variables
